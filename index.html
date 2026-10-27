@@ -94,6 +94,64 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .bar button:hover, .file:hover { border-color: var(--accent); }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+/* le sélecteur de firmwares : un contrôle sous le panneau, une liste en verre au-dessus du contenu */
+.deck { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.picker { position: relative; }
+#fw-picker { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; max-width: 100%;
+  font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; cursor: pointer;
+  transition: border-color 0.15s var(--ease); touch-action: manipulation; }
+#fw-picker:hover, #fw-picker[aria-expanded="true"] { border-color: var(--accent); }
+.picker-k { color: var(--muted); }
+#fw-name { font-weight: 600; max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notch { flex: none; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg) translate(-1px, -1px); transition: transform 0.15s var(--ease); }
+[aria-expanded="true"] > .notch { transform: rotate(-135deg) translate(-1px, -1px); }
+.sheet { position: absolute; z-index: 30; top: calc(100% + 8px); left: 0; width: min(440px, calc(100vw - 32px)); max-height: min(70vh, 640px);
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 20px;
+  background: color-mix(in srgb, var(--surface) 84%, transparent); -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
+  border: 0.5px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.18), 0 2px 8px rgb(0 0 0 / 0.08), inset 0 0.5px 0 rgb(255 255 255 / 0.4);
+  animation: sheet-in 0.25s var(--ease); }
+@keyframes sheet-in { from { opacity: 0; transform: translateY(-6px); } }
+.sheet-grip, .scrim { display: none; }
+.search { position: relative; margin: 12px 12px 8px; flex: none; }
+.search svg { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+#fw-search { width: 100%; box-sizing: border-box; min-height: 44px; padding: 0 44px 0 38px; border: 0; border-radius: 12px;
+  font: 400 1.0625rem var(--body); color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); outline: none; -webkit-appearance: none; appearance: none; }
+#fw-search::-webkit-search-cancel-button { display: none; }
+#fw-search:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+#fw-clear { position: absolute; right: 0; top: 0; width: 44px; height: 44px; border: 0; background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+#fw-clear svg { width: 16px; height: 16px; }
+.sheet-body { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 0 8px 4px; flex: 1 1 auto; }
+.fw-sec-head { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border: 0; background: none; cursor: pointer;
+  font: 600 0.9375rem var(--body); color: var(--ink); text-align: left; border-radius: 12px; }
+.fw-sec-head .count { color: var(--muted); font-weight: 400; margin-left: auto; font-variant-numeric: tabular-nums; }
+.fw-sec-head:hover, .fw-item:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.fw-items { list-style: none; margin: 0 0 6px; padding: 0; }
+.fw-item { width: 100%; min-height: 44px; display: grid; grid-template-columns: 1fr auto; gap: 1px 12px; padding: 9px 12px; border: 0; border-radius: 12px;
+  background: none; cursor: pointer; text-align: left; font: 400 0.9375rem/1.3 var(--body); color: var(--ink); touch-action: manipulation; }
+.fw-n { font-weight: 600; }
+.fw-n[aria-current="true"]::before, .fw-item[aria-current="true"] .fw-n::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 0; border-radius: 50%; background: var(--accent); }
+.fw-a { color: var(--muted); font-size: 0.8125rem; justify-self: end; align-self: center; }
+.fw-d { grid-column: 1 / -1; color: var(--muted); font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fw-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
+.fw-tags:empty { display: none; }
+.fw-tag { font: 500 0.6875rem/1 var(--body); letter-spacing: 0.02em; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 7px; }
+.fw-note { margin: 4px 12px 6px; font: 600 0.8125rem var(--body); color: var(--muted); }
+.open-local { flex: none; display: flex; align-items: center; min-height: 44px; padding: 0 20px; border-top: 0.5px solid var(--rule);
+  font: 500 0.9375rem var(--body); color: var(--accent); cursor: pointer; position: relative; }
+.open-local input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.open-local:focus-within { outline: 2px solid var(--accent); outline-offset: -2px; }
+@media (max-width: 699px) {
+  .scrim { display: block; position: fixed; inset: 0; z-index: 29; background: rgb(0 0 0 / 0.28); animation: fade-in 0.25s var(--ease); }
+  .sheet { position: fixed; left: 0; right: 0; bottom: 0; top: auto; width: auto; max-height: 82vh; border-radius: 20px 20px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px); animation: sheet-up 0.3s var(--ease); }
+  .sheet-grip { display: block; width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: color-mix(in srgb, var(--ink) 22%, transparent); flex: none; }
+}
+@keyframes sheet-up { from { transform: translateY(100%); } }
+@keyframes fade-in { from { opacity: 0; } }
+@media (prefers-reduced-transparency: reduce) { .sheet { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .scrim { animation: none; } .notch { transition: none; } }
 
 .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 0 32px; border-top: 1px solid var(--rule); }
 details { border-bottom: 1px solid var(--rule); min-width: 0; }
@@ -132,9 +190,30 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
         <div class="start" id="start"><button id="go" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span>Allumer</span></button></div>
       </div>
     </div>
-    <div class="skins" role="radiogroup" aria-labelledby="skin-name">
-      <span class="skin-name" id="skin-name">Coloris</span>
-      <div class="swatches" id="swatches"></div>
+    <div class="deck">
+      <div class="picker" id="fw-box">
+        <button id="fw-picker" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="fw-sheet">
+          <span class="picker-k">Firmware</span><span id="fw-name">FM-1+VA</span><span class="notch" aria-hidden="true"></span>
+        </button>
+        <div class="scrim" id="fw-scrim" hidden></div>
+        <div class="sheet" id="fw-sheet" role="dialog" aria-label="Choisir un firmware" hidden>
+          <div class="sheet-grip" aria-hidden="true"></div>
+          <div class="search">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M10.4 10.4 14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <input id="fw-search" type="search" placeholder="Rechercher un firmware" aria-label="Rechercher un firmware" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go">
+            <button id="fw-clear" type="button" aria-label="Effacer la recherche" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="sheet-body">
+            <div id="fw-sections"></div>
+            <div id="fw-results" hidden></div>
+          </div>
+          <label class="open-local" for="fw-file"><input type="file" id="fw-file" accept=".fwsc">Ouvrir un .fwsc…</label>
+        </div>
+      </div>
+      <div class="skins" role="radiogroup" aria-labelledby="skin-name">
+        <span class="skin-name" id="skin-name">Coloris</span>
+        <div class="swatches" id="swatches"></div>
+      </div>
     </div>
     <div class="bar">
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
@@ -1201,17 +1280,59 @@ const isLit = (leds, id) => !!leds && leds[id] > LIT;
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
 const foldText = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-function groupCatalogue(entries, query) {
-  const q = foldText(query).trim();
+// les sections du sélecteur (la recherche, elle, passe par rankCatalogue)
+function groupCatalogue(entries) {
   const sections = new Map(CATEGORY_ORDER.map((c) => [c, []]));
   for (const e of entries) {
     if (HIDDEN.has(e.id)) continue;
-    if (q && ![e.nom, e.auteur, e.description].some((t) => foldText(t).includes(q))) continue;
     const c = (e.categories || [])[0];
     (sections.get(c) || sections.get("Autre")).push(e);
   }
   return [...sections].filter(([, items]) => items.length)
     .map(([categorie, items]) => ({ categorie, items: items.sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })) }));
+}
+// Recherche tolérante : mots dans n'importe quel ordre, mots vides et accents ignorés, début de mot
+// et fautes de frappe acceptés, classement par pertinence, sinon « résultats approchants ».
+const STOP_WORDS = new Set(["le", "la", "les", "l", "de", "des", "du", "d", "un", "une", "et", "a", "au", "aux", "en", "pour", "the", "of", "and", "an", "for"]);
+const wordsOf = (s) => foldText(s).split(/[^a-z0-9+]+/).filter(Boolean);
+function typoDistance(a, b) {                       // Damerau-Levenshtein restreinte
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[a.length][b.length];
+}
+function tokenScore(t, w) {
+  if (w === t) return 4;
+  if (w.startsWith(t)) return 3;
+  if (t.length >= 3 && w.includes(t)) return 2;
+  const k = t.length >= 8 ? 2 : t.length >= 4 ? 1 : 0;
+  if (k && (typoDistance(t, w) <= k || (w.length > t.length && typoDistance(t, w.slice(0, t.length)) <= k))) return 1;
+  return 0;
+}
+function rankCatalogue(entries, query) {
+  const tokens = wordsOf(query).filter((t) => !STOP_WORDS.has(t));
+  if (!tokens.length) return { items: [], approchants: false };
+  const scored = [];
+  for (const e of entries) {
+    if (HIDDEN.has(e.id)) continue;
+    const fields = [[wordsOf(e.nom), 3], [wordsOf(e.auteur), 2], [wordsOf(e.description), 1]];
+    let matched = 0, score = 0;
+    for (const t of tokens) {
+      let best = 0;
+      for (const [ws, weight] of fields) for (const w of ws) best = Math.max(best, weight * tokenScore(t, w));
+      if (best) { matched++; score += best; }
+    }
+    if (matched) scored.push({ e, matched, score });
+  }
+  const byName = (a, b) => a.e.nom.localeCompare(b.e.nom, "fr", { sensitivity: "base" });
+  const exact = scored.filter((s) => s.matched === tokens.length).sort((a, b) => b.score - a.score || byName(a, b));
+  if (exact.length) return { items: exact.map((s) => s.e), approchants: false };
+  const near = scored.sort((a, b) => b.matched - a.matched || b.score - a.score || byName(a, b)).slice(0, 12);
+  return { items: near.map((s) => s.e), approchants: near.length > 0 };
 }
 </script>
 <script id="fm1-emu">
@@ -3936,6 +4057,7 @@ function buildPanel(fw) {
       $("start").hidden = true;
       $("controls").inert = false;
       status.textContent = "Allumé.";
+      restoreLast();
       device.focus({ preventScroll: true });
       document.addEventListener("visibilitychange", () => { if (!document.hidden && ac.state !== "running") ac.resume(); });
     } catch (err) {
@@ -3946,7 +4068,7 @@ function buildPanel(fw) {
   $("go").addEventListener("click", switchOn);
 
   // ---- les moteurs : un seul AudioContext, celui de l'allumage
-  fetch("firmwares/catalogue.json").then((r) => r.json()).then((d) => { catalogue = d.firmwares; }).catch(() => {});
+  const catalogueReady = fetch("firmwares/catalogue.json").then((r) => r.json()).then((d) => { catalogue = d.firmwares; renderSections(); }).catch(() => {});
   async function loadWasm() {
     if (!wasm) {
       const r = await fetch("runtime/fm1_web.wasm");
@@ -3959,7 +4081,14 @@ function buildPanel(fw) {
     if (on && !vaLive) { vaNode.connect(vaAn); vaLive = true; va.sendGlobal(); }
     if (!on && vaLive) { va.allNotesOff(); vaNode.disconnect(); vaLive = false; }
   }
-  async function useEngine(entry) {
+  // un changement à la fois ; une demande remplacée par une plus récente avant d'avoir commencé est abandonnée
+  let useSeq = 0, useChain = Promise.resolve(true);
+  function useEngine(entry) {
+    const my = ++useSeq;
+    useChain = useChain.catch(() => false).then(() => (my === useSeq ? engineSwitch(entry) : false));
+    return useChain;
+  }
+  async function engineSwitch(entry) {
     if (!ac) return false;
     if (entry.id === "fm1va") {
       if (current !== va) { await emu.stop(); vaOut(true); current = va; }
@@ -3978,6 +4107,139 @@ function buildPanel(fw) {
     current = prev;
     return false;
   }
+  // ---- le sélecteur
+  const VA_ENTRY = { id: "fm1va", nom: "FM-1+VA", auteur: "Réimplémentation d'après Baud Girl", categories: ["FM-1+VA"],
+    description: "Le firmware de Baud Girl réécrit d'après son manuel : FM six opérateurs, Virtual Analog et 8-Bit.", beta: false, fichier: null };
+  const entries = () => [VA_ENTRY, ...catalogue];
+  const box = $("fw-box"), picker = $("fw-picker"), sheet = $("fw-sheet"), scrim = $("fw-scrim"), search = $("fw-search"), clear = $("fw-clear");
+  const sectionsEl = $("fw-sections"), resultsEl = $("fw-results"), nameEl = $("fw-name");
+  const LAST = "fm1.firmware";
+  let active = { id: "fm1va", nom: "FM-1+VA" }, expanded = null;
+  try { const s = JSON.parse(localStorage.getItem(LAST) || "null"); if (s && s.id) { active = s; nameEl.textContent = s.nom; } } catch { /* rien de gardé */ }
+
+  function tagsOf(e) {
+    const t = [];
+    if (e.beta) t.push("bêta");
+    if (e.id !== "fm1va" && !e.fichier) t.push("en ligne");
+    if (e.emulateur_fm1emu === "pas encore évalué") t.push("non évalué");
+    return t;
+  }
+  function row(e) {
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.type = "button"; b.className = "fw-item"; b.dataset.id = e.id;
+    if (e.id === active.id) b.setAttribute("aria-current", "true");
+    const span = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; return s; };
+    const tags = span("fw-tags", "");
+    for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
+    b.append(span("fw-n", e.nom), span("fw-a", e.auteur || ""), span("fw-d", e.description || ""), tags);
+    b.addEventListener("click", () => pick(e));
+    li.append(b);
+    return li;
+  }
+  function renderSections() {
+    const groups = groupCatalogue(entries());
+    if (!expanded) expanded = new Set([(groups.find((g) => g.items.some((e) => e.id === active.id)) || groups[0]).categorie]);
+    sectionsEl.replaceChildren(...groups.map((g) => {
+      const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
+      sec.className = "fw-sec"; sec.dataset.cat = g.categorie;
+      head.type = "button"; head.className = "fw-sec-head"; head.dataset.cat = g.categorie;
+      const open = expanded.has(g.categorie);
+      head.setAttribute("aria-expanded", open);
+      head.innerHTML = `<span></span><span class="count">${g.items.length}</span><span class="notch" aria-hidden="true"></span>`;
+      head.firstChild.textContent = g.categorie;
+      ul.className = "fw-items"; ul.hidden = !open;
+      ul.append(...g.items.map(row));
+      head.addEventListener("click", () => {
+        const now = head.getAttribute("aria-expanded") !== "true";
+        head.setAttribute("aria-expanded", now); ul.hidden = !now;
+        now ? expanded.add(g.categorie) : expanded.delete(g.categorie);
+      });
+      sec.append(head, ul);
+      return sec;
+    }));
+  }
+  function renderResults() {
+    const q = search.value;
+    clear.hidden = !q;
+    sectionsEl.hidden = !!q.trim(); resultsEl.hidden = !q.trim();
+    if (!q.trim()) return;
+    const r = rankCatalogue(entries(), q), ul = document.createElement("ul");
+    ul.className = "fw-items"; ul.append(...r.items.map(row));
+    const note = document.createElement("p"); note.className = "fw-note";
+    note.textContent = r.items.length ? "Résultats approchants" : "Aucun firmware ne correspond.";
+    resultsEl.replaceChildren(...(r.approchants || !r.items.length ? [note] : []), ul);
+  }
+  function openSheet() {
+    renderSections(); renderResults();
+    sheet.hidden = false; scrim.hidden = false; picker.setAttribute("aria-expanded", "true");
+    if (getComputedStyle(sheet).position === "absolute") {
+      // sous le contrôle : la liste tient dans la fenêtre, la page défile juste ce qu'il faut
+      const want = Math.min(640, Math.round(innerHeight * 0.7)), room = innerHeight - picker.getBoundingClientRect().bottom - 24;
+      if (room < want) scrollBy(0, Math.min(want - room, picker.getBoundingClientRect().top - 16));
+      sheet.style.maxHeight = Math.max(240, Math.min(want, innerHeight - picker.getBoundingClientRect().bottom - 24)) + "px";
+    } else sheet.style.maxHeight = "";
+    if (matchMedia("(pointer: fine)").matches) search.focus({ preventScroll: true });
+  }
+  function closeSheet() {
+    sheet.hidden = true; scrim.hidden = true; picker.setAttribute("aria-expanded", "false");
+  }
+  picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
+  scrim.addEventListener("click", closeSheet);
+  document.addEventListener("pointerdown", (e) => { if (!sheet.hidden && !box.contains(e.target)) closeSheet(); });
+  search.addEventListener("input", renderResults);
+  clear.addEventListener("click", () => { search.value = ""; renderResults(); search.focus({ preventScroll: true }); });
+  search.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && search.value) { e.preventDefault(); e.stopPropagation(); search.value = ""; renderResults(); }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      const first = resultsEl.querySelector(".fw-item");
+      if (first) first.click(); else closeSheet();
+    }
+  });
+  sheet.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); closeSheet(); picker.focus(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheet.hidden) { closeSheet(); picker.focus(); } });
+
+  function showContext() { document.querySelector(".file").hidden = current !== va; }
+  let pickSeq = 0;
+  async function pick(e) {
+    closeSheet();
+    if (!ac) {
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
+      status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
+      return;
+    }
+    const my = ++pickSeq;
+    status.textContent = `Démarrage de ${e.nom}…`;
+    const ok = await useEngine(e);
+    if (my !== pickSeq) return;
+    if (ok) {
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; status.textContent = e.nom;
+      if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
+      renderSections();
+    } else status.textContent = `${e.nom} n'a pas démarré.`;
+    showContext();
+  }
+  $("fw-file").addEventListener("change", async (ev) => {
+    const f = ev.target.files[0];
+    ev.target.value = "";
+    if (!f) return;
+    pick({ id: "local", nom: f.name.replace(/\.fwsc$/i, ""), auteur: "", description: "", bytes: new Uint8Array(await f.arrayBuffer()) });
+  });
+  // à l'allumage : le dernier firmware choisi redémarre
+  async function restoreLast() {
+    await catalogueReady;
+    if (active.id === "fm1va") return;
+    const e = catalogue.find((x) => x.id === active.id);
+    if (e) await pick(e);
+  }
+  async function resetEmu() {
+    const e = emu.entry;
+    status.textContent = `Réglages d'usine de ${e.nom}…`;
+    const ok = await emu.boot(e, { reset: true });
+    status.textContent = ok ? e.nom : `${e.nom} n'a pas redémarré.`;
+  }
+
   // pour les tests
   window.__host = fw;
   window.__engine = () => current;
@@ -4002,7 +4264,10 @@ function buildPanel(fw) {
 
   const reset = $("reset");
   reset.addEventListener("click", () => {
-    if (reset.dataset.armed) {
+    if (reset.dataset.armed && current !== va) {
+      delete reset.dataset.armed; reset.textContent = "Réglages d'usine";
+      resetEmu();
+    } else if (reset.dataset.armed) {
       try { for (const k of Object.keys(localStorage)) if (k.startsWith("fm1va.")) localStorage.removeItem(k); } catch { /* nothing kept */ }
       location.reload();
     } else {

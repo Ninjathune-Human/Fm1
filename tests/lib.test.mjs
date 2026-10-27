@@ -8,7 +8,7 @@ import vm from "node:vm";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
 const m = html.match(/<script id="fm1-lib">([\s\S]*?)<\/script>/);
-const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, CATEGORY_ORDER, HIDDEN, groupCatalogue })") : {};
+const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, CATEGORY_ORDER, HIDDEN, groupCatalogue, rankCatalogue })") : {};
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8")).firmwares;
 const plain = (x) => JSON.parse(JSON.stringify(x));   // objets du contexte vm vers ce contexte
 const fold = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -61,9 +61,33 @@ test("catalogue groupé sans recherche", () => {
   }
 });
 
-test("recherche sans accents ni casse", () => {
-  const items = plain(lib.groupCatalogue(cat, "SYNTHÉ")).flatMap((s) => s.items);
-  assert.ok(items.length > 0);
-  for (const e of items) assert.ok([e.nom, e.auteur, e.description].some((t) => fold(t).includes("synthe")), e.id);
-  assert.deepEqual(plain(lib.groupCatalogue(cat, "zzz")), []);
+const firstIds = (q) => plain(lib.rankCatalogue(cat, q)).items.slice(0, 3).map((e) => e.id);
+
+test("recherche : mots dans n'importe quel ordre, mots vides et casse ignorés", () => {
+  assert.equal(firstIds("machine FART")[0], "fart");
+  assert.equal(firstIds("le chipbox")[0], "chipbox");
+});
+
+test("recherche : début de mot et fautes de frappe", () => {
+  assert.equal(firstIds("chipb")[0], "chipbox");
+  assert.equal(firstIds("slopo")[0], "sloop");
+  assert.equal(firstIds("kalimab")[0], "fimba");
+});
+
+test("recherche : accents ignorés", () => {
+  const r = plain(lib.rankCatalogue([{ id: "a", nom: "Été", auteur: "", description: "" }, { id: "b", nom: "Hiver", auteur: "", description: "" }], "ete"));
+  assert.deepEqual(r.items.map((e) => e.id), ["a"]);
+});
+
+test("recherche : résultats approchants quand aucun élément n'a tous les mots", () => {
+  const r = plain(lib.rankCatalogue(cat, "sloop zzzzqq"));
+  assert.equal(r.approchants, true);
+  assert.ok(r.items.some((e) => e.id === "sloop"));
+  assert.equal(plain(lib.rankCatalogue(cat, "sloop")).approchants, false);
+});
+
+test("recherche : vide, mots vides seuls, élément masqué", () => {
+  assert.deepEqual(plain(lib.rankCatalogue(cat, "")), { items: [], approchants: false });
+  assert.deepEqual(plain(lib.rankCatalogue(cat, "le de la")), { items: [], approchants: false });
+  assert.ok(!plain(lib.rankCatalogue(cat, "bubba machine")).items.some((e) => e.id === "bubba"));
 });
