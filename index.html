@@ -131,6 +131,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .fw-item { width: 100%; min-height: 44px; display: grid; grid-template-columns: 1fr auto; gap: 1px 12px; padding: 9px 12px; border: 0; border-radius: 12px;
   background: none; cursor: pointer; text-align: left; font: 400 0.9375rem/1.3 var(--body); color: var(--ink); touch-action: manipulation; }
 .fw-n { font-weight: 600; }
+.fw-item[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .fw-n[aria-current="true"]::before, .fw-item[aria-current="true"] .fw-n::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 0; border-radius: 50%; background: var(--accent); }
 .fw-a { color: var(--muted); font-size: 0.8125rem; justify-self: end; align-self: center; }
 .fw-d { grid-column: 1 / -1; color: var(--muted); font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -217,6 +218,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
     </div>
     <div class="bar">
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
+      <button id="fw-restart" type="button" hidden>Redémarrer</button>
       <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Charger un patch DX7 (.syx)</label>
       <button id="reset" type="button">Réglages d'usine</button>
     </div>
@@ -1384,7 +1386,8 @@ class EmuFirmware {
   async boot(entry, opts = {}) {
     const seq = ++this.seq;
     let bytes;
-    try { bytes = await packageBytes(entry); } catch { return false; }
+    this.failure = null;
+    try { bytes = await packageBytes(entry); } catch { this.failure = "fetch"; return false; }
     if (seq !== this.seq) return false;
     const hash = await this.mod.packageHash(bytes);
     let record = null;
@@ -1404,7 +1407,7 @@ class EmuFirmware {
     });
     this.send({ type: "boot", seq, wasm: this.wasm.slice(0), package: bytes.slice().buffer,
       sectors: this.mod.packSectors(sectors).buffer, syx: null, mhz: 100, jit: true });
-    try { await ready; } catch (err) { this.bootError = err; this.send({ type: "resume" }); return false; }
+    try { await ready; } catch (err) { this.bootError = err; this.failure = "boot"; this.send({ type: "resume" }); return false; }
     if (seq !== this.seq) return false;
     this.entry = entry; this.hash = hash; this.name = entry.nom;
     this.send({ type: "pot", value: this.pot });
@@ -1455,6 +1458,7 @@ class EmuFirmware {
     const m = e.data;
     if (m.type === "error") {
       if (m.fatal && this.running?.seq === m.seq) {
+        if (!this.halted) this.onHalt?.();
         this.halted = 1;
         for (const [id, w] of this.snapshotWaiters) if (w.seq === m.seq) { clearTimeout(w.timer); this.snapshotWaiters.delete(id); w.resolve(); }
       }
@@ -1482,6 +1486,7 @@ class EmuFirmware {
     if (m.type !== "frame" || m.seq !== this.seq) return;
     if (m.lcd) { this.lcd = m.lcd; this.lcdNew = true; }
     if (m.leds) this.leds = m.leds;
+    if (m.halted && !this.halted) this.onHalt?.();
     this.halted = m.halted;
   }
 
@@ -4069,14 +4074,19 @@ function buildPanel(fw) {
 
   // ---- les moteurs : un seul AudioContext, celui de l'allumage
   const catalogueReady = fetch("firmwares/catalogue.json").then((r) => r.json()).then((d) => { catalogue = d.firmwares; renderSections(); }).catch(() => {});
+  let coreError = null, switchFailure = null;
   async function loadWasm() {
     if (!wasm) {
+      if (typeof WebAssembly !== "object") throw new Error("WebAssembly absent");
+      new WebAssembly.Module(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]));   // refusé là où le WebAssembly est interdit
       const r = await fetch("runtime/fm1_web.wasm");
       if (!r.ok) throw new Error("cœur d'émulation indisponible (" + r.status + ")");
       wasm = await r.arrayBuffer();
     }
     return wasm;
   }
+  // le cœur se charge dès l'ouverture : sans lui, les firmwares émulés sont grisés
+  loadWasm().then(() => true, (err) => { coreError = err; renderSections(); renderResults(); return false; });
   function vaOut(on) {
     if (on && !vaLive) { vaNode.connect(vaAn); vaLive = true; va.sendGlobal(); }
     if (!on && vaLive) { va.allNotesOff(); vaNode.disconnect(); vaLive = false; }
@@ -4095,14 +4105,16 @@ function buildPanel(fw) {
       return true;
     }
     const prev = current;
+    switchFailure = null;
     try {
       const w = await loadWasm();
-      if (!emu) emu = new EmuFirmware($("screen"), va);
+      if (!emu) { emu = new EmuFirmware($("screen"), va); emu.onHalt = halted; }
       await emu.attach(ac, w);
-    } catch (err) { return false; }
+    } catch (err) { switchFailure = "core"; return false; }
     if (prev === va) vaOut(false);
     const ok = await emu.boot(entry);
     if (ok) { current = emu; return true; }
+    switchFailure = emu.failure;
     if (prev === va) { await emu.stop(); vaOut(true); }
     current = prev;
     return false;
@@ -4128,6 +4140,7 @@ function buildPanel(fw) {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button"; b.className = "fw-item"; b.dataset.id = e.id;
     if (e.id === active.id) b.setAttribute("aria-current", "true");
+    if (coreError && e.id !== "fm1va") b.setAttribute("aria-disabled", "true");
     const span = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; return s; };
     const tags = span("fw-tags", "");
     for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
@@ -4139,7 +4152,9 @@ function buildPanel(fw) {
   function renderSections() {
     const groups = groupCatalogue(entries());
     if (!expanded) expanded = new Set([(groups.find((g) => g.items.some((e) => e.id === active.id)) || groups[0]).categorie]);
-    sectionsEl.replaceChildren(...groups.map((g) => {
+    const notes = [];
+    if (coreError) { const p = document.createElement("p"); p.className = "fw-note"; p.textContent = "Cœur d'émulation indisponible"; notes.push(p); }
+    sectionsEl.replaceChildren(...notes, ...groups.map((g) => {
       const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
       sec.className = "fw-sec"; sec.dataset.cat = g.categorie;
       head.type = "button"; head.className = "fw-sec-head"; head.dataset.cat = g.categorie;
@@ -4201,8 +4216,19 @@ function buildPanel(fw) {
 
   function showContext() { document.querySelector(".file").hidden = current !== va; }
   let pickSeq = 0;
+  const restartBtn = $("fw-restart");
+  function halted() { status.textContent = `${emu.name} s'est arrêté.`; restartBtn.hidden = false; }
+  restartBtn.addEventListener("click", () => { if (emu && emu.entry) pick(emu.entry); });
+  function failureText(e) {
+    if (switchFailure === "core") return "Cœur d'émulation indisponible.";
+    if (switchFailure === "fetch") return `${e.nom} : paquet injoignable.`;
+    if (e.id === "local") return "Ce fichier n'est pas un paquet FM-1.";
+    return `${e.nom} n'a pas démarré.`;
+  }
   async function pick(e) {
     closeSheet();
+    restartBtn.hidden = true;
+    if (e.id !== "fm1va" && coreError) { status.textContent = "Cœur d'émulation indisponible."; return; }
     if (!ac) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
       if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
@@ -4214,10 +4240,11 @@ function buildPanel(fw) {
     const ok = await useEngine(e);
     if (my !== pickSeq) return;
     if (ok) {
-      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; status.textContent = e.nom;
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      status.textContent = current === emu && emu.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : e.nom;
       if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
-    } else status.textContent = `${e.nom} n'a pas démarré.`;
+    } else status.textContent = failureText(e);
     showContext();
   }
   $("fw-file").addEventListener("change", async (ev) => {
