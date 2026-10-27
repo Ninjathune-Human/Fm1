@@ -1345,8 +1345,12 @@ function rankCatalogue(entries, query) {
 async function packageBytes(entry) {
   if (entry.bytes) return entry.bytes;
   const r = await fetch(entry.fichier || entry.paquet_en_ligne);
-  if (!r.ok) throw new Error("paquet injoignable (" + r.status + ")");
-  return new Uint8Array(await r.arrayBuffer());
+  if (r.ok) return new Uint8Array(await r.arrayBuffer());
+  if (entry.fichier) {                     // artefact Claude : les .fwsc y sont publiés en base64 (.b64.txt)
+    const t = await fetch(entry.fichier + ".b64.txt");
+    if (t.ok) return Uint8Array.from(atob((await t.text()).trim()), (c) => c.charCodeAt(0));
+  }
+  throw new Error("paquet injoignable (" + r.status + ")");
 }
 class EmuFirmware {
   constructor(canvas, va) {
