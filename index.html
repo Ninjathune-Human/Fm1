@@ -1182,6 +1182,38 @@ class Engine extends AudioWorkletProcessor {
 registerProcessor("fm1va", Engine);
 
 </script>
+<script id="fm1-lib">
+"use strict";
+// La liaison entre ce panneau et les firmwares exécutés par le cœur fm1-emu : identifiants
+// des touches et encodeurs (fm1-soc, d'après panel.c de Felucca), écran, voyants, catalogue.
+const KEY_IDS = { "OCT-": 0, "OCT+": 1, FX: 2, SEL: 3, ENV: 4, LFO: 5, EDIT: 6, GLO: 7, HOME: 8, SAVE: 9, ARP: 10, SEQ: 11, PLAY: 12, REC: 13 };
+const noteId = (i) => (Number.isInteger(i) && i >= 0 && i < 27 ? 14 + i : -1);   // 0 = F3 .. 26 = G5
+const ENC_IDS = { SELECT: 0, ALGORITHM: 1, KNOB1: 2, KNOB2: 3, KNOB3: 4, KNOB4: 5, PRESETS: 6 };
+const potAfter = (pot, clicks) => Math.max(0, Math.min(1023, pot + 8 * clicks));
+function rgb565ToRgba(src, dst) {
+  for (let i = 0, j = 0; i < src.length; i++, j += 4) {
+    const p = src[i], r = p >> 11, g = (p >> 5) & 63, b = p & 31;
+    dst[j] = (r << 3) | (r >> 2); dst[j + 1] = (g << 2) | (g >> 4); dst[j + 2] = (b << 3) | (b >> 2); dst[j + 3] = 255;
+  }
+}
+const LIT = 0.25;
+const isLit = (leds, id) => !!leds && leds[id] > LIT;
+const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
+const HIDDEN = new Set(["bubba"]);
+const foldText = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+function groupCatalogue(entries, query) {
+  const q = foldText(query).trim();
+  const sections = new Map(CATEGORY_ORDER.map((c) => [c, []]));
+  for (const e of entries) {
+    if (HIDDEN.has(e.id)) continue;
+    if (q && ![e.nom, e.auteur, e.description].some((t) => foldText(t).includes(q))) continue;
+    const c = (e.categories || [])[0];
+    (sections.get(c) || sections.get("Autre")).push(e);
+  }
+  return [...sections].filter(([, items]) => items.length)
+    .map(([categorie, items]) => ({ categorie, items: items.sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })) }));
+}
+</script>
 <script>
 "use strict";
 // the 32 algorithms: for each operator (0 = OP1), the operators that modulate it; the carriers; feedback [dst, src]
