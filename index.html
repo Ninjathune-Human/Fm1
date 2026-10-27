@@ -1214,6 +1214,204 @@ function groupCatalogue(entries, query) {
     .map(([categorie, items]) => ({ categorie, items: items.sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })) }));
 }
 </script>
+<script id="fm1-emu">
+"use strict";
+// Un firmware open source du FM-1, exécuté tel quel par le cœur fm1-emu (Joakim Eriksson, MIT :
+// runtime/LICENSE-fm1-emu.txt) dans son AudioWorklet. Mêmes membres que Firmware, pour le panneau.
+// La session et les sauvegardes reprennent web/main.js de fm1-emu (lignes 751 à 962).
+async function packageBytes(entry) {
+  if (entry.bytes) return entry.bytes;
+  const r = await fetch(entry.fichier || entry.paquet_en_ligne);
+  if (!r.ok) throw new Error("paquet injoignable (" + r.status + ")");
+  return new Uint8Array(await r.arrayBuffer());
+}
+class EmuFirmware {
+  constructor(canvas, va) {
+    this.cv = canvas; this.va = va;
+    this.on = false; this.idx = 0; this.onTheme = null;
+    this.node = null; this.an = null; this.wasm = null; this.mod = null; this.saveStore = null; this.moduleOf = null;
+    this.seq = 0; this.requestId = 0; this.running = null; this.entry = null; this.hash = null; this.name = "";
+    this.sessions = new Map(); this.bootWaiters = new Map(); this.snapshotWaiters = new Map();
+    this.lcd = null; this.lcdNew = false; this.leds = new Float32Array(41); this.halted = 0;
+    this.keyNotes = new Map(); this.down = new Set();
+    this.pot = Math.round((va.G.master ?? 0.88) * 1023);
+    this.off = document.createElement("canvas"); this.off.width = this.off.height = 240;
+    this.img = this.off.getContext("2d").createImageData(240, 240);
+  }
+  get T() { return this.va.T; }
+  get G() { return this.va.G; }
+  get gdirty() { return this.va.gdirty; }
+  set gdirty(v) { this.va.gdirty = v; }
+  send(m) { if (this.node) this.node.port.postMessage(m); }
+
+  async attach(ac, wasm) {
+    if (!this.mod) this.mod = await import("./runtime/persistence.js");
+    if (!this.saveStore) this.saveStore = new this.mod.SaveStore();
+    this.wasm = wasm;
+    if (this.moduleOf !== ac) { await ac.audioWorklet.addModule("runtime/worklet.js"); this.moduleOf = ac; }
+    if (!this.node) {
+      this.node = new AudioWorkletNode(ac, "fm1", { numberOfInputs: 0, outputChannelCount: [2] });
+      this.node.port.onmessage = (e) => this.onWorklet(e);
+      this.an = ac.createAnalyser(); this.an.fftSize = 2048;
+      this.an.connect(ac.destination);
+    }
+    this.node.connect(this.an);
+    this.live = true;
+  }
+  power() { this.on = true; }
+
+  async boot(entry, opts = {}) {
+    const seq = ++this.seq;
+    let bytes;
+    try { bytes = await packageBytes(entry); } catch { return false; }
+    if (seq !== this.seq) return false;
+    const hash = await this.mod.packageHash(bytes);
+    let record = null;
+    try { record = await this.saveStore.load(hash); } catch (err) { this.storageError = err; }
+    if (seq !== this.seq) return false;
+    await this.flush(true).catch(() => {});
+    const sectors = opts.reset ? [] : record?.sectors || [];
+    this.releaseAll();
+    const session = { seq, hash, key: "fm1." + entry.id, revision: record?.revision || 0, forceSave: !!opts.reset,
+      persisted: record?.sectors || [], record: { version: 1, hash, name: entry.nom, byo: entry.id === "local", device: "fm1",
+        package: bytes, url: entry.fichier || entry.paquet_en_ligne || null, sectors, revision: record?.revision || 0 } };
+    this.sessions.set(seq, session);
+    this.lcd = null; this.leds = new Float32Array(41); this.halted = 0;
+    const ready = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { this.bootWaiters.delete(seq); this.send({ type: "cancel-boot", seq }); reject(new Error("délai dépassé")); }, 30000);
+      this.bootWaiters.set(seq, { resolve, reject, timer });
+    });
+    this.send({ type: "boot", seq, wasm: this.wasm.slice(0), package: bytes.slice().buffer,
+      sectors: this.mod.packSectors(sectors).buffer, syx: null, mhz: 100, jit: true });
+    try { await ready; } catch (err) { this.bootError = err; this.send({ type: "resume" }); return false; }
+    if (seq !== this.seq) return false;
+    this.entry = entry; this.hash = hash; this.name = entry.nom;
+    this.send({ type: "pot", value: this.pot });
+    this.on = true;
+    return true;
+  }
+
+  // sauvegarde la flash de la machine en cours ; pause : la machine s'arrête ensuite
+  async flush(pause = false) {
+    const s = this.running;
+    if (!s || !this.node) return;
+    const request = ++this.requestId;
+    const done = new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { this.snapshotWaiters.delete(request); this.send({ type: "cancel-snapshot", request }); reject(new Error("sauvegarde : délai dépassé")); }, 10000);
+      this.snapshotWaiters.set(request, { seq: s.seq, resolve, reject, timer });
+    });
+    this.send({ type: "snapshot", seq: s.seq, request, pause });
+    await done;
+    await s.pending?.catch(() => {});
+  }
+
+  async stop() {
+    await this.flush(true).catch(() => {});
+    this.releaseAll();
+    if (this.node && this.live) { this.node.disconnect(); this.live = false; }
+    this.on = false;
+  }
+
+  saveSnapshot(s, flash) {
+    s.flash = flash;
+    const sectors = this.mod.changedSectors(s.base, flash);
+    s.record = { ...s.record, sectors };
+    const same = (a, b) => a.length === b.length && a.every((x, i) => x.at === b[i].at && x.data.every((v, j) => v === b[i].data[j]));
+    if (!s.forceSave && s.revision && same(s.persisted, sectors)) {
+      s.pending = Promise.resolve(s.pending).catch(() => {}).then(() => this.saveStore.remember(s.hash, s.key));
+    } else {
+      const record = s.record;
+      s.pending = Promise.resolve(s.pending).catch(() => {}).then(async () => {
+        s.revision = await this.saveStore.save({ ...record, revision: s.revision }, s.key);
+        s.persisted = record.sectors; s.forceSave = false;
+      });
+    }
+    s.pending.catch((err) => { this.storageError = err; });
+    return s.pending;
+  }
+
+  onWorklet(e) {
+    const m = e.data;
+    if (m.type === "error") {
+      if (m.fatal && this.running?.seq === m.seq) {
+        this.halted = 1;
+        for (const [id, w] of this.snapshotWaiters) if (w.seq === m.seq) { clearTimeout(w.timer); this.snapshotWaiters.delete(id); w.resolve(); }
+      }
+      const w = this.bootWaiters.get(m.seq);
+      if (w) { clearTimeout(w.timer); this.bootWaiters.delete(m.seq); w.reject(new Error(m.message)); }
+      return;
+    }
+    if (m.type === "snapshot") {
+      const s = this.sessions.get(m.seq);
+      if (s && s.base && m.flash) this.saveSnapshot(s, m.flash);
+      const w = this.snapshotWaiters.get(m.request);
+      if (w && w.seq === m.seq) { clearTimeout(w.timer); this.snapshotWaiters.delete(m.request); m.error ? w.reject(new Error(m.error)) : w.resolve(); }
+      return;
+    }
+    if (m.type === "booted") {
+      const s = this.sessions.get(m.seq), w = this.bootWaiters.get(m.seq);
+      if (!s || !w) return;
+      this.running = s;
+      for (const k of this.sessions.keys()) if (k !== m.seq) this.sessions.delete(k);
+      s.base = m.base;
+      this.saveSnapshot(s, m.flash);
+      clearTimeout(w.timer); this.bootWaiters.delete(m.seq); w.resolve();
+      return;
+    }
+    if (m.type !== "frame" || m.seq !== this.seq) return;
+    if (m.lcd) { this.lcd = m.lcd; this.lcdNew = true; }
+    if (m.leds) this.leds = m.leds;
+    this.halted = m.halted;
+  }
+
+  draw() {
+    const c = this.cv.getContext("2d");
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.imageSmoothingEnabled = false;
+    if (!this.lcd) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
+    if (this.lcdNew) { rgb565ToRgba(this.lcd, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.lcdNew = false; }
+    c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
+  }
+
+  press(label) { const id = KEY_IDS[label]; if (id === undefined) return; this.down.add(id); this.send({ type: "key", id, down: true }); }
+  release(label) { const id = KEY_IDS[label]; if (id === undefined) return; this.down.delete(id); this.send({ type: "key", id, down: false }); }
+  keyDown(i, src) {
+    const id = noteId(i);
+    if (id < 0) return;
+    this.keyNotes.set(src, id); this.down.add(id);
+    this.send({ type: "key", id, down: true });
+  }
+  keyUp(src) {
+    const id = this.keyNotes.get(src);
+    if (id === undefined) return;
+    this.keyNotes.delete(src); this.down.delete(id);
+    this.send({ type: "key", id, down: false });
+  }
+  releaseAll() {
+    for (const id of this.down) this.send({ type: "key", id, down: false });
+    this.down.clear(); this.keyNotes.clear();
+  }
+  allNotesOff() { this.releaseAll(); }
+  turn(label, n) {
+    if (!n) return null;
+    if (label === "MASTER") {
+      const pot = potAfter(this.pot, n);
+      if (pot === this.pot) return false;
+      this.pot = pot; this.va.G.master = pot / 1023; this.va.gdirty = true;
+      this.send({ type: "pot", value: pot });
+      return true;
+    }
+    const enc = ENC_IDS[label];
+    if (enc === undefined) return null;
+    this.send({ type: "enc", enc, clicks: n });
+    return true;
+  }
+  keyLit(i) { return isLit(this.leds, noteId(i)); }
+  buttonLit(label) { return KEY_IDS[label] !== undefined && isLit(this.leds, KEY_IDS[label]); }
+  takePatch() { throw new Error("Réservé à FM-1+VA"); }
+  askBank() { throw new Error("Réservé à FM-1+VA"); }
+}
+</script>
 <script>
 "use strict";
 // the 32 algorithms: for each operator (0 = OP1), the operators that modulate it; the carriers; feedback [dst, src]
@@ -3651,9 +3849,15 @@ function buildPanel(fw) {
 (function () {
   const $ = (id) => document.getElementById(id);
   const device = $("device"), status = $("status");
-  const fw = new Firmware($("screen"));
-  window.__fw = fw;
-  fw.load();
+  const va = new Firmware($("screen"));
+  window.__fw = va;
+  va.load();
+  // le panneau parle à un hôte qui délègue au moteur actif : FM-1+VA ou un firmware émulé
+  let current = va, emu = null, ac = null, vaNode = null, vaAn = null, vaLive = false, wasm = null, catalogue = [];
+  const fw = new Proxy({}, {
+    get: (_, k) => { const v = current[k]; return typeof v === "function" ? v.bind(current) : v; },
+    set: (_, k, v) => { current[k] = v; return true; },
+  });
   const panel = buildPanel(fw);
   window.__panel = panel;
   const applyTheme = () => { panel.setBody(fw.T.body); device.style.setProperty("--led", fw.T.acc); };
@@ -3717,7 +3921,6 @@ function buildPanel(fw) {
     go.disabled = true; go.lastChild.textContent = "Démarrage…";
     try {
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch { /* older Safari */ }
-      let ac;
       try { ac = new AudioContext({ sampleRate: 44100, latencyHint: "interactive" }); } catch { ac = new AudioContext({ latencyHint: "interactive" }); }
       const src = $("engine-src").textContent;
       try { await ac.audioWorklet.addModule(URL.createObjectURL(new Blob([src], { type: "text/javascript" }))); }
@@ -3727,8 +3930,9 @@ function buildPanel(fw) {
       an.fftSize = 2048;
       node.connect(an); an.connect(ac.destination);
       await ac.resume();
-      fw.attach(node, an);
-      fw.power();
+      va.attach(node, an);
+      va.power();
+      vaNode = node; vaAn = an; vaLive = true;
       $("start").hidden = true;
       $("controls").inert = false;
       status.textContent = "Allumé.";
@@ -3740,6 +3944,47 @@ function buildPanel(fw) {
     }
   }
   $("go").addEventListener("click", switchOn);
+
+  // ---- les moteurs : un seul AudioContext, celui de l'allumage
+  fetch("firmwares/catalogue.json").then((r) => r.json()).then((d) => { catalogue = d.firmwares; }).catch(() => {});
+  async function loadWasm() {
+    if (!wasm) {
+      const r = await fetch("runtime/fm1_web.wasm");
+      if (!r.ok) throw new Error("cœur d'émulation indisponible (" + r.status + ")");
+      wasm = await r.arrayBuffer();
+    }
+    return wasm;
+  }
+  function vaOut(on) {
+    if (on && !vaLive) { vaNode.connect(vaAn); vaLive = true; va.sendGlobal(); }
+    if (!on && vaLive) { va.allNotesOff(); vaNode.disconnect(); vaLive = false; }
+  }
+  async function useEngine(entry) {
+    if (!ac) return false;
+    if (entry.id === "fm1va") {
+      if (current !== va) { await emu.stop(); vaOut(true); current = va; }
+      return true;
+    }
+    const prev = current;
+    try {
+      const w = await loadWasm();
+      if (!emu) emu = new EmuFirmware($("screen"), va);
+      await emu.attach(ac, w);
+    } catch (err) { return false; }
+    if (prev === va) vaOut(false);
+    const ok = await emu.boot(entry);
+    if (ok) { current = emu; return true; }
+    if (prev === va) { await emu.stop(); vaOut(true); }
+    current = prev;
+    return false;
+  }
+  // pour les tests
+  window.__host = fw;
+  window.__engine = () => current;
+  window.__useEngine = useEngine;
+  window.__nodes = () => [vaLive && vaNode, emu && emu.live && emu.node].filter(Boolean);
+  Object.defineProperty(window, "__ac", { get: () => ac });
+  Object.defineProperty(window, "__catalogue", { get: () => catalogue });
 
   // a DX7 patch or bank, as a .syx file: chosen, or dropped on the FM-1
   async function takeFile(file) {
