@@ -1404,14 +1404,13 @@ class EmuFirmware {
       persisted: record?.sectors || [], record: { version: 1, hash, name: entry.nom, byo: entry.id === "local", device: "fm1",
         package: bytes, url: entry.fichier || entry.paquet_en_ligne || null, sectors, revision: record?.revision || 0 } };
     this.sessions.set(seq, session);
-    this.lcd = null; this.leds = new Float32Array(41); this.halted = 0;
     const ready = new Promise((resolve, reject) => {
       const timer = setTimeout(() => { this.bootWaiters.delete(seq); this.send({ type: "cancel-boot", seq }); reject(new Error("délai dépassé")); }, 30000);
       this.bootWaiters.set(seq, { resolve, reject, timer });
     });
     this.send({ type: "boot", seq, wasm: this.wasm.slice(0), package: bytes.slice().buffer,
       sectors: this.mod.packSectors(sectors).buffer, syx: null, mhz: 100, jit: true });
-    try { await ready; } catch (err) { this.bootError = err; this.failure = "boot"; this.send({ type: "resume" }); return false; }
+    try { await ready; } catch (err) { this.bootError = err; this.failure = "boot"; this.sessions.delete(seq); this.send({ type: "resume" }); return false; }
     if (seq !== this.seq) return false;
     this.entry = entry; this.hash = hash; this.name = entry.nom;
     this.send({ type: "pot", value: this.pot });
@@ -1481,13 +1480,14 @@ class EmuFirmware {
       const s = this.sessions.get(m.seq), w = this.bootWaiters.get(m.seq);
       if (!s || !w) return;
       this.running = s;
+      this.lcd = null; this.leds = new Float32Array(41); this.halted = 0;
       for (const k of this.sessions.keys()) if (k !== m.seq) this.sessions.delete(k);
       s.base = m.base;
       this.saveSnapshot(s, m.flash);
       clearTimeout(w.timer); this.bootWaiters.delete(m.seq); w.resolve();
       return;
     }
-    if (m.type !== "frame" || m.seq !== this.seq) return;
+    if (m.type !== "frame" || m.seq !== this.running?.seq) return;   // la machine en marche, même si un démarrage a échoué
     if (m.lcd) { this.lcd = m.lcd; this.lcdNew = true; }
     if (m.leds) this.leds = m.leds;
     if (m.halted && !this.halted) this.onHalt?.();
@@ -4092,7 +4092,7 @@ function buildPanel(fw) {
   // le cœur se charge dès l'ouverture : sans lui, les firmwares émulés sont grisés
   loadWasm().then(() => true, (err) => { coreError = err; renderSections(); renderResults(); return false; });
   function vaOut(on) {
-    if (on && !vaLive) { vaNode.connect(vaAn); vaLive = true; va.sendGlobal(); }
+    if (on && !vaLive) { va.allNotesOff(); vaNode.connect(vaAn); vaLive = true; va.sendGlobal(); }
     if (!on && vaLive) { va.allNotesOff(); vaNode.disconnect(); vaLive = false; }
   }
   // un changement à la fois ; une demande remplacée par une plus récente avant d'avoir commencé est abandonnée
@@ -4116,7 +4116,8 @@ function buildPanel(fw) {
       await emu.attach(ac, w);
     } catch (err) { switchFailure = "core"; return false; }
     if (prev === va) vaOut(false);
-    const ok = await emu.boot(entry);
+    let ok = false;
+    try { ok = await emu.boot(entry); } catch (err) { emu.failure = "boot"; emu.bootError = err; }
     if (ok) { current = emu; return true; }
     switchFailure = emu.failure;
     if (prev === va) { await emu.stop(); vaOut(true); }
@@ -4242,7 +4243,7 @@ function buildPanel(fw) {
     }
     const my = ++pickSeq;
     status.textContent = `Démarrage de ${e.nom}…`;
-    const ok = await useEngine(e);
+    const ok = await useEngine(e).catch(() => false);
     if (my !== pickSeq) return;
     if (ok) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
