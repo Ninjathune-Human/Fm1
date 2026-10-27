@@ -4134,6 +4134,7 @@ function buildPanel(fw) {
     if (e.beta) t.push("bêta");
     if (e.id !== "fm1va" && !e.fichier) t.push("en ligne");
     if (e.emulateur_fm1emu === "pas encore évalué") t.push("non évalué");
+    if (e.emulateur_fm1emu === "ne démarre pas") t.push("ne démarre pas");
     return t;
   }
   function row(e) {

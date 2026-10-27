@@ -105,7 +105,7 @@
    "commit_source": "7b5b8b261bf8ea4d5d64485c082636c5b1579854",
    "source_c": 72,
    "description": "Dark ambient drones and feedback screams from the frozen tundra. Built on GR!MM, with HOWL, a feedback-loop voice after the Synthux Audrey II that wakes out of silence and grows into a howl, and 46 arctic sounds.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/arctic-1.1.fwsc",
    "provenance_paquet": "release download/v1.1/arctic-scream-1.1.fwsc"
   },
@@ -147,7 +147,7 @@
    "commit_source": "afe2d937442fd248d145a34e8907d1c67ee4c3d6",
    "source_c": 76,
    "description": "A generative Berlin School MIDI sequencer: voices that repeat, phase on loops of unequal length and earn their mutations over time. The FM-1 makes no sound itself: each voice goes out over USB on its own MIDI channel to your synths.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/berlinan-0.5.1.fwsc",
    "provenance_paquet": "release download/v0.5.1/berlinan-0.5.1.fwsc"
   },
@@ -231,7 +231,7 @@
    "commit_source": "b50bad57dcf32862f36661a5fc2996e13392b93e",
    "source_c": 263,
    "description": "Felucca continued: a multi-engine synth with ANALOG, SEM, HADES, PHASE, TRIO, a tonewheel, FM6, physical models, voices, samples, grain and slices, drums, noise and an experimental DRONE engine. Pair Morph blends two engines, a HOME screen of your own and free macros a track for live sound design.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/caravel-0.6.0.fwsc",
    "provenance_paquet": "release download/v0.6.0/caravel-0.6.0.fwsc"
   },
@@ -525,7 +525,7 @@
    "commit_source": "b6be8f78adcee97d4b217db7b81f6a4eb02445e8",
    "source_c": 211,
    "description": "A groovebox for lively mediæval dance music: hurdy-gurdy, lutes, shawms and frame drums over drones, four tracks with 64-step sequencers, mediæval modes and temperaments, and velocity from the FM-1's own keys. Built on GHOULBOX and Felucca.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/estampie-0.3.7.fwsc",
    "provenance_paquet": "release download/v0.3.7/estampie-0.3.7.fwsc"
   },
@@ -672,7 +672,7 @@
    "commit_source": "664d9812e32d5c24a0f3a89b429d35ccac1a9b32",
    "source_c": 229,
    "description": "A groovebox around one engine, ChoralRoot's FM TONE: eight tracks, p-locks and preset sound locks, conditions, ratchets, chords, and MIDI FX for generative patterns and for reworking the ones you have.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fizz-0.12.0-beta.10.fwsc",
    "provenance_paquet": "dans le dépôt site/firmware/0.12.0-beta.10/fizz.fwsc"
   },
@@ -1008,7 +1008,7 @@
    "commit_source": "92f923e0b9fe6101d5cd422cffa5946ce20d785a",
    "source_c": 175,
    "description": "A monophonic macro-oscillator on the open Plaits DSP: all 24 models with harmonics, timbre and morph, an 8-slot mod matrix fed by an envelope, two LFOs, velocity, aftertouch and random, a low-pass gate, and a DRONE mode.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/gator-0.6.fwsc",
    "provenance_paquet": "release download/v0.6/gator-0.6.fwsc"
   },
@@ -1113,7 +1113,7 @@
    "commit_source": "09a4f170d76e7e6b1fad6cb3f3609553eabaf498",
    "source_c": 53,
    "description": "A chord and string instrument: 16 synthesized sounds, 50 chord styles, editable voicings, guitar tunings, and Freeplay, Strum and Arp modes with partial-chord pulses.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/guitchordi-0.1.0-beta.1.fwsc",
    "provenance_paquet": "release download/v0.1.0-beta.1/guitchordi-v0.1.0-beta.1.fwsc"
   },
@@ -1197,7 +1197,7 @@
    "commit_source": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2",
    "source_c": 89,
    "description": "A six-voice JUNO-60 style polysynth with chorus, arpeggiator and a 16-step recorder.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/j6-1.3.1.fwsc",
    "provenance_paquet": "release download/v1.3.1/j6-1.3.1.fwsc"
   },
@@ -1302,7 +1302,7 @@
    "commit_source": "ed6f036f9e3187ba22f915c3941d23f477159683",
    "source_c": 179,
    "description": "Four synth and sampler tracks and a drum track on 14 engines, among them wavetable, 6-op FM, tape scrub, granular and a slicer; a 64-step sequencer, a chord progression generator, macros and sidechain ducking.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/loomfm1-0.1.0.fwsc",
    "provenance_paquet": "release download/v0.1.0/loom-groovebox.fwsc"
   },
@@ -1344,7 +1344,7 @@
    "commit_source": "800edc8a88d2a883fbeb2cf198a976d7769f3707",
    "source_c": 38,
    "description": "A generative groovebox in the style of early-90s PC tracker music: six lanes (lead, arp, pad, bass, drums, sfx) composed live in ten S3M-scene styles. You mix styles instead of programming steps. Built on Tuna and Felucca.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/makohai-1.0.fwsc",
    "provenance_paquet": "release download/v1.0/makohai-1.0.fwsc"
   },
@@ -1386,7 +1386,7 @@
    "commit_source": "e3145af6c7327e0c988ac08b079cc319bb428bc0",
    "source_c": 78,
    "description": "A modular synth you patch in the browser: modules (oscillators, filters, envelopes, delays) nest into assemblies you save and reuse, and the patch plays on the FM-1, polyphonic with a Voicing module.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/matryoshka-1.4.2.fwsc",
    "provenance_paquet": "dans le dépôt web/public/firmware/matryoshka.fwsc"
   },
@@ -1449,7 +1449,7 @@
    "commit_source": "e00e86395363c61367d1d260e75116a6e6d03cea",
    "source_c": 6,
    "description": "A MIDI monitor for USB, the TRS jack and Bluetooth (as device and host at once): hex or words, filters, stats. Its THRU routes, each filtered, make the FM-1 a Bluetooth MIDI dongle.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/midimon-0.4.fwsc",
    "provenance_paquet": "release download/v0.4/midimon-0.4.fwsc"
   },
@@ -1512,7 +1512,7 @@
    "commit_source": "2c7aee4c277bb642404c4638dbc77a360d36cf55",
    "source_c": 270,
    "description": "Six monophonic tracks of synth and FX machines, pages of eight knobs, a filter and a tape delay on every track, three LFOs a track, parameter locks and slides. Forked from Hortator, with sounds ported from MONO2K.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mnm1-1.0.1.fwsc",
    "provenance_paquet": "release download/v1.0.1/mnm1-1.0.1.fwsc"
   },
@@ -1575,7 +1575,7 @@
    "commit_source": "b52d67703d4728c176c685c27d213f0c4da52232",
    "source_c": 61,
    "description": "Six mono machines in the spirit of Elektron's Monomachine: FM, superwaves, wavetables, a SID, a voice and four drum synths, one per track. A 64-step sequencer with parameter locks, trig conditions and ratchets, a lofi bus, four demo parts and a web patch editor.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mono2k-1.1.fwsc",
    "provenance_paquet": "dans le dépôt web/firmware/mono2k.fwsc"
   },
@@ -1596,7 +1596,7 @@
    "commit_source": "8590e27dc9d4e080d1d4f585036c97df44940a71",
    "source_c": 88,
    "description": "A monosynth: one voice with analogue-modelled oscillators and five filters (ladder, diode ladder, OTA, Sallen-Key, state-variable), unison, chorus, delay and reverb, and 14 presets.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/monohull-0.2.0.fwsc",
    "provenance_paquet": "release download/v0.2.0/monohull.fwsc"
   },
@@ -1617,7 +1617,7 @@
    "commit_source": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
    "source_c": 53,
    "description": "A sad wavetable synth played by a pixel blob in a rainy room: its eyes are the filter, its mouth the envelope, its tears the delay. Toy-keyboard accompaniment with 13 gloomy beats, auto-bass, arpeggiator, loop recorder.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mope1-0.1.0.fwsc",
    "provenance_paquet": "release download/v0.1.0/mope-0.1.0.fwsc"
   },
@@ -1828,7 +1828,7 @@
    "commit_source": "d2ed6aa95867dd5b395eee36fb447bcb99b9949b",
    "source_c": 82,
    "description": "A generative groovebox you perform on: ten genres of self-playing pieces, an auto-DJ with breakdowns, builds and drops, Euclidean drums, an acid line that answers itself, beat FX and DX7-style FM voices from your own .syx.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/perf1-0.13.0.fwsc",
    "provenance_paquet": "release download/v0.13.0/perf1-0.13.0.fwsc"
   },
@@ -1954,7 +1954,7 @@
    "commit_source": "6a7696d75ae4ffaeff21827f973abf2b93771326",
    "source_c": 66,
    "description": "An eight-track groovebox for sound design: thirteen synth engines, struck percussion and 33 drum machines after the Machinedrum, on an influence grid where any track can trigger, excite or modulate any other.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ravel-0.9.0.fwsc",
    "provenance_paquet": "release download/v0.9.0/Ravel-FM1.fwsc"
   },
@@ -2164,7 +2164,7 @@
    "commit_source": "15fd6986007ef51965303d7fd6410493e89c9ff4",
    "source_c": 56,
    "description": "A 12-voice wavetable synth: two oscillators a voice, a resonant filter, two envelopes, an LFO, four effects, an arpeggiator and two step sequencers for chords and counterpoint; load your own Serum, WaveEdit, Ableton or Surge tables.",
-   "emulateur_fm1emu": "pas encore évalué",
+   "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tastywaves-1.0.1.fwsc",
    "provenance_paquet": "dans le dépôt tools/web/firmware/tastywaves.fwsc"
   },

@@ -150,3 +150,15 @@ def test_open_local(page):
     page.wait_for_timeout(3000)
     assert lit_pixels(page) >= 2000
     assert page.evaluate("window.__catalogue.length") == n
+
+
+def test_tag_no_boot(page):
+    import json
+    cat = json.load(open(os.path.join(ROOT, "firmwares", "catalogue.json")))
+    for e in cat["firmwares"]:
+        if e["id"] == "x0x":
+            e["emulateur_fm1emu"] = "ne démarre pas"
+    page.route("**/firmwares/catalogue.json", lambda r: r.fulfill(status=200, body=json.dumps(cat), content_type="application/json"))
+    page.goto(page.base + "index.html")
+    page.wait_for_selector('.fw-item[data-id="x0x"]', state="attached")
+    assert "ne démarre pas" in page.eval_on_selector('.fw-item[data-id="x0x"]', "e => e.textContent")
