@@ -23,16 +23,25 @@ def test_only_legend_lights(page):
 
 def test_va_play_colours(page):
     power_on(page)
-    page.evaluate("() => { const f = window.__fw; f.G.seqOn = 0; f.S.playing = false; }")
+    page.evaluate("() => { window.__fw.G.seqOn = 1; }")       # séquenceur allumé, jamais lancé : éteint, comme REC
     page.wait_for_timeout(200)
     assert state(page, "PLAY") == {"lit": False, "green": False, "red": False}
-    page.evaluate("() => { window.__fw.G.seqOn = 1; }")
-    page.wait_for_timeout(200)
-    assert state(page, "PLAY") == {"lit": False, "green": False, "red": True}
-    page.evaluate("() => { window.__fw.S.playing = true; }")
+    assert page.evaluate("window.__fw.buttonLit('REC')") is False
+    page.evaluate("() => { window.__fw.seqPlay(); }")
     page.wait_for_timeout(200)
     assert state(page, "PLAY") == {"lit": False, "green": True, "red": False}
-    page.evaluate("() => { window.__fw.S.playing = false; window.__fw.G.seqOn = 0; }")
+    page.evaluate("() => { window.__fw.seqPlay(); }")         # arrêt : rouge
+    page.wait_for_timeout(200)
+    assert state(page, "PLAY") == {"lit": False, "green": False, "red": True}
+    page.evaluate("() => { window.__fw.seqOn(false); }")      # séquenceur éteint : plus rien
+    page.wait_for_timeout(200)
+    assert state(page, "PLAY") == {"lit": False, "green": False, "red": False}
+
+
+def test_launch_state(page):
+    """Au lancement : PLAY et REC éteints, « Jouer » replié."""
+    page.goto(page.base + "index.html")
+    assert page.evaluate("[window.__fw.playLight(), window.__fw.buttonLit('REC'), document.querySelectorAll('details[open]').length]") == [None, False, 0]
 
 
 def test_emulated_play_colours(page):

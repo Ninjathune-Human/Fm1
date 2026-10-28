@@ -235,7 +235,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
   </section>
 
   <section class="notes" aria-label="Mode d'emploi">
-    <details open>
+    <details>
       <summary>Jouer</summary>
       <div class="note">
         <dl>
@@ -3076,8 +3076,8 @@ class Firmware {
     const note = KEY0 + i + 12 * this.octave + this.kbdTr, s = this.seqKeyLit(note);
     return s === null ? this.lit.has(note) : s;
   }
-  // PLAY a deux LED : verte pendant la lecture, rouge séquenceur allumé à l'arrêt, éteinte sinon
-  playLight() { return this.S.playing ? "green" : this.G.seqOn ? "red" : null; }
+  // PLAY a deux LED : verte pendant la lecture, rouge après un arrêt du séquenceur, éteinte sinon (et au lancement)
+  playLight() { return this.S.playing ? "green" : this.S.stopped && this.G.seqOn ? "red" : null; }
   buttonLit(b) {
     const root = this.stack.length ? this.stack[0].root : null;
     switch (b) {
@@ -3453,7 +3453,7 @@ Object.assign(Firmware.prototype, {
       if (S.rec === "rt") { S.rec = "step"; S.cursor = S.pos ? S.pos.step : 0; }
     } else {
       if (S.next !== null) { S.pat = S.next; S.next = null; }
-      S.playing = true;
+      S.playing = true; S.stopped = false;
       // PLAY in step recording: one bar of four clicks first, with Count-in on and Sync off (manual 9.10)
       if (S.rec === "step") { S.rec = "rt"; if (this.G.countIn && !this.G.sync) { S.countReq = true; S.countUntil = this.now() + (4 * 60) / this.G.tempo; } }
     }
@@ -3462,6 +3462,7 @@ Object.assign(Firmware.prototype, {
   seqStop(endRec) {
     const S = this.S;
     if (S.playing && S.next !== null) { S.pat = S.next; S.next = null; }
+    if (S.playing) S.stopped = true;                  // PLAY's red : on a stopped the sequencer, not on a fresh start
     S.playing = false; S.pos = null;
     if (endRec) S.rec = null;
     this.endRtNotes();
@@ -4447,13 +4448,20 @@ function buildPanel(fw) {
     if (getComputedStyle(sheet).position === "absolute") {
       // sous le contrôle : la liste tient dans la fenêtre, la page défile juste ce qu'il faut
       const want = Math.min(640, Math.round(innerHeight * 0.7)), room = innerHeight - picker.getBoundingClientRect().bottom - 24;
-      if (room < want) scrollBy(0, Math.min(want - room, picker.getBoundingClientRect().top - 16));
-      sheet.style.maxHeight = Math.max(240, Math.min(want, innerHeight - picker.getBoundingClientRect().bottom - 24)) + "px";
+      if (room < want) {                      // la page doit pouvoir défiler sans l'aide de la liste : une réserve, le temps de l'ouverture
+        document.body.style.paddingBottom = want + 32 + "px";
+        scrollBy(0, Math.min(want - room, picker.getBoundingClientRect().top - 16));
+      }
+      // la hauteur suit la position réelle du contrôle, aussi après le défilement (la page peut n'être défilable
+      // que grâce à la liste elle-même, quand les notes sont repliées)
+      const fit = () => { if (!sheet.hidden) sheet.style.maxHeight = Math.max(240, Math.min(want, innerHeight - picker.getBoundingClientRect().bottom - 24)) + "px"; };
+      fit(); requestAnimationFrame(() => { fit(); requestAnimationFrame(fit); });
     } else sheet.style.maxHeight = "";
     if (matchMedia("(pointer: fine)").matches) search.focus({ preventScroll: true });
   }
   function closeSheet() {
     sheet.hidden = true; scrim.hidden = true; picker.setAttribute("aria-expanded", "false");
+    document.body.style.paddingBottom = "";
   }
   picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
   scrim.addEventListener("click", closeSheet);
