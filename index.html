@@ -1542,6 +1542,147 @@ class EmuFirmware {
   takePatch() { throw new Error("Réservé à FM-1+VA"); }
   askBank() { throw new Error("Réservé à FM-1+VA"); }
 }
+
+// Un firmware compilé depuis ses sources pour le navigateur (son propre web/emu, GPL-3.0 de son auteur) :
+// pas de processeur émulé, son worklet et son .wasm tels que l'action GitHub les construit (natif/<id>/).
+// Protocole de ces worklets (famille Felucca) : load, buttons / keys (masques), enc {role, n}, master ;
+// en retour ready, frame {fb RGB565, leds, sectors, load}, error.
+const NATIVE_BUTTONS = { FX: 0, SEL: 1, ENV: 2, LFO: 3, EDIT: 4, GLO: 5, HOME: 6, SAVE: 7, ARP: 8, SEQ: 9, PLAY: 10, REC: 11, "OCT-": 12, "OCT+": 13 };
+const NATIVE_ROLES = { SELECT: 0, ALGORITHM: 1, PRESETS: 2, KNOB1: 3, KNOB2: 4, KNOB3: 5, KNOB4: 6 };
+const nativeFlash = {                     // la flash gardée de chaque firmware natif, dans IndexedDB
+  db: null,
+  open() {
+    if (!this.db) this.db = new Promise((ok, ko) => {
+      const r = indexedDB.open("fm1-natif", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("flash");
+      r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+    });
+    return this.db;
+  },
+  async get(id) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const r = db.transaction("flash").objectStore("flash").get(id); r.onsuccess = () => ok(r.result || null); r.onerror = () => ko(r.error); });
+  },
+  async put(id, sectors) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const t = db.transaction("flash", "readwrite"); t.objectStore("flash").put(sectors, id); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
+  },
+};
+class NativeFirmware {
+  constructor(canvas, va, entry) {
+    this.cv = canvas; this.va = va; this.entry = entry; this.name = entry.nom; this.kind = "natif";
+    this.on = false; this.idx = 0; this.onTheme = null; this.node = null; this.an = null; this.ac = null;
+    this.fb = null; this.fbNew = false; this.leds = [0, 0, 0, 0, 0, 0, 0, 0]; this.load = null;
+    this.buttons = 0; this.keys = 0; this.keyNotes = new Map(); this.held = new Set();
+    this.pendingSave = null; this.lastLoadSectors = null; this.storageError = null; this.failure = null;
+    this.pot = Math.round((va.G.master ?? 0.88) * 1023);
+    this.off = document.createElement("canvas"); this.off.width = this.off.height = 240;
+    this.img = this.off.getContext("2d").createImageData(240, 240);
+  }
+  get T() { return this.va.T; }
+  get G() { return this.va.G; }
+  get gdirty() { return this.va.gdirty; }
+  set gdirty(v) { this.va.gdirty = v; }
+  send(m, t) { if (this.node) this.node.port.postMessage(m, t || []); }
+
+  // démarre le firmware (une fois par page : son worklet garde l'état) ; ensuite, rebranche seulement
+  async boot(ac) {
+    this.failure = null;
+    if (this.node && this.ac === ac) { this.node.connect(this.an); this.on = true; return true; }
+    const base = this.entry.natif;
+    try {
+      const [wasm] = await Promise.all([fetch(base + this.entry.natif_wasm).then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }),
+        ac.audioWorklet.addModule(base + "worklet.js")]);
+      let sectors = null;
+      try { sectors = await nativeFlash.get(this.entry.id); } catch (err) { this.storageError = err; }
+      this.lastLoadSectors = sectors;
+      this.ac = ac;
+      this.node = new AudioWorkletNode(ac, this.entry.natif_processeur, { numberOfInputs: 0, outputChannelCount: [2] });
+      this.an = ac.createAnalyser(); this.an.fftSize = 2048; this.an.connect(ac.destination);
+      const ready = new Promise((ok, ko) => {
+        const timer = setTimeout(() => ko(new Error("délai dépassé")), 20000);
+        this.node.port.onmessage = (e) => {
+          if (e.data.type === "ready") { clearTimeout(timer); this.node.port.onmessage = (ev) => this.onWorklet(ev); ok(); }
+          else if (e.data.type === "error") { clearTimeout(timer); ko(new Error(e.data.message)); }
+        };
+      });
+      this.send({ type: "load", wasm, sectors: sectors || {}, master: this.pot }, [wasm]);
+      await ready;
+      this.node.connect(this.an);
+      this.on = true;
+      return true;
+    } catch (err) {
+      this.failure = "boot"; this.bootError = err;
+      if (this.node) { this.node.disconnect(); this.node = null; }
+      return false;
+    }
+  }
+  async stop() {
+    this.releaseAll();
+    await this.pendingSave?.catch(() => {});
+    if (this.node) this.node.disconnect();
+    this.on = false;
+  }
+  onWorklet(e) {
+    const m = e.data;
+    if (m.type !== "frame") return;
+    if (m.fb) { this.fb = m.fb; this.fbNew = true; }
+    if (m.leds) this.leds = m.leds;
+    if (m.load !== undefined) this.load = m.load;
+    if (m.sectors) {
+      const p = nativeFlash.put(this.entry.id, m.sectors).catch((err) => { this.storageError = err; })
+        .then(() => { if (this.pendingSave === p) this.pendingSave = null; });
+      this.pendingSave = p;
+    }
+  }
+  draw() {
+    const c = this.cv.getContext("2d");
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    c.imageSmoothingEnabled = false;
+    if (!this.fb) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
+    if (this.fbNew) { rgb565ToRgba(this.fb, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false; }
+    c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
+  }
+  power() { this.on = true; }
+  setButtons() { this.send({ type: "buttons", mask: this.buttons >>> 0 }); }
+  setKeys() { this.send({ type: "keys", mask: this.keys >>> 0 }); }
+  press(label) { const b = NATIVE_BUTTONS[label]; if (b === undefined) return; this.buttons |= 1 << b; this.setButtons(); }
+  release(label) { const b = NATIVE_BUTTONS[label]; if (b === undefined) return; this.buttons &= ~(1 << b); this.setButtons(); }
+  keyDown(i, src) {
+    if (i < 0 || i > 26) return;
+    this.keyNotes.set(src, i); this.held.add(i);
+    this.keys |= 1 << i; this.setKeys();
+  }
+  keyUp(src) {
+    const i = this.keyNotes.get(src);
+    if (i === undefined) return;
+    this.keyNotes.delete(src);
+    if (![...this.keyNotes.values()].includes(i)) { this.held.delete(i); this.keys &= ~(1 << i); this.setKeys(); }
+  }
+  releaseAll() {
+    this.keyNotes.clear(); this.held.clear();
+    if (this.keys || this.buttons) { this.keys = 0; this.buttons = 0; this.setKeys(); this.setButtons(); }
+  }
+  allNotesOff() { this.releaseAll(); }
+  turn(label, n) {
+    if (!n) return null;
+    if (label === "MASTER") {
+      const pot = potAfter(this.pot, n);
+      if (pot === this.pot) return false;
+      this.pot = pot; this.va.G.master = pot / 1023; this.va.gdirty = true;
+      this.send({ type: "master", value: pot });
+      return true;
+    }
+    const role = NATIVE_ROLES[label];
+    if (role === undefined) return null;
+    this.send({ type: "enc", role, n });
+    return true;
+  }
+  keyLit(i) { return !!(this.leds[1] & (1 << i)); }
+  buttonLit(label) { const b = NATIVE_BUTTONS[label]; return b !== undefined && !!(this.leds[0] & (1 << b)); }
+  takePatch() { throw new Error("Réservé à FM-1+VA"); }
+  askBank() { throw new Error("Réservé à FM-1+VA"); }
+}
 </script>
 <script>
 "use strict";
@@ -4103,11 +4244,32 @@ function buildPanel(fw) {
     useChain = useChain.catch(() => false).then(() => (my === useSeq ? engineSwitch(entry) : false));
     return useChain;
   }
+  const natives = new Map();               // les firmwares natifs démarrés : leur worklet garde l'état
+  async function leave(engine) {            // débranche le moteur courant (FM-1+VA reste prêt)
+    if (engine === va) vaOut(false); else await engine.stop();
+  }
+  async function enter(engine) {            // rebranche un moteur déjà démarré
+    if (engine === va) vaOut(true); else if (engine.kind === "natif") await engine.boot(ac); else engine.on = true;
+  }
   async function engineSwitch(entry) {
     if (!ac) return false;
     if (entry.id === "fm1va") {
-      if (current !== va) { await emu.stop(); vaOut(true); current = va; }
+      if (current !== va) { await leave(current); vaOut(true); current = va; }
       return true;
+    }
+    if (entry.natif) {
+      const prev = current;
+      switchFailure = null;
+      let n = natives.get(entry.id);
+      if (!n) { n = new NativeFirmware($("screen"), va, entry); natives.set(entry.id, n); }
+      if (n === prev) return true;
+      await leave(prev);
+      let ok = false;
+      try { ok = await n.boot(ac); } catch (err) { n.failure = "boot"; }
+      if (ok) { current = n; return true; }
+      switchFailure = n.failure; natives.delete(entry.id);
+      await enter(prev); current = prev;
+      return false;
     }
     const prev = current;
     switchFailure = null;
@@ -4116,12 +4278,12 @@ function buildPanel(fw) {
       if (!emu) { emu = new EmuFirmware($("screen"), va); emu.onHalt = halted; }
       await emu.attach(ac, w);
     } catch (err) { switchFailure = "core"; return false; }
-    if (prev === va) vaOut(false);
+    if (prev !== emu) await leave(prev);
     let ok = false;
     try { ok = await emu.boot(entry); } catch (err) { emu.failure = "boot"; emu.bootError = err; }
     if (ok) { current = emu; return true; }
     switchFailure = emu.failure;
-    if (prev === va) { await emu.stop(); vaOut(true); }
+    if (prev !== emu) { await emu.stop(); await enter(prev); }
     current = prev;
     return false;
   }
@@ -4248,7 +4410,7 @@ function buildPanel(fw) {
     if (my !== pickSeq) return;
     if (ok) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
-      status.textContent = current === emu && emu.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : e.nom;
+      status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : e.nom;
       if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
     } else status.textContent = failureText(e);
@@ -4268,6 +4430,15 @@ function buildPanel(fw) {
     if (e) await pick(e);
   }
   async function resetEmu() {
+    if (current.kind === "natif") {         // natif : flash effacée, firmware redémarré à neuf
+      const n = current, e = n.entry;
+      status.textContent = `Réglages d'usine de ${e.nom}…`;
+      try { await nativeFlash.put(e.id, {}); } catch { /* rien de gardé */ }
+      await n.stop(); n.node = null; natives.delete(e.id); current = va; vaOut(true);
+      const ok = await useEngine(e).catch(() => false);
+      status.textContent = ok ? e.nom : `${e.nom} n'a pas redémarré.`;
+      return;
+    }
     const e = emu.entry;
     status.textContent = `Réglages d'usine de ${e.nom}…`;
     const ok = await emu.boot(e, { reset: true });
@@ -4278,7 +4449,7 @@ function buildPanel(fw) {
   window.__host = fw;
   window.__engine = () => current;
   window.__useEngine = useEngine;
-  window.__nodes = () => [vaLive && vaNode, emu && emu.live && emu.node].filter(Boolean);
+  window.__nodes = () => [vaLive && vaNode, emu && emu.live && emu.node, ...[...natives.values()].filter((n) => n === current).map((n) => n.node)].filter(Boolean);
   Object.defineProperty(window, "__ac", { get: () => ac });
   Object.defineProperty(window, "__catalogue", { get: () => catalogue });
 

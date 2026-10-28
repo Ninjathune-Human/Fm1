@@ -1,10 +1,11 @@
 # Compile le cœur d'émulation fm1-emu (MIT, Joakim Eriksson) au commit figé, assemble le site,
-# joint le dossier runtime/ à une version GitHub, et publie sur GitHub Pages depuis main.
+# compile Felucca depuis ses sources pour le navigateur (natif/), joint runtime/ et natif/ à des versions
+# GitHub, et publie sur GitHub Pages depuis main.
 name: Site
 
 on:
   push:
-    branches: [main, selecteur]
+    branches: [main, natif]
   workflow_dispatch:
 
 permissions:
@@ -19,12 +20,41 @@ concurrency:
 env:
   FM1_EMU_COMMIT: 1c8661daa1bbfddbb7d32d927bbaf831343b7d3b
   RUNTIME_TAG: runtime-1c8661d
+  FELUCCA_COMMIT: a53ecf428c29c780108fd70a31b71a32a6b5c313
+  EMSDK_VERSION: 3.1.64
+  NATIF_TAG: natif-felucca-a53ecf4
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: hugelton/Felucca
+          ref: ${{ env.FELUCCA_COMMIT }}
+          path: felucca
+          submodules: recursive
+
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ env.EMSDK_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Felucca natif (ses sources, son web/emu)
+        working-directory: felucca
+        run: |
+          pip install pillow fonttools numpy
+          python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()"
+          EMU_PREVIEW=0 sh web/emu/build.sh
+          BENCH_MAX=5 node web/emu/emu_test.mjs build/emu/felucca.wasm | tail -3
 
       - uses: actions/checkout@v4
         with:
@@ -54,6 +84,12 @@ jobs:
           grep -q 'sampleRate / 60' _site/runtime/worklet.js
           cp fm1-emu/LICENSE _site/runtime/LICENSE-fm1-emu.txt
           ls -la _site/runtime
+          mkdir -p _site/natif/felucca
+          cp felucca/build/emu/felucca.wasm felucca/build/emu/worklet.js _site/natif/felucca/
+          cp felucca/LICENSE _site/natif/felucca/LICENSE-felucca.txt
+          # écran publié 60 fois par seconde au lieu de 30 (seule modification du fichier de Felucca)
+          sed -i 's#1 / 30#1 / 60#g' _site/natif/felucca/worklet.js
+          grep -q '1 / 60' _site/natif/felucca/worklet.js
 
       - name: Version runtime
         env:
@@ -64,6 +100,11 @@ jobs:
               --title "Cœur fm1-emu ${FM1_EMU_COMMIT:0:7}" \
               --notes "fm1_web.wasm compilé depuis joakimeriksson/fm1-emu@${FM1_EMU_COMMIT} (MIT), avec worklet.js et persistence.js."
           gh release upload "$RUNTIME_TAG" _site/runtime/* --repo "$GITHUB_REPOSITORY" --clobber
+          gh release view "$NATIF_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create "$NATIF_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --title "Felucca natif ${FELUCCA_COMMIT:0:7}" \
+              --notes "Felucca (GPL-3.0, Hügelton Instruments) compilé depuis ses sources pour le navigateur (son web/emu)."
+          gh release upload "$NATIF_TAG" _site/natif/felucca/* --repo "$GITHUB_REPOSITORY" --clobber
 
       - uses: actions/upload-pages-artifact@v3
         with:

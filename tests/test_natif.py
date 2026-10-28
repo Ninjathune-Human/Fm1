@@ -1,0 +1,74 @@
+"""Felucca compilé depuis ses sources (natif) derrière le panneau, à la place de l'émulation."""
+from conftest import lit_pixels, power_on
+from test_emu import rms, use
+
+
+def test_felucca_runs_native(page):
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    assert page.evaluate("window.__engine().kind") == "natif"
+    page.wait_for_timeout(2500)
+    assert lit_pixels(page) >= 2000
+    page.evaluate("window.__host.keyDown(12, 't')")
+    page.wait_for_timeout(500)
+    level = rms(page)
+    lit = page.evaluate("window.__host.keyLit(12)")
+    page.evaluate("window.__host.keyUp('t')")
+    assert level > 0.001, level
+    assert lit is True
+
+
+def test_native_light_cost(page):
+    """Le firmware natif prend une petite part du temps audio (Felucca mesure lui-même sa charge)."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.evaluate("window.__host.keyDown(12, 't'); window.__host.keyDown(16, 'u')")
+    page.wait_for_function("window.__engine().load !== null", timeout=8000)
+    load = page.evaluate("window.__engine().load")
+    page.evaluate("window.__host.keyUp('t'); window.__host.keyUp('u')")
+    assert load < 0.25, load
+
+
+def test_native_then_emulated_then_back(page):
+    """Felucca natif, puis un firmware émulé, puis FM-1+VA : chaque passage marche, aucune note tenue."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.evaluate("window.__host.keyDown(12, 't')")
+    assert use(page, "zp12") is True
+    assert page.evaluate("window.__engine().kind") != "natif"
+    page.wait_for_timeout(2000)
+    assert lit_pixels(page) >= 2000
+    assert use(page, "felucca") is True
+    page.wait_for_timeout(800)
+    assert rms(page) < 0.001
+    assert use(page, "fm1va") is True
+    assert page.evaluate("window.__engine() === window.__fw")
+
+
+def test_native_saves_kept(page):
+    """Ce que Felucca écrit dans sa flash revient à la prochaine ouverture de la page."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.evaluate("""() => window.__engine().onWorklet({ data: { type: 'frame', sectors: { 0x97000: new Uint8Array(4096).fill(7) } } })""")
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=5000)
+    power_on(page)
+    assert use(page, "felucca") is True
+    assert page.evaluate("window.__engine().lastLoadSectors && window.__engine().lastLoadSectors[0x97000][0]") == 7
+
+
+def test_native_screen_60fps(page):
+    """L'écran natif n'est plus plafonné à 30 images par seconde : il suit le rythme de dessin du firmware."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.wait_for_timeout(1500)
+    rate = page.evaluate("""() => new Promise((done) => {
+      const e = window.__engine(), o = e.onWorklet.bind(e); let n = 0;
+      e.onWorklet = (ev) => { if (ev.data.fb) n++; o(ev); };
+      const t = setInterval(() => window.__host.turn('KNOB1', 1), 8);
+      setTimeout(() => { clearInterval(t); e.onWorklet = o; done(n / 2); }, 2000); })""")
+    assert rate > 33, rate

@@ -4,3 +4,4 @@ test-results/
 .superpowers/
 .pytest_cache/
 tests/boot_all.json
+natif/

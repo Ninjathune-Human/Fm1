@@ -44,7 +44,10 @@
    "description": "The custom firmware the others build on: the FM-1's own synth engines, a sequencer, effects and a better panel, with an editor in the browser.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/felucca-1.6.1.fwsc",
-   "provenance_paquet": "release download/v1.6.1/felucca-1.6.1.fwsc"
+   "provenance_paquet": "release download/v1.6.1/felucca-1.6.1.fwsc",
+   "natif": "natif/felucca/",
+   "natif_wasm": "felucca.wasm",
+   "natif_processeur": "felucca"
   },
   {
    "id": "386dx",
