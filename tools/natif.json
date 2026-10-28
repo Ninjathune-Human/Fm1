@@ -1,0 +1,370 @@
+{
+ "firmwares": [
+  {
+   "id": "amb",
+   "depot": "charlesvestal/fm1-amb",
+   "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395",
+   "script": "web/app/build.sh"
+  },
+  {
+   "id": "arctic",
+   "depot": "PolarPatch/Arctic-scream-FM-1",
+   "commit": "7b5b8b261bf8ea4d5d64485c082636c5b1579854",
+   "script": "web/build_web.sh"
+  },
+  {
+   "id": "bunker",
+   "depot": "kidbee85-beep/bunker-evolved",
+   "commit": "c9bb0b1ac4a7dbb420a3f452fc75b705981ab0f4",
+   "script": "firmware/web/emu/build.sh"
+  },
+  {
+   "id": "caravel",
+   "depot": "bonszaimusic/caravel",
+   "commit": "b50bad57dcf32862f36661a5fc2996e13392b93e",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "carnac",
+   "depot": "OwenKirby/carnac-os",
+   "commit": "be8cc104f3618ba9b12c834827abfdbb4e1686af",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "chipbox",
+   "depot": "pbarilla/chipbox",
+   "commit": "48510318cffe4db2a5ceccfc153a65dcd6c8d6ff",
+   "script": "web/build.sh"
+  },
+  {
+   "id": "choralroot",
+   "depot": "Quixotic7/ChoralRootFM1",
+   "commit": "070bd306ed63c7d08f09bb6ea937262b52b1a6c0",
+   "script": "tools/emu/web/build_web.sh"
+  },
+  {
+   "id": "coralflower",
+   "depot": "FicusFicusov/CoralFlower",
+   "commit": "b5ceb997be330c8a420958eb8f4e0f4b3ca084c2",
+   "script": "tools/emu/web/build_web.sh"
+  },
+  {
+   "id": "cs1",
+   "depot": "twochannels/CS-1",
+   "commit": "5dce8fadd3aa86cf47a3290289ee1c10b7c102e4",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "drift",
+   "depot": "FBNFRTG/drift-fm1",
+   "commit": "09b5b981f350a37055467d560702af8608f65ad1",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "dub",
+   "depot": "sbegueria/fm1-dub",
+   "commit": "e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d",
+   "script": "web/app/build.sh"
+  },
+  {
+   "id": "duell",
+   "depot": "oscillr/DUELL",
+   "commit": "33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0",
+   "script": "felucca-base/web/emu/build.sh"
+  },
+  {
+   "id": "estampie",
+   "depot": "ocean/estampie",
+   "commit": "b6be8f78adcee97d4b217db7b81f6a4eb02445e8",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fart",
+   "depot": "adamcharleswilsonmusic-code/Fart-Machine-One",
+   "commit": "5e49a216c18c6e0a7e5e42bef43843b40ad9ea5f",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "felucca",
+   "depot": "hugelton/Felucca",
+   "commit": "a53ecf428c29c780108fd70a31b71a32a6b5c313",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "felucca8",
+   "depot": "echoe/Felucca_8_patterns",
+   "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fimba",
+   "depot": "jadamsowers/fm1-fimba",
+   "commit": "0485ed0d387ce78216428c7b19f97d77bbe10b4d",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "flyfish",
+   "depot": "delirioux/flyfish",
+   "commit": "4e5efb8a7623cfb19a55fdc08cb12e8cfdfce578",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fm106",
+   "depot": "PatttF/fm-106",
+   "commit": "3833499bfd0f2f4df522793526690f743b7164c9",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fmel",
+   "depot": "AntonioAltea/fmel-1",
+   "commit": "2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fmini",
+   "depot": "ruppert/fmini-1",
+   "commit": "ab0f5c83d9c3b8cf10fd2f9ef3dc760a06c3abb3",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "fomni",
+   "depot": "charlesvestal/fm1-fomni",
+   "commit": "6ecd227013cc18def0e89d035b3760eb268b342b",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "frodhes",
+   "depot": "leonardoMirabal/frodhes",
+   "commit": "33c9730c04f1c72b1319aec68124b8759419fd68",
+   "script": "web/build.sh"
+  },
+  {
+   "id": "fumi",
+   "depot": "cartesive/fumi-1",
+   "commit": "6a20fa387cf6bc28a33309a09aaa94a108325e2e",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "gammawave",
+   "depot": "fvalente/GammaWave-FM1",
+   "commit": "8bf1a12cdb7c70e86eba81e63cb374d14f9d43e2",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "ghoulbox",
+   "depot": "jasonpersinger/ghoulbox-fm1-dungeon-synth",
+   "commit": "9f2b9a22e456d7fe9552b40f7a1d0c13200913bb",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "golana",
+   "depot": "Gadlele/Golana",
+   "commit": "472914d794fb879eb502f62d3380a3b674ab2547",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "golanadz",
+   "depot": "dzwerg/Golana-DZ",
+   "commit": "858e3f2f9e018f01a1c87451c712193869f0324b",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "grimm",
+   "depot": "GRiMMBIENT/grimm",
+   "commit": "815ca6be81d973445851238dbaf12b4536d1e6d8",
+   "script": "web/build_web.sh"
+  },
+  {
+   "id": "hera",
+   "depot": "benbadio/hera-fm1",
+   "commit": "2c99af2141217e1e0083da39049ace432efa1cd1",
+   "script": "web/build.sh"
+  },
+  {
+   "id": "hyp1",
+   "depot": "RustyPawz/fm1-HYP1",
+   "commit": "57c456db61826331d356458c9c1a136517da7cbf",
+   "script": "web/app/build.sh"
+  },
+  {
+   "id": "jiant",
+   "depot": "juanjiant-bit/JIANT",
+   "commit": "c6e7aa189525043806e6b3052dd1f8b3c39c3e33",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "loomfm1",
+   "depot": "Co-oscillator/Loom-FM-1",
+   "commit": "ed6f036f9e3187ba22f915c3941d23f477159683",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "makohai",
+   "depot": "delirioux/makohai",
+   "commit": "800edc8a88d2a883fbeb2cf198a976d7769f3707",
+   "script": "web/emu/makohai_build.sh"
+  },
+  {
+   "id": "maku",
+   "depot": "okumurari2/maku",
+   "commit": "5671198f1989cbd4a0e674b2059e7f8316faf37d",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "min1",
+   "depot": "Reytian/fm1-min1",
+   "commit": "8d6dd77d34cde4f980bd84e726d6a923f951a0dd",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "minitone",
+   "depot": "eldontyrellcorp/Mini-Tone",
+   "commit": "6803c6c29e3402fcc0c4af7c2050df987d9b66b5",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "monk",
+   "depot": "charlesvestal/fm1-monk",
+   "commit": "b21a361ea43b04b38b7598d35eb1ca651baaa661",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "mono2k",
+   "depot": "InigoHernandez/mono2k",
+   "commit": "b52d67703d4728c176c685c27d213f0c4da52232",
+   "script": "web/build.sh"
+  },
+  {
+   "id": "mope1",
+   "depot": "slothpallas/mope-1",
+   "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "niagara",
+   "depot": "evanyerburgh/niagara-drift",
+   "commit": "802daa818af060293cae77afec013df3dec0a060",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "noizdemons",
+   "depot": "SPIKE-the-Percussionist/noiz_demons",
+   "commit": "4fe0f1afb4d97f56dfb763c176679fe6e059ecec",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "obervave",
+   "depot": "zvenson/obervave",
+   "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8",
+   "script": "web/sim/build.sh"
+  },
+  {
+   "id": "perf1",
+   "depot": "deamonSLINKY/PERF-1",
+   "commit": "d2ed6aa95867dd5b395eee36fb447bcb99b9949b",
+   "script": "web/app/build.sh"
+  },
+  {
+   "id": "pigeon",
+   "depot": "TheShrimpBlimp/pigeon",
+   "commit": "48f028f2ee7f6a0140dfef9d9426dc3237f2e466",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "polly",
+   "depot": "charlesvestal/fm1-polly",
+   "commit": "62cd07ea7c95c30021c31e957cea8be448415fa7",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "purplemonkey",
+   "depot": "Quixotic7/PurpleMonkeyFM1",
+   "commit": "7590d4a5205bd4932b206d676c09b9521843a023",
+   "script": "tools/emu/web/build_web.sh"
+  },
+  {
+   "id": "rainbow",
+   "depot": "joshbartlettband-web/felucca-rainbow",
+   "commit": "0baf362731c65398ad963229a3fe5500c75c6e3e",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "ravel",
+   "depot": "De-Pattern/Ravel_FM1",
+   "commit": "6a7696d75ae4ffaeff21827f973abf2b93771326",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "s1vave",
+   "depot": "AndrewGG88/S1Vave",
+   "commit": "97303378678c247ca1d005ae641114f4544acf65",
+   "script": "web/sim/build.sh"
+  },
+  {
+   "id": "shineon",
+   "depot": "zvenson/shineon",
+   "commit": "2f37738d690a628e0ae1d23d07ea5ee3eeda2de7",
+   "script": "web/sim/build.sh"
+  },
+  {
+   "id": "skiff",
+   "depot": "illuminus5/skiff",
+   "commit": "c01fa1ed619266d770ea6552b153612e1b77d0a9",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "tessera",
+   "depot": "Rastapopolix/tessera",
+   "commit": "094f53582cc4bc04d62e95537eb2ff22264f4819",
+   "script": "web/sim/build.sh"
+  },
+  {
+   "id": "tribe",
+   "depot": "apiel/fm1-tribe",
+   "commit": "29664b28c9d8b8eb043de0739bf9dd64869958c4",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "tuna",
+   "depot": "delirioux/tuna",
+   "commit": "f06047dc7e4a4c061818b9a29f5412359a2fb607",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "unholy",
+   "depot": "actuallysparky/FM-1-Unholy-Union-generative-drone-firmware",
+   "commit": "3c0dfd93571774a0a2386bd1d2bc2b80de48fdfb",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "vector37",
+   "depot": "genkigenki/Vector37",
+   "commit": "08742a4198f99e2db2846b00b70ed6808239c447",
+   "script": "web/sim/build.sh"
+  },
+  {
+   "id": "waveloop",
+   "depot": "ELI7VH/Felucca",
+   "commit": "7bce76090a076cf488ac03b53c83960b7c14e81e",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "x0x",
+   "depot": "charlesvestal/fm1-x0x",
+   "commit": "27f6fac7e07ce97b5de158b45aec99f59a9e23fd",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "x0xrmx",
+   "depot": "Mr-Roboto/fm1-x0x-rmx",
+   "commit": "a4e78f3a6e16fa310b7614e5876d07e16a0020f9",
+   "script": "web/emu/build.sh"
+  },
+  {
+   "id": "zen",
+   "depot": "aceyprime/zen-1",
+   "commit": "ec9295233ea64ddac224b58b4d07216706c1b8ee",
+   "script": "web/emu/build.sh"
+  }
+ ]
+}
