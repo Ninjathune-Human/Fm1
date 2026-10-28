@@ -49,6 +49,9 @@ jobs:
           for d in firmwares assets; do [ -d "$d" ] && cp -r "$d" _site/; done
           cp fm1-emu/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm _site/runtime/
           cp fm1-emu/web/worklet.js fm1-emu/web/persistence.js _site/runtime/
+          # écran envoyé 60 fois par seconde au lieu de 30 (seule modification du fichier de fm1-emu)
+          sed -i 's#sampleRate / 30#sampleRate / 60#' _site/runtime/worklet.js
+          grep -q 'sampleRate / 60' _site/runtime/worklet.js
           cp fm1-emu/LICENSE _site/runtime/LICENSE-fm1-emu.txt
           ls -la _site/runtime
 

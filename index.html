@@ -4041,7 +4041,7 @@ function buildPanel(fw) {
 
   let last = 0;
   function frame(t) {
-    if (t - last > 30) { last = t; fw.draw(); panel.lights(); }
+    if (t - last > 12) { last = t; fw.draw(); panel.lights(); }   // à chaque image de l'écran (60 par seconde)
     requestAnimationFrame(frame);
   }
   const fontReady = document.fonts && document.fonts.load ? document.fonts.load('600 16px "Barlow Semi Condensed"').catch(() => {}) : Promise.resolve();

@@ -121,3 +121,18 @@ def test_audio_ahead_256(page):
     level = rms(page)
     page.evaluate("window.__host.keyUp('t')")
     assert level > 0.001, level
+
+
+def test_screen_60fps(page):
+    """Le cœur envoie l'écran environ 60 fois par seconde et la page le redessine à chaque image."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.wait_for_timeout(1000)
+    rates = page.evaluate("""() => new Promise((done) => {
+      const e = window.__engine(), o = e.onWorklet.bind(e), d = e.draw.bind(e); let frames = 0, draws = 0;
+      e.onWorklet = (ev) => { if (ev.data.type === 'frame') frames++; o(ev); };
+      e.draw = () => { draws++; d(); };
+      setTimeout(() => { e.onWorklet = o; e.draw = d; done({ frames: frames / 2, draws: draws / 2 }); }, 2000); })""")
+    assert rates["frames"] >= 50, rates
+    assert rates["draws"] >= 50, rates
