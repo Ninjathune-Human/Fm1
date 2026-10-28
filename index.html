@@ -62,13 +62,17 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .key .lamp, .key .bloom { opacity: 0; transition: opacity 110ms var(--ease); }
 /* a lit button: only its legend lights, from behind; PLAY's legend in its LED's colour, green or red */
 .cap .legend { transition: fill 110ms var(--ease); }
-.cap.lit .legend { fill: #fffdf6; filter: drop-shadow(0 0 2px rgb(255 255 255 / 0.95)) drop-shadow(0 0 6px rgb(255 250 235 / 0.7)); }
-.cap.lit-green .legend { fill: #8dffa4; filter: drop-shadow(0 0 2px rgb(110 255 140 / 0.95)) drop-shadow(0 0 7px rgb(60 230 100 / 0.75)); }
-.cap.lit-red .legend { fill: #ff5246; filter: drop-shadow(0 0 2px rgb(255 110 100 / 0.95)) drop-shadow(0 0 7px rgb(240 50 40 / 0.75)); }
+.cap .legend-bloom { opacity: 0; color: #ffffff; transition: opacity 110ms var(--ease); }
+.cap.lit .legend-bloom, .cap.lit-green .legend-bloom, .cap.lit-red .legend-bloom { opacity: 0.5; }
+.cap.lit-green .legend-bloom { color: #5dff83; }
+.cap.lit-red .legend-bloom { color: #ff4a3d; }
+.cap.lit .legend { fill: #fffdf6; filter: drop-shadow(0 0 1.5px rgb(255 255 255 / 0.9)); }
+.cap.lit-green .legend { fill: #8dffa4; filter: drop-shadow(0 0 1.5px rgb(110 255 140 / 0.9)); }
+.cap.lit-red .legend { fill: #ff5246; filter: drop-shadow(0 0 1.5px rgb(255 110 100 / 0.9)); }
 .key.lit .lamp, .key.held .lamp { opacity: 1; }
 .key.lit .bloom, .key.held .bloom { opacity: 0.85; }
 .knob { transition: none; }
-@media (prefers-reduced-motion: reduce) { .face, .cap .legend, .key .lamp, .key .bloom, summary::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .face, .cap .legend, .cap .legend-bloom, .key .lamp, .key .bloom, summary::after { transition: none; } }
 .start { position: absolute; inset: 0; border-radius: 5.85% / 9.7%; background: rgb(0 0 0 / 0.08); }
 /* the switch sits on the dark glass, like a prompt on the device itself */
 .start button { position: absolute; left: 37.62%; top: 26.77%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 8px;
@@ -3818,7 +3822,7 @@ function buildPanel(fw) {
   grad("gKnobSkirt", [[0, "#2c2c30"], [0.5, "#121214"], [1, "#050506"]], { x1: 0, y1: 0, x2: 1, y2: 0 });
   grad("gBezel", [[0, "#3c3d40"], [0.35, "#141517"], [1, "#050506"]], { x1: 0, y1: 0, x2: 1, y2: 1 });
   grad("gBezelEdge", [[0, "#6e6f73"], [0.18, "#333437"], [0.6, "#141416"], [1, "#000000"]]);
-  blur("fShadow", 9); blur("fShadowS", 5); blur("fGlow", 7); blur("fSoft", 2.5);
+  blur("fShadow", 9); blur("fShadowS", 5); blur("fGlow", 7); blur("fGlowS", 3.5); blur("fSoft", 2.5);
   const noise = el("filter", { id: "fNoise", x: 0, y: 0, width: "100%", height: "100%" }, defs);
   el("feTurbulence", { type: "fractalNoise", baseFrequency: 0.9, numOctaves: 2, seed: 7, stitchTiles: "stitch" }, noise);
   el("feColorMatrix", { type: "matrix", values: "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 -0.42" }, noise);
@@ -3884,6 +3888,13 @@ function buildPanel(fw) {
     const g = el("g", { class: "cap", "data-label": name }, live), face = el("g", { class: "face" }, g);
     el("rect", { x, y, width: w, height: h, rx, fill: "url(#gCap)" }, face);
     el("rect", { x: x + 1, y: y + 1, width: w - 2, height: h - 2, rx: rx - 1, fill: "none", stroke: "url(#gCapRim)", "stroke-width": 2 }, face);
+    // the legend, and behind it its halo (a blurred, thickened copy), lit with the button like a key's bloom
+    const lines = two ? [[cy - 8, name], [cy + 22, two]] : [[cy + 8, name]];
+    const glow = el("g", { class: "legend-bloom", filter: "url(#fGlowS)" }, face);
+    for (const [yy, s] of lines) {
+      const e = el("text", { x: cx, y: yy, "text-anchor": "middle", "font-family": CAP_FONT, "font-weight": 700, "font-size": 19, stroke: "currentColor", "stroke-width": 3, "stroke-linejoin": "round", fill: "currentColor" }, glow);
+      e.textContent = s;
+    }
     const t = (yy, s) => { const e = el("text", { x: cx, y: yy, "text-anchor": "middle", "font-family": CAP_FONT, "font-weight": 700, "font-size": 19, fill: "#24302d", class: "sk-cap legend" }, face); e.textContent = s; };
     if (two) { t(cy - 8, name); el("rect", { x: cx - 26, y: cy - 4.5, width: 52, height: 2.2, rx: 1.1, fill: "#24302d", class: "sk-cap legend" }, face); t(cy + 22, two); }
     else t(cy + 8, name);
