@@ -133,3 +133,28 @@ def test_every_native_boots(page):
         page.wait_for_timeout(1500)
         if lit_pixels(page) < 500: bad.append((i, "écran"))
     assert not bad, bad
+
+
+def test_every_native_reacts(page):
+    """Chaque firmware natif répond au panneau : la molette SELECT ou une touche change l'écran ou le son."""
+    import json, os
+    from conftest import ROOT
+    ids = sorted(json.load(open(os.path.join(ROOT, "natif/manifest.json"))))
+    shot = "() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < d.length; i += 16) h = (h * 31 + d[i] + d[i + 1] + d[i + 2]) | 0; return h; }"
+    power_on(page)
+    page.set_default_timeout(30000)
+    mute = []
+    for i in ids:
+        if use(page, i) is not True:
+            mute.append((i, "démarrage")); continue
+        page.wait_for_timeout(1500)
+        before = page.evaluate(shot)
+        page.evaluate("window.__host.turn('SELECT', 3)")
+        page.wait_for_timeout(400)
+        page.evaluate("window.__host.keyDown(12, 't')")
+        page.wait_for_timeout(500)
+        level = rms(page)
+        page.evaluate("window.__host.keyUp('t')")
+        if page.evaluate(shot) == before and level <= 0.001:
+            mute.append((i, "aucune réaction"))
+    assert not mute, mute

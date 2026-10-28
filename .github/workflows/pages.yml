@@ -177,7 +177,7 @@ jobs:
           tar -xzf natif.tar.gz
           pip install pytest playwright
           python -m playwright install --with-deps chromium
-          python -m pytest -q tests/test_natif.py::test_every_native_boots 2>&1 | tee verif.txt; rc=${PIPESTATUS[0]}
+          python -m pytest -q tests/test_natif.py::test_every_native_boots tests/test_natif.py::test_every_native_reacts 2>&1 | tee verif.txt; rc=${PIPESTATUS[0]}
           r=$(grep -E "^E |passed|failed" verif.txt | head -30 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
           if [ "$rc" = 0 ]; then echo "::notice title=vérification natifs::$r"; else echo "::error title=vérification natifs::$r"; fi
           exit "$rc"
