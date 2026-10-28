@@ -9,17 +9,31 @@ ID=$1 REPO=$(cd "$2" && pwd) SCRIPT=$3 OUT=$4
 mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd)
 cd "$REPO"
 touch /tmp/natif-start; sleep 1
+LOG=/tmp/natif-$ID.log; : > "$LOG"
+# un firmware écarté : la raison et la fin du journal, en annotation de l'action (lisible sans les journaux)
+echec() {
+  echo "natif $ID : $1"
+  printf '::warning title=natif %s::%s\n' "$ID" "$( { echo "$1"; tail -n 25 "$LOG"; } | sed 's/%/%25/g' | tr -d '\r' | sed ':a;N;$!ba;s/\n/%0A/g')"
+  exit 0
+}
+command -v zig >/dev/null 2>&1 && export ZIG="${ZIG:-$(command -v zig)}"   # les scripts qui compilent avec zig cc
 
-# en-têtes générés, pour les firmwares de la famille Felucca qui les demandent (polices, tables, échantillons)
-if [ -f tools/build.py ] && grep -q "def generate" tools/build.py; then
-  python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()" \
-    || echo "natif $ID : génération des en-têtes en échec (on continue)"
-fi
+# en-têtes générés, pour les firmwares de la famille Felucca qui les demandent (polices, tables, échantillons) :
+# tools/build.py du projet où vit le script (le dépôt, ou un sous-dossier comme firmware/ ou felucca-base/)
+P=$(dirname "$SCRIPT")
+while :; do
+  if [ -f "$P/tools/build.py" ] && grep -q "def generate" "$P/tools/build.py"; then
+    (cd "$P" && python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()") >>"$LOG" 2>&1 \
+      || echo "natif $ID : génération des en-têtes en échec (on continue)"
+    break
+  fi
+  [ "$P" = . ] && break; P=$(dirname "$P")
+done
 
-EMU_PREVIEW=0 bash "$SCRIPT" || { echo "natif $ID : la compilation a échoué"; exit 0; }
+EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 
 CANDIDATS=$(find . -name node_modules -prune -o -name '*.wasm' -newer /tmp/natif-start -print)
-[ -n "$CANDIDATS" ] || { echo "natif $ID : aucun .wasm produit"; exit 0; }
+[ -n "$CANDIDATS" ] || echec "aucun .wasm produit"
 WASM="" WORKLET=""
 for w in $CANDIDATS; do                    # de préférence le .wasm qui a son worklet à côté
   k=$(ls "$(dirname "$w")"/worklet*.js 2>/dev/null | head -1)
@@ -27,11 +41,11 @@ for w in $CANDIDATS; do                    # de préférence le .wasm qui a son 
 done
 if [ -z "$WASM" ]; then WASM=$(echo "$CANDIDATS" | head -1); WORKLET=$(ls "$(dirname "$SCRIPT")"/worklet*.js 2>/dev/null | head -1); fi
 echo "natif $ID : .wasm produits : $(echo $CANDIDATS)"
-[ -n "$WORKLET" ] || { echo "natif $ID : pas de worklet à côté du .wasm"; exit 0; }
+[ -n "$WORKLET" ] || echec "pas de worklet à côté du .wasm"
 
 if grep -q 'msg.leds' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=felucca
 elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=x0x
-else echo "natif $ID : protocole du worklet inconnu"; exit 0; fi
+else echec "protocole du worklet inconnu ($(basename "$WORKLET"))"; fi
 
 D="$OUT/$ID"; mkdir -p "$D"
 cp "$WASM" "$D/"
@@ -49,6 +63,6 @@ sed -i -E "s/registerProcessor\(\"[^\"]+\"/registerProcessor(\"natif-$ID\"/" "$D
 sed -i 's#1 / 30#1 / 60#g' "$D/worklet.js"
 # TextDecoder manque dans le fil audio de Chrome : quelques worklets s'en servent au chargement
 sed -i '1i globalThis.TextDecoder ??= class { decode(b) { let s = ""; for (const c of b || []) s += String.fromCharCode(c); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } };' "$D/worklet.js"
-grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { echo "natif $ID : nom de processeur introuvable"; rm -rf "$D"; exit 0; }
+grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { rm -rf "$D"; echec "nom de processeur introuvable"; }
 printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s"}\n' "$(basename "$WASM")" "$ID" "$DIALECT" > "$D/natif.json"
 echo "natif $ID : prêt ($DIALECT, $(basename "$WASM"), $(wc -c < "$WASM") octets)"

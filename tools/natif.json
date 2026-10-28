@@ -76,7 +76,8 @@
    "id": "estampie",
    "depot": "ocean/estampie",
    "commit": "b6be8f78adcee97d4b217db7b81f6a4eb02445e8",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "zig": "0.17.0"
   },
   {
    "id": "fart",
