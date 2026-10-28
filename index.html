@@ -18,16 +18,15 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #000000; --surface: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --rule: #2c2c2e; --accent: #9fd4c4; color-scheme: dark; } }
 :root[data-theme="dark"] { --bg: #000000; --surface: #1c1c1e; --ink: #f5f5f7; --muted: #a1a1a6; --rule: #2c2c2e; --accent: #9fd4c4; color-scheme: dark; }
 body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.47 var(--body); -webkit-font-smoothing: antialiased;
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 64px; }
-main { max-width: 1120px; margin: 0 auto; display: grid; gap: 36px; }
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 48px; }
+main { max-width: 1120px; margin: 0 auto; display: grid; gap: 20px; }
 a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
 
-.mast { display: grid; gap: 10px; }
+.mast { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 16px; }
 .eyebrow { margin: 0; font: 600 0.8125rem/1.2 var(--body); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
-.mark { font: 600 clamp(2.75rem, 7.2vw, 4.5rem)/1.02 var(--display); letter-spacing: -0.025em; margin: 0; }
+.mark { font: 600 clamp(2rem, 5vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; margin: 0; }
 .mark span { color: var(--accent); }
-.lede { margin: 0; max-width: 58ch; color: var(--muted); font-size: 1.1875rem; line-height: 1.42; text-wrap: pretty; }
 
 .stage { display: grid; gap: 22px; }
 .turn { display: none; margin: 0; color: var(--muted); font-size: 0.9375rem; }
@@ -184,9 +183,8 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 
 <main>
   <header class="mast">
-    <p class="eyebrow">Émulateur · Version 102</p>
     <h1 class="mark">FM-1<span>+VA</span></h1>
-    <p class="lede">Le firmware de Baud Girl pour le M-VAVE FM-1, réécrit pour le navigateur d'après son manuel, version 102 : trois moteurs (FM six opérateurs, Virtual Analog, 8-Bit), sept effets, onze banques de molettes, le Note Engine.</p>
+    <p class="eyebrow">M-VAVE FM-1 · Émulateur · Version 102</p>
   </header>
 
   <section class="stage" aria-label="Le FM-1">
