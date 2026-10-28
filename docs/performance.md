@@ -41,6 +41,13 @@ Gain estimé : 20 à 40 %, pas un ordre de grandeur.
 
 Le natif coûte environ 30 fois moins pour un travail plus lourd.
 
-L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh`). Sont retenus ceux dont le worklet parle un des deux protocoles connus : famille Felucca (24) et famille X0X (15), soit 39 firmwares natifs. Les 22 autres (protocole différent, ou outils Zig) restent émulés. La page lit `natif/manifest.json` et prend le natif quand il existe.
+L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh` ; les champs facultatifs `zig`, `avant` et `wasm` y règlent la chaîne Zig, une commande préalable et le `.wasm` retenu). Sont retenus ceux dont le worklet parle un des cinq protocoles connus : familles Felucca, X0X, ChoralRoot, sim et MEL, soit 51 firmwares natifs. La raison de chaque écart s'affiche en annotation de l'action. La page lit `natif/manifest.json` et prend le natif quand il existe ; l'action vérifie que chacun démarre, dessine son écran et répond au panneau.
+
+Les 10 autres restent émulés :
+
+- hera, ravel, frodhes, chipbox : leur version navigateur tourne sur la page (Emscripten et sa boucle, ou un `ScriptProcessor`), sans worklet ;
+- mono2k : son propre protocole et un écran d'un bit par pixel ;
+- amb, dub, hyp1, perf1 : la version navigateur est une appli compagnon (le moteur seul, sans écran ni touches FM-1) ;
+- vector37 : la version navigateur simule un SMK-37 Pro, pas le FM-1.
 
 Retouches faites aux worklets, et seulement celles-là : nom de processeur propre à chaque firmware, écran à 60 images par seconde, et un `TextDecoder` de secours (absent du fil audio de Chrome, il bloquait FUMI et ZEN-1).
