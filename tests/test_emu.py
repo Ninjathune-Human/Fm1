@@ -106,15 +106,15 @@ def test_va_still_works(page):
     assert page.evaluate("window.__fw.on") is True
 
 
-def test_audio_ahead_256(page):
-    """L'avance du son demandée au cœur est de 256 échantillons (au lieu de 1 024 par défaut)."""
+def test_audio_ahead_default(page):
+    """L'avance du son reste celle de fm1-emu (1 024) : 256 multipliait les quanta trop longs."""
     power_on(page)
     page.set_default_timeout(30000)
     page.evaluate("""() => { const e = window.__engine(); window.__sent = [];
       const orig = EmuFirmware.prototype.send;
       EmuFirmware.prototype.send = function (m) { window.__sent.push(m.type === 'boot' ? { type: 'boot', ahead: m.ahead } : { type: m.type }); return orig.call(this, m); }; }""")
     assert use(page, "felucca") is True
-    assert page.evaluate("window.__sent.find((m) => m.type === 'boot').ahead") == 256
+    assert page.evaluate("window.__sent.find((m) => m.type === 'boot').ahead") is None
     page.wait_for_timeout(1500)
     page.evaluate("window.__host.keyDown(12, 't')")
     page.wait_for_timeout(500)
