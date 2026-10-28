@@ -59,13 +59,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .face { transition: transform 70ms var(--ease); }
 .cap.held .face, .cap.latched .face { transform: translateY(3.5px); }
 .key.held .face { transform: translateY(3px); }
-.cap .glow, .cap .halo, .key .lamp, .key .bloom { opacity: 0; transition: opacity 110ms var(--ease); }
-.cap.lit .glow { opacity: 0.6; }
-.cap.lit .halo { opacity: 0.38; }
+.key .lamp, .key .bloom { opacity: 0; transition: opacity 110ms var(--ease); }
+/* a lit button: only its legend lights, from behind; PLAY's legend in its LED's colour, green or red */
+.cap .legend { transition: fill 110ms var(--ease); }
+.cap.lit .legend { fill: #fffdf6; filter: drop-shadow(0 0 2px rgb(255 255 255 / 0.95)) drop-shadow(0 0 6px rgb(255 250 235 / 0.7)); }
+.cap.lit-green .legend { fill: #8dffa4; filter: drop-shadow(0 0 2px rgb(110 255 140 / 0.95)) drop-shadow(0 0 7px rgb(60 230 100 / 0.75)); }
+.cap.lit-red .legend { fill: #ff5246; filter: drop-shadow(0 0 2px rgb(255 110 100 / 0.95)) drop-shadow(0 0 7px rgb(240 50 40 / 0.75)); }
 .key.lit .lamp, .key.held .lamp { opacity: 1; }
 .key.lit .bloom, .key.held .bloom { opacity: 0.85; }
 .knob { transition: none; }
-@media (prefers-reduced-motion: reduce) { .face, .cap .glow, .cap .halo, .key .lamp, .key .bloom, summary::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .face, .cap .legend, .key .lamp, .key .bloom, summary::after { transition: none; } }
 .start { position: absolute; inset: 0; border-radius: 5.85% / 9.7%; background: rgb(0 0 0 / 0.08); }
 /* the switch sits on the dark glass, like a prompt on the device itself */
 .start button { position: absolute; left: 37.62%; top: 26.77%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 8px;
@@ -1383,7 +1386,7 @@ class EmuFirmware {
     this.node = null; this.an = null; this.wasm = null; this.mod = null; this.saveStore = null; this.moduleOf = null;
     this.seq = 0; this.requestId = 0; this.running = null; this.entry = null; this.hash = null; this.name = "";
     this.sessions = new Map(); this.bootWaiters = new Map(); this.snapshotWaiters = new Map();
-    this.lcd = null; this.lcdNew = false; this.leds = new Float32Array(41); this.halted = 0;
+    this.lcd = null; this.lcdNew = false; this.leds = new Float32Array(41); this.green = 0; this.halted = 0;
     this.keyNotes = new Map(); this.down = new Set();
     this.pot = Math.round((va.G.master ?? 0.88) * 1023);
     this.off = document.createElement("canvas"); this.off.width = this.off.height = 240;
@@ -1505,7 +1508,7 @@ class EmuFirmware {
       const s = this.sessions.get(m.seq), w = this.bootWaiters.get(m.seq);
       if (!s || !w) return;
       this.running = s;
-      this.lcd = null; this.leds = new Float32Array(41); this.halted = 0;
+      this.lcd = null; this.leds = new Float32Array(41); this.green = 0; this.halted = 0;
       for (const k of this.sessions.keys()) if (k !== m.seq) this.sessions.delete(k);
       s.base = m.base;
       this.saveSnapshot(s, m.flash);
@@ -1514,7 +1517,7 @@ class EmuFirmware {
     }
     if (m.type !== "frame" || m.seq !== this.running?.seq) return;   // la machine en marche, même si un démarrage a échoué
     if (m.lcd) { this.lcd = m.lcd; this.lcdNew = true; }
-    if (m.leds) this.leds = m.leds;
+    if (m.leds) { this.leds = m.leds; this.green = m.green || 0; }
     if (m.halted && !this.halted) this.onHalt?.();
     this.halted = m.halted;
   }
@@ -1563,6 +1566,8 @@ class EmuFirmware {
   }
   keyLit(i) { return isLit(this.leds, noteId(i)); }
   buttonLit(label) { return KEY_IDS[label] !== undefined && isLit(this.leds, KEY_IDS[label]); }
+  // la verte de PLAY vient à part (fm1_play_green, ajoutée à fm1-emu par l'action GitHub) ; la rouge est la LED du bouton
+  playLight() { return this.green > LIT ? "green" : isLit(this.leds, KEY_IDS.PLAY) ? "red" : null; }
   takePatch() { throw new Error("Réservé à FM-1+VA"); }
   askBank() { throw new Error("Réservé à FM-1+VA"); }
 }
@@ -1713,6 +1718,12 @@ class NativeFirmware {
   }
   keyLit(i) { return !!(this.leds[1] & (1 << i)); }
   buttonLit(label) { const b = NATIVE_BUTTONS[label]; return b !== undefined && !!(this.leds[0] & (1 << b)); }
+  // famille Felucca : bit 14 la verte de PLAY, bit 10 sa rouge ; famille X0X : un seul bit, vert (rouge en enregistrement sur l'appareil)
+  playLight() {
+    const b = this.leds[0];
+    if (this.x0x) return b & (1 << 10) ? "green" : null;
+    return b & (1 << 14) ? "green" : b & (1 << 10) ? "red" : null;
+  }
   takePatch() { throw new Error("Réservé à FM-1+VA"); }
   askBank() { throw new Error("Réservé à FM-1+VA"); }
 }
@@ -3060,6 +3071,8 @@ class Firmware {
     const note = KEY0 + i + 12 * this.octave + this.kbdTr, s = this.seqKeyLit(note);
     return s === null ? this.lit.has(note) : s;
   }
+  // PLAY a deux LED : verte pendant la lecture, rouge séquenceur allumé à l'arrêt, éteinte sinon
+  playLight() { return this.S.playing ? "green" : this.G.seqOn ? "red" : null; }
   buttonLit(b) {
     const root = this.stack.length ? this.stack[0].root : null;
     switch (b) {
@@ -3805,8 +3818,7 @@ function buildPanel(fw) {
   grad("gKnobSkirt", [[0, "#2c2c30"], [0.5, "#121214"], [1, "#050506"]], { x1: 0, y1: 0, x2: 1, y2: 0 });
   grad("gBezel", [[0, "#3c3d40"], [0.35, "#141517"], [1, "#050506"]], { x1: 0, y1: 0, x2: 1, y2: 1 });
   grad("gBezelEdge", [[0, "#6e6f73"], [0.18, "#333437"], [0.6, "#141416"], [1, "#000000"]]);
-  grad("gLitCap", [[0, "#ffffff", 0.95], [0.55, "#f2fffb", 0.55], [1, "#d6f5ec", 0]], { cx: 0.5, cy: 0.45, r: 0.62 }, "radialGradient");
-  blur("fShadow", 9); blur("fShadowS", 5); blur("fGlow", 7); blur("fHalo", 14); blur("fSoft", 2.5);
+  blur("fShadow", 9); blur("fShadowS", 5); blur("fGlow", 7); blur("fSoft", 2.5);
   const noise = el("filter", { id: "fNoise", x: 0, y: 0, width: "100%", height: "100%" }, defs);
   el("feTurbulence", { type: "fractalNoise", baseFrequency: 0.9, numOctaves: 2, seed: 7, stitchTiles: "stitch" }, noise);
   el("feColorMatrix", { type: "matrix", values: "0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 -0.42" }, noise);
@@ -3869,13 +3881,11 @@ function buildPanel(fw) {
     const x = cx - w / 2, y = cy - h / 2, rx = 15;
     el("rect", { x: x + 6, y: y + 12, width: w - 6, height: h, rx, fill: "#173d33", opacity: 0.75, filter: "url(#fShadowS)", class: "sk-shade" }, base);
     el("rect", { x, y: y + 5, width: w, height: h, rx, fill: "url(#gWall)" }, base);
-    const g = el("g", { class: "cap" }, live), face = el("g", { class: "face" }, g);
-    el("rect", { x: x - 6, y: y - 6, width: w + 12, height: h + 12, rx: rx + 6, fill: "#ffffff", class: "halo", filter: "url(#fHalo)" }, face);
+    const g = el("g", { class: "cap", "data-label": name }, live), face = el("g", { class: "face" }, g);
     el("rect", { x, y, width: w, height: h, rx, fill: "url(#gCap)" }, face);
-    el("rect", { x, y, width: w, height: h, rx, fill: "url(#gLitCap)", class: "glow" }, face);
     el("rect", { x: x + 1, y: y + 1, width: w - 2, height: h - 2, rx: rx - 1, fill: "none", stroke: "url(#gCapRim)", "stroke-width": 2 }, face);
-    const t = (yy, s) => { const e = el("text", { x: cx, y: yy, "text-anchor": "middle", "font-family": CAP_FONT, "font-weight": 700, "font-size": 19, fill: "#24302d", class: "sk-cap" }, face); e.textContent = s; };
-    if (two) { t(cy - 8, name); el("rect", { x: cx - 26, y: cy - 4.5, width: 52, height: 2.2, rx: 1.1, fill: "#24302d", class: "sk-cap" }, face); t(cy + 22, two); }
+    const t = (yy, s) => { const e = el("text", { x: cx, y: yy, "text-anchor": "middle", "font-family": CAP_FONT, "font-weight": 700, "font-size": 19, fill: "#24302d", class: "sk-cap legend" }, face); e.textContent = s; };
+    if (two) { t(cy - 8, name); el("rect", { x: cx - 26, y: cy - 4.5, width: 52, height: 2.2, rx: 1.1, fill: "#24302d", class: "sk-cap legend" }, face); t(cy + 22, two); }
     else t(cy + 8, name);
     buttons[name] = { g, label: name, box: [x, y, w, h + 5] };
   };
@@ -4155,7 +4165,15 @@ function buildPanel(fw) {
 
   // lights, each frame
   function lights() {
-    for (const b of Object.values(buttons)) { const on = fw.buttonLit(b.label); if (on !== b.lit) { b.lit = on; b.g.classList.toggle("lit", on); } }
+    for (const b of Object.values(buttons)) {
+      const on = b.label === "PLAY" ? fw.playLight() : fw.buttonLit(b.label);   // PLAY : "green", "red" ou null
+      if (on !== b.lit) {
+        b.lit = on;
+        b.g.classList.toggle("lit", on === true);
+        b.g.classList.toggle("lit-green", on === "green");
+        b.g.classList.toggle("lit-red", on === "red");
+      }
+    }
     keys.forEach((k, i) => { const on = fw.keyLit(i); if (on !== k.lit) { k.lit = on; k.g.classList.toggle("lit", on); } });
   }
   return { setBody, setSkin, lights, knobs };

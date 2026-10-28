@@ -97,6 +97,9 @@ jobs:
       - name: Cible WebAssembly
         run: rustup target add wasm32-unknown-unknown
 
+      - name: LED verte de PLAY (absente du tableau de LED de fm1-emu)
+        run: python3 tools/fm1emu_vert.py fm1-emu fm1-emu/web/worklet.js
+
       - name: Compilation du cœur
         working-directory: fm1-emu
         env:
