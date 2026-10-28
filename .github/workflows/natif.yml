@@ -18,6 +18,9 @@ env:
 jobs:
   felucca:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -38,13 +41,14 @@ jobs:
       - name: En-têtes générés (polices, tables, échantillons)
         working-directory: felucca
         run: |
-          pip install pillow fonttools
-          python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()"
-          ls build/gen
+          mkdir -p ../logs
+          { pip install pillow fonttools numpy
+            python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()"
+            ls build/gen; } 2>&1 | tee ../logs/1-generation.txt; test "${PIPESTATUS[0]}" = 0
 
       - name: Compilation navigateur
         working-directory: felucca
-        run: EMU_PREVIEW=0 sh web/emu/build.sh
+        run: EMU_PREVIEW=0 sh web/emu/build.sh 2>&1 | tee ../logs/2-compilation.txt; test "${PIPESTATUS[0]}" = 0
 
       - name: Tests et coût de Felucca natif
         working-directory: felucca
@@ -61,6 +65,14 @@ jobs:
         run: |
           { echo '### Felucca natif'; echo '```'; grep -iE "cost|real time|fail|ok$" natif-test.txt | tail -15; echo '```';
             echo '### Felucca émulé (fm1-emu, 100 MHz)'; echo '```'; head -1 emule-bench.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Journaux
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view natif-journaux >/dev/null 2>&1 || gh release create natif-journaux --target "$GITHUB_SHA" --title "Journaux de l'essai natif" --notes "Journaux de la dernière exécution." --prerelease
+          gh release upload natif-journaux logs/* --clobber || true
 
       - name: Version
         env:
