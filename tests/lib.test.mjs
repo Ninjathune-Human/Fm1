@@ -8,7 +8,7 @@ import vm from "node:vm";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
 const m = html.match(/<script id="fm1-lib">([\s\S]*?)<\/script>/);
-const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, CATEGORY_ORDER, HIDDEN, groupCatalogue, rankCatalogue })") : {};
+const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, CATEGORY_ORDER, HIDDEN, groupCatalogue, rankCatalogue, widenBoxes })") : {};
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8")).firmwares;
 const plain = (x) => JSON.parse(JSON.stringify(x));   // objets du contexte vm vers ce contexte
 const fold = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -73,6 +73,13 @@ test("optimisés d'abord, non optimisés à la fin", () => {
   assert.equal(new Set(g.map((s) => s.cle)).size, g.length);
   const va = plain(lib.groupCatalogue([{ id: "fm1va", nom: "FM-1+VA", categories: ["FM-1+VA"] }, ...entries]));
   assert.ok(va[0].optimise && va[0].items[0].id === "fm1va");
+});
+
+test("zones sensibles agrandies jusqu'au milieu des espaces", () => {
+  const w = plain(lib.widenBoxes([[0, 0, 10, 10], [20, 0, 10, 10], [0, 14, 10, 10]], 8));
+  assert.deepEqual(w[0], [-8, -8, 23, 20]);     // à droite et en bas, la moitié des espaces (5 et 2)
+  assert.deepEqual(w[1], [15, -8, 23, 26]);     // à gauche 5 ; en bas, rien en face : 8
+  assert.deepEqual(w[2], [-8, 12, 26, 20]);     // en haut 2 ; à droite, rien en face : 8
 });
 
 const firstIds = (q) => plain(lib.rankCatalogue(cat, q)).items.slice(0, 3).map((e) => e.id);

@@ -177,3 +177,30 @@ def test_tag_no_boot(page):
     page.goto(page.base + "index.html")
     page.wait_for_selector('.fw-item[data-id="x0x"]', state="attached")
     assert "ne démarre pas" in page.eval_on_selector('.fw-item[data-id="x0x"]', "e => e.textContent")
+
+
+def test_no_dead_zone_between_keys(page):
+    """Entre deux touches ou deux boutons voisins, un appui tombe sur l'une ou l'autre, jamais dans le vide."""
+    from conftest import power_on
+    power_on(page)
+    gaps = page.evaluate("""() => {
+      const mid = (a, b) => { const r = a.getBoundingClientRect(), s = b.getBoundingClientRect();
+        return [(r.right + s.left) / 2, (Math.max(r.top, s.top) + Math.min(r.bottom, s.bottom)) / 2]; };
+      const hitAt = ([x, y]) => { const e = document.elementFromPoint(x, y); return !!e && e.classList.contains('hit'); };
+      const keys = [...document.querySelectorAll('.key')], caps = [...document.querySelectorAll('.cap')];
+      const out = [];
+      for (let i = 0; i + 1 < keys.length; i++) {
+        keys[i].scrollIntoView({ block: 'center' });
+        const r = keys[i].getBoundingClientRect(), s = keys[i + 1].getBoundingClientRect();
+        if (s.left > r.right && s.top < r.bottom && s.bottom > r.top) out.push(['key', i, hitAt(mid(keys[i], keys[i + 1]))]);
+      }
+      caps[0].scrollIntoView({ block: 'center' });
+      caps.forEach((c, i) => {                       // chaque bouton et son voisin de droite sur la même rangée
+        const r = c.getBoundingClientRect();
+        const right = caps.filter((d) => { const s = d.getBoundingClientRect(); return s.left > r.right && s.left - r.right < r.width && s.top < r.bottom && s.bottom > r.top; })
+          .sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)[0];
+        if (right) out.push(['cap', i, hitAt(mid(c, right))]);
+      });
+      return out; }""")
+    assert len([g for g in gaps if g[0] == "key"]) >= 10 and len([g for g in gaps if g[0] == "cap"]) >= 8, [g for g in gaps if g[0] == "cap"]
+    assert all(g[2] for g in gaps), [g for g in gaps if not g[2]]

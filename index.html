@@ -1283,6 +1283,22 @@ const LIT = 0.25;
 const isLit = (leds, id) => !!leds && leds[id] > LIT;
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
+// zones sensibles agrandies : chaque boîte [x, y, w, h] gagne jusqu'à `pad` de chaque côté, sans dépasser
+// le milieu de l'espace qui la sépare d'une voisine en face d'elle ; plus de zone morte entre deux touches
+function widenBoxes(boxes, pad) {
+  return boxes.map(([x, y, w, h], i) => {
+    let l = pad, r = pad, t = pad, b = pad;
+    boxes.forEach(([X, Y, W, H], j) => {
+      if (j === i) return;
+      const facingY = Y < y + h && Y + H > y, facingX = X < x + w && X + W > x;
+      if (facingY && X >= x + w) r = Math.min(r, (X - (x + w)) / 2);
+      if (facingY && X + W <= x) l = Math.min(l, (x - (X + W)) / 2);
+      if (facingX && Y >= y + h) b = Math.min(b, (Y - (y + h)) / 2);
+      if (facingX && Y + H <= y) t = Math.min(t, (y - (Y + H)) / 2);
+    });
+    return [x - l, y - t, w + l + r, h + t + b];
+  });
+}
 const foldText = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 // les sections du sélecteur (la recherche, elle, passe par rankCatalogue) : d'abord les firmwares optimisés
 // (FM-1+VA et les natifs, compilés depuis leurs sources), puis les non optimisés (émulés), chacun par catégorie
@@ -3953,10 +3969,22 @@ function buildPanel(fw) {
   for (const n of ["OCT-", "OCT+"]) hit(buttons[n], "", { role: "button", tabindex: 0, "aria-label": spoken(n) });
   for (const n of ["KNOB1", "KNOB2", "KNOB3", "KNOB4"]) hit(knobs[n], "knob", { role: "button", tabindex: 0, "aria-label": spoken(n) });
   for (const n of [...ROW1, ...ROW2]) hit(buttons[n], "", { role: "button", tabindex: 0, "aria-label": n });
+  // les boutons et les touches couvrent aussi la moitié des espaces qui les séparent (et un peu autour)
+  const widen = (list, pad) => {
+    const boxes = list.map((c) => c.box), m = 12;     // sans déborder de plus de m autour du groupe
+    const x0 = Math.min(...boxes.map((b) => b[0])) - m, y0 = Math.min(...boxes.map((b) => b[1])) - m;
+    const x1 = Math.max(...boxes.map((b) => b[0] + b[2])) + m, y1 = Math.max(...boxes.map((b) => b[1] + b[3])) + m;
+    widenBoxes(boxes, pad).map(([x, y, w, h]) => { const l = Math.max(x, x0), t = Math.max(y, y0); return [l, t, Math.min(x + w, x1) - l, Math.min(y + h, y1) - t]; }).forEach((bx, i) => {
+    const d = list[i].hit;
+    if (d) Object.assign(d.style, { left: `${(bx[0] / VW) * 100}%`, top: `${(bx[1] / VH) * 100}%`, width: `${(bx[2] / VW) * 100}%`, height: `${(bx[3] / VH) * 100}%` });
+    });
+  };
+  widen(Object.values(buttons), 22);
   const keybed = document.createElement("div");
   keybed.className = "keybed"; keybed.setAttribute("role", "group"); keybed.setAttribute("aria-label", "Keys");
   controls.appendChild(keybed);
   keys.forEach((k, i) => hit(k, "", { role: "button", tabindex: i === 0 ? 0 : -1, "aria-label": "Key " + (i + 1) }, keybed));
+  widen(keys, 60);                         // y compris les grands espaces de la rangée haute
 
   // ---------------------------------------------------------------- buttons: held by pointers, keys or a latch
   let latched = new Set();
