@@ -104,3 +104,20 @@ def test_va_still_works(page):
     page.evaluate("window.__host.keyUp('t')")
     assert lit_pixels(page) >= 1000
     assert page.evaluate("window.__fw.on") is True
+
+
+def test_audio_ahead_256(page):
+    """L'avance du son demandée au cœur est de 256 échantillons (au lieu de 1 024 par défaut)."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    page.evaluate("""() => { const e = window.__engine(); window.__sent = [];
+      const orig = EmuFirmware.prototype.send;
+      EmuFirmware.prototype.send = function (m) { window.__sent.push(m.type === 'boot' ? { type: 'boot', ahead: m.ahead } : { type: m.type }); return orig.call(this, m); }; }""")
+    assert use(page, "felucca") is True
+    assert page.evaluate("window.__sent.find((m) => m.type === 'boot').ahead") == 256
+    page.wait_for_timeout(1500)
+    page.evaluate("window.__host.keyDown(12, 't')")
+    page.wait_for_timeout(500)
+    level = rms(page)
+    page.evaluate("window.__host.keyUp('t')")
+    assert level > 0.001, level

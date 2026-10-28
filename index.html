@@ -1409,7 +1409,8 @@ class EmuFirmware {
       this.bootWaiters.set(seq, { resolve, reject, timer });
     });
     this.send({ type: "boot", seq, wasm: this.wasm.slice(0), package: bytes.slice().buffer,
-      sectors: this.mod.packSectors(sectors).buffer, syx: null, mhz: 100, jit: true });
+      sectors: this.mod.packSectors(sectors).buffer, syx: null, mhz: 100, jit: true,
+      ahead: 256 });   // avance du son : 256 échantillons (5,8 ms) au lieu de 1 024, pour la réactivité
     try { await ready; } catch (err) { this.bootError = err; this.failure = "boot"; this.sessions.delete(seq); this.send({ type: "resume" }); return false; }
     if (seq !== this.seq) return false;
     this.entry = entry; this.hash = hash; this.name = entry.nom;
