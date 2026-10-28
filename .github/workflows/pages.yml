@@ -68,6 +68,9 @@ jobs:
           version: ${{ matrix.firmware.zig }}
           use-cache: false
       - name: Compilation depuis les sources
+        env:
+          NATIF_AVANT: ${{ matrix.firmware.avant }}
+          NATIF_WASM: ${{ matrix.firmware.wasm }}
         run: |
           pip install pillow fonttools numpy
           bash fm1/tools/natif_build.sh "${{ matrix.firmware.id }}" src "${{ matrix.firmware.script }}" out

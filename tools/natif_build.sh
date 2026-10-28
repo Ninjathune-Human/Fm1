@@ -3,7 +3,9 @@
 # natif/<id>/ pour le panneau. Lancé par l'action GitHub, un firmware par tâche.
 #   tools/natif_build.sh <id> <dossier du dépôt du firmware> <script de compilation> <dossier de sortie>
 # Sortie : <sortie>/<id>/{<nom>.wasm, worklet.js, LICENSE.txt, natif.json}, ou rien si la compilation échoue
-# ou si le worklet ne parle pas un des deux protocoles connus (Felucca, X0X).
+# ou si le worklet ne parle pas un des protocoles connus (Felucca, X0X, ChoralRoot, sim, MEL).
+# Facultatifs, depuis tools/natif.json : NATIF_AVANT, une commande lancée à la racine du dépôt avant le script ;
+# NATIF_WASM, le .wasm à retenir quand le script en produit plusieurs.
 set -uo pipefail
 ID=$1 REPO=$(cd "$2" && pwd) SCRIPT=$3 OUT=$4
 mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd)
@@ -17,6 +19,8 @@ echec() {
   exit 0
 }
 command -v zig >/dev/null 2>&1 && export ZIG="${ZIG:-$(command -v zig)}"   # les scripts qui compilent avec zig cc
+# wasm-ld et wasm-opt d'Emscripten, en fin de PATH : pour les scripts qui lient avec clang ou passent par Asyncify
+E=$(command -v emcc 2>/dev/null) && [ -x "$(dirname "$E")/../bin/wasm-ld" ] && PATH="$PATH:$(cd "$(dirname "$E")/../bin" && pwd)"
 
 # en-têtes générés, pour les firmwares de la famille Felucca qui les demandent (polices, tables, échantillons) :
 # tools/build.py du projet où vit le script (le dépôt, ou un sous-dossier comme firmware/ ou felucca-base/)
@@ -30,11 +34,13 @@ while :; do
   [ "$P" = . ] && break; P=$(dirname "$P")
 done
 
+if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo "natif $ID : préparation en échec (on continue)"; fi
 EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 
 CANDIDATS=$(find . -name node_modules -prune -o -name '*.wasm' -newer /tmp/natif-start -print)
 [ -n "$CANDIDATS" ] || echec "aucun .wasm produit"
 WASM="" WORKLET=""
+[ -n "${NATIF_WASM:-}" ] && CANDIDATS=./$NATIF_WASM
 for w in $CANDIDATS; do                    # de préférence le .wasm qui a son worklet à côté
   k=$(ls "$(dirname "$w")"/worklet*.js 2>/dev/null | head -1)
   if [ -n "$k" ]; then WASM=$w WORKLET=$k; break; fi
@@ -45,6 +51,9 @@ echo "natif $ID : .wasm produits : $(echo $CANDIDATS)"
 
 if grep -q 'msg.leds' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=felucca
 elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=x0x
+elif grep -q 'web_flash_stage' "$WORKLET" && grep -q 'case "buttons"' "$WORKLET"; then DIALECT=choralroot
+elif grep -q 'sim_leds_buttons' "$WORKLET" && grep -q 'processorOptions' "$WORKLET"; then DIALECT=sim
+elif grep -q 'web_settings_set_len' "$WORKLET" && grep -q 'web_button(' "$WORKLET"; then DIALECT=mel
 else echec "protocole du worklet inconnu ($(basename "$WORKLET"))"; fi
 
 D="$OUT/$ID"; mkdir -p "$D"
@@ -59,7 +68,7 @@ done
 LIC=$(ls LICENSE LICENSE.* COPYING 2>/dev/null | head -1); [ -n "$LIC" ] && cp "$LIC" "$D/LICENSE.txt"
 # deux modifications, seulement : un nom de processeur propre à ce firmware (plusieurs dans la même page),
 # et l'écran publié 60 fois par seconde au lieu de 30
-sed -i -E "s/registerProcessor\(\"[^\"]+\"/registerProcessor(\"natif-$ID\"/" "$D/worklet.js"
+sed -i -E "s/registerProcessor\([\"'][^\"']+[\"']/registerProcessor(\"natif-$ID\"/" "$D/worklet.js"
 sed -i 's#1 / 30#1 / 60#g' "$D/worklet.js"
 # TextDecoder manque dans le fil audio de Chrome : quelques worklets s'en servent au chargement
 sed -i '1i globalThis.TextDecoder ??= class { decode(b) { let s = ""; for (const c of b || []) s += String.fromCharCode(c); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } };' "$D/worklet.js"

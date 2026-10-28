@@ -40,7 +40,8 @@
    "id": "choralroot",
    "depot": "Quixotic7/ChoralRootFM1",
    "commit": "070bd306ed63c7d08f09bb6ea937262b52b1a6c0",
-   "script": "tools/emu/web/build_web.sh"
+   "script": "tools/emu/web/build_web.sh",
+   "wasm": "build/emu-web/choralroot.wasm"
   },
   {
    "id": "coralflower",
@@ -119,7 +120,8 @@
    "id": "fmel",
    "depot": "AntonioAltea/fmel-1",
    "commit": "2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "zig": "0.17.0"
   },
   {
    "id": "fmini",
@@ -257,7 +259,8 @@
    "id": "obervave",
    "depot": "zvenson/obervave",
    "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8",
-   "script": "web/sim/build.sh"
+   "script": "web/sim/build.sh",
+   "zig": "0.17.0"
   },
   {
    "id": "perf1",
@@ -281,7 +284,7 @@
    "id": "purplemonkey",
    "depot": "Quixotic7/PurpleMonkeyFM1",
    "commit": "7590d4a5205bd4932b206d676c09b9521843a023",
-   "script": "tools/emu/web/build_web.sh"
+   "script": "tools/emu/web/build_pm_web.sh"
   },
   {
    "id": "rainbow",
@@ -299,13 +302,15 @@
    "id": "s1vave",
    "depot": "AndrewGG88/S1Vave",
    "commit": "97303378678c247ca1d005ae641114f4544acf65",
-   "script": "web/sim/build.sh"
+   "script": "web/sim/build.sh",
+   "zig": "0.17.0"
   },
   {
    "id": "shineon",
    "depot": "zvenson/shineon",
    "commit": "2f37738d690a628e0ae1d23d07ea5ee3eeda2de7",
-   "script": "web/sim/build.sh"
+   "script": "web/sim/build.sh",
+   "zig": "0.17.0"
   },
   {
    "id": "skiff",
@@ -317,7 +322,8 @@
    "id": "tessera",
    "depot": "Rastapopolix/tessera",
    "commit": "094f53582cc4bc04d62e95537eb2ff22264f4819",
-   "script": "web/sim/build.sh"
+   "script": "web/sim/build.sh",
+   "avant": "python3 tools/gen_909_tables.py build/gen/x0x_drum_tables.h"
   },
   {
    "id": "tribe",
