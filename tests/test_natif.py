@@ -72,3 +72,14 @@ def test_native_screen_60fps(page):
       const t = setInterval(() => window.__host.turn('KNOB1', 1), 8);
       setTimeout(() => { clearInterval(t); e.onWorklet = o; done(n / 2); }, 2000); })""")
     assert rate > 33, rate
+
+
+def test_native_colours(page):
+    """L'écran natif est dans l'ordre d'octets de la dalle : un pixel 0x00F8 (rouge pur côté dalle) s'affiche rouge."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    px = page.evaluate("""() => { const e = window.__engine(); e.onWorklet = () => {};
+      e.fb = new Uint16Array(240 * 240).fill(0x00F8); e.fbNew = true; e.draw();
+      const c = document.getElementById('screen'); return Array.from(c.getContext('2d').getImageData(c.width >> 1, c.height >> 1, 1, 1).data); }""")
+    assert px[0] > 200 and px[1] < 40 and px[2] < 40, px

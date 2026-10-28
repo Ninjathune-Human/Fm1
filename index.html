@@ -1640,7 +1640,10 @@ class NativeFirmware {
     c.setTransform(1, 0, 0, 1, 0, 0);
     c.imageSmoothingEnabled = false;
     if (!this.fb) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
-    if (this.fbNew) { rgb565ToRgba(this.fb, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false; }
+    if (this.fbNew) {                       // l'ordre d'octets de la dalle : chaque pixel est inversé avant la conversion
+      const f = this.fb; for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
+      rgb565ToRgba(f, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false;
+    }
     c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
   }
   power() { this.on = true; }
