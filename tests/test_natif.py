@@ -147,7 +147,7 @@ def test_every_native_reacts(page):
     for i in ids:
         if use(page, i) is not True:
             mute.append((i, "démarrage")); continue
-        page.wait_for_timeout(1500)
+        page.wait_for_timeout(4000)        # après l'écran de démarrage (environ 3 s chez fmini et pigeon), qui ignore le panneau
         before = page.evaluate(shot)
         page.evaluate("window.__host.turn('SELECT', 3)")
         page.wait_for_timeout(400)

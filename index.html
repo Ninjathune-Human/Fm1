@@ -1639,7 +1639,8 @@ class NativeFirmware {
     this.buttons = 0; this.keys = 0; this.keyNotes = new Map(); this.held = new Set();
     this.pendingSave = null; this.lastLoadSectors = null; this.storageError = null; this.failure = null;
     this.dialect = entry.natif_dialecte;
-    this.x0x = this.dialect === "x0x";
+    this.x0x = this.dialect === "x0x" || this.dialect === "monk";   // MONK-1 : la famille X0X, une touche à la fois
+    this.perKey = this.dialect === "sim" || this.dialect === "monk";
     this.dinghy = this.dialect === "sim" || this.dialect === "mel";
     this.potMax = this.x0x ? 4096 : 1023;
     this.pot = Math.round((va.G.master ?? 0.88) * 1023);
@@ -1691,7 +1692,7 @@ class NativeFirmware {
   loadMessage(wasm, saved, master) {
     switch (this.dialect) {
       case "sim": return null;                 // tout passe par les options du processeur
-      case "x0x": return { type: "load", wasm, store: saved || {}, master };
+      case "x0x": case "monk": return { type: "load", wasm, store: saved || {}, master };
       case "choralroot": return { type: "load", wasm, flash: saved instanceof ArrayBuffer ? saved : null, master };
       case "mel": return { type: "load", wasm, settings: Array.isArray(saved) ? saved : null, master };
       default: return { type: "load", wasm, sectors: saved || {}, master };
@@ -1753,7 +1754,9 @@ class NativeFirmware {
   }
   key(i, down) {
     this.keys = down ? this.keys | 1 << i : this.keys & ~(1 << i);
-    if (this.dialect === "sim") this.send({ t: "key", k: i, down: down ? 1 : 0 }); else this.setKeys();
+    if (this.dialect === "sim") this.send({ t: "key", k: i, down: down ? 1 : 0 });
+    else if (this.dialect === "monk") this.send({ type: "key", key: i, vel: down ? 100 : 0, press: 0 });
+    else this.setKeys();
   }
   press(label) { this.button(label, true); }
   release(label) { this.button(label, false); }
@@ -1771,10 +1774,10 @@ class NativeFirmware {
   releaseAll() {
     this.keyNotes.clear(); this.held.clear();
     if (!this.keys && !this.buttons) return;
-    if (this.dinghy) {                      // un message par bouton et par touche encore enfoncés
-      for (const l of DINGHY_BUTTONS) if (this.buttons & 1 << NATIVE_BUTTONS[l]) this.button(l, false);
-      for (let i = 0; i < 27; i++) if (this.keys & 1 << i) this.key(i, false);
-    } else { this.keys = 0; this.buttons = 0; this.setKeys(); this.setButtons(); }
+    if (this.dinghy) { for (const l of DINGHY_BUTTONS) if (this.buttons & 1 << NATIVE_BUTTONS[l]) this.button(l, false); }
+    else { this.buttons = 0; this.setButtons(); }
+    if (this.dinghy || this.perKey) { for (let i = 0; i < 27; i++) if (this.keys & 1 << i) this.key(i, false); }   // une par une
+    else { this.keys = 0; this.setKeys(); }
   }
   allNotesOff() { this.releaseAll(); }
   turn(label, n) {

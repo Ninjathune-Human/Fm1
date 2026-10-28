@@ -50,6 +50,7 @@ echo "natif $ID : .wasm produits : $(echo $CANDIDATS)"
 [ -n "$WORKLET" ] || echec "pas de worklet à côté du .wasm"
 
 if grep -q 'msg.leds' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=felucca
+elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'web_key(m.key' "$WORKLET" && ! grep -q 'type === "keys"' "$WORKLET"; then DIALECT=monk   # X0X, touche par touche
 elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=x0x
 elif grep -q 'web_flash_stage' "$WORKLET" && grep -q 'case "buttons"' "$WORKLET"; then DIALECT=choralroot
 elif grep -q 'sim_leds_buttons' "$WORKLET" && grep -q 'processorOptions' "$WORKLET"; then DIALECT=sim

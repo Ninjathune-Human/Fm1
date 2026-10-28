@@ -108,3 +108,18 @@ def test_familles_existantes_inchangees(page, d):
     assert sent(page) == [{"type": "buttons", "mask": 1}, {"type": "keys", "mask": 2}, {"type": "enc", "role": 0, "n": 1}]
     m = page.evaluate("window.__n.loadMessage(new ArrayBuffer(8), {}, 1)")
     assert ("store" in m) == (d == "x0x") and ("sectors" in m) == (d == "felucca")
+
+
+def test_monk_touches_une_a_une(page):
+    """MONK-1 (famille X0X) lit chaque touche avec sa vélocité, pas un masque."""
+    make(page, "monk")
+    page.evaluate("window.__n.keyDown(7, 'a'); window.__n.keyUp('a'); window.__n.keyDown(2, 'b'); window.__n.press('FX')")
+    m = sent(page)
+    assert m[:3] == [{"type": "key", "key": 7, "vel": 100, "press": 0}, {"type": "key", "key": 7, "vel": 0, "press": 0},
+                     {"type": "key", "key": 2, "vel": 100, "press": 0}]
+    assert m[3] == {"type": "buttons", "mask": 1}
+    page.evaluate("window.__n.releaseAll()")
+    assert {"type": "key", "key": 2, "vel": 0, "press": 0} in sent(page)
+    frame(page, {"type": "frame", "buttons": 1 << 10, "keys": 1 << 4, "touch": 0})
+    assert page.evaluate("[window.__n.playLight(), window.__n.keyLit(4)]") == ["green", True]
+    assert "store" in page.evaluate("window.__n.loadMessage(new ArrayBuffer(8), {}, 1)")

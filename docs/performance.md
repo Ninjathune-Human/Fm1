@@ -41,7 +41,7 @@ Gain estimé : 20 à 40 %, pas un ordre de grandeur.
 
 Le natif coûte environ 30 fois moins pour un travail plus lourd.
 
-L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh` ; les champs facultatifs `zig`, `avant` et `wasm` y règlent la chaîne Zig, une commande préalable et le `.wasm` retenu). Sont retenus ceux dont le worklet parle un des cinq protocoles connus : familles Felucca, X0X, ChoralRoot, sim et MEL, soit 51 firmwares natifs. La raison de chaque écart s'affiche en annotation de l'action. La page lit `natif/manifest.json` et prend le natif quand il existe ; l'action vérifie que chacun démarre, dessine son écran et répond au panneau.
+L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh` ; les champs facultatifs `zig`, `avant` et `wasm` y règlent la chaîne Zig, une commande préalable et le `.wasm` retenu). Sont retenus ceux dont le worklet parle un des cinq protocoles connus : familles Felucca, X0X (dont MONK-1, qui lit une touche à la fois), ChoralRoot, sim et MEL, soit 51 firmwares natifs. La raison de chaque écart s'affiche en annotation de l'action. La page lit `natif/manifest.json` et prend le natif quand il existe ; l'action vérifie que chacun démarre, dessine son écran et répond au panneau.
 
 Les 10 autres restent émulés :
 
