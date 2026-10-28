@@ -3084,7 +3084,7 @@ class Firmware {
       case "EDIT": return root === "edit";
       case "GLO": return root === "glo";
       case "HOME": return !root && !this.splash && this.on;
-      case "SEQ": return !!this.G.seqOn && this.beatPhase() < 0.3;
+      case "SEQ": return this.on && !!this.G.seqOn && this.beatPhase() < 0.3;   // éteint tant que l'appareil n'est pas allumé
       case "PLAY": return this.S.playing;
       case "REC": return this.S.rec === "step" || (this.S.rec === "rt" && this.beatPhase() < 0.5);
       case "ENV": return !!this.cur.env.on;

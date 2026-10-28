@@ -70,3 +70,13 @@ def test_native_play_colours(page):
       for (const b of [1 << 10, 0]) { e.onWorklet({ data: { type: 'frame', buttons: b, keys: 0 } }); out.push(e.playLight()); }
       return out; }""")
     assert r == ["green", None]
+
+
+def test_seq_dark_before_power_on(page):
+    """Avant l'allumage, SEQ ne clignote pas, même séquenceur allumé dans les réglages sauvegardés."""
+    page.goto(page.base + "index.html")
+    page.evaluate("() => { window.__fw.G.seqOn = 1; }")
+    seen = page.evaluate("""() => new Promise((done) => { let lit = 0; const t = setInterval(() => { if (window.__fw.buttonLit('SEQ')) lit++; }, 25);
+      setTimeout(() => { clearInterval(t); done(lit); }, 2500); })""")
+    assert seen == 0, seen
+    assert page.evaluate("document.querySelector('.cap[data-label=\"SEQ\"]').classList.contains('lit')") is False
