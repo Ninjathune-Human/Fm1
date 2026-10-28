@@ -61,6 +61,20 @@ test("catalogue groupé sans recherche", () => {
   }
 });
 
+test("optimisés d'abord, non optimisés à la fin", () => {
+  const natifs = new Set(["felucca", "x0x", "ghoulbox"]);
+  const entries = cat.map((e) => (natifs.has(e.id) ? { ...e, natif: "natif/" + e.id + "/" } : e));
+  const g = plain(lib.groupCatalogue(entries));
+  const k = g.findIndex((s) => !s.optimise);
+  assert.ok(k > 0, "deux groupes attendus");
+  assert.ok(g.slice(0, k).every((s) => s.optimise && s.items.every((e) => natifs.has(e.id))));
+  assert.ok(g.slice(k).every((s) => !s.optimise && s.items.every((e) => !natifs.has(e.id))));
+  assert.equal(g.slice(0, k).reduce((n, s) => n + s.items.length, 0), 3);
+  assert.equal(new Set(g.map((s) => s.cle)).size, g.length);
+  const va = plain(lib.groupCatalogue([{ id: "fm1va", nom: "FM-1+VA", categories: ["FM-1+VA"] }, ...entries]));
+  assert.ok(va[0].optimise && va[0].items[0].id === "fm1va");
+});
+
 const firstIds = (q) => plain(lib.rankCatalogue(cat, q)).items.slice(0, 3).map((e) => e.id);
 
 test("recherche : mots dans n'importe quel ordre, mots vides et casse ignorés", () => {

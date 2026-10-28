@@ -98,7 +98,7 @@ def test_restore_last(page):
 def test_sections_fold(page):
     page.goto(page.base + "index.html")
     page.click("#fw-picker")
-    head = '.fw-sec-head[data-cat="Synthé"]'
+    head = '.fw-sec[data-tier="emule"][data-cat="Synthé"] .fw-sec-head'
     before = page.get_attribute(head, "aria-expanded")
     notch = notch_transform(page, head + " .notch")
     page.click(head)
@@ -106,7 +106,22 @@ def test_sections_fold(page):
     assert page.get_attribute(head, "aria-expanded") != before
     assert notch_transform(page, head + " .notch") != notch
     expanded = page.get_attribute(head, "aria-expanded") == "true"
-    assert page.is_visible('.fw-sec[data-cat="Synthé"] .fw-items') == expanded
+    assert page.is_visible('.fw-sec[data-tier="emule"][data-cat="Synthé"] .fw-items') == expanded
+
+
+def test_optimised_first(page):
+    """Les firmwares optimisés (natifs) d'abord, les non optimisés (émulés) à la fin."""
+    page.goto(page.base + "index.html")
+    page.click("#fw-picker")
+    page.wait_for_selector('.fw-item[data-id="x0x"]', state="attached")
+    order = page.evaluate("""() => [...document.querySelectorAll('#fw-sections > .fw-tier, #fw-sections > .fw-sec')]
+      .map((n) => n.classList.contains('fw-tier') ? 'T:' + n.textContent : n.dataset.tier)""")
+    assert order[0] == "T:Optimisés"
+    k = order.index("T:Non optimisés")
+    assert set(order[1:k]) == {"optimise"} and set(order[k + 1:]) == {"emule"}
+    tier = lambda i: page.evaluate("(id) => document.querySelector(`.fw-item[data-id=\"${id}\"]`).closest('.fw-sec').dataset.tier", i)
+    assert tier("fm1va") == "optimise" and tier("x0x") == "optimise" and tier("felucca") == "optimise"
+    assert tier("zp12") == "emule" and tier("obervave") == "emule"
 
 
 def test_layouts(browser, base_url):

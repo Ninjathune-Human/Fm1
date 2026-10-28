@@ -138,6 +138,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .fw-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
 .fw-tags:empty { display: none; }
 .fw-tag { font: 500 0.6875rem/1 var(--body); letter-spacing: 0.02em; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 7px; }
+.fw-tier { margin: 10px 12px 2px; font: 600 0.6875rem/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.fw-tier ~ .fw-tier { margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--rule); }
 .fw-note { margin: 4px 12px 6px; font: 600 0.8125rem var(--body); color: var(--muted); }
 .open-local { flex: none; display: flex; align-items: center; min-height: 44px; padding: 0 20px; border-top: 0.5px solid var(--rule);
   font: 500 0.9375rem var(--body); color: var(--accent); cursor: pointer; position: relative; }
@@ -1282,16 +1284,22 @@ const isLit = (leds, id) => !!leds && leds[id] > LIT;
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
 const foldText = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-// les sections du sélecteur (la recherche, elle, passe par rankCatalogue)
+// les sections du sélecteur (la recherche, elle, passe par rankCatalogue) : d'abord les firmwares optimisés
+// (FM-1+VA et les natifs, compilés depuis leurs sources), puis les non optimisés (émulés), chacun par catégorie
+const isOptimised = (e) => e.id === "fm1va" || !!e.natif;
 function groupCatalogue(entries) {
-  const sections = new Map(CATEGORY_ORDER.map((c) => [c, []]));
-  for (const e of entries) {
-    if (HIDDEN.has(e.id)) continue;
-    const c = (e.categories || [])[0];
-    (sections.get(c) || sections.get("Autre")).push(e);
+  const out = [];
+  for (const optimise of [true, false]) {
+    const sections = new Map(CATEGORY_ORDER.map((c) => [c, []]));
+    for (const e of entries) {
+      if (HIDDEN.has(e.id) || isOptimised(e) !== optimise) continue;
+      const c = (e.categories || [])[0];
+      (sections.get(c) || sections.get("Autre")).push(e);
+    }
+    for (const [categorie, items] of sections) if (items.length) out.push({ categorie, optimise, cle: (optimise ? "o:" : "e:") + categorie,
+      items: items.sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })) });
   }
-  return [...sections].filter(([, items]) => items.length)
-    .map(([categorie, items]) => ({ categorie, items: items.sort((a, b) => a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })) }));
+  return out;
 }
 // Recherche tolérante : mots dans n'importe quel ordre, mots vides et accents ignorés, début de mot
 // et fautes de frappe acceptés, classement par pertinence, sinon « résultats approchants ».
@@ -4339,14 +4347,15 @@ function buildPanel(fw) {
   }
   function renderSections() {
     const groups = groupCatalogue(entries());
-    if (!expanded) expanded = new Set([(groups.find((g) => g.items.some((e) => e.id === active.id)) || groups[0]).categorie]);
+    if (!expanded) expanded = new Set([(groups.find((g) => g.items.some((e) => e.id === active.id)) || groups[0]).cle]);
     const notes = [];
     if (coreError) { const p = document.createElement("p"); p.className = "fw-note"; p.textContent = "Cœur d'émulation indisponible"; notes.push(p); }
-    sectionsEl.replaceChildren(...notes, ...groups.map((g) => {
+    const tier = (text) => { const h = document.createElement("h3"); h.className = "fw-tier"; h.textContent = text; return h; };
+    sectionsEl.replaceChildren(...notes, ...groups.flatMap((g, i) => {
       const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
-      sec.className = "fw-sec"; sec.dataset.cat = g.categorie;
+      sec.className = "fw-sec"; sec.dataset.cat = g.categorie; sec.dataset.tier = g.optimise ? "optimise" : "emule";
       head.type = "button"; head.className = "fw-sec-head"; head.dataset.cat = g.categorie;
-      const open = expanded.has(g.categorie);
+      const open = expanded.has(g.cle);
       head.setAttribute("aria-expanded", open);
       head.innerHTML = `<span></span><span class="count">${g.items.length}</span><span class="notch" aria-hidden="true"></span>`;
       head.firstChild.textContent = g.categorie;
@@ -4355,10 +4364,11 @@ function buildPanel(fw) {
       head.addEventListener("click", () => {
         const now = head.getAttribute("aria-expanded") !== "true";
         head.setAttribute("aria-expanded", now); ul.hidden = !now;
-        now ? expanded.add(g.categorie) : expanded.delete(g.categorie);
+        now ? expanded.add(g.cle) : expanded.delete(g.cle);
       });
       sec.append(head, ul);
-      return sec;
+      const first = i === 0 || groups[i - 1].optimise !== g.optimise;
+      return first ? [tier(g.optimise ? "Optimisés" : "Non optimisés"), sec] : [sec];
     }));
   }
   function renderResults() {
