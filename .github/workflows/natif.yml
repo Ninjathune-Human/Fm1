@@ -29,6 +29,7 @@ jobs:
           repository: hugelton/Felucca
           ref: ${{ env.FELUCCA_COMMIT }}
           path: felucca
+          submodules: recursive
 
       - uses: actions/setup-node@v4
         with:
