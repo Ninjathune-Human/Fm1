@@ -4,7 +4,7 @@ name: Site
 
 on:
   push:
-    branches: [main, selecteur]
+    branches: [main, perf]
   workflow_dispatch:
 
 permissions:
@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FM1_EMU_COMMIT: 1c8661daa1bbfddbb7d32d927bbaf831343b7d3b
-  RUNTIME_TAG: runtime-1c8661d
+  FM1_EMU_COMMIT: eb0d897cf6e0ebf4c412e2389a113d878ec28dd0
+  RUNTIME_TAG: runtime-eb0d897
 
 jobs:
   build:
