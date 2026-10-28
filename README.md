@@ -14,7 +14,7 @@ Chrome, Edge, Firefox et Safari récents, sur ordinateur, iPad et iPhone : souri
 2. Le contrôle **Firmware**, sous le panneau, ouvre la liste. La recherche accepte les fautes de frappe et les mots dans n'importe quel ordre ; Entrée démarre le premier résultat.
 3. Toucher une ligne démarre le firmware. Chaque firmware garde ses presets et ses patterns dans le navigateur, séparément des autres.
 4. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur. Il n'est envoyé nulle part.
-5. **Réglages d'usine** efface les sauvegardes du seul firmware actif.
+5. L'interrupteur **marche / arrêt**, sous le panneau, allume le FM-1. L'éteindre efface les sauvegardes du seul firmware actif.
 
 Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne » (paquet chargé depuis le FM-1 Firmware Hub), « non évalué » (pas encore essayé dans l'émulateur).
 

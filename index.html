@@ -101,6 +101,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .bar button:hover, .file:hover { border-color: var(--accent); }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+/* l'interrupteur marche / arrêt : le symbole et un curseur, menthe quand le FM-1 est allumé */
+#power { padding: 0 12px 0 14px; }
+#power svg { width: 16px; height: 16px; flex: none; }
+#power .track { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--rule); transition: background 0.2s var(--ease); }
+#power .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); transition: transform 0.2s var(--ease); }
+#power[aria-checked="true"] .track { background: var(--accent); }
+#power[aria-checked="true"] .track::after { transform: translateX(14px); }
+#power:disabled { opacity: 0.6; cursor: progress; }
+@media (prefers-reduced-motion: reduce) { #power .track, #power .track::after { transition: none; } }
 /* le sélecteur de firmwares : un contrôle sous le panneau, une liste en verre au-dessus du contenu */
 .deck { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
 .picker { position: relative; }
@@ -227,7 +237,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
         <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Patch DX7 (.syx)</label>
-        <button id="reset" type="button">Réglages d'usine</button>
+        <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
     </div>
   </section>
@@ -4282,6 +4292,7 @@ function buildPanel(fw) {
       vaNode = node; vaAn = an; vaLive = true;
       $("start").hidden = true;
       $("controls").inert = false;
+      $("power").setAttribute("aria-checked", "true");
       status.textContent = "Allumé.";
       restoreLast();
       device.focus({ preventScroll: true });
@@ -4561,20 +4572,19 @@ function buildPanel(fw) {
   device.addEventListener("dragover", (e) => { e.preventDefault(); });
   device.addEventListener("drop", (e) => { e.preventDefault(); takeFile(e.dataTransfer.files[0]); });
 
-  const reset = $("reset");
-  reset.addEventListener("click", () => {
-    if (reset.dataset.armed && current !== va) {
-      delete reset.dataset.armed; reset.textContent = "Réglages d'usine";
-      resetEmu();
-    } else if (reset.dataset.armed) {
-      try { for (const k of Object.keys(localStorage)) if (k.startsWith("fm1va.")) localStorage.removeItem(k); } catch { /* nothing kept */ }
-      location.reload();
+  // marche / arrêt : éteindre remet le firmware actif en réglages d'usine, puis la page repart éteinte
+  const power = $("power");
+  power.addEventListener("click", async () => {
+    if (!$("start").hidden) { if (!$("go").disabled) switchOn(); return; }
+    power.disabled = true;
+    status.textContent = "Extinction…";
+    if (current !== va) {
+      await resetEmu().catch(() => {});
+      if (current !== va) await current.stop().catch(() => {});   // la flash effacée est enregistrée avant de partir
     } else {
-      reset.dataset.armed = "1";
-      reset.textContent = "Confirmer : tout effacer";
-      status.textContent = "Cliquez encore pour revenir aux presets et réglages d'usine. Vos presets enregistrés seront perdus.";
-      setTimeout(() => { delete reset.dataset.armed; reset.textContent = "Réglages d'usine"; }, 5000);
+      try { for (const k of Object.keys(localStorage)) if (k.startsWith("fm1va.")) localStorage.removeItem(k); } catch { /* nothing kept */ }
     }
+    location.reload();
   });
 })();
 
