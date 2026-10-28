@@ -86,7 +86,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 
 /* the colourway picker: a swatch per model, its body and its rubber split on the diagonal */
 .skins { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.skin-name { font: 600 0.9375rem var(--body); min-width: 6.5em; }
+.skin-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }   /* lu, pas affiché : chaque pastille porte son nom */
 .swatches { display: flex; flex-wrap: wrap; gap: 4px; }
 .swatch { width: 44px; height: 44px; border: 0; padding: 0; background: none; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
 .swatch span { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%);
@@ -95,14 +95,15 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .swatch:hover span { transform: scale(1.08); }
 .swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
 @media (prefers-reduced-motion: reduce) { .swatch span { transition: none; } }
-.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; font-size: 0.9375rem; color: var(--muted); }
-.bar #status { flex: 1 1 22rem; min-width: 0; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-left: auto; }
+/* tout sur une ligne sous le panneau : firmware, coloris, état (une ligne, coupée), actions */
+#status { flex: 1 1 0; min-width: 4rem; font-size: 0.875rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar button, .file { font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
   padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .bar button:hover, .file:hover { border-color: var(--accent); }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 /* le sélecteur de firmwares : un contrôle sous le panneau, une liste en verre au-dessus du contenu */
-.deck { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.deck { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
 .picker { position: relative; }
 #fw-picker { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; max-width: 100%;
   font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; cursor: pointer;
@@ -224,12 +225,12 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
         <span class="skin-name" id="skin-name">Coloris</span>
         <div class="swatches" id="swatches"></div>
       </div>
-    </div>
-    <div class="bar">
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
-      <button id="fw-restart" type="button" hidden>Redémarrer</button>
-      <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Charger un patch DX7 (.syx)</label>
-      <button id="reset" type="button">Réglages d'usine</button>
+      <div class="bar">
+        <button id="fw-restart" type="button" hidden>Redémarrer</button>
+        <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Patch DX7 (.syx)</label>
+        <button id="reset" type="button">Réglages d'usine</button>
+      </div>
     </div>
   </section>
 
@@ -4195,6 +4196,7 @@ function buildPanel(fw) {
 (function () {
   const $ = (id) => document.getElementById(id);
   const device = $("device"), status = $("status");
+  new MutationObserver(() => { status.title = status.textContent; }).observe(status, { childList: true, characterData: true, subtree: true });   // le texte entier, quand la ligne le coupe
   const va = new Firmware($("screen"));
   window.__fw = va;
   va.load();
