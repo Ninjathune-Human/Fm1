@@ -36,11 +36,19 @@ else echo "natif $ID : protocole du worklet inconnu"; exit 0; fi
 D="$OUT/$ID"; mkdir -p "$D"
 cp "$WASM" "$D/"
 cp "$WORKLET" "$D/worklet.js"
+# les modules que le worklet importe à côté de lui (import … from "./x.js"), sur deux niveaux
+for f in "$WORKLET" $(grep -oE "from \"\./[^\"]+\.js\"" "$WORKLET" | sed -E 's/from "\.\/(.*)"/\1/' | sed "s#^#$(dirname "$WORKLET")/#"); do
+  for m in $(grep -oE "from \"\./[^\"]+\.js\"" "$f" | sed -E 's/from "\.\/(.*)"/\1/'); do
+    cp "$(dirname "$WORKLET")/$m" "$D/$m" || echo "natif $ID : module $m introuvable"
+  done
+done
 LIC=$(ls LICENSE LICENSE.* COPYING 2>/dev/null | head -1); [ -n "$LIC" ] && cp "$LIC" "$D/LICENSE.txt"
 # deux modifications, seulement : un nom de processeur propre à ce firmware (plusieurs dans la même page),
 # et l'écran publié 60 fois par seconde au lieu de 30
 sed -i -E "s/registerProcessor\(\"[^\"]+\"/registerProcessor(\"natif-$ID\"/" "$D/worklet.js"
 sed -i 's#1 / 30#1 / 60#g' "$D/worklet.js"
+# TextDecoder manque dans le fil audio de Chrome : quelques worklets s'en servent au chargement
+sed -i '1i globalThis.TextDecoder ??= class { decode(b) { let s = ""; for (const c of b || []) s += String.fromCharCode(c); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } };' "$D/worklet.js"
 grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { echo "natif $ID : nom de processeur introuvable"; rm -rf "$D"; exit 0; }
 printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s"}\n' "$(basename "$WASM")" "$ID" "$DIALECT" > "$D/natif.json"
 echo "natif $ID : prêt ($DIALECT, $(basename "$WASM"), $(wc -c < "$WASM") octets)"

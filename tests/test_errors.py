@@ -9,10 +9,10 @@ def test_core_missing(page):
     page.route("**/runtime/fm1_web.wasm", lambda r: r.fulfill(status=404, body="absent"))
     power_on(page)
     page.click("#fw-picker")
-    page.wait_for_selector('.fw-item[data-id="felucca8"][aria-disabled="true"]', state="attached")
+    page.wait_for_selector('.fw-item[data-id="obervave"][aria-disabled="true"]', state="attached")
     assert page.get_attribute('.fw-item[data-id="fm1va"]', "aria-disabled") is None
     assert page.is_visible("text=Cœur d'émulation indisponible")
-    click_row(page, "felucca8")
+    click_row(page, "obervave")
     assert page.evaluate("window.__engine() === window.__fw")
 
 
@@ -37,9 +37,9 @@ def test_truncated_package(page):
 def test_storage_unavailable(page):
     page.add_init_script("Object.defineProperty(window, 'indexedDB', { value: undefined })")
     power_on(page)
-    click_row(page, "felucca8")
+    click_row(page, "obervave")
     page.wait_for_function("document.getElementById('status').textContent.includes('Sauvegardes indisponibles dans ce navigateur.')", timeout=30000)
-    assert page.evaluate("window.__engine().name") == "Felucca 8 Patterns"
+    assert page.evaluate("window.__engine().name") == "OberVave"
 
 
 def test_invalid_local_file(page, tmp_path):
@@ -54,13 +54,13 @@ def test_invalid_local_file(page, tmp_path):
 
 def test_halted_restart(page):
     power_on(page)
-    click_row(page, "felucca8")
-    wait_status(page, "Felucca 8 Patterns")
+    click_row(page, "obervave")
+    wait_status(page, "OberVave")
     page.evaluate("""() => { const e = window.__engine();
       e.onWorklet({ data: { type: 'frame', seq: e.seq, halted: 1, lcd: null, leds: new Float32Array(41) } }); }""")
-    wait_status(page, "Felucca 8 Patterns s'est arrêté.")
+    wait_status(page, "OberVave s'est arrêté.")
     assert page.is_visible("#fw-restart")
     page.click("#fw-restart")
-    wait_status(page, "Felucca 8 Patterns")
+    wait_status(page, "OberVave")
     assert not page.is_visible("#fw-restart")
     assert page.evaluate("window.__engine().halted") == 0

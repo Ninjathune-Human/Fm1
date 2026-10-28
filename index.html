@@ -1545,8 +1545,9 @@ class EmuFirmware {
 
 // Un firmware compilé depuis ses sources pour le navigateur (son propre web/emu, GPL-3.0 de son auteur) :
 // pas de processeur émulé, son worklet et son .wasm tels que l'action GitHub les construit (natif/<id>/).
-// Protocole de ces worklets (famille Felucca) : load, buttons / keys (masques), enc {role, n}, master ;
-// en retour ready, frame {fb RGB565, leds, sectors, load}, error.
+// Deux protocoles voisins : famille Felucca (load {sectors}, master 0..1023 ; frame {fb, leds, sectors, load 0..1})
+// et famille X0X (load {store}, master 0..4096 ; frame {fb, buttons, keys, store, load en %}). Les deux reçoivent
+// buttons / keys (masques), enc {role, n}, master, et répondent ready ou error.
 const NATIVE_BUTTONS = { FX: 0, SEL: 1, ENV: 2, LFO: 3, EDIT: 4, GLO: 5, HOME: 6, SAVE: 7, ARP: 8, SEQ: 9, PLAY: 10, REC: 11, "OCT-": 12, "OCT+": 13 };
 const NATIVE_ROLES = { SELECT: 0, ALGORITHM: 1, PRESETS: 2, KNOB1: 3, KNOB2: 4, KNOB3: 5, KNOB4: 6 };
 const nativeFlash = {                     // la flash gardée de chaque firmware natif, dans IndexedDB
@@ -1575,6 +1576,8 @@ class NativeFirmware {
     this.fb = null; this.fbNew = false; this.leds = [0, 0, 0, 0, 0, 0, 0, 0]; this.load = null;
     this.buttons = 0; this.keys = 0; this.keyNotes = new Map(); this.held = new Set();
     this.pendingSave = null; this.lastLoadSectors = null; this.storageError = null; this.failure = null;
+    this.x0x = entry.natif_dialecte === "x0x";
+    this.potMax = this.x0x ? 4096 : 1023;
     this.pot = Math.round((va.G.master ?? 0.88) * 1023);
     this.off = document.createElement("canvas"); this.off.width = this.off.height = 240;
     this.img = this.off.getContext("2d").createImageData(240, 240);
@@ -1606,7 +1609,8 @@ class NativeFirmware {
           else if (e.data.type === "error") { clearTimeout(timer); ko(new Error(e.data.message)); }
         };
       });
-      this.send({ type: "load", wasm, sectors: sectors || {}, master: this.pot }, [wasm]);
+      const master = Math.round(this.pot / 1023 * this.potMax);
+      this.send(this.x0x ? { type: "load", wasm, store: sectors || {}, master } : { type: "load", wasm, sectors: sectors || {}, master }, [wasm]);
       await ready;
       this.node.connect(this.an);
       this.on = true;
@@ -1628,9 +1632,11 @@ class NativeFirmware {
     if (m.type !== "frame") return;
     if (m.fb) { this.fb = m.fb; this.fbNew = true; }
     if (m.leds) this.leds = m.leds;
-    if (m.load !== undefined) this.load = m.load;
-    if (m.sectors) {
-      const p = nativeFlash.put(this.entry.id, m.sectors).catch((err) => { this.storageError = err; })
+    if (m.buttons !== undefined) this.leds = [m.buttons, m.keys, 0, m.dim | 0, 0, 0, 0, 0];
+    if (m.load !== undefined) this.load = this.x0x ? m.load / 100 : m.load;
+    const saved = m.sectors || m.store;
+    if (saved) {
+      const p = nativeFlash.put(this.entry.id, saved).catch((err) => { this.storageError = err; })
         .then(() => { if (this.pendingSave === p) this.pendingSave = null; });
       this.pendingSave = p;
     }
@@ -1673,7 +1679,7 @@ class NativeFirmware {
       const pot = potAfter(this.pot, n);
       if (pot === this.pot) return false;
       this.pot = pot; this.va.G.master = pot / 1023; this.va.gdirty = true;
-      this.send({ type: "master", value: pot });
+      this.send({ type: "master", value: Math.round(pot / 1023 * this.potMax) });
       return true;
     }
     const role = NATIVE_ROLES[label];
@@ -4222,7 +4228,17 @@ function buildPanel(fw) {
   $("go").addEventListener("click", switchOn);
 
   // ---- les moteurs : un seul AudioContext, celui de l'allumage
-  const catalogueReady = fetch("firmwares/catalogue.json").then((r) => r.json()).then((d) => { catalogue = d.firmwares; renderSections(); }).catch(() => {});
+  // le catalogue, et pour chaque firmware compilé depuis ses sources par l'action GitHub, son natif/<id>/
+  const catalogueReady = Promise.all([
+    fetch("firmwares/catalogue.json").then((r) => r.json()),
+    fetch("natif/manifest.json").then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+  ]).then(([d, natifs]) => {
+    for (const e of d.firmwares) {
+      const n = natifs[e.id];
+      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte });
+    }
+    catalogue = d.firmwares; renderSections();
+  }).catch(() => {});
   let coreError = null, switchFailure = null;
   async function loadWasm() {
     if (!wasm) {

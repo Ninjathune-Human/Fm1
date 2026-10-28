@@ -83,3 +83,53 @@ def test_native_colours(page):
       e.fb = new Uint16Array(240 * 240).fill(0x00F8); e.fbNew = true; e.draw();
       const c = document.getElementById('screen'); return Array.from(c.getContext('2d').getImageData(c.width >> 1, c.height >> 1, 1, 1).data); }""")
     assert px[0] > 200 and px[1] < 40 and px[2] < 40, px
+
+
+def test_x0x_runs_native(page):
+    """X0X, de l'autre famille de protocole (store, master sur 4096), tourne aussi en natif."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "x0x") is True
+    assert page.evaluate("window.__engine().kind") == "natif"
+    page.wait_for_timeout(2500)
+    assert lit_pixels(page) >= 2000
+    # X0X est une boîte à rythmes : une touche allume un pas, PLAY lance le motif
+    for k in (0, 4, 8, 12):
+        page.evaluate(f"window.__host.keyDown({k}, 't')"); page.wait_for_timeout(120); page.evaluate("window.__host.keyUp('t')")
+    page.wait_for_timeout(300)
+    assert page.evaluate("window.__host.keyLit(12)") is True, page.evaluate("window.__engine().leds")
+    page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
+    level = 0
+    for _ in range(10):
+        page.wait_for_timeout(150); level = max(level, rms(page))
+    assert level > 0.001, level
+    page.wait_for_function("window.__engine().load !== null", timeout=8000)
+    assert page.evaluate("window.__engine().load") < 0.25
+
+
+def test_x0x_store_kept(page):
+    """Ce que X0X enregistre (store) revient à la prochaine ouverture."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "x0x") is True
+    page.evaluate("""() => window.__engine().onWorklet({ data: { type: 'frame', buttons: 0, keys: 0, store: { 3: new Uint8Array(16).fill(9) } } })""")
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=5000)
+    power_on(page)
+    assert use(page, "x0x") is True
+    assert page.evaluate("window.__engine().lastLoadSectors[3][0]") == 9
+
+
+def test_every_native_boots(page):
+    """Chaque firmware de natif/manifest.json démarre et dessine son écran."""
+    import json, os
+    from conftest import ROOT
+    ids = sorted(json.load(open(os.path.join(ROOT, "natif/manifest.json"))))
+    power_on(page)
+    page.set_default_timeout(30000)
+    bad = []
+    for i in ids:
+        if use(page, i) is not True or page.evaluate("window.__engine().kind") != "natif":
+            bad.append((i, "démarrage")); continue
+        page.wait_for_timeout(1500)
+        if lit_pixels(page) < 500: bad.append((i, "écran"))
+    assert not bad, bad

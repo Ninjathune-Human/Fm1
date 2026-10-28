@@ -39,4 +39,8 @@ Gain estimé : 20 à 40 %, pas un ordre de grandeur.
 | natif, morceau lourd (FM6, PHYS, GRAIN, batterie) | 1,1 % du temps réel |
 | émulé, accord simple | 31 % du temps réel (3,21×) |
 
-Le natif coûte environ 30 fois moins pour un travail plus lourd. Felucca tourne en natif dans le sélecteur depuis cette version ; l'action GitHub le compile depuis ses sources au commit `a53ecf4`.
+Le natif coûte environ 30 fois moins pour un travail plus lourd.
+
+L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh`). Sont retenus ceux dont le worklet parle un des deux protocoles connus : famille Felucca (24) et famille X0X (15), soit 39 firmwares natifs. Les 22 autres (protocole différent, ou outils Zig) restent émulés. La page lit `natif/manifest.json` et prend le natif quand il existe.
+
+Retouches faites aux worklets, et seulement celles-là : nom de processeur propre à chaque firmware, écran à 60 images par seconde, et un `TextDecoder` de secours (absent du fil audio de Chrome, il bloquait FUMI et ZEN-1).
