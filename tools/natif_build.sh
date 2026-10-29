@@ -6,8 +6,10 @@
 # ou si le worklet ne parle pas un des protocoles connus (Felucca, X0X, ChoralRoot, sim, MEL).
 # Facultatifs, depuis tools/natif.json : NATIF_AVANT, une commande lancée à la racine du dépôt avant le script ;
 # NATIF_WASM, le .wasm à retenir quand le script en produit plusieurs ; NATIF_OUTILS (relatifs à NATIF_OUTILS_BASE),
-# des modules de la page du firmware joints sous outils/, dont NATIF_ECHANTILLONS, sa préparation des échantillons.
+# des modules de la page du firmware joints sous outils/, dont NATIF_ECHANTILLONS, sa préparation des échantillons ;
+# NATIF_WORKLET (relatif à ce dépôt) et NATIF_DIALECTE, notre worklet pour un firmware dont la page n'en a pas.
 set -uo pipefail
+HERE=$(cd "$(dirname "$0")/.." && pwd)     # ce dépôt : ses worklets (tools/worklets/) pour les firmwares qui n'en ont pas
 ID=$1 REPO=$(cd "$2" && pwd) SCRIPT=$3 OUT=$4
 mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd)
 cd "$REPO"
@@ -47,15 +49,18 @@ for w in $CANDIDATS; do                    # de préférence le .wasm qui a son 
   if [ -n "$k" ]; then WASM=$w WORKLET=$k; break; fi
 done
 if [ -z "$WASM" ]; then WASM=$(echo "$CANDIDATS" | head -1); WORKLET=$(ls "$(dirname "$SCRIPT")"/worklet*.js 2>/dev/null | head -1); fi
+[ -n "${NATIF_WORKLET:-}" ] && WORKLET="$HERE/$NATIF_WORKLET"
 echo "natif $ID : .wasm produits : $(echo $CANDIDATS)"
 [ -n "$WORKLET" ] || echec "pas de worklet à côté du .wasm"
 
-if grep -q 'msg.leds' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=felucca
+if [ -n "${NATIF_DIALECTE:-}" ]; then DIALECT=$NATIF_DIALECTE
+elif grep -q 'msg.leds' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=felucca
 elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'web_key(m.key' "$WORKLET" && ! grep -q 'type === "keys"' "$WORKLET"; then DIALECT=monk   # X0X, touche par touche
 elif grep -q 'web_lit_buttons() >>> 0, keys' "$WORKLET" && grep -q 'type === "buttons"' "$WORKLET"; then DIALECT=x0x
 elif grep -q 'web_flash_stage' "$WORKLET" && grep -q 'case "buttons"' "$WORKLET"; then DIALECT=choralroot
 elif grep -q 'sim_leds_buttons' "$WORKLET" && grep -q 'processorOptions' "$WORKLET"; then DIALECT=sim
 elif grep -q 'web_settings_set_len' "$WORKLET" && grep -q 'web_button(' "$WORKLET"; then DIALECT=mel
+elif grep -q 't === "wasm"' "$WORKLET" && grep -q 'w_frame(' "$WORKLET"; then DIALECT=m2k
 else echec "protocole du worklet inconnu ($(basename "$WORKLET"))"; fi
 
 D="$OUT/$ID"; mkdir -p "$D"

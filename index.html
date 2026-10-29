@@ -1605,6 +1605,19 @@ function fromDinghy(mask) {                // boutons allumés, ordre Dinghy →
   DINGHY_BUTTONS.forEach((l, i) => { if ((mask >>> i) & 1) b |= l === "PLAY" ? 1 << 14 : 1 << NATIVE_BUTTONS[l]; });
   return b;
 }
+// mono2k : [0..26] touches, [27..40] boutons dans l'ordre du panneau, en intensité 0..255 ; PLAY allumé : vert
+function fromMono2k(l) {
+  let b = 0, k = 0;
+  for (let i = 0; i < 27; i++) if (l[i] > 90) k |= 1 << i;
+  for (let i = 0; i < 14; i++) if (l[27 + i] > 60) b |= i === NATIVE_BUTTONS.PLAY ? 1 << 14 : 1 << i;
+  return [b, k >>> 0];
+}
+// son écran : 240 × 240 points d'un bit, le bit fort à gauche ; l'encre de la palette « Paper » de sa page sur son papier
+function inkToRgb565(src) {
+  const ink = 0x0841, paper = 0xF79D, out = new Uint16Array(240 * 240);
+  for (let i = 0, p = 0; i < 7200; i++) for (let j = 7; j >= 0; j--) out[p++] = (src[i] >> j) & 1 ? ink : paper;
+  return out;
+}
 function fromChoralRoot(l) {               // [0..26] touches, [27..40] boutons, [41] vert de PLAY ; 1 tamisé, 4 effleuré : éteints
   const on = (v) => v === 2 || v === 3;
   let b = 0, k = 0;
@@ -1641,7 +1654,8 @@ class NativeFirmware {
     this.pendingSave = null; this.lastLoadSectors = null; this.storageError = null; this.failure = null;
     this.dialect = entry.natif_dialecte;
     this.x0x = this.dialect === "x0x" || this.dialect === "monk";   // MONK-1 : la famille X0X, une touche à la fois
-    this.perKey = this.dialect === "sim" || this.dialect === "monk";
+    this.m2k = this.dialect === "m2k";       // mono2k : ses propres messages {t}, un écran d'un bit par pixel
+    this.perKey = this.dialect === "sim" || this.dialect === "monk" || this.m2k;
     this.dinghy = this.dialect === "sim" || this.dialect === "mel";
     this.potMax = this.x0x ? 4096 : 1023;
     this.pot = Math.round((va.G.master ?? 0.88) * 1023);
@@ -1695,6 +1709,7 @@ class NativeFirmware {
     switch (this.dialect) {
       case "sim": return null;                 // tout passe par les options du processeur
       case "x0x": case "monk": return { type: "load", wasm, store: saved || {}, master };
+      case "m2k": return { t: "wasm", bytes: wasm, seed: (Math.random() * 4294967295) >>> 0, store: saved instanceof Uint8Array ? saved : null };
       case "choralroot": return { type: "load", wasm, flash: saved instanceof ArrayBuffer ? saved : null, master };
       case "mel": return { type: "load", wasm, settings: Array.isArray(saved) ? saved : null, master };
       default: {                               // pigeon : sa banque d'échantillons revient avec le reste
@@ -1717,18 +1732,19 @@ class NativeFirmware {
   }
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
-    if (t === "flash" || t === "store") { this.save(m.data); return; }   // ChoralRoot, sim : la mémoire entière
+    if (t === "flash" || t === "store") { this.save(m.data || m.bytes); return; }   // ChoralRoot, sim, mono2k : la mémoire entière
     if (t === "bank-loaded" || t === "bank-error") {                      // pigeon : réponse à une banque envoyée
       const w = this.waits && this.waits.get(m.id);
       if (w) { this.waits.delete(m.id); clearTimeout(w.timer); t === "bank-error" ? w.ko(new Error(m.message)) : w.ok(); }
       return;
     }
     if (t !== "frame") return;
-    if (m.fb) { this.fb = m.fb; this.fbNew = true; }
+    if (m.fb) { this.fb = this.m2k ? inkToRgb565(m.fb) : m.fb; this.fbNew = true; }
     if (m.leds) {
       if (this.dialect === "choralroot") this.leds = fromChoralRoot(m.leds);
       else if (this.dialect === "sim") this.leds = [fromDinghy(m.leds), m.keys >>> 0];
       else if (this.dialect === "mel") this.leds = [fromDinghy(m.leds[0] & 0x3FFF), ((m.leds[0] >>> 14) | ((m.leds[1] & 0x1FF) << 18)) >>> 0];
+      else if (this.m2k) this.leds = fromMono2k(m.leds);
       else this.leds = m.leds;
     }
     if (m.buttons !== undefined) this.leds = [m.buttons, m.keys, 0, m.dim | 0, 0, 0, 0, 0];
@@ -1776,7 +1792,7 @@ class NativeFirmware {
     if (!this.fb) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
     if (this.fbNew) {                       // l'ordre d'octets de la dalle : chaque pixel est inversé avant la conversion
       const f = this.fb;                    // (sim et MEL donnent l'écran dans l'ordre de la machine)
-      if (!this.dinghy) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
+      if (!this.dinghy && !this.m2k) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
       rgb565ToRgba(f, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false;
     }
     c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
@@ -1789,12 +1805,14 @@ class NativeFirmware {
     this.buttons = down ? this.buttons | 1 << b : this.buttons & ~(1 << b);
     if (this.dialect === "sim") this.send({ t: "btn", b: DINGHY_BUTTONS.indexOf(label), down: down ? 1 : 0 });
     else if (this.dialect === "mel") this.send({ type: "button", id: DINGHY_BUTTONS.indexOf(label), down });
+    else if (this.m2k) this.send({ t: "btn", b, d: down ? 1 : 0 });
     else this.setButtons();
   }
   key(i, down) {
     this.keys = down ? this.keys | 1 << i : this.keys & ~(1 << i);
     if (this.dialect === "sim") this.send({ t: "key", k: i, down: down ? 1 : 0 });
     else if (this.dialect === "monk") this.send({ type: "key", key: i, vel: down ? 100 : 0, press: 0 });
+    else if (this.m2k) this.send({ t: "key", k: i, d: down ? 1 : 0 });
     else this.setKeys();
   }
   press(label) { this.button(label, true); }
@@ -1813,7 +1831,7 @@ class NativeFirmware {
   releaseAll() {
     this.keyNotes.clear(); this.held.clear();
     if (!this.keys && !this.buttons) return;
-    if (this.dinghy) { for (const l of DINGHY_BUTTONS) if (this.buttons & 1 << NATIVE_BUTTONS[l]) this.button(l, false); }
+    if (this.dinghy || this.m2k) { for (const l of DINGHY_BUTTONS) if (this.buttons & 1 << NATIVE_BUTTONS[l]) this.button(l, false); }
     else { this.buttons = 0; this.setButtons(); }
     if (this.dinghy || this.perKey) { for (let i = 0; i < 27; i++) if (this.keys & 1 << i) this.key(i, false); }   // une par une
     else { this.keys = 0; this.setKeys(); }
@@ -1826,13 +1844,15 @@ class NativeFirmware {
       if (pot === this.pot) return false;
       this.pot = pot; this.va.G.master = pot / 1023; this.va.gdirty = true;
       const v = Math.round(pot / 1023 * this.potMax);
-      this.send(this.dialect === "sim" ? { t: "master", v } : { type: "master", value: v });
+      if (this.m2k) this.send({ t: "enc", e: 7, d: n });       // son volume est une molette
+      else this.send(this.dialect === "sim" ? { t: "master", v } : { type: "master", value: v });
       return true;
     }
     const role = NATIVE_ROLES[label];
     if (role === undefined) return null;
     if (this.dialect === "sim") this.send({ t: "enc", e: DINGHY_ENC[label], steps: n });
     else if (this.dialect === "mel") this.send({ type: "enc", id: DINGHY_ENC[label], n });
+    else if (this.m2k) this.send({ t: "enc", e: role, d: n });
     else this.send({ type: "enc", role, n });
     return true;
   }

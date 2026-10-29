@@ -123,3 +123,33 @@ def test_monk_touches_une_a_une(page):
     frame(page, {"type": "frame", "buttons": 1 << 10, "keys": 1 << 4, "touch": 0})
     assert page.evaluate("[window.__n.playLight(), window.__n.keyLit(4)]") == ["green", True]
     assert "store" in page.evaluate("window.__n.loadMessage(new ArrayBuffer(8), {}, 1)")
+
+
+def test_m2k_envoie(page):
+    """mono2k : un message par bouton et par touche, dans l'ordre du panneau ; MASTER est sa huitième molette."""
+    make(page, "m2k")
+    page.evaluate("window.__n.press('PLAY'); window.__n.release('PLAY'); window.__n.keyDown(4, 'a'); window.__n.keyUp('a')")
+    page.evaluate("window.__n.turn('PRESETS', 2); window.__n.turn('MASTER', -1)")
+    assert sent(page) == [{"t": "btn", "b": 10, "d": 1}, {"t": "btn", "b": 10, "d": 0}, {"t": "key", "k": 4, "d": 1},
+                          {"t": "key", "k": 4, "d": 0}, {"t": "enc", "e": 2, "d": 2}, {"t": "enc", "e": 7, "d": -1}]
+    page.evaluate("window.__n.press('FX'); window.__n.keyDown(9, 'b'); window.__sent.length = 0; window.__n.releaseAll()")
+    assert sorted(map(str, sent(page))) == sorted(map(str, [{"t": "btn", "b": 0, "d": 0}, {"t": "key", "k": 9, "d": 0}]))
+    m = page.evaluate("(() => { const m = window.__n.loadMessage(new ArrayBuffer(8), new Uint8Array([1, 2]), 1); return [m.t, m.store.length, m.bytes instanceof ArrayBuffer]; })()")
+    assert m == ["wasm", 2, True]
+    assert page.evaluate("window.__n.loadMessage(new ArrayBuffer(8), {}, 1).store") is None
+
+
+def test_m2k_lit_et_dessine(page):
+    make(page, "m2k")
+    leds = [0] * 41
+    leds[3], leds[4], leds[27 + 10], leds[27 + 1] = 255, 50, 255, 255     # touche 3, touche 4 trop faible, PLAY, SEL
+    fb = [0] * 7200
+    fb[3600 + 15] = 0xFF                                                   # une ligne d'encre au milieu de l'écran
+    frame(page, {"t": "frame", "leds": leds, "fb": fb, "store": [7, 7]})
+    assert page.evaluate("[window.__n.keyLit(3), window.__n.keyLit(4), window.__n.playLight(), window.__n.buttonLit('SEL')]") == [True, False, "green", True]
+    px = page.evaluate("""() => { const e = window.__n; e.draw(); const c = document.getElementById('screen'), x = c.getContext('2d');
+      const at = (u, v) => Array.from(x.getImageData(Math.floor(u * c.width / 240), Math.floor(v * c.height / 240), 1, 1).data);
+      return [at(124, 120), at(10, 10)]; }""")
+    assert sum(px[0][:3]) < 100 and sum(px[1][:3]) > 600, px                # encre sombre sur papier clair
+    page.wait_for_function("window.__n.pendingSave === null", timeout=5000)
+    assert page.evaluate("nativeFlash.get('essai-m2k').then((s) => Array.from(s))") == [7, 7]

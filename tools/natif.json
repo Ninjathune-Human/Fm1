@@ -181,7 +181,10 @@
    "id": "hera",
    "depot": "benbadio/hera-fm1",
    "commit": "2c99af2141217e1e0083da39049ace432efa1cd1",
-   "script": "web/build.sh"
+   "script": "web/build.sh",
+   "wasm": "web/hera.wasm",
+   "worklet": "tools/worklets/hera.js",
+   "dialecte": "felucca"
   },
   {
    "id": "hyp1",
@@ -304,7 +307,10 @@
    "id": "ravel",
    "depot": "De-Pattern/Ravel_FM1",
    "commit": "6a7696d75ae4ffaeff21827f973abf2b93771326",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "wasm": "web/emu/ravel.wasm",
+   "worklet": "tools/worklets/ravel.js",
+   "dialecte": "felucca"
   },
   {
    "id": "s1vave",
