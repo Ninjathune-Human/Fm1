@@ -34,7 +34,7 @@ def page(browser, base_url):
 def power_on(page, path="index.html"):
     page.goto(page.base + path)
     page.click("#go")
-    page.wait_for_function("document.getElementById('status').textContent.startsWith('Allumé')", timeout=20000)
+    page.wait_for_function("document.getElementById('power').getAttribute('aria-checked') === 'true'", timeout=20000)
     # l'écran d'accueil de FM-1+VA ignore les touches tant qu'il est affiché
     page.wait_for_function("!window.__fw.splash", timeout=20000)
 

@@ -14,6 +14,10 @@ def wait_status(page, text, timeout=30000):
     page.wait_for_function("(t) => document.getElementById('status').textContent === t", arg=text, timeout=timeout)
 
 
+def ready(page, nom, timeout=30000):                                    # démarré : son nom dans le sélecteur, la ligne d'état vide
+    page.wait_for_function("(n) => document.getElementById('fw-name').textContent === n && document.getElementById('status').textContent === ''", arg=nom, timeout=timeout)
+
+
 def click_row(page, fid):
     page.evaluate("(id) => document.querySelector(`.fw-item[data-id=\"${id}\"]`).click()", fid)
 
@@ -60,7 +64,7 @@ def test_pick(page):
     power_on(page)
     click_row(page, "sloop")
     assert status(page) == "Démarrage de SLOOP…"
-    wait_status(page, "SLOOP")
+    ready(page, "SLOOP")
     assert page.inner_text("#fw-name") == "SLOOP"
     assert not page.is_visible("#fw-sheet")
 
@@ -71,14 +75,14 @@ def test_enter_picks_first(page):
     page.fill("#fw-search", "chipbox")
     page.keyboard.press("Enter")
     assert not page.is_visible("#fw-sheet")
-    wait_status(page, "Chipbox")
+    ready(page, "Chipbox")
 
 
 def test_last_wins(page):
     power_on(page)
     page.evaluate("""() => { document.querySelector('.fw-item[data-id="x0x"]').click();
       setTimeout(() => document.querySelector('.fw-item[data-id="zp12"]').click(), 30); }""")
-    wait_status(page, "zp12", timeout=60000)
+    ready(page, "zp12", timeout=60000)
     page.wait_for_timeout(500)
     assert page.evaluate("window.__engine().name") == "zp12"
     assert page.evaluate("window.__nodes().length") == 1
@@ -87,11 +91,11 @@ def test_last_wins(page):
 def test_restore_last(page):
     power_on(page)
     click_row(page, "zp12")
-    wait_status(page, "zp12")
+    ready(page, "zp12")
     page.reload()
     assert page.inner_text("#fw-name") == "zp12"
     page.click("#go")
-    wait_status(page, "zp12")
+    page.wait_for_function("window.__engine && window.__engine().name === 'zp12'", timeout=30000)
     assert page.evaluate("window.__engine().name") == "zp12"
 
 
@@ -149,10 +153,10 @@ def test_contextual_controls(page):
     power_on(page)
     assert page.is_visible(".file")
     click_row(page, "sloop")
-    wait_status(page, "SLOOP")
+    ready(page, "SLOOP")
     assert not page.is_visible(".file")
     click_row(page, "fm1va")
-    wait_status(page, "FM-1+VA")
+    ready(page, "FM-1+VA")
     assert page.is_visible(".file")
 
 
@@ -160,7 +164,7 @@ def test_open_local(page):
     power_on(page)
     n = page.evaluate("window.__catalogue.length")
     page.set_input_files("#fw-file", os.path.join(ROOT, "firmwares", "gator.fwsc"))
-    wait_status(page, "gator")
+    ready(page, "gator")
     assert page.inner_text("#fw-name") == "gator"
     page.wait_for_timeout(3000)
     assert lit_pixels(page) >= 2000

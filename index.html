@@ -97,6 +97,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 @media (prefers-reduced-motion: reduce) { .swatch span { transition: none; } }
 .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-left: auto; }
 /* tout sur une ligne sous le panneau : firmware, coloris, état (une ligne, coupée), actions */
+#status:empty { display: none; }
 #status { flex: 1 1 0; min-width: 4rem; font-size: 0.875rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar button, .file { font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
   padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -206,7 +207,9 @@ html.embed .swatch span { width: 26px; height: 26px; }
 @media (max-width: 760px) { html.embed .picker-k { display: none; } html.embed .deck { flex-wrap: nowrap; } html.embed .bar { flex-wrap: nowrap; } }
 @media (max-width: 620px) { html.embed .swatch { width: 32px; } html.embed .swatch span { width: 22px; height: 22px; } }
 .file .short { display: none; }
-@media (max-width: 680px) { html.embed .file .long { display: none; } html.embed .file .short { display: inline; } }
+.deck { container-type: inline-size; }
+@container (max-width: 860px) { .file .long { display: none; } .file .short { display: inline; } }
+@container (max-width: 720px) { .picker-k { display: none; } }   /* « Importer… » : la ligne reste entière */
 @media (max-width: 560px) { html.embed .deck { gap: 6px 8px; } html.embed .swatch { width: 28px; } html.embed .bar { gap: 8px; } }
 html.embed .duo-tabs { margin-left: auto; }                              /* FM1-A | FM1-B au milieu de la ligne, en paysage */
 .fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
@@ -215,7 +218,8 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 .duo-brand { display: flex; align-items: center; gap: 6px; margin-right: auto; }
 .duo-brand .mark { font-size: 1.5rem; }
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
-.duo-bar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px 16px; flex-wrap: wrap; padding: 8px 16px; }
+.duo-bar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px 16px; flex-wrap: wrap; padding: 20px 16px 8px;
+  min-height: calc(clamp(2rem, 5vw, 2.75rem) * 1.05); }   /* Solo | Duo à la même place que sur la page Solo */
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .seg a, .seg button { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
   font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; touch-action: manipulation; }
@@ -286,10 +290,10 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         <span class="skin-name" id="skin-name">Coloris</span>
         <div class="swatches" id="swatches"></div>
       </div>
-      <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
+      <span id="status" role="status"></span>
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
-        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short">Son DX7…</span></label>
+        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">Importer…</span></label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
@@ -5596,7 +5600,7 @@ function buildPanel(fw) {
       $("start").hidden = true;
       $("controls").inert = false;
       $("power").setAttribute("aria-checked", "true");
-      status.textContent = "Allumé.";
+      status.textContent = "";
       restoreLast();
       device.focus({ preventScroll: true });
       document.addEventListener("visibilitychange", () => { if (!document.hidden && ac.state !== "running") ac.resume(); });
@@ -5850,7 +5854,7 @@ function buildPanel(fw) {
     if (my !== pickSeq) return;
     if (ok) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
-      status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : e.nom;
+      status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : "";
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
     } else status.textContent = failureText(e);
@@ -5876,13 +5880,13 @@ function buildPanel(fw) {
       try { await nativeFlash.put(e.id, {}); await nativeFlash.put(e.id + "/banque", null); } catch { /* rien de gardé */ }
       await n.stop(); n.node = null; natives.delete(e.id); current = va; vaOut(true);
       const ok = await useEngine(e).catch(() => false);
-      status.textContent = ok ? e.nom : `${e.nom} n'a pas redémarré.`;
+      status.textContent = ok ? "" : `${e.nom} n'a pas redémarré.`;
       return;
     }
     const e = emu.entry;
     status.textContent = `Réglages d'usine de ${e.nom}…`;
     const ok = await emu.boot(e, { reset: true });
-    status.textContent = ok ? e.nom : `${e.nom} n'a pas redémarré.`;
+    status.textContent = ok ? "" : `${e.nom} n'a pas redémarré.`;
   }
 
   // pour les tests
@@ -5982,8 +5986,8 @@ function buildPanel(fw) {
         <button type="button" role="radio" data-v="side">Côte à côte</button>
         <button type="button" role="radio" data-v="one">Un à la fois</button>
       </div>
-      <nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
       <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
+      <nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
     </div>
     <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
   document.body.append(root);

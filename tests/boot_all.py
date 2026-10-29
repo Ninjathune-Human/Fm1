@@ -60,7 +60,7 @@ def main(ids):
                 page.set_default_timeout(40000)
                 page.goto(url + "index.html")
                 page.click("#go")
-                page.wait_for_function("document.getElementById('status').textContent.startsWith('Allumé') && window.__catalogue.length > 0")
+                page.wait_for_function("document.getElementById('power').getAttribute('aria-checked') === 'true' && window.__catalogue.length > 0")
             try:
                 r = check(page, e)
             except Exception as err:                  # page bloquée : on repart d'une page neuve
@@ -70,7 +70,7 @@ def main(ids):
                     page = b.new_context(viewport={"width": 1280, "height": 900}).new_page()
                     page.set_default_timeout(40000)
                     page.goto(url + "index.html"); page.click("#go")
-                    page.wait_for_function("document.getElementById('status').textContent.startsWith('Allumé') && window.__catalogue.length > 0")
+                    page.wait_for_function("document.getElementById('power').getAttribute('aria-checked') === 'true' && window.__catalogue.length > 0")
             r["verdict"] = verdict(r)
             r["declare"] = e["emulateur_fm1emu"]
             results.append(r)

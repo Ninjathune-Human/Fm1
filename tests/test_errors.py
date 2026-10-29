@@ -2,7 +2,7 @@
 import os
 
 from conftest import ROOT, power_on
-from test_picker import click_row, wait_status
+from test_picker import click_row, ready, wait_status
 
 
 def test_core_missing(page):
@@ -55,12 +55,12 @@ def test_invalid_local_file(page, tmp_path):
 def test_halted_restart(page):
     power_on(page)
     click_row(page, "gator")
-    wait_status(page, "GATOR")
+    ready(page, "GATOR")
     page.evaluate("""() => { const e = window.__engine();
       e.onWorklet({ data: { type: 'frame', seq: e.seq, halted: 1, lcd: null, leds: new Float32Array(41) } }); }""")
     wait_status(page, "GATOR s'est arrêté.")
     assert page.is_visible("#fw-restart")
     page.click("#fw-restart")
-    wait_status(page, "GATOR")
+    ready(page, "GATOR")
     assert not page.is_visible("#fw-restart")
     assert page.evaluate("window.__engine().halted") == 0
