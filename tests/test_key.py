@@ -53,3 +53,15 @@ def test_first_key_reads_the_arpeggio(midi):
     midi.evaluate("() => { const fw = window.__fw, key = () => fw.arpList().rows.find((x) => x.name === 'Key');"
                   " fw.G.arp.chord = 1; fw.turnRow(key(), -1); fw.turnRow(key(), 1); }")   # Off, puis Do à nouveau
     assert midi.evaluate("window.__fw.G.arp.chord") == 1               # une seule fois : rien de perdu
+
+
+def test_8bit_first_key(midi):
+    names = midi.evaluate("""() => { const fw = window.__fw; fw.loadPreset(fw.bank.findIndex((p) => p.engine === 'b8'));
+      const b = fw.cur.b8; b.bass.arp = 14; b.lead.arp = 3;                                     // Minor 7, Major 8
+      const r = fw.editList().rows.find((x) => x.name === 'Key'); fw.turnRow(r, 1);
+      return fw.partList('lead').rows.map((x) => x.name); }""")
+    b = midi.evaluate("window.__fw.cur.b8")
+    assert (b["key"], b["scale"], b["voicing"], b["acc"], b["follow"]) == (1, 0, 0, 0, 0)
+    assert (b["bass"]["chord"], b["bass"]["pattern"], b["lead"]["chord"], b["lead"]["pattern"]) == (1, 1, 0, 4)   # Seventh Up, Triad Up 8
+    assert "Chord" in names and "Pattern" in names and "Arpeggio" not in names
+    assert midi.evaluate("window.__fw.dirty")

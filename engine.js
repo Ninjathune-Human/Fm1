@@ -450,8 +450,9 @@ class PartVoice {                                  // the bass or the lead
     // the arpeggio steps on the key's own clock, or on the grid (Arp Sync Beat)
     const arp = this.chord;
     if (arp && arp.length > 1) {
-      if (b.arpSync) { const s = eng.beatStep(part.speed); if (s !== this.beatStep) { this.beatStep = s; this.ai = (this.ai + 1) % arp.length; } }
-      else { const len = ARPSPEED[part.speed] * 60 / eng.tempo; this.at += dt; while (this.at >= len) { this.at -= len; this.ai = (this.ai + 1) % arp.length; } }
+      const next = (i) => (arp.once ? Math.min(i + 1, arp.length - 1) : (i + 1) % arp.length);   // Plink holds its last note
+      if (b.arpSync) { const s = eng.beatStep(part.speed); if (s !== this.beatStep) { this.beatStep = s; this.ai = next(this.ai); } }
+      else { const len = ARPSPEED[part.speed] * 60 / eng.tempo; this.at += dt; while (this.at >= len) { this.at -= len; this.ai = next(this.ai); } }
     } else this.ai = 0;
     const off = arp ? arp[this.ai % arp.length] : 0;
     // glide (mono), sweep, vibrato
@@ -721,8 +722,8 @@ function keyChord(n, h) {
 // the order a chord's notes play in (Pattern); once: played once, then its last note held or repeated
 const PATTERNS = ["Off", "Up", "Down", "Up Down", "Up 8", "Down 8", "Up Down 8", "Wide", "Alberti", "Pedal", "Octave", "Octave Down",
   "Two Octaves", "Bounce", "Gallop", "Plink", "Trill", "User"];
-function keyRun(n, h) {
-  const c = keyChord(n, h), s = c.up, N = s.length, lo = s[0], top = s[N - 1], down = s.slice().reverse(), i = (j) => s[Math.min(j, N - 1)];
+function keyRun(n, h, c = keyChord(n, h)) {
+  const s = c.up, N = s.length, lo = s[0], top = s[N - 1], down = s.slice().reverse(), i = (j) => s[Math.min(j, N - 1)];
   let seq, once = false;
   switch (h.pattern) {
     case 1: seq = s; break;
@@ -741,9 +742,26 @@ function keyRun(n, h) {
     case 14: seq = [lo, lo, top]; break;                // Gallop: twice the low note, then the top
     case 15: seq = [n + 12, n]; once = true; break;     // Plink: the octave above once, then the key
     case 16: { let m = n + 1; while (!c.keys.includes((((m - c.t) % 12) + 12) % 12)) m++; seq = [n, m]; break; }   // Trill
+    case 17: {                                         // User: each drawn step by its role, root 3rd 5th 7th, and its octave
+      seq = [];
+      for (const st of h.user || []) {
+        if (st > 18) break;
+        const r = ((st % 12) + 12) % 12, role = r === 0 ? 0 : r < 6 ? 1 : r < 9 ? 2 : 3;
+        seq.push(c.list[Math.min(role, c.list.length - 1)] + 12 * Math.floor(st / 12));
+      }
+      if (!seq.length) seq = [n];
+      break;
+    }
     default: seq = [n];
   }
   return { seq: seq.map(fold), once };
+}
+// Lead Follows Bass (manual 6.6): the lead key, then the next notes above it that belong to the bass key's chord
+function followChord(n, bc) {
+  const pcs = new Set(bc.list.map((x) => x % 12)), list = [n];
+  for (let m = n + 1; list.length < bc.list.length && m < n + 36; m++) if (pcs.has(m % 12)) list.push(m);
+  const f = list.map(fold);
+  return { list: f, up: [...new Set(f)].sort((p, q) => p - q), t: bc.t, keys: bc.keys };
 }
 
 const NE_RATE = [4, 2, 4 / 3, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12];   // 1/1 .. 1/32T, in beats
@@ -772,15 +790,34 @@ class NoteEngine {
   // a key's chord: in the Key when one is set, else the Arpeggio's shape; at most four different notes together
   chord(n) {
     const a = this.s;
-    if (a.key) return keyChord(n, a).list;
+    if (this.solo8(n)) return [n];
+    if (a.key) return [...new Set(keyChord(n, a).list.map((x) => this.in8(n, x)))];
     const shape = a.arpeggio > 0 && a.arpeggio <= 31 ? ARPS[a.arpeggio] : [0];
-    return [...new Set(shape.map((x) => fold(n + x)))].slice(0, 4);
+    return [...new Set(shape.map((x) => this.in8(n, fold(n + x))))].slice(0, 4);
   }
   run(n) {                                             // Auto-Arp: a key's run, as the settings are when it starts
     const a = this.s;
-    if (a.key) return Object.assign(keyRun(n, a), { i: 0 });
+    if (this.solo8(n)) return { seq: [n], once: false, i: 0 };
+    if (a.key) { const r = keyRun(n, a); return { seq: r.seq.map((x) => this.in8(n, x)), once: r.once, i: 0 }; }
     const shape = a.arpeggio > 0 && a.arpeggio <= 31 ? ARPS[a.arpeggio] : [0];
-    return { seq: shape.map((x) => fold(n + x)), once: false, i: 0 };
+    return { seq: shape.map((x) => this.in8(n, fold(n + x))), once: false, i: 0 };
+  }
+  // on an 8-Bit preset (manual 8.5.1): a drum or effect key, or a part playing a chord of its own, takes no chord
+  // from the Note Engine, and a chord's notes stay in their key's part
+  solo8(n) {
+    const p = this.eng.p;
+    if (!p || p.engine !== "b8") return false;
+    if (n < B8.BASS) return true;
+    const b = p.b8, part = n < B8.LEAD ? b.bass : b.lead;
+    return !!(b.key ? part.pattern : part.arp) || part.ne === 1;
+  }
+  in8(n, x) {
+    const p = this.eng.p;
+    if (!p || p.engine !== "b8") return x;
+    const lo = n < B8.LEAD ? B8.BASS : B8.LEAD, hi = n < B8.LEAD ? B8.LEAD - 1 : B8.TOP;
+    while (x > hi) x -= 12;
+    while (x < lo) x += 12;
+    return x;
   }
   // Auto-Chord: a note two keys share sounds once
   chordOn(n, v) {
@@ -870,6 +907,7 @@ class Engine extends AudioWorkletProcessor {
       const old = this.p;
       this.p = m.p;
       if (m.same && old && old.engine === m.p.engine) for (const v of this.all()) if (v.active && v.p === old) v.p = m.p;
+      if (!m.same) this.lastBass = null;                 // a new preset: the lead plays its own chords again
     } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); else this.ne.refresh(); }
     else if (m.t === "key") this.key(m.n, m.on, m.v, m.src);
     else if (m.t === "seq") this.seqMsg(m);
@@ -967,19 +1005,49 @@ class Engine extends AudioWorkletProcessor {
     if (n < B8.LEAD) { which = "bass"; note = n; this.lastBass = n; }
     else { which = "lead"; let m = n; while (m > B8.TOP) m -= 12; note = m - 12; }
     const part = b[which], base = note + 12 * part.oct;
-    const shape = part.arp === 32 ? this.userArp(part) : part.arp ? ARPS[part.arp] : null;
+    const { run: shape, chord } = this.partChord(b, which, base);
     const pool = this.parts;
+    if (which === "bass" && b.key && b.follow) this.followBass(p, b);
     if (part.mono) {
       const cur = pool.find((x) => x.active && x.gate && x.which === which);
       if (cur) { cur.key = key; cur.start(p, which, key, base, v, shape, true); return; }
       const vc = this.pick(pool); vc.start(p, which, key, base, v, shape, false); return;
     }
-    if (part.ne === 1 && shape) {                       // Auto-Chord: the chord's notes together, at most four
-      const notes = [...new Set(shape.map((x) => base + x))].slice(0, 4);
-      for (const x of notes) { const vc = this.pick(pool); vc.start(p, which, key, x, v, null, false); }
+    if (part.ne === 1 && chord) {                       // Auto-Chord: the chord's notes together, at most four, a shared one once
+      const notes = [...new Set(chord.map((x) => base + x))].slice(0, 4);
+      for (const x of notes) {
+        if (pool.some((o) => o.active && o.gate && o.which === which && o.note === x)) continue;
+        const vc = this.pick(pool); vc.start(p, which, key, x, v, null, false); vc.root = base;
+      }
       return;
     }
-    const vc = this.pick(pool); vc.start(p, which, key, base, v, shape, false);
+    const vc = this.pick(pool); vc.start(p, which, key, base, v, shape, false); vc.root = base;
+  }
+  // what a bass or lead key plays: the Arpeggio's shape, or with a Key the Chord (run: in its Pattern), as offsets
+  partChord(b, which, base) {
+    const part = b[which];
+    if (!b.key) { const s = part.arp === 32 ? this.userArp(part) : part.arp ? ARPS[part.arp] : null; return { run: s, chord: s }; }
+    const h = { key: b.key, scale: b.scale, acc: b.acc, voicing: b.voicing, chord: part.chord, pattern: part.pattern, user: part.user };
+    let c = keyChord(base, h);
+    if (which === "lead" && b.follow && this.lastBass !== null) c = followChord(base, keyChord(this.lastBass, h));
+    const r = keyRun(base, h, c), run = part.pattern ? r.seq.map((x) => x - base) : null;
+    if (run) run.once = r.once;
+    return { run, chord: c.list.map((x) => x - base) };
+  }
+  // a bass key under Lead Follows: the held lead keys take its chord at once, their Pattern carrying on
+  followBass(p, b) {
+    const lead = this.parts.filter((o) => o.active && o.gate && o.which === "lead" && o.root !== undefined);
+    if (b.lead.ne === 1 && !b.lead.mono) {
+      const keys = new Map();
+      for (const o of lead) keys.set(o.key, { root: o.root, vel: o.vel });
+      for (const o of lead) o.release();
+      for (const [key, k] of keys) {
+        const notes = [...new Set(this.partChord(b, "lead", k.root).chord.map((x) => k.root + x))].slice(0, 4);
+        for (const x of notes) { const vc = this.pick(this.parts); vc.start(p, "lead", key, x, k.vel, null, false); vc.root = k.root; }
+      }
+      return;
+    }
+    for (const o of lead) o.chord = this.partChord(b, "lead", o.root).run;
   }
   userArp(part) {
     const out = [];

@@ -8,8 +8,9 @@ import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = readFileSync(join(ROOT, "engine.js"), "utf8");
-const ctx = { sampleRate: 44100, currentTime: 0, AudioWorkletProcessor: class {}, registerProcessor: () => {} };
-const { keyChord, keyRun } = vm.runInNewContext(src + "\n;({ keyChord, keyRun })", ctx);
+const ctx = { sampleRate: 44100, currentTime: 0, AudioWorkletProcessor: class { constructor() { this.port = { postMessage() {} }; } } };
+ctx.registerProcessor = (name, cls) => { ctx.Engine = cls; };
+const { keyChord, keyRun, followChord } = vm.runInNewContext(src + "\n;({ keyChord, keyRun, followChord })", ctx);
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const NN = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const names = (ns) => ns.map((n) => NN[n % 12]).join(" ");
@@ -61,4 +62,40 @@ test("Patterns", () => {
   assert.deepEqual(plain(keyRun(60, C({ pattern: 15 }))), { seq: [72, 60], once: true });   // Plink
   assert.deepEqual(run(60, { pattern: 0 }), [60]);
   assert.deepEqual(run(124, { pattern: 4 }), [119, 124, 127, 119]);     // Mi Sol Si : au-dessus de 127, une octave plus bas
+});
+
+// une partie 8-Bit : Key du preset, Chord et Pattern de la partie
+const part = (o = {}) => Object.assign({ arp: 0, ne: 0, chord: 0, pattern: 1, user: [19, 19, 19, 19, 19, 19, 19, 19], mono: 0 }, o);
+const b8 = (o = {}) => Object.assign({ key: 1, scale: 0, acc: 0, voicing: 0, follow: 0, bass: part(), lead: part() }, o);
+
+test("8-Bit : l'accord et la course d'une partie", () => {
+  const e = new ctx.Engine();
+  assert.deepEqual(plain(e.partChord(b8(), "bass", 50)), { run: [0, 3, 7], chord: [0, 3, 7] });   // Ré : Ré Fa La
+  assert.equal(e.partChord(b8({ bass: part({ pattern: 0 }) }), "bass", 50).run, null);           // Off : la touche seule
+  const p = e.partChord(b8({ bass: part({ pattern: 15 }) }), "bass", 50).run;
+  assert.deepEqual([plain(p), p.once], [[12, 0], true]);                                           // Plink
+  // User : les pas par leur rôle, 0 4 7 12 sur Ré mineur
+  assert.deepEqual(plain(e.partChord(b8({ bass: part({ pattern: 17, user: [0, 4, 7, 12, 19, 19, 19, 19] }) }), "bass", 50).run), [0, 3, 7, 12]);
+  assert.deepEqual(plain(e.partChord(b8({ key: 0, bass: part({ arp: 1 }) }), "bass", 50).run), [0, 4, 7]);   // sans Key : l'Arpeggio
+});
+
+test("Lead Follows Bass", () => {
+  const C = keyChord(48, { key: 1, scale: 0, acc: 0, voicing: 0, chord: 0 }), G = keyChord(55, { key: 1, scale: 0, acc: 0, voicing: 0, chord: 0 });
+  assert.equal(names(plain(followChord(64, C).list)), "E G C");
+  assert.equal(names(plain(followChord(62, C).list)), "D E G");
+  assert.equal(names(plain(followChord(60, G).list)), "C D G");
+  const e = new ctx.Engine();
+  e.lastBass = 55;
+  assert.deepEqual(plain(e.partChord(b8({ follow: 1 }), "lead", 60).chord), [0, 2, 7]);
+  e.lastBass = null;                                                                                // pas encore de basse : ses propres accords
+  assert.deepEqual(plain(e.partChord(b8({ follow: 1 }), "lead", 60).chord), [0, 4, 7]);
+});
+
+test("8-Bit : pas d'accord du Note Engine sur la batterie ni sur une partie qui a le sien", () => {
+  const e = new ctx.Engine();
+  e.p = { engine: "b8", b8: b8({ key: 0, bass: part({ arp: 0 }), lead: part({ arp: 1 }) }) };
+  e.g.arp = Object.assign(e.g.arp, { ne: 2, key: 1, scale: 0, acc: 0, voicing: 0, chord: 0 });
+  assert.deepEqual(plain(e.ne.chord(20)), [20]);                                                    // une batterie
+  assert.deepEqual(plain(e.ne.chord(86)), [86]);                                                    // le lead joue son Arpeggio
+  assert.deepEqual(plain(e.ne.chord(74)), [74, 65, 69]);                                            // Ré Fa La, gardé dans la basse
 });
