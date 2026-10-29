@@ -19,8 +19,8 @@ def test_core_missing(page):
 def test_online_package_unreachable(page):
     page.route("https://thefirmwarehub.com/**", lambda r: r.fulfill(status=503, body="indisponible"))
     power_on(page)
-    nom = page.evaluate("window.__catalogue.find((e) => e.id === 'hyp1').nom")
-    click_row(page, "hyp1")
+    nom = page.evaluate("window.__catalogue.find((e) => e.id === 'kawa').nom")
+    click_row(page, "kawa")
     wait_status(page, f"{nom} : paquet injoignable.")
     assert page.evaluate("window.__engine() === window.__fw")
 

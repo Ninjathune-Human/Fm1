@@ -22,7 +22,7 @@ def test_failed_emu_switch_keeps_screen(page):
     page.set_default_timeout(30000)
     assert use(page, "gator") is True
     page.wait_for_timeout(2000)
-    assert use(page, "hyp1") is False
+    assert use(page, "kawa") is False
     page.wait_for_timeout(1500)
     assert lit_pixels(page) >= 2000
     assert frames_accepted(page)

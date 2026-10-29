@@ -1206,7 +1206,8 @@
    "description": "Hypnotic techno and acid: a breathing pad, a deep drone, a generative 303 line and grain over drums you sequence. Flip patterns on the bar, break it down, build it up. Forked from AMB-1. One of a pack of four: LOF-1 (a lofi groovebox), ECO-1 (a plant plays it) and GRAV-1 (a star and its planets), experimental, on its project page.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/hyp1-1.5.54.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "j6",
@@ -1861,7 +1862,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/perf1.fwsc",
+   "fichier": null,
    "sha256": "572d85002a8886ee239ebfb20b9bca4983dad0818f873277be5de3092be3155a",
    "taille": 609684,
    "depot": "https://github.com/deamonSLINKY/PERF-1",
@@ -1870,7 +1871,8 @@
    "description": "A generative groovebox you perform on: ten genres of self-playing pieces, an auto-DJ with breakdowns, builds and drops, Euclidean drums, an acid line that answers itself, beat FX and DX7-style FM voices from your own .syx.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/perf1-0.13.0.fwsc",
-   "provenance_paquet": "release download/v0.13.0/perf1-0.13.0.fwsc"
+   "provenance_paquet": "release download/v0.13.0/perf1-0.13.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "pigeon",

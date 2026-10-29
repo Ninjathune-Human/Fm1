@@ -22,7 +22,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 - **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, écrans et séquenceur. Ce n'est pas son firmware : FM-1+VA de Baud Girl n'est pas redistribué ici, et la réimplémentation ne reprend aucun code de son firmware.
 - **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `1c8661d`, puis publie le site.
-- **57 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
+- **59 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
 - Les paquets `.fwsc` sont ceux publiés par leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json)). Chacun a été démarré dans l'émulateur : voir le [rapport de vérification](docs/verification.md).
 
 ## Firmwares
@@ -52,7 +52,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Golana DZ Edition | dzwerg | GPL-3.0 | [858e3f2](https://github.com/dzwerg/Golana-DZ/tree/858e3f2f9e018f01a1c87451c712193869f0324b) | fonctionne, bêta, natif |
 | GR!MM | GRiMMBIENT | GPL-3.0 | [815ca6b](https://github.com/GRiMMBIENT/grimm/tree/815ca6be81d973445851238dbaf12b4536d1e6d8) | fonctionne, natif |
 | HERA | Ben Badio | GPL-3.0 | [2c99af2](https://github.com/benbadio/hera-fm1/tree/2c99af2141217e1e0083da39049ace432efa1cd1) | fonctionne, natif |
-| HYP-1 | RedtailWorks | GPL-3.0 | [57c456d](https://github.com/RustyPawz/fm1-HYP1/tree/57c456db61826331d356458c9c1a136517da7cbf) | fonctionne, en ligne |
+| HYP-1 | RedtailWorks | GPL-3.0 | [57c456d](https://github.com/RustyPawz/fm1-HYP1/tree/57c456db61826331d356458c9c1a136517da7cbf) | fonctionne, natif |
 | Jangada | zednaked | GPL-3.0 | [46e6c2c](https://github.com/zednaked/jangada/tree/46e6c2c2ed94b609918aa6f5f7381fac915ffc45) | fonctionne |
 | JIANT FM | juanjiant-bit | GPL-3.0 | [c6e7aa1](https://github.com/juanjiant-bit/JIANT/tree/c6e7aa189525043806e6b3052dd1f8b3c39c3e33) | fonctionne, bêta, natif |
 | Loom FM-1 | Co-oscillator | GPL-3.0 | [ed6f036](https://github.com/Co-oscillator/Loom-FM-1/tree/ed6f036f9e3187ba22f915c3941d23f477159683) | vérifié, bêta, natif |
@@ -67,7 +67,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Mutable Dreams | Kid Bunka | GPL-3.0 | [04cf468](https://github.com/kidbee85-beep/mutable-dreams/tree/04cf468420f4325f6bdbbecfd59695b06c481a8a) | fonctionne |
 | MYCELIUM | Mandalars | GPL-3.0 | [750eb12](https://github.com/megagott/mycelium-fm1/tree/750eb125e2850acc62a8391cb742246a7c437745) | fonctionne, bêta |
 | ORBIT | dspaudio | GPL-3.0 | [3cbd250](https://github.com/dspaudio/orbit/tree/3cbd2502ddd375484574837ae8e7e6a46c5c1e2d) | fonctionne, bêta |
-| PERF-1 | deamonSLINKY | GPL-3.0 | [d2ed6aa](https://github.com/deamonSLINKY/PERF-1/tree/d2ed6aa95867dd5b395eee36fb447bcb99b9949b) | vérifié, bêta |
+| PERF-1 | deamonSLINKY | GPL-3.0 | [d2ed6aa](https://github.com/deamonSLINKY/PERF-1/tree/d2ed6aa95867dd5b395eee36fb447bcb99b9949b) | vérifié, bêta, natif |
 | Pocket GammaWave | ShadowTune (GammaWave Audio) | GPL-3.0 | [8bf1a12](https://github.com/fvalente/GammaWave-FM1/tree/8bf1a12cdb7c70e86eba81e63cb374d14f9d43e2) | fonctionne, natif |
 | Polly | Charles Vestal | GPL-3.0 | [62cd07e](https://github.com/charlesvestal/fm1-polly/tree/62cd07ea7c95c30021c31e957cea8be448415fa7) | fonctionne, bêta, natif |
 | Ravel | De-Pattern | GPL-3.0 | [6a7696d](https://github.com/De-Pattern/Ravel_FM1/tree/6a7696d75ae4ffaeff21827f973abf2b93771326) | vérifié, bêta, natif |
