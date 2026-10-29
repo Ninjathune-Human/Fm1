@@ -5960,18 +5960,20 @@ function buildPanel(fw) {
   const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
   const cur = () => document.fullscreenElement || document.webkitFullscreenElement;
   const exit = () => (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  if (FM1_ID || navigator.standalone || matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches) return;   // déjà sans navigateur
+  // une bulle sous un bouton, qui se ferme au toucher suivant (aussi dans un cadre du Duo)
   let tip = null;
   const shut = () => { if (tip) { tip.remove(); tip = null; } };
-  const help = (b) => {
+  window.__tip = (b, html) => {
     if (tip) return shut();
     const r = b.getBoundingClientRect(), w = Math.min(300, innerWidth - 32), x = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, innerWidth - 16 - w));
     tip = document.createElement("div"); tip.className = "fs-tip"; tip.setAttribute("role", "note");
     tip.style.cssText = `top:${Math.round(r.bottom + 10)}px;left:${Math.round(x)}px;width:${w}px;--x:${Math.round(r.left + r.width / 2 - x)}px`;
-    tip.innerHTML = "Ce navigateur n'ouvre pas le plein écran. Touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b> : ouvert depuis l'écran d'accueil, le FM-1 occupe tout l'écran.";
+    tip.innerHTML = html;
     document.body.append(tip);
-    setTimeout(() => { document.addEventListener("pointerdown", shut, { once: true }); addEventListener("blur", shut, { once: true }); });   // aussi un toucher dans un cadre du Duo
+    setTimeout(() => { document.addEventListener("pointerdown", shut, { once: true }); addEventListener("blur", shut, { once: true }); });
   };
+  if (FM1_ID || navigator.standalone || matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches) return;   // déjà sans navigateur
+  const help = (b) => window.__tip(b, "Ce navigateur n'ouvre pas le plein écran. Touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b> : ouvert depuis l'écran d'accueil, le FM-1 occupe tout l'écran.");
   // le même bouton entre en plein écran puis en sort (le navigateur réapparaît) ; son icône le dit
   const IN = "M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5", OUT = "M7.5 3v4.5H3M17 7.5h-4.5V3M12.5 17v-4.5H17M3 12.5h4.5V17";
   const paint = () => {
@@ -6066,7 +6068,12 @@ function buildPanel(fw) {
 
   // le tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre FM-1 suit son horloge, Start, Stop et Continue,
   // FM-1+VA ou firmware natif (un natif suit s'il sait suivre une horloge MIDI, souvent un réglage Sync à lui)
-  linkBtn.addEventListener("click", () => { linked = !linked; keep("link", linked ? "1" : "0"); tick(); });
+  linkBtn.addEventListener("click", () => {
+    if (linkBtn.getAttribute("aria-disabled") === "true") {   // aucun FM-1+VA allumé : rien ne donne l'horloge, la bulle le dit
+      return window.__tip(linkBtn, "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue <b>FM-1+VA</b> : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.");
+    }
+    linked = !linked; keep("link", linked ? "1" : "0"); tick();
+  });
   const engOf = (k) => {
     try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? (e === w.__fw ? { va: e } : e.kind === "natif" ? { natif: e } : null) : null; } catch { return null; }
   };
@@ -6079,7 +6086,7 @@ function buildPanel(fw) {
     linkBtn.setAttribute("aria-checked", on);
     linkBtn.setAttribute("aria-disabled", !lead);
     linkBtn.querySelector(".dir").textContent = on ? (lead === "a" ? " · A → B" : " · B → A") : "";
-    linkBtn.title = lead ? `FM1-${lead.toUpperCase()} mène, FM1-${other.toUpperCase()} suit son horloge` : "Le tempo se lie quand l'un des deux est un FM-1+VA allumé";
+    linkBtn.title = lead ? `FM1-${lead.toUpperCase()} mène, FM1-${other.toUpperCase()} suit son horloge` : "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA";
     for (const k of ["a", "b"]) {                     // ce que chacun doit être maintenant
       const e = E[k] && (E[k].va || E[k].natif), isLead = on && k === lead, isFollow = on && k === other;
       if (was[k] && was[k] !== e && was[k].mi) { was[k].mi.lead = false; was[k].mi.follow = false; was[k].mi.link = null; was[k].sendGlobal(); }

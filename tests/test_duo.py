@@ -119,3 +119,10 @@ def test_sheet_visible_side_by_side(page):
     page.wait_for_timeout(400)
     top, bottom, h = a.evaluate("() => { const r = document.getElementById('fw-sheet').getBoundingClientRect(); return [r.top, r.bottom, innerHeight]; }")
     assert 0 <= top < bottom <= h + 1 and bottom - top > 200           # la liste dans le cadre, pas hors de vue
+
+
+def test_link_disabled_explains(page):
+    open_duo(page, 1600, 900)                                            # rien d'allumé : personne ne donne l'horloge
+    page.click(".duo-link", force=True)                                 # aria-disabled : Playwright l'attendrait
+    assert page.is_visible(".fs-tip") and "FM-1+VA" in page.inner_text(".fs-tip")
+    assert page.evaluate("window.__duo.linked") is False                 # le réglage ne change pas
