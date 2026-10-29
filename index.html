@@ -273,7 +273,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <summary>Ce qui manque encore</summary>
       <div class="note">
         <ul>
-          <li>Le séquenceur, deuxième partie : la vue Lane, les verrous de paramètres, Ratchet, Tie &amp; Slide, Repeats, Time Multiplier.</li>
+          <li>Le séquenceur : la vue Lane (l'écran Pattern, les lanes, Locks), les verrous de paramètres, le déplacement et la copie des pas.</li>
           <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
           <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
         </ul>
@@ -1369,37 +1369,56 @@ class Engine extends AudioWorkletProcessor {
   // A pattern changes at the end of its pass: to the one waiting, or along its Chain.
   seqMsg(m) {
     const s = this.sq || (this.sq = { playing: false, step: -1, t: 0, dur: 0, offs: [], pat: 0, next: null, bt: 0, beat: 0 });
-    s.pats = m.pats; s.tr = m.tr; s.rec = m.rec; s.metro = m.metro; s.metroLvl = m.metroLvl; s.next = m.next;
+    s.pats = m.pats; s.tr = m.tr; s.rec = m.rec; s.metro = m.metro; s.metroLvl = m.metroLvl; s.next = m.next; s.presets = m.presets || {};
     if (!s.playing) s.pat = m.pat;
     // a start (again from step 1 on a MIDI Start, or on from a step on a MIDI Continue); following a clock, step 1
     // waits for its next pulse
     if (m.playing && (!s.playing || m.restart)) {
       if (s.playing) this.seqAllOff();
       s.playing = true; s.step = (m.from || 0) - 1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0;
-      s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0;
+      s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0; s.pass = 0; s.ons = [];
     }
     else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); }
   }
-  seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; }
+  seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; s.ons = []; }
+  // a held or tied note: through the steps it holds over, each at its own Length, into the last by the Gate (seconds)
+  heldFor(P, i, held, gate) {
+    let t = 0;
+    for (let k = 0; k < held; k++) t += this.stepBeats(P, i + k);
+    return ((t + this.stepBeats(P, i + held) * gate) * 60) / this.tempo;
+  }
+  // a step's own length in beats: its Length, or the pattern's Rate (manual 9.11.1)
+  stepBeats(P, i) { const st = P.set && P.set[i]; return NE_RATE[st && st.len !== undefined && st.len !== null ? st.len : P.rate]; }
   seqAdvance() {
     const s = this.sq;
     if (s.first) { this.sendRt(s.first); this.sendRt(0xf8); this.pulseT = 60 / (24 * this.tempo); s.first = 0; }   // Start, then step 1's pulse
     s.at = currentTime;
     let P = s.pats[s.pat];
     s.step++;
-    if (s.step >= P.steps) {
+    if (s.step >= P.steps) {                           // the end of a pass: the pattern picked, or the Chain after its Repeats
       s.step = 0;
-      s.pat = s.next !== null && s.next !== undefined ? s.next : P.chain >= 0 ? P.chain : s.pat;
+      const was = s.pat;
+      if (s.next !== null && s.next !== undefined) s.pat = s.next;
+      else if (P.chain >= 0 && ++s.pass >= (P.repeats || 1)) s.pat = P.chain;
       s.next = null;
+      if (s.pat !== was || P.chain >= 0 && s.pass >= (P.repeats || 1)) s.pass = 0;
       P = s.pats[s.pat];
+      if (s.pat !== was && s.presets[s.pat]) this.p = s.presets[s.pat];   // the pattern's Preset, before its first step
     }
-    const L = (NE_RATE[P.rate] * 60) / this.tempo, sw = (P.swing - 50) / 50;
+    const L = (this.stepBeats(P, s.step) * 60) / this.tempo, sw = (P.swing - 50) / 50, st = (P.set && P.set[s.step]) || {};
     s.dur = L * (s.step % 2 === 0 ? 1 + sw : 1 - sw);
     if (!this.p) return;
+    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    // the step's notes: its Gate, Transpose and Accent; a Ratchet replays them in even hits; a held or tied note ends later
+    const gate = (st.gate || P.gate) / 100, r = st.ratchet || 1, h = L / r;
     for (const x of P.notes[s.step]) {
-      const n = clamp(x.n + s.tr, 0, 127), key = "q" + n;
-      this.own(n, x.v, key, true, true);
-      s.offs.push({ n, key, t: Math.max(0.008, L * (x.len - 1) + (L * P.gate) / 100) });
+      const n = clamp(x.n + s.tr + (st.tr || 0), 0, 127), key = "q" + n, v = st.acc ? 127 : x.v;
+      const held = (x.len || 1) - 1 + (x.tie && s.step < P.steps - 1 ? 1 : 0);
+      for (let k = 0; k < r; k++) {
+        const off = Math.max(0.008, k === r - 1 && held ? this.heldFor(P, s.step, held, gate) - k * h : h * gate);
+        if (k === 0) { this.own(n, v, key, true, true); s.offs.push({ n, key, t: off }); }
+        else s.ons.push({ n, v, key, t: k * h, off });
+      }
     }
     this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur });
   }
@@ -1416,6 +1435,10 @@ class Engine extends AudioWorkletProcessor {
       s.count = -1; s.t = 0; s.bt = 0; s.beat = 0;
     }
     for (let i = s.offs.length - 1; i >= 0; i--) { const o = s.offs[i]; o.t -= dt; if (o.t <= 0) { this.own(o.n, 0, o.key, false, true); s.offs.splice(i, 1); } }
+    for (let i = s.ons.length - 1; i >= 0; i--) {     // a Ratchet's later hits
+      const o = s.ons[i]; o.t -= dt;
+      if (o.t <= 0) { this.own(o.n, o.v, o.key, true, true); s.offs.push({ n: o.n, key: o.key, t: o.off + o.t }); s.ons.splice(i, 1); }
+    }
     if (s.arm) return;                                   // step 1 waits for the clock's next pulse
     if (s.locked) {                                      // following a clock: the steps begin on its pulses (seqPulse)
       if (!this.following()) { s.locked = false; s.t = Math.max(0, s.at + s.dur - currentTime); }   // it stopped: on at its last tempo
@@ -1438,11 +1461,11 @@ class Engine extends AudioWorkletProcessor {
     if (s.arm) { s.arm = false; s.pc = 0; this.seqAdvance(); return; }
     if (!s.locked) return;
     const P = s.pats[s.pat];
-    if (++s.pc < Math.round(NE_RATE[P.rate] * 24)) return;
+    if (++s.pc < Math.round(this.stepBeats(P, s.step) * 24)) return;
     s.pc = 0;
     const sw = (P.swing - 50) / 50, next = s.step + 1;
     if (s.wait > 0) { s.wait = 0; this.seqAdvance(); }
-    if (sw > 0 && next % 2 === 1 && next < P.steps) s.wait = (sw * NE_RATE[P.rate] * 60) / this.tempo;   // Swing moves the note, not the pulse
+    if (sw > 0 && next % 2 === 1 && next < P.steps) s.wait = (sw * this.stepBeats(P, s.step) * 60) / this.tempo;   // Swing moves the note, not the pulse
     else this.seqAdvance();
   }
   // Clock Out: 24 pulses a beat at the Tempo, Always or while the pattern plays, never while following a clock
@@ -3202,7 +3225,7 @@ class Firmware {
     if (this.splash) return;
     if (["FX", "ENV", "LFO", "EDIT", "GLO", "HOME"].includes(b)) this.leaveRt();   // these end real-time recording
     const goto = (root, list) => {
-      this.q = null; this.nameEd = null; this.plist = null;
+      this.q = null; this.nameEd = null; this.plist = null; this.S.stepClip = null;   // leaving the Sequencer forgets Copy Step
       if (this.stack.length && this.stack[0].root === root) this.stack = [];
       else this.stack = [{ root, list, sel: 0, top: 0 }];
     };
@@ -3252,6 +3275,7 @@ class Firmware {
     if (this.diag) { this.diag = null; return; }
     if (!this.stack.length) { this.stack = [{ root: "banks", list: () => this.banksList(), sel: Math.max(0, this.bankIds().indexOf(this.G.knobBank)), top: 0 }]; return; }
     this.stack.pop();
+    if (!this.inSeq()) this.S.stepClip = null;
   }
   enter() {
     if (this.q) {
@@ -3267,7 +3291,7 @@ class Firmware {
     if (!top) return;
     const L = top.list(), r = L.rows[top.sel];
     if (!r || (r.dim && r.dim())) return;
-    if (r.kind === "group") this.stack.push({ list: r.open, sel: 0, top: 0 });
+    if (r.kind === "group" || (r.kind === "value" && r.open)) this.stack.push({ list: r.open, sel: 0, top: 0 });   // a note's row opens its own list
     else if (r.kind === "action") r.run();
     else if (r.kind === "bank") { this.G.knobBank = r.bankId; this.gdirty = true; this.stack = []; this.message("Knobs: " + this.bankName(r.bankId)); }
   }
@@ -3810,7 +3834,9 @@ function dx7Parse(bytes) {
 "use strict";
 const SEQ_RATES = NE_RATES;
 const SEQ_RATE_BEATS = [4, 2, 4 / 3, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12];   // a step's length in beats                         // 1/1 .. 1/32T, as the arpeggiator's Rate
-const newPattern = () => ({ steps: 16, rate: 7, swing: 50, gate: 80, chain: -1, notes: Array.from({ length: 64 }, () => []) });
+const newPattern = () => ({ steps: 16, rate: 7, swing: 50, gate: 80, chain: -1, repeats: 1, preset: -1, notes: Array.from({ length: 64 }, () => []), set: [] });
+const REPEATS = [1, 2, 3, 4, 6, 8, 12, 16];
+const rateIdx = (beats) => SEQ_RATE_BEATS.findIndex((b) => Math.abs(b - beats) < 1e-9);   // -1: no such note value
 const noteName = (n) => NN[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 1);
 
 Object.defineProperty(Firmware.prototype, "P", { get() { return this.pats[this.S.pat]; } });
@@ -3822,6 +3848,7 @@ Object.assign(Firmware.prototype, {
     this.pats = Array.isArray(pats) && pats.length === 16 ? pats : Array.from({ length: 16 }, newPattern);
     // an empty pattern starts at 1/16 each time the FM-1 is switched on (manual 9.8.6)
     for (const p of this.pats) if (!p.notes.some((s) => s.length)) p.rate = 7;
+    for (const p of this.pats) { if (p.repeats === undefined) p.repeats = 1; if (p.preset === undefined) p.preset = -1; if (!p.set) p.set = []; }   // kept before part 2
     this.S = { pat: 0, next: null, playing: false, rec: null, cursor: 0, ring: 0, pos: null, recHeld: new Map(), clip: null };
     if (this.G.seqOn === undefined) this.G.seqOn = 0;
     if (this.G.seqTr === undefined) this.G.seqTr = 0;
@@ -3831,7 +3858,9 @@ Object.assign(Firmware.prototype, {
   sendSeq() {
     if (!this.node) return;
     const S = this.S;
-    this.node.port.postMessage({ t: "seq", pats: this.pats, pat: S.pat, next: S.next, tr: this.G.seqTr, playing: S.playing,
+    const presets = {};                                // each pattern's Preset, for the worklet to change to at a pass's end
+    this.pats.forEach((p, i) => { if (p.preset >= 0) presets[i] = p.preset === this.idx ? this.cur : this.bank[p.preset]; });
+    this.node.port.postMessage({ t: "seq", pats: this.pats, pat: S.pat, next: S.next, tr: this.G.seqTr, playing: S.playing, presets,
       rec: S.rec, metro: this.G.metroOn ? this.G.metro : 0, metroLvl: this.G.metro, count: !!S.countReq,
       from: S.from || 0, cont: !!S.cont, restart: !!S.restart });
     S.countReq = false; S.from = 0; S.cont = false; S.restart = false;
@@ -3840,7 +3869,7 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     S.pos = { pat: m.pat, step: m.step, at: m.at, dur: m.dur };
     S.countUntil = 0;
-    if (m.pat !== S.pat) { S.pat = m.pat; S.next = null; this.message("Pattern " + (m.pat + 1)); }
+    if (m.pat !== S.pat) { S.pat = m.pat; S.next = null; this.message("Pattern " + (m.pat + 1)); this.patPreset(); }
     if (S.rec === "rt") { S.cursor = m.step; this.rtEraseStep(m.step); }
   },
   now() { return this.node ? this.node.context.currentTime : performance.now() / 1000; },
@@ -3873,6 +3902,7 @@ Object.assign(Firmware.prototype, {
       if (S.rec === "rt") { S.rec = "step"; S.cursor = at; }
     } else {
       if (S.next !== null) { S.pat = S.next; S.next = null; }
+      this.patPreset();
       S.playing = true; S.stopped = false;
       // PLAY in step recording: one bar of four clicks first, with Count-in on and Sync off (manual 9.10)
       if (S.rec === "step") { S.rec = "rt"; if (this.G.countIn && !this.G.sync) { S.countReq = true; S.countUntil = this.now() + (4 * 60) / this.G.tempo; } }
@@ -3927,7 +3957,7 @@ Object.assign(Firmware.prototype, {
     if (S.playing) {
       S.next = to === S.pat ? null : to;
       this.message(S.next === null ? "Pattern " + (S.pat + 1) + " continues" : "Pattern " + (to + 1) + " plays next");
-    } else { S.pat = to; S.cursor = S.ring = Math.min(S.ring, this.P.steps - 1); this.message("Pattern " + (to + 1)); }
+    } else { S.pat = to; S.cursor = S.ring = Math.min(S.ring, this.P.steps - 1); this.message("Pattern " + (to + 1)); this.patPreset(); }
     this.sendSeq();
     return true;
   },
@@ -4015,35 +4045,130 @@ Object.assign(Firmware.prototype, {
   },
 
   // ---------------------------------------------------------------- lists
+  patPreset() {                                         // the pattern's Preset, before its first step (manual 9.15.2)
+    const pr = this.P.preset;
+    if (pr >= 0 && pr !== this.idx) this.loadPreset(pr);
+  },
   patList() {
-    const S = this.S, P = () => this.P, stopped = () => S.playing, g = { g: true };
+    const S = this.S, P = () => this.P, stopped = () => S.playing, g = { g: true }, send = () => this.sendSeq();
     const patRow = { kind: "value", name: "Pattern", min: 0, max: 15, bar: false,
       get: () => (S.next !== null ? S.next : S.pat), set: () => {}, fmt: () => (S.next !== null ? `${S.pat + 1} > ${S.next + 1}` : String(S.pat + 1)),
       turn: (d) => this.choosePattern(d) };
+    const act = (name, run) => action(name, run, { dim: stopped });
     return { title: "Pattern " + (S.pat + 1) + " Settings", rows: [
       patRow,
       num("Steps", P, "steps", 1, 64, { g: true, dim: stopped, after: () => { S.ring = Math.min(S.ring, P().steps - 1); this.sendSeq(); } }),
       group("Timing", () => ({ title: "Timing", rows: [
-        ch("Rate", P, "rate", SEQ_RATES, { g: true, after: () => this.sendSeq() }),
-        num("Swing", P, "swing", 50, 75, { g: true, after: () => this.sendSeq() }),
-        num("Gate", P, "gate", 5, 100, { g: true, after: () => this.sendSeq() })] }), { value: () => SEQ_RATES[P().rate] }),
-      num("Transpose", () => this.G, "seqTr", -24, 24, { g: true, after: () => this.sendSeq() }),
-      vals("Chain", P, "chain", [-1, ...Array.from({ length: 16 }, (_, i) => i)], ["Repeat", ...Array.from({ length: 16 }, (_, i) => "Pattern " + (i + 1))], { g: true, after: () => this.sendSeq() }),
-      action("Copy Pattern", () => { S.clip = clone(P()); this.message("Pattern " + (S.pat + 1) + " copied"); }),
-      action("Paste Pattern", () => this.ask({ title: "Paste Pattern?", lines: () => ["Replaces pattern " + (S.pat + 1) + ".", "Its notes and timing go."], options: ["Cancel", "Paste"],
-        confirm: () => { const c = clone(S.clip); c.chain = P().chain; this.pats[S.pat] = c; this.gdirty = true; this.sendSeq(); this.message("Pattern pasted"); } }), { dim: () => S.playing || !S.clip }),
+        ch("Rate", P, "rate", SEQ_RATES, { g: true, after: () => { for (const st of P().set || []) if (st) delete st.len; this.sendSeq(); } }),   // every step's Length with it
+        num("Swing", P, "swing", 50, 75, { g: true, after: send }),
+        num("Gate", P, "gate", 5, 100, { g: true, after: send })] }), { value: () => SEQ_RATES[P().rate] }),
+      num("Transpose", () => this.G, "seqTr", -24, 24, { g: true, after: send }),
+      vals("Chain", P, "chain", [-1, ...Array.from({ length: 16 }, (_, i) => i)], ["Repeat", ...Array.from({ length: 16 }, (_, i) => "Pattern " + (i + 1))], { g: true, after: send }),
+      vals("Repeats", P, "repeats", REPEATS, REPEATS.map(String), { g: true, dim: () => P().chain < 0, after: send }),
+      num("Preset", P, "preset", -1, 127, { g: true, bar: false, fmt: (v) => (v < 0 ? "Off" : this.label(v)), after: send }),
+      action("Copy Pattern", () => { S.clipPat = S.pat; this.message("Pattern " + (S.pat + 1) + " copied"); }),
+      action("Paste Pattern", () => this.askPaste(), { dim: () => S.playing || S.clipPat === undefined }),
+      group("Time Multiplier", () => ({ title: "Time Multiplier", rows: [
+        act("Stretch to 2x", () => this.stretch()), act("2x in Place", () => this.inPlace(2)),
+        act("Squeeze to 1/2x", () => this.squeeze(false)), act("1/2x in Place", () => this.inPlace(0.5))] }), { dim: stopped }),
+      act("Copy Repeater", () => this.copyRepeater()),
       action("Clear Pattern", () => {
         const used = P().notes.filter((s) => s.length).length;
         this.ask({ title: "Clear Pattern?", lines: () => [used + " step" + (used === 1 ? "" : "s") + " with notes", "in pattern " + (S.pat + 1) + " go."], options: ["Cancel", "Clear"],
-          confirm: () => { const p = P(); p.notes = Array.from({ length: 64 }, () => []); p.rate = 7; this.gdirty = true; this.sendSeq(); this.message("Pattern cleared"); } });
+          confirm: () => { const p = P(); p.notes = Array.from({ length: 64 }, () => []); p.set = []; p.rate = 7; this.gdirty = true; this.sendSeq(); this.message("Pattern cleared"); } });
       }, { dim: stopped })] };
   },
+  // Paste Pattern asks first, on the pattern copied; ALGORITHM pastes another (manual 9.16). The Chain and Repeats stay
+  askPaste() {
+    const S = this.S;
+    let from = S.clipPat;
+    this.ask({ title: "Paste Pattern?", lines: () => ["Pattern " + (from + 1) + " into " + (S.pat + 1) + ".", "Its notes and timing go."], options: ["Cancel", "Paste"],
+      algo: (d) => { from = clampi(from + d, 0, 15); },
+      confirm: () => {
+        const c = clone(this.pats[from]), P = this.P;
+        Object.assign(P, { notes: c.notes, set: c.set || [], steps: c.steps, rate: c.rate, swing: c.swing, gate: c.gate, preset: c.preset === undefined ? -1 : c.preset });
+        this.gdirty = true; this.sendSeq(); this.message("Pattern " + (from + 1) + " pasted");
+      } });
+  },
+  stepSet(i) { const P = this.P; if (!P.set) P.set = []; return P.set[i] || (P.set[i] = { ratchet: 1, gate: 0, chance: 100, tr: 0, acc: 0 }); },
+  // ---------------------------------------------------------------- Time Multiplier and Copy Repeater (manual 9.17, 9.18)
+  changedPat(text) { this.gdirty = true; this.S.ring = Math.min(this.S.ring, this.P.steps - 1); this.S.cursor = Math.min(this.S.cursor, this.P.steps - 1); this.sendSeq(); this.message(text); },
+  stretch() {                                           // every step gets a twin, held from it
+    const P = this.P;
+    if (P.steps > 32) return this.message("64 steps is the limit");
+    const notes = Array.from({ length: 64 }, () => []), set = [];
+    for (let i = 0; i < P.steps; i++) {
+      notes[2 * i] = P.notes[i].map((x) => Object.assign({}, x, { len: 2 * (x.len || 1) + (x.tie ? 1 : 0) }));
+      if (P.set && P.set[i]) set[2 * i] = clone(P.set[i]);
+    }
+    Object.assign(P, { notes, set, steps: P.steps * 2 });
+    this.changedPat("Stretched to " + P.steps + " steps");
+  },
+  squeeze(sure) {                                       // the pairs into one each, keeping the first
+    const P = this.P;
+    if (!sure && P.notes.some((s, i) => i % 2 === 1 && i < P.steps && s.length))
+      return this.ask({ title: "Squeeze to 1/2x?", lines: () => ["The second step of a pair", "loses its notes."], options: ["Cancel", "Squeeze"], confirm: () => this.squeeze(true) });
+    const notes = Array.from({ length: 64 }, () => []), set = [], n = Math.ceil(P.steps / 2);
+    for (let i = 0; i < n; i++) {
+      notes[i] = P.notes[2 * i].map((x) => Object.assign({}, x, { len: Math.max(1, x.tie ? Math.floor((x.len || 1) / 2) : Math.ceil((x.len || 1) / 2)) }));
+      if (P.set && P.set[2 * i]) set[i] = clone(P.set[2 * i]);
+    }
+    Object.assign(P, { notes, set, steps: n });
+    this.changedPat("Squeezed to " + n + " steps");
+  },
+  inPlace(k) {                                          // every step's Length and the Rate, twice or half as long
+    const P = this.P, to = (r) => rateIdx(SEQ_RATE_BEATS[r] * k);
+    for (let i = 0; i < P.steps; i++) {
+      const st = P.set && P.set[i];
+      if (st && st.len !== undefined && to(st.len) < 0) return this.message("Step " + (i + 1) + " already " + SEQ_RATES[st.len]);
+    }
+    if (to(P.rate) < 0) return this.message("Rate already " + SEQ_RATES[P.rate]);
+    for (const st of P.set || []) if (st && st.len !== undefined) st.len = to(st.len);
+    P.rate = to(P.rate);
+    this.changedPat("Rate " + SEQ_RATES[P.rate]);
+  },
+  copyRepeater() {
+    const P = this.P, n = P.steps;
+    if (n >= 64) return this.message("Already 64 steps");
+    for (let i = 0; i < n; i++) for (const x of P.notes[i]) {   // the hold that never sounded, past the end, goes
+      if ((x.len || 1) > n - i) x.len = n - i;
+      if (i === n - 1) x.tie = 0;
+    }
+    const m = Math.min(64, 2 * n);
+    if (!P.set) P.set = [];
+    for (let i = n; i < m; i++) { P.notes[i] = clone(P.notes[i - n]); P.set[i] = P.set[i - n] ? clone(P.set[i - n]) : undefined; }
+    P.steps = m;
+    this.changedPat(m === 2 * n ? "Repeated to " + m + " steps" : "Trimmed to 64 steps");
+  },
+  // ---------------------------------------------------------------- a step's list and a note's (manual 9.11)
   stepList(i) {
-    const s = () => this.P.notes[i];
+    const S = this.S, s = () => this.P.notes[i], st = () => this.stepSet(i), send = () => this.sendSeq(), o = { g: true, after: send };
     const rows = s().map((x, k) => ({ kind: "value", name: noteName(x.n) + (x.len > 1 ? "  " + x.len + " steps" : ""), min: 1, max: 127, g: true,
-      get: () => (s()[k] ? s()[k].v : null), set: (v) => { s()[k].v = v; }, after: () => this.sendSeq() }));
-    rows.push(action("Erase Step", () => { this.P.notes[i] = []; this.gdirty = true; this.sendSeq(); this.stack.pop(); this.message("Step " + (i + 1) + " erased"); }));
+      get: () => (s()[k] ? s()[k].v : null), set: (v) => { s()[k].v = v; }, after: send, open: () => this.noteList(i, k) }));
+    const last = () => i >= this.P.steps - 1;
+    rows.push(
+      { kind: "value", name: "Length", min: 0, max: SEQ_RATES.length - 1, labels: SEQ_RATES, g: true, after: send,
+        get: () => (st().len === undefined ? this.P.rate : st().len), set: (v) => { st().len = v; } },
+      vals("Ratchet", st, "ratchet", [1, 2, 3, 4], ["Off", "2", "3", "4"], o),
+      vals("Gate", st, "gate", [0, ...Array.from({ length: 96 }, (_, k) => k + 5)], ["Pattern", ...Array.from({ length: 96 }, (_, k) => String(k + 5))], o),
+      vals("Chance", st, "chance", Array.from({ length: 20 }, (_, k) => 100 - 5 * k), ["Always", ...Array.from({ length: 19 }, (_, k) => String(95 - 5 * k))], o),
+      num("Transpose", st, "tr", -24, 24, Object.assign({ center: 0 }, o)),
+      onoff("Accent", st, "acc", o),
+      { kind: "value", name: "Tie & Slide", min: 0, max: 1, labels: ["Off", "On"], g: true, after: send, dim: () => last() || !s().length,
+        get: () => (s().length && s().every((x) => x.tie) ? 1 : 0), set: (v) => { for (const x of s()) x.tie = v; } },
+      action("Copy Step", () => { S.stepClip = { notes: clone(s()), set: this.P.set && this.P.set[i] ? clone(this.P.set[i]) : undefined }; this.message("Step " + (i + 1) + " copied"); }),
+      action("Paste Step", () => { this.P.notes[i] = clone(S.stepClip.notes); if (!this.P.set) this.P.set = []; this.P.set[i] = S.stepClip.set ? clone(S.stepClip.set) : undefined;
+        this.gdirty = true; this.sendSeq(); this.message("Step " + (i + 1) + " pasted"); }, { dim: () => !S.stepClip }),
+      action("Clear Step", () => { this.P.notes[i] = []; if (this.P.set) this.P.set[i] = undefined; this.gdirty = true; this.sendSeq(); this.stack.pop(); this.message("Step " + (i + 1) + " cleared"); }));
     return { title: "Step " + (i + 1) + " Settings", rows };
+  },
+  noteList(i, k) {
+    const x = () => this.P.notes[i][k], send = () => this.sendSeq(), o = { g: true, after: send };
+    return { title: "Note Settings", rows: [
+      num("Note", x, "n", 0, 127, Object.assign({ bar: false, fmt: (v) => noteName(v) }, o)),
+      num("Velocity", x, "v", 1, 127, o),
+      onoff("Tie & Slide", x, "tie", Object.assign({ dim: () => i >= this.P.steps - 1 }, o)),
+      action("Remove Note", () => { this.P.notes[i].splice(k, 1); this.gdirty = true; this.sendSeq(); this.stack.pop(); this.message("Note removed"); })] };
   },
   seqEnter() {                                          // SEL on the grid opens the step under the ring or the diamond
     const S = this.S;
@@ -4060,12 +4185,21 @@ Object.assign(Firmware.prototype, {
     const pos = (i) => [x0 + (i % 8) * pitch, y0 + Math.floor(i / 8) * pitch];
     // held notes: a bar to the next dot
     c.lineWidth = 4; c.lineCap = "round";
+    // a line to the next dot, straight, or wavy into a step that starts a different note (a slide, on a mono preset with glide)
+    const seg = (ax, ay, bx, wavy) => {
+      if (!wavy) { c.moveTo(ax, ay); c.lineTo(bx, ay); return; }
+      const n = 6, w = (bx - ax) / n;
+      c.moveTo(ax, ay);
+      for (let j = 1; j <= n; j++) c.lineTo(ax + w * j, ay + (j === n ? 0 : j % 2 ? -2.6 : 2.6));
+    };
     for (let i = 0; i < P.steps; i++) {
-      const long = P.notes[i].reduce((m, x) => Math.max(m, x.len), 0);
+      const held = P.notes[i].map((x) => ({ n: x.n, k: (x.len || 1) + (x.tie && i < P.steps - 1 ? 1 : 0) }));
+      const long = held.reduce((m, x) => Math.max(m, x.k), 0);
       for (let k = 1; k < long && i + k < P.steps; k++) {
         const [ax, ay] = pos(i + k - 1), [bx, by] = pos(i + k);
+        const into = held.filter((x) => x.k > k).map((x) => x.n), wavy = P.notes[i + k].some((x) => !into.includes(x.n));
         c.strokeStyle = T.acc; c.globalAlpha = 0.55; c.beginPath();
-        if (ay === by) { c.moveTo(ax, ay); c.lineTo(bx, by); } else { c.moveTo(ax, ay); c.lineTo(ax + pitch / 2, ay); c.moveTo(bx - pitch / 2, by); c.lineTo(bx, by); }
+        if (ay === by) seg(ax, ay, bx, wavy); else { seg(ax, ay, ax + pitch / 2, wavy); seg(bx - pitch / 2, by, bx, wavy); }
         c.stroke(); c.globalAlpha = 1;
       }
     }
@@ -4076,6 +4210,12 @@ Object.assign(Firmware.prototype, {
       if (i === playing) { c.fillStyle = "#ffffff"; c.fill(); }
       else if (full) { c.fillStyle = T.acc; c.fill(); }
       else { c.strokeStyle = T.mute; c.lineWidth = 1.6; c.stroke(); }
+      const rt = P.set && P.set[i] ? P.set[i].ratchet || 1 : 1;   // a Ratchet: one, two or three black lines across the dot
+      if (rt > 1) {
+        c.strokeStyle = "#000000"; c.lineWidth = 1.4; c.beginPath();
+        for (let j = 1; j < rt; j++) { const lx = x - r + (2 * r * j) / rt; c.moveTo(lx, y - r * 0.7); c.lineTo(lx, y + r * 0.7); }
+        c.stroke();
+      }
     }
     // the white ring, or the red diamond while recording
     if (S.rec) {

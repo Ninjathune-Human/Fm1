@@ -1083,37 +1083,56 @@ class Engine extends AudioWorkletProcessor {
   // A pattern changes at the end of its pass: to the one waiting, or along its Chain.
   seqMsg(m) {
     const s = this.sq || (this.sq = { playing: false, step: -1, t: 0, dur: 0, offs: [], pat: 0, next: null, bt: 0, beat: 0 });
-    s.pats = m.pats; s.tr = m.tr; s.rec = m.rec; s.metro = m.metro; s.metroLvl = m.metroLvl; s.next = m.next;
+    s.pats = m.pats; s.tr = m.tr; s.rec = m.rec; s.metro = m.metro; s.metroLvl = m.metroLvl; s.next = m.next; s.presets = m.presets || {};
     if (!s.playing) s.pat = m.pat;
     // a start (again from step 1 on a MIDI Start, or on from a step on a MIDI Continue); following a clock, step 1
     // waits for its next pulse
     if (m.playing && (!s.playing || m.restart)) {
       if (s.playing) this.seqAllOff();
       s.playing = true; s.step = (m.from || 0) - 1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0;
-      s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0;
+      s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0; s.pass = 0; s.ons = [];
     }
     else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); }
   }
-  seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; }
+  seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; s.ons = []; }
+  // a held or tied note: through the steps it holds over, each at its own Length, into the last by the Gate (seconds)
+  heldFor(P, i, held, gate) {
+    let t = 0;
+    for (let k = 0; k < held; k++) t += this.stepBeats(P, i + k);
+    return ((t + this.stepBeats(P, i + held) * gate) * 60) / this.tempo;
+  }
+  // a step's own length in beats: its Length, or the pattern's Rate (manual 9.11.1)
+  stepBeats(P, i) { const st = P.set && P.set[i]; return NE_RATE[st && st.len !== undefined && st.len !== null ? st.len : P.rate]; }
   seqAdvance() {
     const s = this.sq;
     if (s.first) { this.sendRt(s.first); this.sendRt(0xf8); this.pulseT = 60 / (24 * this.tempo); s.first = 0; }   // Start, then step 1's pulse
     s.at = currentTime;
     let P = s.pats[s.pat];
     s.step++;
-    if (s.step >= P.steps) {
+    if (s.step >= P.steps) {                           // the end of a pass: the pattern picked, or the Chain after its Repeats
       s.step = 0;
-      s.pat = s.next !== null && s.next !== undefined ? s.next : P.chain >= 0 ? P.chain : s.pat;
+      const was = s.pat;
+      if (s.next !== null && s.next !== undefined) s.pat = s.next;
+      else if (P.chain >= 0 && ++s.pass >= (P.repeats || 1)) s.pat = P.chain;
       s.next = null;
+      if (s.pat !== was || P.chain >= 0 && s.pass >= (P.repeats || 1)) s.pass = 0;
       P = s.pats[s.pat];
+      if (s.pat !== was && s.presets[s.pat]) this.p = s.presets[s.pat];   // the pattern's Preset, before its first step
     }
-    const L = (NE_RATE[P.rate] * 60) / this.tempo, sw = (P.swing - 50) / 50;
+    const L = (this.stepBeats(P, s.step) * 60) / this.tempo, sw = (P.swing - 50) / 50, st = (P.set && P.set[s.step]) || {};
     s.dur = L * (s.step % 2 === 0 ? 1 + sw : 1 - sw);
     if (!this.p) return;
+    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    // the step's notes: its Gate, Transpose and Accent; a Ratchet replays them in even hits; a held or tied note ends later
+    const gate = (st.gate || P.gate) / 100, r = st.ratchet || 1, h = L / r;
     for (const x of P.notes[s.step]) {
-      const n = clamp(x.n + s.tr, 0, 127), key = "q" + n;
-      this.own(n, x.v, key, true, true);
-      s.offs.push({ n, key, t: Math.max(0.008, L * (x.len - 1) + (L * P.gate) / 100) });
+      const n = clamp(x.n + s.tr + (st.tr || 0), 0, 127), key = "q" + n, v = st.acc ? 127 : x.v;
+      const held = (x.len || 1) - 1 + (x.tie && s.step < P.steps - 1 ? 1 : 0);
+      for (let k = 0; k < r; k++) {
+        const off = Math.max(0.008, k === r - 1 && held ? this.heldFor(P, s.step, held, gate) - k * h : h * gate);
+        if (k === 0) { this.own(n, v, key, true, true); s.offs.push({ n, key, t: off }); }
+        else s.ons.push({ n, v, key, t: k * h, off });
+      }
     }
     this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur });
   }
@@ -1130,6 +1149,10 @@ class Engine extends AudioWorkletProcessor {
       s.count = -1; s.t = 0; s.bt = 0; s.beat = 0;
     }
     for (let i = s.offs.length - 1; i >= 0; i--) { const o = s.offs[i]; o.t -= dt; if (o.t <= 0) { this.own(o.n, 0, o.key, false, true); s.offs.splice(i, 1); } }
+    for (let i = s.ons.length - 1; i >= 0; i--) {     // a Ratchet's later hits
+      const o = s.ons[i]; o.t -= dt;
+      if (o.t <= 0) { this.own(o.n, o.v, o.key, true, true); s.offs.push({ n: o.n, key: o.key, t: o.off + o.t }); s.ons.splice(i, 1); }
+    }
     if (s.arm) return;                                   // step 1 waits for the clock's next pulse
     if (s.locked) {                                      // following a clock: the steps begin on its pulses (seqPulse)
       if (!this.following()) { s.locked = false; s.t = Math.max(0, s.at + s.dur - currentTime); }   // it stopped: on at its last tempo
@@ -1152,11 +1175,11 @@ class Engine extends AudioWorkletProcessor {
     if (s.arm) { s.arm = false; s.pc = 0; this.seqAdvance(); return; }
     if (!s.locked) return;
     const P = s.pats[s.pat];
-    if (++s.pc < Math.round(NE_RATE[P.rate] * 24)) return;
+    if (++s.pc < Math.round(this.stepBeats(P, s.step) * 24)) return;
     s.pc = 0;
     const sw = (P.swing - 50) / 50, next = s.step + 1;
     if (s.wait > 0) { s.wait = 0; this.seqAdvance(); }
-    if (sw > 0 && next % 2 === 1 && next < P.steps) s.wait = (sw * NE_RATE[P.rate] * 60) / this.tempo;   // Swing moves the note, not the pulse
+    if (sw > 0 && next % 2 === 1 && next < P.steps) s.wait = (sw * this.stepBeats(P, s.step) * 60) / this.tempo;   // Swing moves the note, not the pulse
     else this.seqAdvance();
   }
   // Clock Out: 24 pulses a beat at the Tempo, Always or while the pattern plays, never while following a clock
