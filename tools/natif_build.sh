@@ -7,7 +7,8 @@
 # Facultatifs, depuis tools/natif.json : NATIF_AVANT, une commande lancée à la racine du dépôt avant le script ;
 # NATIF_WASM, le .wasm à retenir quand le script en produit plusieurs ; NATIF_OUTILS (relatifs à NATIF_OUTILS_BASE),
 # des modules de la page du firmware joints sous outils/, dont NATIF_ECHANTILLONS, sa préparation des échantillons ;
-# NATIF_WORKLET (relatif à ce dépôt) et NATIF_DIALECTE, notre worklet pour un firmware dont la page n'en a pas.
+# NATIF_WORKLET (relatif à ce dépôt) et NATIF_DIALECTE, notre worklet pour un firmware dont la page n'en a pas ;
+# NATIF_CONSTRUCTION, une commande lancée à la place du script (elle trouve ce dépôt dans $HERE).
 set -uo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)     # ce dépôt : ses worklets (tools/worklets/) pour les firmwares qui n'en ont pas
 ID=$1 REPO=$(cd "$2" && pwd) SCRIPT=$3 OUT=$4
@@ -38,7 +39,9 @@ while :; do
 done
 
 if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo "natif $ID : préparation en échec (on continue)"; fi
-EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
+export HERE
+if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
+else EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; fi; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 
 CANDIDATS=$(find . -name node_modules -prune -o -name '*.wasm' -newer /tmp/natif-start -print)
 [ -n "$CANDIDATS" ] || echec "aucun .wasm produit"

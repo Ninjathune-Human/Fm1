@@ -34,7 +34,12 @@
    "id": "chipbox",
    "depot": "pbarilla/chipbox",
    "commit": "48510318cffe4db2a5ceccfc153a65dcd6c8d6ff",
-   "script": "web/build.sh"
+   "script": "web/build.sh",
+   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/chipbox.wasm -DCHIPBOX_HOST -DCHIPBOX_WEB '-DAPP_VER=\"web\"' -Ifirmware/src -Ifirmware/gen firmware/src/chipbox.c",
+   "wasm": "build/natif/chipbox.wasm",
+   "worklet": "tools/worklets/chipbox.js",
+   "dialecte": "felucca",
+   "zig": "0.17.0"
   },
   {
    "id": "choralroot",
@@ -139,7 +144,12 @@
    "id": "frodhes",
    "depot": "leonardoMirabal/frodhes",
    "commit": "33c9730c04f1c72b1319aec68124b8759419fd68",
-   "script": "web/build.sh"
+   "script": "web/build.sh",
+   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/frodhes.wasm -DDINGHY_HOST -DDINGHY_WEB -DHOST_SAVE_MS=1u '-DAPP_VER=\"web\"' -Ifirmware/src -Ifirmware/gen firmware/src/frodhes.c",
+   "wasm": "build/natif/frodhes.wasm",
+   "worklet": "tools/worklets/frodhes.js",
+   "dialecte": "felucca",
+   "zig": "0.17.0"
   },
   {
    "id": "fumi",

@@ -76,6 +76,7 @@ jobs:
           NATIF_ECHANTILLONS: ${{ matrix.firmware.echantillons }}
           NATIF_WORKLET: ${{ matrix.firmware.worklet }}
           NATIF_DIALECTE: ${{ matrix.firmware.dialecte }}
+          NATIF_CONSTRUCTION: ${{ matrix.firmware.construction }}
         run: |
           pip install pillow fonttools numpy
           bash fm1/tools/natif_build.sh "${{ matrix.firmware.id }}" src "${{ matrix.firmware.script }}" out
