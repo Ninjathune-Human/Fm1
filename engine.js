@@ -905,7 +905,7 @@ class Engine extends AudioWorkletProcessor {
   msg(m) {
     if (m.t === "preset") {
       const old = this.p;
-      this.p = m.p;
+      this.p = this.base = m.p;                          // base: the preset without the Sequencer's locks
       if (m.same && old && old.engine === m.p.engine) for (const v of this.all()) if (v.active && v.p === old) v.p = m.p;
       if (!m.same) this.lastBass = null;                 // a new preset: the lead plays its own chords again
     } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); else this.ne.refresh(); }
@@ -1092,7 +1092,28 @@ class Engine extends AudioWorkletProcessor {
       s.playing = true; s.step = (m.from || 0) - 1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0;
       s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0; s.pass = 0; s.ons = [];
     }
-    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); }
+    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); this.seqLocks(null); }
+  }
+  // a step's locks (manual 9.13.3): the preset with their values from the step's start, the preset's own on a step
+  // without them. An FM lock plays on the notes starting on its step; elsewhere, and on the effects, at once
+  seqLocks(locks) {
+    const base = this.base;
+    if (!base) return;
+    const ok = (locks || []).filter((l) => l.eng === "fx" || l.eng === base.engine);
+    let p = base;
+    if (ok.length) {
+      p = JSON.parse(JSON.stringify(base));
+      for (const l of ok) for (const [path, v] of l.sets) {
+        const ks = path.split("."), last = ks.pop();
+        let o = p;
+        for (const k of ks) { o = o && o[k]; }
+        if (o) o[last] = v;
+      }
+    }
+    if (p === this.p) return;
+    const old = this.p;
+    this.p = p;
+    if (p.engine !== "fm") for (const v of this.all()) if (v.active && v.p === old) v.p = p;
   }
   seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; s.ons = []; }
   // a held or tied note: through the steps it holds over, each at its own Length, into the last by the Gate (seconds)
@@ -1117,12 +1138,13 @@ class Engine extends AudioWorkletProcessor {
       s.next = null;
       if (s.pat !== was || P.chain >= 0 && s.pass >= (P.repeats || 1)) s.pass = 0;
       P = s.pats[s.pat];
-      if (s.pat !== was && s.presets[s.pat]) this.p = s.presets[s.pat];   // the pattern's Preset, before its first step
+      if (s.pat !== was && s.presets[s.pat]) this.p = this.base = s.presets[s.pat];   // the pattern's Preset, before its first step
     }
     const L = (this.stepBeats(P, s.step) * 60) / this.tempo, sw = (P.swing - 50) / 50, st = (P.set && P.set[s.step]) || {};
     s.dur = L * (s.step % 2 === 0 ? 1 + sw : 1 - sw);
     if (!this.p) return;
-    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.seqLocks(null); this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    this.seqLocks(st.locks);
     // the step's notes: its Gate, Transpose and Accent; a Ratchet replays them in even hits; a held or tied note ends later
     const gate = (st.gate || P.gate) / 100, r = st.ratchet || 1, h = L / r;
     for (const x of P.notes[s.step]) {

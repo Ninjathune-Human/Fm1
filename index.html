@@ -273,7 +273,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <summary>Ce qui manque encore</summary>
       <div class="note">
         <ul>
-          <li>Le séquenceur : la vue Lane (l'écran Pattern, les lanes, Locks), les verrous de paramètres, le déplacement et la copie des pas.</li>
+          <li>Le séquenceur : la vue Lane (l'écran Pattern, les lanes, Locks), le déplacement et la copie des pas.</li>
           <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
           <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
         </ul>
@@ -1191,7 +1191,7 @@ class Engine extends AudioWorkletProcessor {
   msg(m) {
     if (m.t === "preset") {
       const old = this.p;
-      this.p = m.p;
+      this.p = this.base = m.p;                          // base: the preset without the Sequencer's locks
       if (m.same && old && old.engine === m.p.engine) for (const v of this.all()) if (v.active && v.p === old) v.p = m.p;
       if (!m.same) this.lastBass = null;                 // a new preset: the lead plays its own chords again
     } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); else this.ne.refresh(); }
@@ -1378,7 +1378,28 @@ class Engine extends AudioWorkletProcessor {
       s.playing = true; s.step = (m.from || 0) - 1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0;
       s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0; s.pass = 0; s.ons = [];
     }
-    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); }
+    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); this.seqLocks(null); }
+  }
+  // a step's locks (manual 9.13.3): the preset with their values from the step's start, the preset's own on a step
+  // without them. An FM lock plays on the notes starting on its step; elsewhere, and on the effects, at once
+  seqLocks(locks) {
+    const base = this.base;
+    if (!base) return;
+    const ok = (locks || []).filter((l) => l.eng === "fx" || l.eng === base.engine);
+    let p = base;
+    if (ok.length) {
+      p = JSON.parse(JSON.stringify(base));
+      for (const l of ok) for (const [path, v] of l.sets) {
+        const ks = path.split("."), last = ks.pop();
+        let o = p;
+        for (const k of ks) { o = o && o[k]; }
+        if (o) o[last] = v;
+      }
+    }
+    if (p === this.p) return;
+    const old = this.p;
+    this.p = p;
+    if (p.engine !== "fm") for (const v of this.all()) if (v.active && v.p === old) v.p = p;
   }
   seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; s.ons = []; }
   // a held or tied note: through the steps it holds over, each at its own Length, into the last by the Gate (seconds)
@@ -1403,12 +1424,13 @@ class Engine extends AudioWorkletProcessor {
       s.next = null;
       if (s.pat !== was || P.chain >= 0 && s.pass >= (P.repeats || 1)) s.pass = 0;
       P = s.pats[s.pat];
-      if (s.pat !== was && s.presets[s.pat]) this.p = s.presets[s.pat];   // the pattern's Preset, before its first step
+      if (s.pat !== was && s.presets[s.pat]) this.p = this.base = s.presets[s.pat];   // the pattern's Preset, before its first step
     }
     const L = (this.stepBeats(P, s.step) * 60) / this.tempo, sw = (P.swing - 50) / 50, st = (P.set && P.set[s.step]) || {};
     s.dur = L * (s.step % 2 === 0 ? 1 + sw : 1 - sw);
     if (!this.p) return;
-    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    if ((st.chance || 100) < 100 && rnd() * 100 >= st.chance) { this.seqLocks(null); this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur }); return; }
+    this.seqLocks(st.locks);
     // the step's notes: its Gate, Transpose and Accent; a Ratchet replays them in even hits; a held or tied note ends later
     const gate = (st.gate || P.gate) / 100, r = st.ratchet || 1, h = L / r;
     for (const x of P.notes[s.step]) {
@@ -3223,6 +3245,7 @@ class Firmware {
     if (!this.on) return;
     this.held.add(b); this.used[b] = false;
     if (this.splash) return;
+    if (b === "SEL" && this.G.seqOn && this.S.rec === "step") this.lockPreview();   // the step's locks sound while SEL is held
     if (["FX", "ENV", "LFO", "EDIT", "GLO", "HOME"].includes(b)) this.leaveRt();   // these end real-time recording
     const goto = (root, list) => {
       this.q = null; this.nameEd = null; this.plist = null; this.S.stepClip = null;   // leaving the Sequencer forgets Copy Step
@@ -3255,6 +3278,7 @@ class Firmware {
   release(b) {
     if (!this.held.has(b)) return;
     this.held.delete(b);
+    if (b === "SEL" && this.locking) { this.locking = false; this.sendPreset(true); }   // the preset's own values again
     if (this.used[b] || this.splash) return;
     switch (b) {
       case "HOME": this.back(); break;
@@ -3291,6 +3315,7 @@ class Firmware {
     if (!top) return;
     const L = top.list(), r = L.rows[top.sel];
     if (!r || (r.dim && r.dim())) return;
+    if (r.press) return r.press();                    // a lock's row: SEL removes it
     if (r.kind === "group" || (r.kind === "value" && r.open)) this.stack.push({ list: r.open, sel: 0, top: 0 });   // a note's row opens its own list
     else if (r.kind === "action") r.run();
     else if (r.kind === "bank") { this.G.knobBank = r.bankId; this.gdirty = true; this.stack = []; this.message("Knobs: " + this.bankName(r.bankId)); }
@@ -3326,6 +3351,7 @@ class Firmware {
     if (role === "ALGORITHM") return this.turnAlgo(n, v);
     if (role === "PRESETS") return this.turnPresets(n, v);
     const k = +role.slice(4) - 1;
+    if (this.held.has("SEL") && this.G.seqOn && this.S.rec === "step") { this.used.SEL = true; return this.lockTurn(k, n, v); }   // a lock (manual 9.13)
     if (this.held.has("HOME")) {
       this.used.HOME = true;
       if (this.G.knobBank === "preset" && (this.bankIds().includes("preset"))) {
@@ -4091,6 +4117,74 @@ Object.assign(Firmware.prototype, {
       } });
   },
   stepSet(i) { const P = this.P; if (!P.set) P.set = []; return P.set[i] || (P.set[i] = { ratchet: 1, gate: 0, chance: 100, tr: 0, acc: 0 }); },
+  // ---------------------------------------------------------------- locks (manual 9.13): a step's own value for a knob's setting
+  // A lock keeps what the setting writes into the preset (found by trying the value on copies), so the worklet only
+  // copies values in: { id, name, eng, c | fx+j, v, sets: [[path, value]] }.
+  lockOf(k) {                                           // what knob k can lock on this bank, or null
+    const b = this.knobSpecsBank();
+    if (b === "preset") { const c = this.cur.knobs[k]; return { id: "p" + c, eng: this.cur.engine, c, name: KNOB_CHOICES[this.cur.engine][c][0] }; }
+    if (FX_NAMES[b] && k < 3) {
+      const j = b === "dist" ? k + 1 : k, r = this.effRows(b)[j];
+      if (!r || r.labels) return null;                  // a Type: changing it rebuilds the chain
+      return { id: "fx:" + b + ":" + j, eng: "fx", fx: b, j, name: FX_NAMES[b] + " " + r.name };
+    }
+    return null;
+  },
+  lockSpec(l) { return l.eng === "fx" ? this.effRows(l.fx)[l.j] : this.presetKnob(l.c); },
+  // the preset values a lock at v writes: the leaves that v changes, against another value and against the preset
+  lockSets(l, v) {
+    const base = this.cur, put = (p, x) => {
+      this.cur = p;
+      try { const sp = this.lockSpec(l); if (sp.adj) { const g = sp.get(); if (g !== null) sp.adj(x - g); } else sp.set(x); } finally { this.cur = base; }
+      return p;
+    };
+    const a = put(clone(base), v), b = put(clone(base), v > l.min ? l.min : l.max), paths = new Set();
+    const diff = (x, y, pre) => {
+      if (x && typeof x === "object") { for (const k of Object.keys(x)) diff(x[k], y ? y[k] : undefined, pre + k + "."); return; }
+      if (x !== y && typeof x === "number") paths.add(pre.slice(0, -1));
+    };
+    diff(a, b, ""); diff(a, base, "");
+    const at = (o, path) => path.split(".").reduce((q, k) => q[k], o);
+    return [...paths].map((path) => [path, at(a, path)]);
+  },
+  stepLocks(i) { const st = this.stepSet(i); return st.locks || (st.locks = []); },
+  lockTurn(k, n, v, cc) {
+    const i = this.S.cursor, l0 = this.lockOf(k), msg = (t) => { this.message(t); return false; };
+    if (!l0) return msg("Step " + (i + 1) + " cannot lock this");
+    const sp = this.lockSpec(l0), now = sp.get();
+    if (now === null || now === undefined || sp.kind !== "value" && !sp.adj) return msg("Step " + (i + 1) + " cannot lock this");
+    const locks = this.stepLocks(i);
+    let l = locks.find((x) => x.id === l0.id);
+    if (!l) {
+      if (locks.length >= 4) return msg("Step " + (i + 1) + " has 4 locks");
+      l = Object.assign(l0, { min: sp.min, max: sp.max, v: now });
+      locks.push(l);
+    }
+    const span = sp.max - sp.min + 1;
+    const to = cc !== undefined ? (sp.labels ? sp.min + Math.min(span - 1, Math.floor((cc * span) / 128)) : Math.round(sp.min + (cc / 127) * (sp.max - sp.min)))
+      : clampi(l.v + (sp.inv ? -1 : 1) * this.accelStep("LOCK" + k, n, v, span), sp.min, sp.max);
+    this.lockValue(l, to);
+    this.message("Lock " + l.name + " " + valText(this.lockRow(l)));
+    return true;
+  },
+  lockValue(l, v) { l.v = v; l.sets = this.lockSets(l, v); this.gdirty = true; this.sendSeq(); if (this.held.has("SEL")) this.lockPreview(); },
+  // a lock made on another engine plays only there: its row shows it, dimmed, and SEL still removes it
+  lockHere(l) { return l.eng === "fx" || l.eng === this.cur.engine; },
+  lockRow(l) {
+    const sp = this.lockHere(l) ? this.lockSpec(l) : {};
+    return { kind: "value", name: l.name, min: l.min, max: l.max, labels: sp.labels, fmt: sp.fmt, get: () => l.v, dimLook: () => !this.lockHere(l) };
+  },
+  // while SEL is held in step recording: the preset with the outlined step's locks
+  lockPreview() {
+    const locks = (this.P.set[this.S.cursor] || {}).locks || [];
+    const p = clone(this.cur);
+    for (const l of locks) if (l.eng === "fx" || l.eng === p.engine) for (const [path, x] of l.sets) {
+      const ks = path.split("."), last = ks.pop(), o = ks.reduce((q, k) => q && q[k], p);
+      if (o) o[last] = x;
+    }
+    this.locking = true;
+    if (this.node) this.node.port.postMessage({ t: "preset", p, same: true });
+  },
   // ---------------------------------------------------------------- Time Multiplier and Copy Repeater (manual 9.17, 9.18)
   changedPat(text) { this.gdirty = true; this.S.ring = Math.min(this.S.ring, this.P.steps - 1); this.S.cursor = Math.min(this.S.cursor, this.P.steps - 1); this.sendSeq(); this.message(text); },
   stretch() {                                           // every step gets a twin, held from it
@@ -4145,7 +4239,9 @@ Object.assign(Firmware.prototype, {
     const S = this.S, s = () => this.P.notes[i], st = () => this.stepSet(i), send = () => this.sendSeq(), o = { g: true, after: send };
     const rows = s().map((x, k) => ({ kind: "value", name: noteName(x.n) + (x.len > 1 ? "  " + x.len + " steps" : ""), min: 1, max: 127, g: true,
       get: () => (s()[k] ? s()[k].v : null), set: (v) => { s()[k].v = v; }, after: send, open: () => this.noteList(i, k) }));
-    const last = () => i >= this.P.steps - 1;
+    const last = () => i >= this.P.steps - 1, locks = () => (this.P.set[i] || {}).locks || [];
+    for (const l of locks()) rows.push(Object.assign(this.lockRow(l), { g: true, set: (v) => { if (this.lockHere(l)) this.lockValue(l, v); },   // ALGORITHM changes it, SEL removes it
+      press: () => { const ls = locks(); ls.splice(ls.indexOf(l), 1); this.gdirty = true; this.sendSeq(); this.message(l.name + " unlocked"); } }));
     rows.push(
       { kind: "value", name: "Length", min: 0, max: SEQ_RATES.length - 1, labels: SEQ_RATES, g: true, after: send,
         get: () => (st().len === undefined ? this.P.rate : st().len), set: (v) => { st().len = v; } },
@@ -4156,6 +4252,7 @@ Object.assign(Firmware.prototype, {
       onoff("Accent", st, "acc", o),
       { kind: "value", name: "Tie & Slide", min: 0, max: 1, labels: ["Off", "On"], g: true, after: send, dim: () => last() || !s().length,
         get: () => (s().length && s().every((x) => x.tie) ? 1 : 0), set: (v) => { for (const x of s()) x.tie = v; } },
+      action("Clear Locks", () => { this.stepSet(i).locks = []; this.gdirty = true; this.sendSeq(); this.message("Step " + (i + 1) + " locks cleared"); }, { dim: () => !locks().length }),
       action("Copy Step", () => { S.stepClip = { notes: clone(s()), set: this.P.set && this.P.set[i] ? clone(this.P.set[i]) : undefined }; this.message("Step " + (i + 1) + " copied"); }),
       action("Paste Step", () => { this.P.notes[i] = clone(S.stepClip.notes); if (!this.P.set) this.P.set = []; this.P.set[i] = S.stepClip.set ? clone(S.stepClip.set) : undefined;
         this.gdirty = true; this.sendSeq(); this.message("Step " + (i + 1) + " pasted"); }, { dim: () => !S.stepClip }),
@@ -4210,6 +4307,7 @@ Object.assign(Firmware.prototype, {
       if (i === playing) { c.fillStyle = "#ffffff"; c.fill(); }
       else if (full) { c.fillStyle = T.acc; c.fill(); }
       else { c.strokeStyle = T.mute; c.lineWidth = 1.6; c.stroke(); }
+      if (P.set && P.set[i] && P.set[i].locks && P.set[i].locks.length) { c.fillStyle = "#ffffff"; c.beginPath(); c.arc(x, y, 2.4, 0, Math.PI * 2); c.fill(); }   // a lock
       const rt = P.set && P.set[i] ? P.set[i].ratchet || 1 : 1;   // a Ratchet: one, two or three black lines across the dot
       if (rt > 1) {
         c.strokeStyle = "#000000"; c.lineWidth = 1.4; c.beginPath();
@@ -4340,6 +4438,7 @@ Object.assign(Firmware.prototype, {
   },
   // CC 85 to 88: the value of what the knob bank has put on the knob, over its own range
   midiKnob(k, b) {
+    if (this.held.has("SEL") && this.G.seqOn && this.S.rec === "step") { this.used.SEL = true; return this.lockTurn(k, 0, 0, b); }   // locks as the knob does
     const s = this.knobSpecs()[k];
     this.col = k; this.colT = performance.now();
     if (this.midiSet(s, b, true, false) && (this.stack.length || this.q || this.nameEd)) this.message(s.name + " " + valText(s));

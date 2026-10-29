@@ -97,7 +97,7 @@ def test_step_and_note_lists(midi):
     setup(midi)
     rows = midi.evaluate("window.__fw.stepList(0).rows.map((r) => r.name + '=' + (r.kind === 'value' ? valText(r) : ''))")
     assert rows == ["C4=100", "Length=1/4", "Ratchet=Off", "Gate=Pattern", "Chance=Always", "Transpose=0", "Accent=Off", "Tie & Slide=Off",
-                    "Copy Step=", "Paste Step=", "Clear Step="]
+                    "Clear Locks=", "Copy Step=", "Paste Step=", "Clear Step="]
     # SEL sur la note ouvre sa liste ; Copy Step puis Paste Step sur un autre pas
     midi.evaluate("""() => { const fw = window.__fw; fw.showGrid(); fw.seqEnter(); fw.enter(); }""")
     assert midi.evaluate("window.__fw.top().list().title") == "Note Settings"

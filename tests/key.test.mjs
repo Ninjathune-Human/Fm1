@@ -99,3 +99,14 @@ test("8-Bit : pas d'accord du Note Engine sur la batterie ni sur une partie qui 
   assert.deepEqual(plain(e.ne.chord(86)), [86]);                                                    // le lead joue son Arpeggio
   assert.deepEqual(plain(e.ne.chord(74)), [74, 65, 69]);                                            // Ré Fa La, gardé dans la basse
 });
+
+test("les verrous d'un pas dans le worklet", () => {
+  const e = new ctx.Engine(), base = { engine: "va", fx: { reverb: { mix: 20 } }, va: { filt: { cutoff: 50 } } };
+  e.p = e.base = base;
+  e.seqLocks([{ eng: "fx", sets: [["fx.reverb.mix", 77]] }, { eng: "va", sets: [["va.filt.cutoff", 99]] }, { eng: "fm", sets: [["fx.reverb.mix", 5]] }]);
+  assert.equal(e.p.fx.reverb.mix, 77);
+  assert.equal(e.p.va.filt.cutoff, 99);
+  assert.equal(base.fx.reverb.mix, 20);                                 // le preset lui-même ne change pas
+  e.seqLocks([]);
+  assert.equal(e.p, base);                                              // un pas sans verrou : les valeurs du preset
+});
