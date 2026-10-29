@@ -143,7 +143,8 @@ def test_layouts(browser, base_url):
         if w < 700:
             assert abs(sheet["bottom"] - h) <= 1, sheet
         else:
-            assert sheet["top"] >= picker["bottom"] - 1, (sheet, picker)
+            assert sheet["top"] >= picker["bottom"] - 1 or sheet["bottom"] <= picker["top"] + 1, (sheet, picker)   # dessous, ou dessus quand la place manque
+            assert sheet["top"] >= 0 and pg.evaluate("scrollY") == 0
         assert sheet["left"] >= 0 and sheet["right"] <= w
         pg.screenshot(path=os.path.join(SHOTS, f"selecteur-{w}.png"))
         ctx.close()
