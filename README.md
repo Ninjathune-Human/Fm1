@@ -21,6 +21,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 ## Comment ça marche
 
 - **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, écrans, séquenceur et MIDI (par Web MIDI : clavier, contrôleurs, horloge, patches DX7 en SysEx). Ce n'est pas son firmware : FM-1+VA de Baud Girl n'est pas redistribué ici, et la réimplémentation ne reprend aucun code de son firmware.
+- **Duo** (`index.html?duo`) : deux FM-1 dans la même page, FM1-A et FM1-B, chacun avec son firmware et sa mémoire ; en portrait l'un au-dessus de l'autre, en paysage l'un ou l'autre (ou côte à côte sur un grand écran), avec un tempo lié au choix entre deux FM-1+VA.
 - **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `1c8661d`, puis publie le site.
 - **59 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
 - Les paquets `.fwsc` sont ceux publiés par leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json)). Chacun a été démarré dans l'émulateur : voir le [rapport de vérification](docs/verification.md).

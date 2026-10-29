@@ -189,6 +189,47 @@ details[open] summary::after { transform: rotate(-135deg) translate(-2px, -1px);
 .note b { color: var(--ink); font-weight: 600; }
 kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 5px; padding: 0 5px; }
 .range { font-variant-numeric: tabular-nums; }
+
+/* Duo : le lien vers deux FM-1, chaque FM-1 dans son cadre, et la page qui les tient */
+.duo-go { font: 500 0.9375rem var(--body); color: var(--ink); text-decoration: none; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 999px; padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; }
+.duo-go:hover { border-color: var(--accent); }
+html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px, env(safe-area-inset-left, 0px)) 6px; overflow: hidden; }
+html.embed main { max-width: none; height: 100%; gap: 0; }
+html.embed .mast, html.embed .notes, html.embed .turn, html.embed .duo-go { display: none; }
+html.embed .stage { height: 100%; display: flex; flex-direction: column; gap: 6px; }
+html.embed .frame { flex: 1 1 0; min-height: 0; padding: 4px 0 10px; container-type: size; display: grid; place-items: center; margin: 0; overflow: visible; }
+html.embed .device { width: min(100cqw, 100cqh * 1640 / 990); min-width: 0; height: auto; }
+html.embed .deck { gap: 6px 14px; flex: none; }
+.duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
+.duo-bar { flex: none; display: flex; align-items: center; justify-content: center; gap: 10px 16px; flex-wrap: wrap; padding: 8px 16px; }
+.duo-bar .duo-exit { margin-right: auto; }
+.seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.seg button { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
+  font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; touch-action: manipulation; }
+.seg button[aria-selected="true"], .seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
+.seg b { font-weight: 600; color: inherit; }
+.seg .fwn { max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.seg .beat { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); }
+.seg .beat.on { background: var(--accent); }
+.duo-link { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--surface); font: 500 0.9375rem var(--body); color: var(--ink); cursor: pointer; }
+.duo-link .track { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--rule); transition: background 0.2s var(--ease); }
+.duo-link .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); transition: transform 0.2s var(--ease); }
+.duo-link[aria-checked="true"] .track { background: var(--accent); }
+.duo-link[aria-checked="true"] .track::after { transform: translateX(14px); }
+.duo-link[aria-disabled="true"] { opacity: 0.5; }
+.duo-stage { flex: 1 1 0; min-height: 0; display: grid; }
+.duo-stage iframe { width: 100%; height: 100%; border: 0; min-height: 0; background: var(--bg); }
+.duo-stage[data-layout="stack"] { grid-template-rows: 1fr 1fr; }
+.duo-stage[data-layout="stack"] iframe + iframe { border-top: 1px solid var(--rule); }
+.duo-stage[data-layout="side"] iframe + iframe { border-left: 1px solid var(--rule); }
+.fm1-id { font: 600 0.8125rem/1 var(--body); letter-spacing: 0.06em; color: var(--muted); }
+.duo-stage[data-layout="side"] { grid-template-columns: 1fr 1fr; }
+.duo-stage[data-layout="one"] iframe { grid-area: 1 / 1; }
+.duo-stage[data-layout="one"] iframe:not(.shown) { visibility: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .duo-link .track, .duo-link .track::after { transition: none; } }
 </style>
 
 <main>
@@ -236,6 +277,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
+        <a class="duo-go" href="?duo" title="Deux FM-1 à la fois">Duo</a>
         <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Patch DX7 (.syx)</label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
@@ -251,6 +293,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
           <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier : <kbd>Q</kbd>…<kbd>I</kbd> et <kbd>A</kbd>…<kbd>K</kbd> pour les blanches, <kbd>1</kbd>…<kbd>0</kbd> <kbd>-</kbd> pour les noires.</dd>
           <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>↑</kbd><kbd>↓</kbd> SELECT, <kbd>←</kbd><kbd>→</kbd> ALGORITHM, <kbd>Pg↑</kbd><kbd>Pg↓</kbd> PRESETS.</dd>
           <dt>Boutons</dt><dd><kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME, <kbd>Z</kbd> <kbd>X</kbd> OCT− et OCT+.</dd>
+          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : FM1-A mène, FM1-B suit son horloge et démarre avec lui (FM-1+VA des deux côtés). FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
         <p>Les presets <span class="range">001–064</span> sont FM, <span class="range">065–080</span> et <span class="range">113–128</span> Virtual Analog, <span class="range">081–112</span> 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT− trois fois).</p>
@@ -1660,6 +1703,12 @@ function rankCatalogue(entries, query) {
 </script>
 <script id="fm1-emu">
 "use strict";
+// Duo (manuel de cette page) : la page sert aussi de FM1-A et de FM1-B, chacun dans un cadre de la page ?duo
+// (?fm1=a, ?fm1=b). FM1-A garde la mémoire de la page seule, FM1-B la sienne, sous « fm1b. ».
+const QS = new URLSearchParams(location.search);
+const FM1_ID = ["a", "b"].includes(QS.get("fm1")) ? QS.get("fm1") : null, DUO_SHELL = !FM1_ID && QS.has("duo");
+const SKEY = (k) => (FM1_ID === "b" ? "fm1b." : "") + k;
+if (FM1_ID) document.documentElement.classList.add("embed");
 // Un firmware open source du FM-1, exécuté tel quel par le cœur fm1-emu (Joakim Eriksson, MIT :
 // runtime/LICENSE-fm1-emu.txt) dans son AudioWorklet. Mêmes membres que Firmware, pour le panneau.
 // La session et les sauvegardes reprennent web/main.js de fm1-emu (lignes 751 à 962).
@@ -1918,11 +1967,11 @@ const nativeFlash = {                     // la flash gardée de chaque firmware
   },
   async get(id) {
     const db = await this.open();
-    return new Promise((ok, ko) => { const r = db.transaction("flash").objectStore("flash").get(id); r.onsuccess = () => ok(r.result || null); r.onerror = () => ko(r.error); });
+    return new Promise((ok, ko) => { const r = db.transaction("flash").objectStore("flash").get(SKEY(id)); r.onsuccess = () => ok(r.result || null); r.onerror = () => ko(r.error); });
   },
   async put(id, sectors) {
     const db = await this.open();
-    return new Promise((ok, ko) => { const t = db.transaction("flash", "readwrite"); t.objectStore("flash").put(sectors, id); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
+    return new Promise((ok, ko) => { const t = db.transaction("flash", "readwrite"); t.objectStore("flash").put(sectors, SKEY(id)); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
   },
 };
 class NativeFirmware {
@@ -2832,7 +2881,7 @@ class Firmware {
   // ---------------------------------------------------------------- storage
   load() {
     let bank = null, g = null;
-    try { bank = JSON.parse(localStorage.getItem("fm1va.bank") || "null"); g = JSON.parse(localStorage.getItem("fm1va.global") || "null"); } catch { /* no storage */ }
+    try { bank = JSON.parse(localStorage.getItem(SKEY("fm1va.bank")) || "null"); g = JSON.parse(localStorage.getItem(SKEY("fm1va.global")) || "null"); } catch { /* no storage */ }
     const factory = factoryBank();
     this.bank = Array.isArray(bank) && bank.length === 128 ? bank : factory;
     // a bank saved by an earlier version: an untouched INIT slot takes the factory preset now there, and a factory
@@ -2847,19 +2896,19 @@ class Firmware {
     }
     if (g) { const d = this.defaultGlobal(); this.G = Object.assign(d, g, { arp: Object.assign(d.arp, g.arp || {}) }); }
     this.G.arp.on = 0;
-    try { this.idx = clampi(+(localStorage.getItem("fm1va.idx") || 0), 0, 127); } catch { this.idx = 0; }
+    try { this.idx = clampi(+(localStorage.getItem(SKEY("fm1va.idx")) || 0), 0, 127); } catch { this.idx = 0; }
     this.cur = fill8(clone(this.bank[this.idx]));
     this.seqInit();
   }
   persist() {
     try {
-      localStorage.setItem("fm1va.bank", JSON.stringify(this.bank));
-      localStorage.setItem("fm1va.global", JSON.stringify(this.G));
-      localStorage.setItem("fm1va.idx", String(this.idx));
+      localStorage.setItem(SKEY("fm1va.bank"), JSON.stringify(this.bank));
+      localStorage.setItem(SKEY("fm1va.global"), JSON.stringify(this.G));
+      localStorage.setItem(SKEY("fm1va.idx"), String(this.idx));
     } catch { /* this session only */ }
   }
   storedCopy(b) {                                   // the copy Reset Bank returns a preset bank to
-    try { const s = JSON.parse(localStorage.getItem("fm1va.stored." + b) || "null"); if (s) return s; } catch { /* factory */ }
+    try { const s = JSON.parse(localStorage.getItem(SKEY("fm1va.stored." + b)) || "null"); if (s) return s; } catch { /* factory */ }
     return factoryBank().slice(b * 32, b * 32 + 32);
   }
 
@@ -2869,7 +2918,7 @@ class Firmware {
   sendGlobal() {
     const G = this.G;
     if (this.node) this.node.port.postMessage({ t: "global", g: { tempo: G.tempo, velocity: G.velocity, glideMode: G.glideMode, glideTime: G.glideTime, drive: G.drive, master: G.master, arp: G.arp,
-      sync: G.sync, clockOut: G.clockOut, local: G.local, seqOut: G.seqOut } });
+      sync: G.sync || (this.mi.follow ? 1 : 0), clockOut: G.clockOut || (this.mi.lead ? 1 : 0), local: G.local, seqOut: G.seqOut } });   // Duo, tempo lié : FM1-A mène, FM1-B suit
   }
   changed(global) {
     if (global) { this.gdirty = true; this.sendGlobal(); } else { this.dirty = true; this.sendPreset(true); }
@@ -2896,7 +2945,7 @@ class Firmware {
     this.sendPreset(false);
     this.midiLoaded();
     if (this.stack.length && this.stack[0].root === "edit") this.stack = [this.stack[0]], this.stack[0].sel = 0, this.stack[0].top = 0;
-    try { localStorage.setItem("fm1va.idx", String(this.idx)); } catch { /* fine */ }
+    try { localStorage.setItem(SKEY("fm1va.idx"), String(this.idx)); } catch { /* fine */ }
   }
   save() {
     const p = clone(this.cur);
@@ -3077,7 +3126,7 @@ class Firmware {
   globList() {
     const G = () => this.G, g = { g: true }, notMono = () => !this.isMono();
     return { title: "Global Settings", rows: [
-      num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 }),
+      num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow }),
       onoff("Sync", G, "sync", g),
       group("MIDI", () => this.midiList()),
       onoff("Metronome", G, "metroOn", { g: true, after: () => this.sendSeq() }),
@@ -3135,7 +3184,7 @@ class Firmware {
       return [...three.map((r, i) => L(r, labels[i])), L(onoff("On/Off", () => this.cur.fx[b], "on"), "ON/OFF")];
     }
     const G = () => this.G, A = () => this.G.arp;
-    if (b === "global") return [L(num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 }), "TEMPO"),
+    if (b === "global") return [L(num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow }), "TEMPO"),
       L(ch("Arp Rate", A, "rate", NE_RATES, { g: true }), "A.RATE"), L(num("Arp Gate", A, "gate", 20, 100, { g: true }), "A.GATE"),
       L(num("Glide Time", G, "glideTime", 0, 100, { g: true, dim: () => !this.isMono() }), "GLIDE")];
     if (b === "mixer") {
@@ -3228,7 +3277,7 @@ class Firmware {
       options: ["Cancel", "Replace"], dx7: true, algo: (d) => { b = clampi(b + d, 0, 3); },
       confirm: () => {
         for (let i = 0; i < 32; i++) { const old = this.bank[b * 32 + i]; const p = voices[i]; p.fx = clone(old.fx); this.bank[b * 32 + i] = p; }
-        try { localStorage.setItem("fm1va.stored." + b, JSON.stringify(this.bank.slice(b * 32, b * 32 + 32))); } catch { /* fine */ }
+        try { localStorage.setItem(SKEY("fm1va.stored." + b), JSON.stringify(this.bank.slice(b * 32, b * 32 + 32))); } catch { /* fine */ }
         this.persist();
         this.loadPreset(b * 32 + (this.idx % 32));
         this.message("DX7 bank loaded");
@@ -3891,7 +3940,7 @@ Object.assign(Firmware.prototype, {
   // ---------------------------------------------------------------- state and storage
   seqInit() {
     let pats = null;
-    try { pats = JSON.parse(localStorage.getItem("fm1va.patterns") || "null"); } catch { /* none kept */ }
+    try { pats = JSON.parse(localStorage.getItem(SKEY("fm1va.patterns")) || "null"); } catch { /* none kept */ }
     this.pats = Array.isArray(pats) && pats.length === 16 ? pats : Array.from({ length: 16 }, newPattern);
     // an empty pattern starts at 1/16 each time the FM-1 is switched on (manual 9.8.6)
     for (const p of this.pats) if (!p.notes.some((s) => s.length)) p.rate = 7;
@@ -3901,7 +3950,7 @@ Object.assign(Firmware.prototype, {
     if (this.G.seqTr === undefined) this.G.seqTr = 0;
     if (this.G.metroOn === undefined) this.G.metroOn = 0;
   },
-  seqPersist() { try { localStorage.setItem("fm1va.patterns", JSON.stringify(this.pats)); } catch { /* this session only */ } },
+  seqPersist() { try { localStorage.setItem(SKEY("fm1va.patterns"), JSON.stringify(this.pats)); } catch { /* this session only */ } },
   sendSeq() {
     if (!this.node) return;
     const S = this.S;
@@ -4862,6 +4911,7 @@ Object.assign(Firmware.prototype, {
   // ---------------------------------------------------------------- what goes out
   midiSend(bytes) {
     const M = this.mi;
+    if (M.link && bytes[0] >= 0xf8) M.link(bytes);    // Duo, tempo lié : l'horloge et Start/Stop vers FM1-B
     if (!M.outs.length || !M.ok()) return;
     for (const o of M.outs) { try { o.send(bytes); } catch { /* a port that went away */ } }
   },
@@ -5432,7 +5482,9 @@ function buildPanel(fw) {
 // FM-1+VA emulator: switching on, the draw loop, DX7 files, factory reset.
 "use strict";
 (function () {
+  if (DUO_SHELL) return;                               // la page ?duo ne fait que les deux cadres (plus bas)
   const $ = (id) => document.getElementById(id);
+  if (FM1_ID) { const t = document.createElement("span"); t.className = "fm1-id"; t.textContent = "FM1-" + FM1_ID.toUpperCase(); document.querySelector(".deck").prepend(t); }
   const device = $("device"), status = $("status");
   new MutationObserver(() => { status.title = status.textContent; }).observe(status, { childList: true, characterData: true, subtree: true });   // le texte entier, quand la ligne le coupe
   const va = new Firmware($("screen"));
@@ -5452,7 +5504,7 @@ function buildPanel(fw) {
 
   // the colourway: the panel's colours, and the screen's matching Theme (which GLO can still change)
   let skin = "mint";
-  try { skin = localStorage.getItem("fm1va.skin") || "mint"; } catch { /* default */ }
+  try { skin = localStorage.getItem(SKEY("fm1va.skin")) || "mint"; } catch { /* default */ }
   if (!SKINS[skin]) skin = "mint";
   const sw = $("swatches"), skinName = $("skin-name");
   function chooseSkin(k, fromUser) {
@@ -5462,7 +5514,7 @@ function buildPanel(fw) {
     for (const b of sw.children) { const on = b.dataset.k === k; b.setAttribute("aria-checked", on); b.tabIndex = on ? 0 : -1; }
     if (fromUser) {
       fw.G.theme = SKINS[k].theme; fw.gdirty = true; applyTheme();
-      try { localStorage.setItem("fm1va.skin", k); } catch { /* this session */ }
+      try { localStorage.setItem(SKEY("fm1va.skin"), k); } catch { /* this session */ }
     }
   }
   for (const [k, v] of Object.entries(SKINS)) {
@@ -5542,7 +5594,7 @@ function buildPanel(fw) {
     navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess()).then((access) => {
       const known = new Set();
       const wire = (e) => {
-        for (const i of access.inputs.values()) i.onmidimessage = (m) => { if (current === va) va.midiIn(m.data); };
+        for (const i of access.inputs.values()) i.onmidimessage = (m) => { if (current === va && window.__midiActive !== false) va.midiIn(m.data); };   // (Duo : le FM-1 affiché ou touché)
         va.mi.outs = [...access.outputs.values()].filter((o) => o.state === "connected");
         const p = e && e.port, here = p && p.state === "connected";
         if (p && here !== known.has(p.id)) {             // a device arriving or leaving, not a port opening
@@ -5644,7 +5696,7 @@ function buildPanel(fw) {
   const sectionsEl = $("fw-sections"), resultsEl = $("fw-results"), nameEl = $("fw-name");
   const LAST = "fm1.firmware";
   let active = { id: "fm1va", nom: "FM-1+VA" }, expanded = null;
-  try { const s = JSON.parse(localStorage.getItem(LAST) || "null"); if (s && s.id) { active = s; nameEl.textContent = s.nom; } } catch { /* rien de gardé */ }
+  try { const s = JSON.parse(localStorage.getItem(SKEY(LAST)) || "null"); if (s && s.id) { active = s; nameEl.textContent = s.nom; } } catch { /* rien de gardé */ }
 
   function tagsOf(e) {
     const t = [];
@@ -5658,7 +5710,7 @@ function buildPanel(fw) {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button"; b.className = "fw-item"; b.dataset.id = e.id;
     if (e.id === active.id) b.setAttribute("aria-current", "true");
-    if (coreError && e.id !== "fm1va") b.setAttribute("aria-disabled", "true");
+    if ((coreError && e.id !== "fm1va") || emuBarred(e)) b.setAttribute("aria-disabled", "true");
     const span = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; return s; };
     const tags = span("fw-tags", "");
     for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
@@ -5755,13 +5807,16 @@ function buildPanel(fw) {
     if (e.id === "local") return "Ce fichier n'est pas un paquet FM-1.";
     return `${e.nom} n'a pas démarré.`;
   }
+  // en Duo, FM1-B prend FM-1+VA ou un firmware natif : un firmware émulé de plus serait trop lourd (et partagerait sa mémoire)
+  function emuBarred(e) { return FM1_ID === "b" && e.id !== "fm1va" && !e.natif; }
   async function pick(e) {
     closeSheet();
     restartBtn.hidden = true;
+    if (emuBarred(e)) { status.textContent = "En Duo, FM1-B prend FM-1+VA ou un firmware natif."; return; }
     if (e.id !== "fm1va" && coreError) { status.textContent = "Cœur d'émulation indisponible."; return; }
     if (!ac) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
-      if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
+      if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
       return;
     }
@@ -5772,7 +5827,7 @@ function buildPanel(fw) {
     if (ok) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
       status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : e.nom;
-      if (e.id !== "local") try { localStorage.setItem(LAST, JSON.stringify(active)); } catch { /* cette session */ }
+      if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
     } else status.textContent = failureText(e);
     showContext();
@@ -5850,12 +5905,99 @@ function buildPanel(fw) {
       await resetEmu().catch(() => {});
       if (current !== va) await current.stop().catch(() => {});   // la flash effacée est enregistrée avant de partir
     } else {
-      try { for (const k of Object.keys(localStorage)) if (k.startsWith("fm1va.")) localStorage.removeItem(k); } catch { /* nothing kept */ }
+      try { for (const k of Object.keys(localStorage)) if (k.startsWith(SKEY("fm1va."))) localStorage.removeItem(k); } catch { /* nothing kept */ }
     }
     location.reload();
   });
 })();
 
+</script>
+<script>
+// Duo : deux FM-1 à la fois, FM1-A et FM1-B, chacun la page entière dans son cadre (?fm1=a, ?fm1=b), avec son firmware,
+// sa mémoire et son allumage. En portrait l'un au-dessus de l'autre ; en paysage l'un ou l'autre en plein écran (le
+// sélecteur), ou, sur un grand écran, côte à côte au choix. Tempo lié : FM1-A mène, FM1-B suit son horloge (FM-1+VA
+// des deux côtés : un firmware natif ne lit pas encore le MIDI).
+"use strict";
+(function () {
+  if (!DUO_SHELL) return;
+  document.title = "FM-1 Duo";
+  document.querySelector("main").hidden = true;
+  const keep = (k, v) => { try { if (v === undefined) return localStorage.getItem("fm1.duo." + k); localStorage.setItem("fm1.duo." + k, v); } catch { return null; } };
+  const root = document.createElement("div");
+  root.className = "duo";
+  root.innerHTML = `
+    <div class="duo-bar">
+      <a class="duo-go duo-exit" href="./">Un FM-1</a>
+      <div class="seg" role="tablist" aria-label="Le FM-1 affiché">
+        <button type="button" role="tab" data-k="a"><span class="beat"></span><b>FM1-A</b><span class="fwn"></span></button>
+        <button type="button" role="tab" data-k="b"><span class="beat"></span><b>FM1-B</b><span class="fwn"></span></button>
+      </div>
+      <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
+        <button type="button" role="radio" data-v="side">Côte à côte</button>
+        <button type="button" role="radio" data-v="one">Un à la fois</button>
+      </div>
+      <button type="button" class="duo-link" role="switch" aria-checked="false" title="FM1-A mène, FM1-B suit son horloge">Tempo lié<span class="track"></span></button>
+    </div>
+    <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
+  document.body.append(root);
+  const stage = root.querySelector(".duo-stage"), frames = { a: stage.children[0], b: stage.children[1] };
+  const tabs = root.querySelector('[role="tablist"]'), view = root.querySelector(".duo-view"), linkBtn = root.querySelector(".duo-link");
+  let shown = keep("shown") === "b" ? "b" : "a", side = keep("side") !== "one", linked = keep("link") === "1", active = shown;
+
+  // la disposition : portrait, l'un sur l'autre ; paysage, un à la fois, ou côte à côte sur un écran assez large
+  function layout() {
+    const portrait = innerHeight > innerWidth, wide = innerWidth >= 1200;
+    const mode = portrait ? "stack" : wide && side ? "side" : "one";
+    stage.dataset.layout = mode;
+    tabs.hidden = mode !== "one";
+    view.hidden = portrait || !wide;
+    for (const b of view.children) b.setAttribute("aria-checked", (b.dataset.v === "side") === side);
+    for (const [k, f] of Object.entries(frames)) f.classList.toggle("shown", k === shown);
+    for (const b of tabs.children) { const on = b.dataset.k === shown; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; }
+    if (mode === "one") midiTo(shown);
+  }
+  function show(k) { shown = k; keep("shown", k); layout(); try { frames[k].contentWindow.focus(); } catch { /* pas encore chargé */ } }
+  tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) show(b.dataset.k); });
+  tabs.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); show(shown === "a" ? "b" : "a"); tabs.querySelector(`[data-k="${shown}"]`).focus(); } });
+  view.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { side = b.dataset.v === "side"; keep("side", side ? "side" : "one"); layout(); } });
+  addEventListener("resize", layout);
+  layout();
+
+  // le MIDI d'un clavier va au FM-1 affiché, ou au dernier touché quand les deux sont visibles
+  function midiTo(k) {
+    active = k;
+    for (const [n, f] of Object.entries(frames)) try { f.contentWindow.__midiActive = n === k; } catch { /* pas encore chargé */ }
+  }
+  addEventListener("blur", () => setTimeout(() => { const f = document.activeElement; if (f && f.tagName === "IFRAME" && stage.dataset.layout !== "one") midiTo(f.name); }));
+  for (const f of Object.values(frames)) f.addEventListener("load", () => midiTo(active));
+
+  // le tempo lié : l'horloge et Start, Stop, Continue de FM1-A vers FM1-B (FM-1+VA des deux côtés)
+  linkBtn.addEventListener("click", () => { linked = !linked; keep("link", linked ? "1" : "0"); tick(); });
+  const fwOf = (k) => { try { const w = frames[k].contentWindow; return w.__fw && w.__engine && w.__engine() === w.__fw && w.__fw.on ? w.__fw : null; } catch { return null; } };
+  let wasA = null, wasB = null;
+  function tick() {
+    const A = fwOf("a"), B = fwOf("b"), can = !!(A && B), on = linked && can;
+    linkBtn.setAttribute("aria-checked", linked);
+    linkBtn.setAttribute("aria-disabled", !can);
+    linkBtn.title = can ? "FM1-A mène, FM1-B suit son horloge" : "Le tempo se lie entre deux FM-1+VA allumés";
+    if (wasA && wasA !== A) { wasA.mi.lead = false; wasA.mi.link = null; wasA.sendGlobal(); }
+    if (wasB && wasB !== B) { wasB.mi.follow = false; wasB.sendGlobal(); }
+    if (A && (!!A.mi.lead !== on)) { A.mi.lead = on; A.mi.link = on ? (bytes) => { const b = fwOf("b"); if (b) b.midiIn(Uint8Array.from(bytes)); } : null; A.sendGlobal(); }
+    if (B && (!!B.mi.follow !== on)) { B.mi.follow = on; B.sendGlobal(); }
+    wasA = A; wasB = B;
+    // les noms des firmwares et le battement de chaque FM-1
+    for (const b of tabs.children) {
+      const k = b.dataset.k;
+      try {
+        const w = frames[k].contentWindow, name = w.document.getElementById("fw-name"), f = fwOf(k);
+        b.querySelector(".fwn").textContent = name ? name.textContent : "";
+        b.querySelector(".beat").classList.toggle("on", !!(f && f.S && f.S.playing && f.beatPhase() < 0.3));
+      } catch { /* pas encore chargé */ }
+    }
+  }
+  setInterval(tick, 120);
+  window.__duo = { frames, show, tick, get linked() { return linked; } };   // pour les tests
+})();
 </script>
 
 </body></html>
