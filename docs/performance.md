@@ -43,9 +43,15 @@ Le natif coûte environ 30 fois moins pour un travail plus lourd.
 
 L'action GitHub compile chacun des 61 depuis ses sources, au commit noté dans `tools/natif.json` (une tâche par firmware, `tools/natif_build.sh` ; les champs facultatifs `zig`, `avant` et `wasm` y règlent la chaîne Zig, une commande préalable et le `.wasm` retenu). Sont retenus ceux dont le worklet parle un des six protocoles connus : familles Felucca, X0X (dont MONK-1, qui lit une touche à la fois), ChoralRoot, sim, MEL et mono2k (écran d'un bit par pixel). hera et ravel, dont la page fait tourner le firmware sans worklet, passent par nos worklets (`tools/worklets/`), qui pilotent leur `.wasm` comme leur page et parlent au panneau en protocole Felucca. frodhes et chipbox, écrits pour une page Emscripten (leur boucle rend la main par `emscripten_sleep`), sont recompilés depuis leurs sources sans Emscripten (`tools/worklets/asyncify.sh` : Zig, un `emscripten.h` de remplacement, la passe Asyncify de Binaryen) ; leur boucle tourne en coroutine dans notre worklet (`coroutine.js`). DUB-1, hyp1 et perf1 passent par leur émulateur complet (`web/emu`, et non l'appli compagnon `web/app`) : DUB-1 compilé avec Zig, hyp1 et perf1 par leur propre `build_clang.sh`. Soit 59 firmwares natifs. La raison de chaque écart s'affiche en annotation de l'action. La page lit `natif/manifest.json` et prend le natif quand il existe ; l'action vérifie que chacun démarre, dessine son écran et répond au panneau.
 
-Les 2 autres restent émulés :
+Les autres restent émulés. Ceux qui pourraient passer en natif, à faire plus tard, du plus simple au plus lourd :
 
-- amb : dans sa version 1.3, celle du catalogue, la version navigateur est l'appli compagnon (le moteur seul, sans écran ni touches FM-1) ; son émulateur complet n'existe que dans une version plus récente ;
-- vector37 : la version navigateur simule un SMK-37 Pro, pas le FM-1.
+- LOOM-8 : un émulateur complet (`app/web/emu`, protocole X0X), compilé par `./build.sh --web` (sous-module fm1-base) ; une entrée dans `natif.json`, comme DUB-1 ;
+- Cut-A-Dor : son `.wasm` (`host/wasm.c`) n'est que le moteur ; son test `host/display.c` montre l'interface complète hors de l'appareil par quelques fonctions `plat_*`, à écrire pour le navigateur, avec un worklet en protocole Felucca ;
+- Bytemania : un simulateur hôte en ligne de commande (`tests/host.c`, sur Dinghy) ; à remplacer par une adaptation navigateur dérivée de celle de frodhes, en coroutine Asyncify ;
+- Mycelium : ses sources dans un zip, un dérivé de SLOOP et de Felucca (`tests/hostsim.c`) ; y greffer le `felucca_web.c` de Felucca, selon l'écart des versions ;
+- amb : dans sa version 1.3, celle du catalogue, la version navigateur est l'appli compagnon (le moteur seul) ; son émulateur complet n'existe que dans une version plus récente du dépôt, avec son paquet à mettre à jour ;
+- SIDOU : un cœur C (un 6502 et un SID émulés) testé depuis Rust, sans version navigateur ; toute une couche plateforme à écrire.
+
+vector37 reste émulé : sa version navigateur simule un SMK-37 Pro, pas le FM-1.
 
 Retouches faites aux worklets, et seulement celles-là : nom de processeur propre à chaque firmware, écran à 60 images par seconde, et un `TextDecoder` de secours (absent du fil audio de Chrome, il bloquait FUMI et ZEN-1).
