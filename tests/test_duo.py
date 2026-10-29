@@ -18,7 +18,7 @@ def test_layouts(page):
     assert page.evaluate("document.querySelector('.duo-stage').dataset.layout") == "stack"
     page.set_viewport_size({"width": 1180, "height": 820})
     page.wait_for_function("document.querySelector('.duo-stage').dataset.layout === 'one'")
-    page.click('[role="tab"][data-k="b"]')
+    page.frame(name="a").click('.duo-tabs [data-k="b"]')
     assert page.evaluate("document.querySelector('iframe[name=b]').classList.contains('shown')")
     assert page.evaluate("window.__duo.frames.b.contentWindow.__midiActive") is True
     assert page.evaluate("window.__duo.frames.a.contentWindow.__midiActive") is False   # le MIDI va au FM-1 affiché
@@ -31,7 +31,7 @@ def test_layouts(page):
 def test_separate_memories(page):
     a, b = open_duo(page)
     power(a)
-    page.click('[role="tab"][data-k="b"]')
+    page.frame(name="a").click('.duo-tabs [data-k="b"]')
     power(b)
     b.evaluate("() => { const fw = window.__fw; fw.G.tempo = 150; fw.loadPreset(7); fw.save(); }")
     keys = page.evaluate("Object.keys(localStorage)")
@@ -42,7 +42,7 @@ def test_separate_memories(page):
 
 def test_b_takes_no_emulated_firmware(page):
     a, b = open_duo(page)
-    page.click('[role="tab"][data-k="b"]')
+    page.frame(name="a").click('.duo-tabs [data-k="b"]')
     power(b)
     b.wait_for_function("window.__catalogue && window.__catalogue.length")
     dis = b.evaluate("""() => { const e = window.__catalogue.find((x) => !x.natif); document.getElementById('fw-picker').click();

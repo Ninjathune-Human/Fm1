@@ -27,7 +27,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .eyebrow { margin: 0; font: 600 0.8125rem/1.2 var(--body); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
 .mark { font: 600 clamp(2rem, 5vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; margin: 0; }
 .mark span { color: var(--accent); }
-.mast .mode { margin-left: auto; align-self: center; }
+.mast .mode { margin-left: auto; align-self: center; display: flex; align-items: center; gap: 8px; }
 
 .stage { display: grid; gap: 22px; }
 .turn { display: none; margin: 0; color: var(--muted); font-size: 0.9375rem; }
@@ -196,17 +196,26 @@ html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px,
 html.embed main { max-width: none; height: 100%; gap: 0; }
 html.embed .mast, html.embed .notes, html.embed .turn, html.embed #status { display: none; }
 html.embed .stage { height: 100%; display: flex; flex-direction: column; gap: 6px; }
-html.embed .frame { flex: 1 1 0; min-height: 0; padding: 4px 0 10px; container-type: size; display: grid; place-items: end center; margin: 0; overflow: visible; }
-html.embed .device { width: min(100cqw, 100cqh * 1640 / 990); min-width: 0; height: auto; }
+html.embed .frame { flex: none; padding: 4px 0 8px; margin: 0; overflow: visible; }   /* le FM-1 en haut, sa ligne juste dessous */
+html.embed .device { width: min(100%, calc((100dvh - 80px) * 1640 / 990)); min-width: 0; height: auto; margin: 0 auto; }
+html.embed .deck { width: min(100%, calc((100dvh - 80px) * 1640 / 990)); margin: 0 auto; }
 html.embed .deck { gap: 6px 12px; flex: none; }                       /* une ligne : firmware, coloris, puis les actions à droite */
 html.embed .swatches { gap: 0; }
 html.embed .swatch { width: 38px; height: 44px; }
 html.embed .swatch span { width: 26px; height: 26px; }
 @media (max-width: 760px) { html.embed .picker-k { display: none; } html.embed .deck { flex-wrap: nowrap; } html.embed .bar { flex-wrap: nowrap; } }
 @media (max-width: 620px) { html.embed .swatch { width: 32px; } html.embed .swatch span { width: 22px; height: 22px; } }
+.file .short { display: none; }
+@media (max-width: 680px) { html.embed .file .long { display: none; } html.embed .file .short { display: inline; } }
+@media (max-width: 560px) { html.embed .deck { gap: 6px 8px; } html.embed .swatch { width: 28px; } html.embed .bar { gap: 8px; } }
+html.embed .duo-tabs { margin-left: auto; }                              /* FM1-A | FM1-B au milieu de la ligne, en paysage */
+.fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
+.fs svg { width: 20px; height: 20px; }
+.fs:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.duo-brand { display: flex; align-items: center; gap: 6px; margin-right: auto; }
+.duo-brand .mark { font-size: 1.5rem; }
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
 .duo-bar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px 16px; flex-wrap: wrap; padding: 8px 16px; }
-.duo-bar [role="tablist"] { margin-right: auto; }                        /* FM1-A | FM1-B à gauche, les réglages à droite */
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .seg a, .seg button { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
   font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; touch-action: manipulation; }
@@ -238,7 +247,7 @@ html.embed .swatch span { width: 26px; height: 26px; }
   <header class="mast">
     <h1 class="mark">FM-1<span>+VA</span></h1>
     <p class="eyebrow">M-VAVE FM-1 · Émulateur · Version 102</p>
-    <nav class="seg mode" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav>
+    <div class="mode"><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><nav class="seg" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav></div>
   </header>
 
   <section class="stage" aria-label="Le FM-1">
@@ -280,7 +289,7 @@ html.embed .swatch span { width: 26px; height: 26px; }
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
-        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex">Importer un son DX7…</label>
+        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short">Son DX7…</span></label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
@@ -5928,6 +5937,32 @@ function buildPanel(fw) {
 
 </script>
 <script>
+// le plein écran (là où le navigateur le permet : pas sur iPhone)
+"use strict";
+(function () {
+  const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+  const cur = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const exit = () => (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  if (!req || FM1_ID) return;
+  // le même bouton entre en plein écran puis en sort (le navigateur réapparaît) ; son icône le dit
+  const IN = "M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5", OUT = "M7.5 3v4.5H3M17 7.5h-4.5V3M12.5 17v-4.5H17M3 12.5h4.5V17";
+  const paint = () => {
+    const on = !!cur();
+    for (const b of document.querySelectorAll(".fs")) {
+      b.setAttribute("aria-pressed", on);
+      b.setAttribute("aria-label", on ? "Quitter le plein écran" : "Plein écran"); b.title = b.getAttribute("aria-label");
+      b.querySelector("path").setAttribute("d", on ? OUT : IN);
+    }
+  };
+  const bind = () => {
+    for (const b of document.querySelectorAll(".fs")) if (!b.dataset.on) { b.dataset.on = 1; b.hidden = false; b.addEventListener("click", () => (cur() ? exit() : req.call(el))); }
+    paint();
+  };
+  document.addEventListener("fullscreenchange", paint); document.addEventListener("webkitfullscreenchange", paint);
+  bind(); window.__bindFullscreen = bind;
+})();
+</script>
+<script>
 // Duo : deux FM-1 à la fois, FM1-A et FM1-B, chacun la page entière dans son cadre (?fm1=a, ?fm1=b), avec son firmware,
 // sa mémoire et son allumage. En portrait l'un au-dessus de l'autre ; en paysage l'un ou l'autre en plein écran (le
 // sélecteur), ou, sur un grand écran, côte à côte au choix. Tempo lié : FM1-A mène, FM1-B suit son horloge (FM-1+VA
@@ -5942,39 +5977,54 @@ function buildPanel(fw) {
   root.className = "duo";
   root.innerHTML = `
     <div class="duo-bar">
-      <div class="seg" role="tablist" aria-label="Le FM-1 affiché">
-        <button type="button" role="tab" data-k="a"><span class="beat"></span><b>FM1-A</b><span class="fwn"></span></button>
-        <button type="button" role="tab" data-k="b"><span class="beat"></span><b>FM1-B</b><span class="fwn"></span></button>
-      </div>
+      <div class="duo-brand"><span class="mark">FM-1<span>+VA</span></span><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
         <button type="button" role="radio" data-v="side">Côte à côte</button>
         <button type="button" role="radio" data-v="one">Un à la fois</button>
       </div>
-      <nav class="seg mode" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
+      <nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
       <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
     </div>
     <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
   document.body.append(root);
+  if (window.__bindFullscreen) window.__bindFullscreen();
   const stage = root.querySelector(".duo-stage"), frames = { a: stage.children[0], b: stage.children[1] };
-  const tabs = root.querySelector('[role="tablist"]'), view = root.querySelector(".duo-view"), linkBtn = root.querySelector(".duo-link");
+  const view = root.querySelector(".duo-view"), linkBtn = root.querySelector(".duo-link");
   let shown = keep("shown") === "b" ? "b" : "a", side = keep("side") !== "one", linked = keep("link") === "1", active = shown;
 
+  // FM1-A | FM1-B : dans la ligne sous le FM-1 affiché (un à la fois), au milieu
+  function tabsOf(k) {
+    let d;
+    try { d = frames[k].contentDocument; } catch { return null; }
+    const deck = d && d.querySelector(".deck");
+    if (!deck) return null;
+    let t = deck.querySelector(".duo-tabs");
+    if (!t) {
+      t = d.createElement("div");
+      t.className = "seg duo-tabs"; t.setAttribute("role", "tablist"); t.setAttribute("aria-label", "Le FM-1 affiché");
+      t.innerHTML = '<button type="button" role="tab" data-k="a"><span class="beat"></span>FM1-A</button><button type="button" role="tab" data-k="b"><span class="beat"></span>FM1-B</button>';
+      t.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) show(b.dataset.k); });
+      deck.querySelector(".skins").after(t);
+    }
+    return t;
+  }
   // la disposition : portrait, l'un sur l'autre ; paysage, un à la fois, ou côte à côte sur un écran assez large
   function layout() {
     const portrait = innerHeight > innerWidth, wide = innerWidth >= 1200;
     const mode = portrait ? "stack" : wide && side ? "side" : "one";
     stage.dataset.layout = mode;
-    tabs.hidden = mode !== "one";
     view.hidden = portrait || !wide;
     for (const b of view.children) b.setAttribute("aria-checked", (b.dataset.v === "side") === side);
-    for (const [k, f] of Object.entries(frames)) f.classList.toggle("shown", k === shown);
-    for (const b of tabs.children) { const on = b.dataset.k === shown; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; }
+    for (const [k, f] of Object.entries(frames)) {
+      f.classList.toggle("shown", k === shown);
+      const t = tabsOf(k);
+      if (t) { t.hidden = mode !== "one"; for (const b of t.children) b.setAttribute("aria-selected", b.dataset.k === shown); }
+    }
     if (mode === "one") midiTo(shown);
   }
   function show(k) { shown = k; keep("shown", k); layout(); try { frames[k].contentWindow.focus(); } catch { /* pas encore chargé */ } }
-  tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) show(b.dataset.k); });
-  tabs.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); show(shown === "a" ? "b" : "a"); tabs.querySelector(`[data-k="${shown}"]`).focus(); } });
   view.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) { side = b.dataset.v === "side"; keep("side", side ? "side" : "one"); layout(); } });
+  for (const f of Object.values(frames)) f.addEventListener("load", layout);
   addEventListener("resize", layout);
   layout();
 
@@ -6016,14 +6066,11 @@ function buildPanel(fw) {
       if (!!e.mi.follow !== isFollow) { e.mi.follow = isFollow; e.sendGlobal(); }
       e.mi.tempo = isFollow && E[lead].va ? E[lead].va.G.tempo : 0;
     }
-    // les noms des firmwares et le battement de chaque FM-1
-    for (const b of tabs.children) {
-      const k = b.dataset.k;
-      try {
-        const w = frames[k].contentWindow, name = w.document.getElementById("fw-name"), f = fwOf(k);
-        b.querySelector(".fwn").textContent = name ? name.textContent : "";
-        b.querySelector(".beat").classList.toggle("on", !!(f && f.S && f.S.playing && f.beatPhase() < 0.3));
-      } catch { /* pas encore chargé */ }
+    // le battement de chaque FM-1, sur ses pastilles FM1-A | FM1-B
+    const beat = { a: fwOf("a"), b: fwOf("b") };
+    for (const k of ["a", "b"]) {
+      const t = tabsOf(k);
+      if (t) for (const b of t.children) { const f = beat[b.dataset.k]; b.querySelector(".beat").classList.toggle("on", !!(f && f.S && f.S.playing && f.beatPhase() < 0.3)); }
     }
   }
   setInterval(tick, 120);
