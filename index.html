@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FM-1"><link rel="apple-touch-icon" href="assets/icone.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>FM-1+VA</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Le firmware FM-1+VA de Baud Girl pour le M-VAVE FM-1, réimplémenté dans le navigateur d'après son manuel.">
@@ -195,6 +195,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 /* Duo : le lien vers deux FM-1, chaque FM-1 dans son cadre, et la page qui les tient */
 html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px, env(safe-area-inset-left, 0px)) 6px; overflow: hidden; }
 html.embed main { max-width: none; height: 100%; gap: 0; }
+html.embed .sheet { top: auto; bottom: calc(100% + 8px); }
 html.embed .mast, html.embed .notes, html.embed .turn, html.embed #status { display: none; }
 html.embed .stage { height: 100%; display: flex; flex-direction: column; gap: 6px; }
 html.embed .frame { flex: none; padding: 4px 0 8px; margin: 0; overflow: visible; }   /* le FM-1 en haut, sa ligne juste dessous */
@@ -215,6 +216,10 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 .fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
 .fs svg { width: 20px; height: 20px; }
 .fs:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.fs-tip { position: fixed; z-index: 60; box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.16); font: 400 0.9375rem/1.4 var(--body); color: var(--ink); }
+.fs-tip::before { content: ""; position: absolute; top: -7px; left: calc(var(--x) - 6px); width: 12px; height: 12px; background: var(--surface);
+  border: 1px solid var(--rule); border-width: 1px 0 0 1px; transform: rotate(45deg); }   /* l'encoche vers le bouton */
 .duo-brand { display: flex; align-items: center; gap: 6px; margin-right: auto; }
 .duo-brand .mark { font-size: 1.5rem; }
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
@@ -5787,7 +5792,9 @@ function buildPanel(fw) {
   function openSheet() {
     renderSections(); renderResults();
     sheet.hidden = false; scrim.hidden = false; picker.setAttribute("aria-expanded", "true");
-    if (getComputedStyle(sheet).position === "absolute") {
+    if (FM1_ID && getComputedStyle(sheet).position === "absolute") {   // dans un cadre du Duo : la liste s'ouvre vers le haut, le cadre ne défile pas
+      sheet.style.maxHeight = Math.max(200, Math.min(640, picker.getBoundingClientRect().top - 16)) + "px";
+    } else if (getComputedStyle(sheet).position === "absolute") {
       // sous le contrôle : la liste tient dans la fenêtre, la page défile juste ce qu'il faut
       const want = Math.min(640, Math.round(innerHeight * 0.7)), room = innerHeight - picker.getBoundingClientRect().bottom - 24;
       if (room < want) {                      // la page doit pouvoir défiler sans l'aide de la liste : une réserve, le temps de l'ouverture
@@ -5804,7 +5811,9 @@ function buildPanel(fw) {
   function closeSheet() {
     sheet.hidden = true; scrim.hidden = true; picker.setAttribute("aria-expanded", "false");
     document.body.style.paddingBottom = "";
+    if (FM1_ID) scrollTo(0, 0);
   }
+  if (FM1_ID) addEventListener("scroll", () => { if (sheet.hidden && (scrollX || scrollY)) scrollTo(0, 0); });   // un cadre du Duo reste en place (clavier, focus)
   picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
   scrim.addEventListener("click", closeSheet);
   document.addEventListener("pointerdown", (e) => { if (!sheet.hidden && !box.contains(e.target)) closeSheet(); });
@@ -5941,13 +5950,24 @@ function buildPanel(fw) {
 
 </script>
 <script>
-// le plein écran (là où le navigateur le permet : pas sur iPhone)
+// le plein écran : l'API du navigateur quand il l'a ; sinon (iPhone, Brave sur iPad…) l'écran d'accueil, qui ouvre le FM-1 sans barre
 "use strict";
 (function () {
   const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
   const cur = () => document.fullscreenElement || document.webkitFullscreenElement;
   const exit = () => (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-  if (!req || FM1_ID) return;
+  if (FM1_ID || navigator.standalone || matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches) return;   // déjà sans navigateur
+  let tip = null;
+  const shut = () => { if (tip) { tip.remove(); tip = null; } };
+  const help = (b) => {
+    if (tip) return shut();
+    const r = b.getBoundingClientRect(), w = Math.min(300, innerWidth - 32), x = Math.max(16, Math.min(r.left + r.width / 2 - w / 2, innerWidth - 16 - w));
+    tip = document.createElement("div"); tip.className = "fs-tip"; tip.setAttribute("role", "note");
+    tip.style.cssText = `top:${Math.round(r.bottom + 10)}px;left:${Math.round(x)}px;width:${w}px;--x:${Math.round(r.left + r.width / 2 - x)}px`;
+    tip.innerHTML = "Ce navigateur n'ouvre pas le plein écran. Touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b> : ouvert depuis l'écran d'accueil, le FM-1 occupe tout l'écran.";
+    document.body.append(tip);
+    setTimeout(() => { document.addEventListener("pointerdown", shut, { once: true }); addEventListener("blur", shut, { once: true }); });   // aussi un toucher dans un cadre du Duo
+  };
   // le même bouton entre en plein écran puis en sort (le navigateur réapparaît) ; son icône le dit
   const IN = "M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5", OUT = "M7.5 3v4.5H3M17 7.5h-4.5V3M12.5 17v-4.5H17M3 12.5h4.5V17";
   const paint = () => {
@@ -5959,7 +5979,7 @@ function buildPanel(fw) {
     }
   };
   const bind = () => {
-    for (const b of document.querySelectorAll(".fs")) if (!b.dataset.on) { b.dataset.on = 1; b.hidden = false; b.addEventListener("click", () => (cur() ? exit() : req.call(el))); }
+    for (const b of document.querySelectorAll(".fs")) if (!b.dataset.on) { b.dataset.on = 1; b.hidden = false; b.addEventListener("click", () => (cur() ? exit() : req ? req.call(el) : help(b))); }
     paint();
   };
   document.addEventListener("fullscreenchange", paint); document.addEventListener("webkitfullscreenchange", paint);

@@ -98,3 +98,15 @@ def test_native_follows(page):
     assert b.evaluate("!!window.__fw.mi.lead")
     got = a.evaluate("window.__got")
     assert got.count(0xF8) >= 10                                        # l'horloge de FM1-B
+
+
+def test_sheet_opens_upward_frame_stays(page):
+    a, _ = open_duo(page, 834, 1112)
+    a.click("#fw-picker")
+    page.wait_for_timeout(300)
+    up = a.evaluate("document.getElementById('fw-sheet').getBoundingClientRect().bottom <= document.getElementById('fw-picker').getBoundingClientRect().top")
+    assert up and a.evaluate("scrollY") == 0                            # la liste au-dessus du contrôle, le cadre en place
+    a.evaluate("scrollTo(0, 40)")
+    page.wait_for_timeout(100)
+    a.click("#fw-picker")
+    assert a.evaluate("scrollY") == 0
