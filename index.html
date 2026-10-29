@@ -237,6 +237,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
         <label class="file" for="syx"><input type="file" id="syx" accept=".syx">Patch DX7 (.syx)</label>
+        <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
     </div>
@@ -1664,6 +1665,7 @@ class NativeFirmware {
       let sectors = null;
       try { sectors = await nativeFlash.get(this.entry.id); } catch (err) { this.storageError = err; }
       this.lastLoadSectors = sectors;
+      if (this.entry.natif_echantillons) try { this.bank = await nativeFlash.get(this.entry.id + "/banque"); } catch { /* sans banque */ }
       this.ac = ac;
       const master = Math.round(this.pot / 1023 * this.potMax);
       this.node = new AudioWorkletNode(ac, this.entry.natif_processeur, this.nodeOptions(wasm, sectors, master));
@@ -1695,7 +1697,11 @@ class NativeFirmware {
       case "x0x": case "monk": return { type: "load", wasm, store: saved || {}, master };
       case "choralroot": return { type: "load", wasm, flash: saved instanceof ArrayBuffer ? saved : null, master };
       case "mel": return { type: "load", wasm, settings: Array.isArray(saved) ? saved : null, master };
-      default: return { type: "load", wasm, sectors: saved || {}, master };
+      default: {                               // pigeon : sa banque d'échantillons revient avec le reste
+        const m = { type: "load", wasm, sectors: saved || {}, master };
+        if (this.bank && this.bank.image) Object.assign(m, { bank: this.bank.image.slice(), unlimited: this.bank.unlimited });
+        return m;
+      }
     }
   }
   nodeOptions(wasm, saved, master) {
@@ -1712,6 +1718,11 @@ class NativeFirmware {
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
     if (t === "flash" || t === "store") { this.save(m.data); return; }   // ChoralRoot, sim : la mémoire entière
+    if (t === "bank-loaded" || t === "bank-error") {                      // pigeon : réponse à une banque envoyée
+      const w = this.waits && this.waits.get(m.id);
+      if (w) { this.waits.delete(m.id); clearTimeout(w.timer); t === "bank-error" ? w.ko(new Error(m.message)) : w.ok(); }
+      return;
+    }
     if (t !== "frame") return;
     if (m.fb) { this.fb = m.fb; this.fbNew = true; }
     if (m.leds) {
@@ -1725,8 +1736,36 @@ class NativeFirmware {
     const saved = m.sectors || m.store || m.settings;
     if (saved) this.save(saved);
   }
-  save(saved) {
-    const p = nativeFlash.put(this.entry.id, saved).catch((err) => { this.storageError = err; })
+  // des sons (un long : la chanson, jusqu'à deux ; les courts : les pads, seize au plus) ou une banque .kob deviennent la
+  // banque d'échantillons du firmware, préparée par l'outil de sa propre page (natif/<id>/outils/) ; au-delà des 500 Kio
+  // du FM-1, la banque passe en mode illimité, comme sa page le propose
+  async takeSamples(files, ac) {
+    let image, what;
+    if (files.length === 1 && /\.kob$/i.test(files[0].name)) {
+      image = new Uint8Array(await files[0].arrayBuffer()); what = `banque « ${files[0].name} »`;
+    } else {
+      const L = await import(new URL(this.entry.natif + this.entry.natif_echantillons, location.href).href), all = [];
+      for (const f of files) all.push(await L.decodeSample(f, ac));
+      const songs = all.filter((x) => x.pcm.length >= 2 * 22050).slice(0, 2);
+      const pads = all.filter((x) => !songs.includes(x)).slice(0, 16);
+      if (!songs.length) songs.push(pads.shift());
+      try { image = L.buildBank(songs, pads, false); } catch (err) { if (!/500 KiB/.test(err.message)) throw err; image = L.buildBank(songs, pads, true); }
+      what = (songs.length > 1 ? "chansons " : "chanson ") + songs.map((x) => `« ${x.name} »`).join(" et ") +
+        (pads.length ? ` et ${pads.length} pad${pads.length > 1 ? "s" : ""}` : "");
+    }
+    const unlimited = new DataView(image.buffer, image.byteOffset).getUint32(8, true) > 0x7E000;
+    await new Promise((ok, ko) => {
+      this.waits ||= new Map();
+      const id = this.reqId = (this.reqId || 0) + 1, copy = image.slice();
+      this.waits.set(id, { ok, ko, timer: setTimeout(() => { this.waits.delete(id); ko(new Error("délai dépassé")); }, 30000) });
+      this.send({ type: "bank", id, image: copy, unlimited }, [copy.buffer]);
+    });
+    this.bank = { image, unlimited };
+    this.save(this.bank, this.entry.id + "/banque");
+    return `Échantillons chargés : ${what}${unlimited ? ", au-delà des 500 Kio du FM-1" : ""}.`;
+  }
+  save(saved, key = this.entry.id) {
+    const p = nativeFlash.put(key, saved).catch((err) => { this.storageError = err; })
       .then(() => { if (this.pendingSave === p) this.pendingSave = null; });
     this.pendingSave = p;
   }
@@ -4380,7 +4419,7 @@ function buildPanel(fw) {
   ]).then(([d, natifs]) => {
     for (const e of d.firmwares) {
       const n = natifs[e.id];
-      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte });
+      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons });
     }
     catalogue = d.firmwares; renderSections();
   }).catch(() => {});
@@ -4405,7 +4444,7 @@ function buildPanel(fw) {
   let useSeq = 0, useChain = Promise.resolve(true);
   function useEngine(entry) {
     const my = ++useSeq;
-    useChain = useChain.catch(() => false).then(() => (my === useSeq ? engineSwitch(entry) : false));
+    useChain = useChain.catch(() => false).then(() => (my === useSeq ? engineSwitch(entry) : false)).finally(showContext);
     return useChain;
   }
   const natives = new Map();               // les firmwares natifs démarrés : leur worklet garde l'état
@@ -4556,7 +4595,10 @@ function buildPanel(fw) {
   sheet.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.stopPropagation(); closeSheet(); picker.focus(); } });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheet.hidden) { closeSheet(); picker.focus(); } });
 
-  function showContext() { document.querySelector(".file").hidden = current !== va; }
+  function showContext() {
+    document.querySelector(".file").hidden = current !== va;
+    $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
+  }
   let pickSeq = 0;
   const restartBtn = $("fw-restart");
   function halted() { status.textContent = `${emu.name} s'est arrêté.`; restartBtn.hidden = false; }
@@ -4606,7 +4648,7 @@ function buildPanel(fw) {
     if (current.kind === "natif") {         // natif : flash effacée, firmware redémarré à neuf
       const n = current, e = n.entry;
       status.textContent = `Réglages d'usine de ${e.nom}…`;
-      try { await nativeFlash.put(e.id, {}); } catch { /* rien de gardé */ }
+      try { await nativeFlash.put(e.id, {}); await nativeFlash.put(e.id + "/banque", null); } catch { /* rien de gardé */ }
       await n.stop(); n.node = null; natives.delete(e.id); current = va; vaOut(true);
       const ok = await useEngine(e).catch(() => false);
       status.textContent = ok ? e.nom : `${e.nom} n'a pas redémarré.`;
@@ -4637,8 +4679,20 @@ function buildPanel(fw) {
     } catch (err) { status.textContent = `« ${file.name} » n'a pas pu être lu : ${err.message}.`; }
   }
   $("syx").addEventListener("change", (e) => { takeFile(e.target.files[0]); e.target.value = ""; });
+  // des sons ou une banque .kob pour un firmware natif qui prend des échantillons (pigeon)
+  async function takeSamples(files) {
+    if (!files.length) return;
+    status.textContent = "Préparation des échantillons…";
+    try { status.textContent = await current.takeSamples(files, ac); }
+    catch (err) { status.textContent = "Échantillons : " + (err && err.message ? err.message : err); }
+  }
+  $("samples").addEventListener("change", (e) => { const f = [...e.target.files]; e.target.value = ""; takeSamples(f); });
   device.addEventListener("dragover", (e) => { e.preventDefault(); });
-  device.addEventListener("drop", (e) => { e.preventDefault(); takeFile(e.dataTransfer.files[0]); });
+  device.addEventListener("drop", (e) => {
+    e.preventDefault();
+    if (current.kind === "natif" && current.entry.natif_echantillons) takeSamples([...e.dataTransfer.files]);
+    else takeFile(e.dataTransfer.files[0]);
+  });
 
   // marche / arrêt : éteindre remet le firmware actif en réglages d'usine, puis la page repart éteinte
   const power = $("power");

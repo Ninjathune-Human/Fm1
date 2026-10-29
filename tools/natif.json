@@ -272,7 +272,15 @@
    "id": "pigeon",
    "depot": "TheShrimpBlimp/pigeon",
    "commit": "48f028f2ee7f6a0140dfef9d9426dc3237f2e466",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "outils_base": "web",
+   "outils": [
+    "emu/loader.js",
+    "pigeon/bank.js",
+    "ko_bank.js",
+    "fm1backup.js"
+   ],
+   "echantillons": "emu/loader.js"
   },
   {
    "id": "polly",

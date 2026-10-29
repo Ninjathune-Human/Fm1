@@ -158,3 +158,34 @@ def test_every_native_reacts(page):
         if page.evaluate(shot) == before and level <= 0.001:
             mute.append((i, "aucune réaction"))
     assert not mute, mute
+
+
+def _wav(path, seconds, hz, rate=22050):
+    import math, struct, wave
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+        n = int(seconds * rate)
+        w.writeframes(b"".join(struct.pack("<h", int(12000 * math.sin(2 * math.pi * hz * i / rate) * (1 - i / n))) for i in range(n)))
+
+
+def test_pigeon_echantillons(page, tmp_path):
+    """pigeon, un échantillonneur livré vide : un son long devient sa chanson, les courts ses pads, et il joue ; la banque revient."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "pigeon") is True
+    page.wait_for_timeout(4000)                          # l'écran de démarrage
+    assert page.is_visible("#samples-box") and page.is_hidden(".file >> nth=0")
+    _wav(tmp_path / "chanson.wav", 4, 220); _wav(tmp_path / "coup.wav", 0.3, 880)
+    page.set_input_files("#samples", [str(tmp_path / "chanson.wav"), str(tmp_path / "coup.wav")])
+    page.wait_for_function("document.getElementById('status').textContent.includes('chargé')", timeout=20000)
+    level = 0
+    for k in (0, 2, 4, 5, 7, 12):
+        page.evaluate(f"window.__host.keyDown({k}, 't')")
+        for _ in range(3):
+            page.wait_for_timeout(120); level = max(level, rms(page))
+        page.evaluate("window.__host.keyUp('t')")
+    assert level > 0.001, level
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=5000)
+    power_on(page)
+    assert use(page, "pigeon") is True
+    assert page.evaluate("!!(window.__engine().bank && window.__engine().bank.image.length > 4096)")
