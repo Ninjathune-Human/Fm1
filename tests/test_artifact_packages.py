@@ -7,12 +7,12 @@ from test_emu import use
 
 
 def test_package_from_base64_copy(page):
-    raw = open(os.path.join(ROOT, "firmwares/obervave.fwsc"), "rb").read()
-    page.route("**/firmwares/obervave.fwsc", lambda r: r.fulfill(status=404, body="absent"))
-    page.route("**/firmwares/obervave.fwsc.b64.txt",
+    raw = open(os.path.join(ROOT, "firmwares/gator.fwsc"), "rb").read()
+    page.route("**/firmwares/gator.fwsc", lambda r: r.fulfill(status=404, body="absent"))
+    page.route("**/firmwares/gator.fwsc.b64.txt",
                lambda r: r.fulfill(status=200, content_type="text/plain", body=base64.b64encode(raw).decode()))
     power_on(page)
     page.set_default_timeout(30000)
-    assert use(page, "obervave") is True
+    assert use(page, "gator") is True
     page.wait_for_timeout(3000)
     assert lit_pixels(page) >= 2000

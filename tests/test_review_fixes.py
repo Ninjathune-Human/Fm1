@@ -20,7 +20,7 @@ def test_failed_emu_switch_keeps_screen(page):
     page.route("https://thefirmwarehub.com/**", lambda r: r.fulfill(status=503, body="indisponible"))
     power_on(page)
     page.set_default_timeout(30000)
-    assert use(page, "obervave") is True
+    assert use(page, "gator") is True
     page.wait_for_timeout(2000)
     assert use(page, "hyp1") is False
     page.wait_for_timeout(1500)
@@ -32,7 +32,7 @@ def test_failed_emu_boot_keeps_screen(page):
     """Felucca puis un paquet invalide : même chose après un échec de démarrage."""
     power_on(page)
     page.set_default_timeout(30000)
-    assert use(page, "obervave") is True
+    assert use(page, "gator") is True
     page.wait_for_timeout(2000)
     ok = page.evaluate("""async () => window.__useEngine({ id: 'local', nom: 'x', bytes: new Uint8Array(1000) })""")
     assert ok is False
@@ -60,7 +60,7 @@ def test_boot_exception_falls_back_to_va(page):
     power_on(page)
     page.set_default_timeout(30000)
     page.evaluate("() => { crypto.subtle.digest = () => { throw new Error('refusé'); }; }")
-    ok = page.evaluate("""async () => { try { return await window.__useEngine(window.__catalogue.find((e) => e.id === 'obervave')); }
+    ok = page.evaluate("""async () => { try { return await window.__useEngine(window.__catalogue.find((e) => e.id === 'gator')); }
       catch (err) { return 'rejet'; } }""")
     assert ok is False
     assert page.evaluate("window.__engine() === window.__fw")

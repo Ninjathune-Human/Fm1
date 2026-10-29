@@ -4523,7 +4523,7 @@ function buildPanel(fw) {
   function tagsOf(e) {
     const t = [];
     if (e.beta) t.push("bêta");
-    if (e.id !== "fm1va" && !e.fichier) t.push("en ligne");
+    if (e.id !== "fm1va" && !e.fichier && !e.natif) t.push("en ligne");   // (un natif n'a plus de paquet dans le dépôt)
     if (e.emulateur_fm1emu === "pas encore évalué") t.push("non évalué");
     if (e.emulateur_fm1emu === "ne démarre pas") t.push("ne démarre pas");
     return t;

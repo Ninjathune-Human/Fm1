@@ -35,7 +35,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/felucca.fwsc",
+   "fichier": null,
    "sha256": "dff3a38f7e5b9833e15aba322558c9485e9e422e3ff813c616c91b3584a2d909",
    "taille": 610090,
    "depot": "https://github.com/hugelton/Felucca",
@@ -44,7 +44,8 @@
    "description": "The custom firmware the others build on: the FM-1's own synth engines, a sequencer, effects and a better panel, with an editor in the browser.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/felucca-1.6.1.fwsc",
-   "provenance_paquet": "release download/v1.6.1/felucca-1.6.1.fwsc"
+   "provenance_paquet": "release download/v1.6.1/felucca-1.6.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "386dx",
@@ -98,7 +99,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/arctic.fwsc",
+   "fichier": null,
    "sha256": "47403939c120f54b030c879d2feebcddf38840205aae4b15eb2f8777e79ece22",
    "taille": 610110,
    "depot": "https://github.com/PolarPatch/Arctic-scream-FM-1",
@@ -107,7 +108,8 @@
    "description": "Dark ambient drones and feedback screams from the frozen tundra. Built on GR!MM, with HOWL, a feedback-loop voice after the Synthux Audrey II that wakes out of silence and grows into a howl, and 46 arctic sounds.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/arctic-1.1.fwsc",
-   "provenance_paquet": "release download/v1.1/arctic-scream-1.1.fwsc"
+   "provenance_paquet": "release download/v1.1/arctic-scream-1.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "beetle",
@@ -182,7 +184,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/bunker.fwsc",
+   "fichier": null,
    "sha256": "db0b50d0ae9c3bfccee76e3b93de09fffa55389169278a0c5899dad9c79e6bb8",
    "taille": 610090,
    "depot": "https://github.com/kidbee85-beep/bunker-evolved",
@@ -191,7 +193,8 @@
    "description": "Generative ambient: four editable layers from 64 sound recipes, 24 worlds, 24 motifs and 32 scales. GROW varies the phrases, seven EVOLVE processes change them over time. Felucca's sound pages stay. Built on Felucca 1.6.1.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bunker-1.0.0.fwsc",
-   "provenance_paquet": "release download/v1.0.0/bunker-evolved-rc2.fwsc"
+   "provenance_paquet": "release download/v1.0.0/bunker-evolved-rc2.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "bytemania",
@@ -224,7 +227,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/caravel.fwsc",
+   "fichier": null,
    "sha256": "e05e25d2c7310a1958ea6f375705cdb91170426ab3f7e62aeac1dca1fac6f772",
    "taille": 610074,
    "depot": "https://github.com/bonszaimusic/caravel",
@@ -233,7 +236,8 @@
    "description": "Felucca continued: a multi-engine synth with ANALOG, SEM, HADES, PHASE, TRIO, a tonewheel, FM6, physical models, voices, samples, grain and slices, drums, noise and an experimental DRONE engine. Pair Morph blends two engines, a HOME screen of your own and free macros a track for live sound design.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/caravel-0.6.0.fwsc",
-   "provenance_paquet": "release download/v0.6.0/caravel-0.6.0.fwsc"
+   "provenance_paquet": "release download/v0.6.0/caravel-0.6.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "carnac",
@@ -245,7 +249,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/carnac.fwsc",
+   "fichier": null,
    "sha256": "7ef06985cb9565d4ed5bc93445c07401ca6278e21b9032ab0491fa1bd6c1c02f",
    "taille": 609680,
    "depot": "https://github.com/OwenKirby/carnac-os",
@@ -254,7 +258,8 @@
    "description": "A dual-timbral wavetable synth after Carnac's standing stones: 15 morphing wavetable banks, seven voice architectures, a MAQ 16/3-style sequencer for modulated sequences and a chord sequencer for progressions, spring, tomb and tank reverbs. Its own installer also writes its wavetables. Built on X0X and Felucca.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/carnac-0.9.4.fwsc",
-   "provenance_paquet": "gh-pages firmware/carnac-0.9.4.fwsc"
+   "provenance_paquet": "gh-pages firmware/carnac-0.9.4.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "chipbox",
@@ -266,7 +271,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/chipbox.fwsc",
+   "fichier": null,
    "sha256": "9121ab7d4689923c3fc39d3beb619d3a0a7f2fd8c89c075c532972081bbdb9c2",
    "taille": 610110,
    "depot": "https://github.com/pbarilla/chipbox",
@@ -275,7 +280,8 @@
    "description": "A chiptune groovebox with replicas of the NES, Game Boy and Sega Master System sound chips, in three views: RACK for the 16 steps of a page, CHIP to set up each channel, SONG to chain the pages into a song.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/chipbox-1.3.3.fwsc",
-   "provenance_paquet": "release download/v1.3.3/chipbox-1.3.3.fwsc"
+   "provenance_paquet": "release download/v1.3.3/chipbox-1.3.3.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "choralroot",
@@ -287,7 +293,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/choralroot.fwsc",
+   "fichier": null,
    "sha256": "a09f9e19b66a91351de37c532e0d15cdc03ff9e9c82a0b152cdb66ca3fdc0326",
    "taille": 610313,
    "depot": "https://github.com/Quixotic7/ChoralRootFM1",
@@ -296,7 +302,8 @@
    "description": "A Telepathic Orchid-style chord instrument: one hand plays roots, the other shapes chords; voicings, performance modes, bass and a looper.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/choralroot-0.27.fwsc",
-   "provenance_paquet": "release download/v0.27/choralroot-0.27.fwsc"
+   "provenance_paquet": "release download/v0.27/choralroot-0.27.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "clipper",
@@ -329,7 +336,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/coralflower.fwsc",
+   "fichier": null,
    "sha256": "ab7d0744eed0c83d62be39da9d63c5618e1bccc94de2931a9145a7d4b723b0bb",
    "taille": 610313,
    "depot": "https://github.com/FicusFicusov/CoralFlower",
@@ -338,7 +345,8 @@
    "description": "Chords after the Orchid, with controls made for the FM-1: one key plays a chord with a bass note. Also 27 scales, an arpeggiator, a sequencer with drums and a song mode, and a pixel flower that grows as you play.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/coralflower-0.5.fwsc",
-   "provenance_paquet": "release download/v0.5/coralflower-0.5.fwsc"
+   "provenance_paquet": "release download/v0.5/coralflower-0.5.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "cs1",
@@ -350,7 +358,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/cs1.fwsc",
+   "fichier": null,
    "sha256": "25179bef57f6136a36071647bbca6d6b82f718042d8ca6ccb5b13d1c9051110c",
    "taille": 610113,
    "depot": "https://github.com/twochannels/CS-1",
@@ -359,7 +367,8 @@
    "description": "A Yamaha CS-80 in spirit: eight voices of two channels, high- and low-pass filters in series, ring modulator, the touch response and 22 tones from the owner's manual. A sound module played over MIDI.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/cs1-2026.10.22.fwsc",
-   "provenance_paquet": "dans le dépôt web/site/firmware/cs1.fwsc"
+   "provenance_paquet": "dans le dépôt web/site/firmware/cs1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "ctl",
@@ -455,7 +464,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/drift.fwsc",
+   "fichier": null,
    "sha256": "297a0c55a6323cafe5f38beb28a6f2cbd847a6b54f8419e184df7d233b1e9d14",
    "taille": 610090,
    "depot": "https://github.com/FBNFRTG/drift-fm1",
@@ -464,7 +473,8 @@
    "description": "An ambient instrument for live sessions: warm synths, spacious pads and delicate plucks over a generative Euclidean sequencer on one track, with delays and reverbs from spring to shimmer. Built on Felucca.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/drift-0.9.1.fwsc",
-   "provenance_paquet": "release download/v0.9.1/drift-fm1-0.9.1.fwsc"
+   "provenance_paquet": "release download/v0.9.1/drift-fm1-0.9.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "dub",
@@ -497,7 +507,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/duell.fwsc",
+   "fichier": null,
    "sha256": "f0fd3b46ec013febc8585fa153f782a7414a0b84e9bfe4f1da8147cfe83ba462",
    "taille": 614666,
    "depot": "https://github.com/oscillr/DUELL",
@@ -506,7 +516,8 @@
    "description": "A multimorphing bitimbral synthesizer: two complete parts, three ways to play them together, and a morph that glides between two versions of every sound.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/duell-1.0.fwsc",
-   "provenance_paquet": "release download/v1.0/duell-1.0.fwsc"
+   "provenance_paquet": "release download/v1.0/duell-1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "estampie",
@@ -518,7 +529,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/estampie.fwsc",
+   "fichier": null,
    "sha256": "da65901952440282206cf4a37040215c3b55ed7d301a19d583231e32531b0caf",
    "taille": 610138,
    "depot": "https://github.com/ocean/estampie",
@@ -527,7 +538,8 @@
    "description": "A groovebox for lively mediæval dance music: hurdy-gurdy, lutes, shawms and frame drums over drones, four tracks with 64-step sequencers, mediæval modes and temperaments, and velocity from the FM-1's own keys. Built on GHOULBOX and Felucca.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/estampie-0.3.7.fwsc",
-   "provenance_paquet": "release download/v0.3.7/estampie-0.3.7.fwsc"
+   "provenance_paquet": "release download/v0.3.7/estampie-0.3.7.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "etch",
@@ -581,7 +593,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/fart.fwsc",
+   "fichier": null,
    "sha256": "b9e380061ddc086d5c45cfa4d4e583249a9bfb45869e1fcd6fdaf5249c7ee7e2",
    "taille": 609657,
    "depot": "https://github.com/adamcharleswilsonmusic-code/Fart-Machine-One",
@@ -590,7 +602,8 @@
    "description": "A questionable musical instrument: ten artisanal farts, reverb, delay and a sixteen-step sequencer.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fart-1.1.0.fwsc",
-   "provenance_paquet": "release download/V1.1.0/fart-machine-one.fwsc"
+   "provenance_paquet": "release download/V1.1.0/fart-machine-one.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "felucca8",
@@ -602,7 +615,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/felucca8.fwsc",
+   "fichier": null,
    "sha256": "f47b12cbface0c8010037094b68829b64b792d50d7418cde92dd701baa2faab5",
    "taille": 610090,
    "depot": "https://github.com/echoe/Felucca_8_patterns",
@@ -611,7 +624,8 @@
    "description": "Felucca 1.5.1 with eight sequences a track to switch between and chain one after another; the user samples are left out to make room.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/felucca8-1.6.1_and_sequences.fwsc",
-   "provenance_paquet": "release download/1.6.1_and_sequences/felucca-1.6.1_sequences.fwsc"
+   "provenance_paquet": "release download/1.6.1_and_sequences/felucca-1.6.1_sequences.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "salt",
@@ -644,7 +658,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/fimba.fwsc",
+   "fichier": null,
    "sha256": "2ce744411ab6142a27e5c6238b8eb2f3875ccaa1e6fc47726211bf09f1393fa7",
    "taille": 609657,
    "depot": "https://github.com/jadamsowers/fm1-fimba",
@@ -653,7 +667,8 @@
    "description": "A physically modelled kalimba: tines laid out like the real one, thumb-roll chords, mbira patterns, a sound hole to cover, grains, tape and a plate reverb. Play it in the browser first.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fimba-0.6.1.fwsc",
-   "provenance_paquet": "release download/v0.6.1/fimba-0.6.1.fwsc"
+   "provenance_paquet": "release download/v0.6.1/fimba-0.6.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "fizz",
@@ -695,7 +710,8 @@
    "description": "One piece on the FM-1: Chopin's Étude Op. 10 No. 1 on a sampled Steinway D. It plays the étude, lets you shape it with rubato, touch and accents, practise it and move it. Built on Tuna and Felucca.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/flyfish-1.0.1-4e5efb8.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "fm1doom",
@@ -749,7 +765,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/fm106.fwsc",
+   "fichier": null,
    "sha256": "a2bc1029e2f630947e66578f4cc7cb52bc66d5b0ddf7630381b2021301894dae",
    "taille": 610265,
    "depot": "https://github.com/PatttF/fm-106",
@@ -758,7 +774,8 @@
    "description": "The Juno-106 emulation of KR-106 ported to the FM-1: six voices on both cores, the BBD stereo chorus, 128 factory presets and a 1980s Roland look.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm106-Beta6+a2bc1029.fwsc",
-   "provenance_paquet": "dans le dépôt web/fm106.fwsc"
+   "provenance_paquet": "dans le dépôt web/fm106.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "fm1quest",
@@ -854,7 +871,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/fmel.fwsc",
+   "fichier": null,
    "sha256": "0e6b9b31d422e875b035db06f7c82aba91f53bbffd0038cdbf7c3f5a726a920a",
    "taille": 610124,
    "depot": "https://github.com/AntonioAltea/fmel-1",
@@ -863,7 +880,8 @@
    "description": "Mellotron-style tape sounds, coloured with effects and lo-fi tape: flutes, strings and choirs as on the old tape frames, played from the keys.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fmel-1.0.fwsc",
-   "provenance_paquet": "release download/v1.0/mel-1.0.fwsc"
+   "provenance_paquet": "release download/v1.0/mel-1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "fmini",
@@ -875,7 +893,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/fmini.fwsc",
+   "fichier": null,
    "sha256": "8d773ae762bb7e7861124ad9ccbb0e1bf2eb8822a421877a55caa92757f80cdf",
    "taille": 610082,
    "depot": "https://github.com/ruppert/fmini-1",
@@ -884,7 +902,8 @@
    "description": "A three-oscillator monosynth in the spirit of the classic Moogs: a 24 dB/octave ladder filter, two contours, 100 factory patches, an arpeggiator, a sequencer and MIDI. Built on Felucca.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fmini-1.8.0.fwsc",
-   "provenance_paquet": "release download/v1.8.0/FMini-1-v1.8.0.fwsc"
+   "provenance_paquet": "release download/v1.8.0/FMini-1-v1.8.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "fomajam",
@@ -917,7 +936,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/fomni.fwsc",
+   "fichier": null,
    "sha256": "71fa8304b91bff89078bfd27e981ed28ca4f0d3c5f406e8fdb5a2ab240fbdbb5",
    "taille": 609661,
    "depot": "https://github.com/charlesvestal/fm1-fomni",
@@ -926,7 +945,8 @@
    "description": "A chord harp inspired by the Omnichord: strum the white keys, pick chords on the black ones.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fomni-0.4.fwsc",
-   "provenance_paquet": "gh-pages firmware/omni-0.4.fwsc"
+   "provenance_paquet": "gh-pages firmware/omni-0.4.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "frasil",
@@ -959,7 +979,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/frodhes.fwsc",
+   "fichier": null,
    "sha256": "27b98382194a14493b4cde339921a01d2d70d7f3ee70f351c3352e4880fffba6",
    "taille": 612196,
    "depot": "https://github.com/leonardoMirabal/frodhes",
@@ -968,7 +988,8 @@
    "description": "An electric piano, vibraphone and marimba, physically modelled, no samples, with drive, tremolo or wah, phaser, chorus, delay and reverb (hall, plate, infinite), tap tempo and MIDI clock sync, an arpeggiator, a sequencer, scales and presets.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/frodhes-0.9.6.fwsc",
-   "provenance_paquet": "release download/v0.9.6/frodhes-0.9.6.fwsc"
+   "provenance_paquet": "release download/v0.9.6/frodhes-0.9.6.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "fumi",
@@ -980,7 +1001,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/fumi.fwsc",
+   "fichier": null,
    "sha256": "211db1c2efc379b0a29a284aea523c67e230d98dab7a7f91336cc3fbd1201188",
    "taille": 609657,
    "depot": "https://github.com/cartesive/fumi-1",
@@ -989,7 +1010,8 @@
    "description": "A shigin conductor after the Suiko ST-50: its two rows of keys, the key set in honsū, equal or its own just tuning, a koto and twelve more sounds on a 6-op FM engine, ring time, vibrato, trill and a looper.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fumi-1.1.0.fwsc",
-   "provenance_paquet": "release download/fumi-1.1.0/fumi-1.1.0.fwsc"
+   "provenance_paquet": "release download/fumi-1.1.0/fumi-1.1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "gator",
@@ -1022,7 +1044,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/ghoulbox.fwsc",
+   "fichier": null,
    "sha256": "92630ae278d4a0b4233ff2512b62ad9b5dbe976a4c9083046222d9293a8df749",
    "taille": 610086,
    "depot": "https://github.com/jasonpersinger/ghoulbox-fm1-dungeon-synth",
@@ -1031,7 +1053,8 @@
    "description": "Dungeon synth: a cathedral hall reverb, tape and crush, a hurdy-gurdy engine, choirs, organs and recorded psaltery and harp, an old-RPG screen with wall torches.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ghoulbox-2.4.fwsc",
-   "provenance_paquet": "release download/ghoulbox-v2.4/ghoulbox-2.4.fwsc"
+   "provenance_paquet": "release download/ghoulbox-v2.4/ghoulbox-2.4.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "golana",
@@ -1043,7 +1066,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/golana.fwsc",
+   "fichier": null,
    "sha256": "49806d009e140d1e90a1396d0f8caf54870d9d633d3ade2718ec0461b9501745",
    "taille": 610086,
    "depot": "https://github.com/Gadlele/Golana",
@@ -1052,7 +1075,8 @@
    "description": "One analog-style synth laid out like the classic microKORG, with a screen that draws the sound.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/golana-1.3.fwsc",
-   "provenance_paquet": "release download/golana-v1.3/golana-1.3.fwsc"
+   "provenance_paquet": "release download/golana-v1.3/golana-1.3.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "golanadz",
@@ -1064,7 +1088,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/golanadz.fwsc",
+   "fichier": null,
    "sha256": "b93e2c911366037031e83c9a366158ca090aa2eb9c939889e9e5982dfc568ca7",
    "taille": 610086,
    "depot": "https://github.com/dzwerg/Golana-DZ",
@@ -1073,7 +1097,8 @@
    "description": "Golana's synth with a sequencer for whole songs: 64 steps a pattern, 32 programs (up to 2,048 steps), a SONGMODE that plays from a first to a last program once or on repeat, and USB MIDI out to sequence other synths.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/golanadz-0.1.0-beta.fwsc",
-   "provenance_paquet": "release download/v0.1.0-beta/Golana-DZ-v0.1.0-beta.fwsc"
+   "provenance_paquet": "release download/v0.1.0-beta/Golana-DZ-v0.1.0-beta.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "grimm",
@@ -1085,7 +1110,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/grimm.fwsc",
+   "fichier": null,
    "sha256": "8f1f6c0bc6c0afb58a400f4ea99a7a03302b98b38e4905527aa1fa2c665f5f65",
    "taille": 610110,
    "depot": "https://github.com/GRiMMBIENT/grimm",
@@ -1094,7 +1119,8 @@
    "description": "Dark ambient, dungeon synth and deathdream: four tracks, seven sound sources from VA and 6-op FM to formant voices and physical models, tape, granular freeze and reverbs up to infinite, a 64-step sequencer and song mode. Built on Dinghy.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/grimm-1.0.fwsc",
-   "provenance_paquet": "release download/v1.0/grimm.fwsc"
+   "provenance_paquet": "release download/v1.0/grimm.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "guitchordi",
@@ -1127,7 +1153,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/hera.fwsc",
+   "fichier": null,
    "sha256": "dc0153ecba3daecfe289cb59124509117701311d15717db9a326d192928a9c45",
    "taille": 610110,
    "depot": "https://github.com/benbadio/hera-fm1",
@@ -1136,7 +1162,8 @@
    "description": "A chord groovebox after the Roland J-6: 100 chord sets, 9 phrase styles with 12 variations each and a 64-pattern step sequencer, on a four-voice Juno-style synth from Clipper with chorus, delay and reverb. A chord map on the screen shows which chord sits on which key. Built on Dinghy.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/hera-1.1.fwsc",
-   "provenance_paquet": "release download/v1.1/hera-1.1.fwsc"
+   "provenance_paquet": "release download/v1.1/hera-1.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "hortator",
@@ -1241,7 +1268,8 @@
    "description": "A bio-synthetic groovebox: six tracks drawn as living beings in thermal colours, eight engines (FM6 with Dexed, analog, phase, voice…), mutating macros, song mode from SLOOP. Not yet tested much on a real FM-1.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/jiant-0.9.9-par13b-3641c02-preview.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "kawa",
@@ -1295,7 +1323,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/loomfm1.fwsc",
+   "fichier": null,
    "sha256": "bbb5ba438d62e947158c614b18ac37264a64a472a077d57eb271acb60f6f47af",
    "taille": 610086,
    "depot": "https://github.com/Co-oscillator/Loom-FM-1",
@@ -1304,7 +1332,8 @@
    "description": "Four synth and sampler tracks and a drum track on 14 engines, among them wavetable, 6-op FM, tape scrub, granular and a slicer; a 64-step sequencer, a chord progression generator, macros and sidechain ducking.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/loomfm1-0.1.0.fwsc",
-   "provenance_paquet": "release download/v0.1.0/loom-groovebox.fwsc"
+   "provenance_paquet": "release download/v0.1.0/loom-groovebox.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "loom",
@@ -1337,7 +1366,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/makohai.fwsc",
+   "fichier": null,
    "sha256": "f7af84b09cf25ddc7e69a7fe3f24ef4a7b86a73600b4d8834e625a8d2226b0c0",
    "taille": 610110,
    "depot": "https://github.com/delirioux/makohai",
@@ -1346,7 +1375,8 @@
    "description": "A generative groovebox in the style of early-90s PC tracker music: six lanes (lead, arp, pad, bass, drums, sfx) composed live in ten S3M-scene styles. You mix styles instead of programming steps. Built on Tuna and Felucca.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/makohai-1.0.fwsc",
-   "provenance_paquet": "release download/v1.0/makohai-1.0.fwsc"
+   "provenance_paquet": "release download/v1.0/makohai-1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "maku",
@@ -1358,7 +1388,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/maku.fwsc",
+   "fichier": null,
    "sha256": "b55d471fd179008511dfea032530750f0692d5be8eab263970f5c3c2162b53ea",
    "taille": 610086,
    "depot": "https://github.com/okumurari2/maku",
@@ -1367,7 +1397,8 @@
    "description": "An ambience machine for DJ interludes: switch it on and a random world in key plays, four parts, buttons that are verbs, and the worlds you like breed new ones. Clock follow. Play it in the browser first.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/maku-1.0.fwsc",
-   "provenance_paquet": "release download/maku-v1.0/maku-1.0.fwsc"
+   "provenance_paquet": "release download/maku-v1.0/maku-1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "matryoshka",
@@ -1463,7 +1494,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/min1.fwsc",
+   "fichier": null,
    "sha256": "82715d6ee18c8b12c287d614c131a4fb37f8606d811ae23301f1cd42bd4548c3",
    "taille": 609657,
    "depot": "https://github.com/Reytian/fm1-min1",
@@ -1472,7 +1503,8 @@
    "description": "A tiny minimalist ensemble after Philip Glass: it starts playing when you switch on, you join whenever you like. In EASY mode every white key is a chord that fits. Four models, twenty pieces.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/min1-0.2.1.fwsc",
-   "provenance_paquet": "release download/v0.2.1/min-0.2.1.fwsc"
+   "provenance_paquet": "release download/v0.2.1/min-0.2.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "minitone",
@@ -1484,7 +1516,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/minitone.fwsc",
+   "fichier": null,
    "sha256": "6e188e18052c67d3b2684781a35af3b0cf8a54ed7645e8c55e313fa143f0b9ca",
    "taille": 610086,
    "depot": "https://github.com/eldontyrellcorp/Mini-Tone",
@@ -1493,7 +1525,8 @@
    "description": "Felucca with six tracks and new engines: SID, Braids' 48 models, a TB-303 and engines after Elektron's Analog Four, SY Chip and Digitone 2, a ping-pong delay and a new reverb. Built on Felucca 1.5.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/minitone-1.0.5.fwsc",
-   "provenance_paquet": "release download/minitone-1.0.5/minitone-1.0.5.fwsc"
+   "provenance_paquet": "release download/minitone-1.0.5/minitone-1.0.5.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "mnm1",
@@ -1547,7 +1580,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/monk.fwsc",
+   "fichier": null,
    "sha256": "76fe9af0ab18b49e197ebae2224daf8a354424bd89cd241527a85bf7048eb192",
    "taille": 609661,
    "depot": "https://github.com/charlesvestal/fm1-monk",
@@ -1556,7 +1589,8 @@
    "description": "Twelve singers, from Jerry the monk to Snider the punk, each in its own voice: MonkSynth's formant voices, played with velocity and pressure from the FM-1's own keys.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/monk-0.9.1.fwsc",
-   "provenance_paquet": "release download/v0.9.1/monk-0.9.1.fwsc"
+   "provenance_paquet": "release download/v0.9.1/monk-0.9.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "mono2k",
@@ -1568,7 +1602,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/mono2k.fwsc",
+   "fichier": null,
    "sha256": "3567333cdbf2992da1f06aedf0823f96ff5c229d7f3385e861bfea6513cf337b",
    "taille": 610113,
    "depot": "https://github.com/InigoHernandez/mono2k",
@@ -1577,7 +1611,8 @@
    "description": "Six mono machines in the spirit of Elektron's Monomachine: FM, superwaves, wavetables, a SID, a voice and four drum synths, one per track. A 64-step sequencer with parameter locks, trig conditions and ratchets, a lofi bus, four demo parts and a web patch editor.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mono2k-1.1.fwsc",
-   "provenance_paquet": "dans le dépôt web/firmware/mono2k.fwsc"
+   "provenance_paquet": "dans le dépôt web/firmware/mono2k.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "monohull",
@@ -1610,7 +1645,7 @@
    ],
    "licence": "GPL-3.0-only",
    "beta": true,
-   "fichier": "firmwares/mope1.fwsc",
+   "fichier": null,
    "sha256": "c68574f2f66b33790499dc5a14fdb258c89dce7df4366367b66e6435495f4eaf",
    "taille": 609657,
    "depot": "https://github.com/slothpallas/mope-1",
@@ -1619,7 +1654,8 @@
    "description": "A sad wavetable synth played by a pixel blob in a rainy room: its eyes are the filter, its mouth the envelope, its tears the delay. Toy-keyboard accompaniment with 13 gloomy beats, auto-bass, arpeggiator, loop recorder.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mope1-0.1.0.fwsc",
-   "provenance_paquet": "release download/v0.1.0/mope-0.1.0.fwsc"
+   "provenance_paquet": "release download/v0.1.0/mope-0.1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "morpheus",
@@ -1695,7 +1731,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/niagara.fwsc",
+   "fichier": null,
    "sha256": "63525a135cc8168c5c183648f04da7f2154f6be7d6d97bb46bca93c19934476e",
    "taille": 609657,
    "depot": "https://github.com/evanyerburgh/niagara-drift",
@@ -1704,7 +1740,8 @@
    "description": "A drone synth: two drifting virtual-analog drones, each with its own part, swells, LFOs, effects and a sequencer.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/niagara-0.2.fwsc",
-   "provenance_paquet": "release download/v0.2/niagara-drift-0.2.fwsc"
+   "provenance_paquet": "release download/v0.2/niagara-drift-0.2.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "nmsfm",
@@ -1737,7 +1774,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/noizdemons.fwsc",
+   "fichier": null,
    "sha256": "b1c14859d45bd8ea1d5ea6ca630083e2a647178f1a45b33865e92da7a01e9b8a",
    "taille": 610086,
    "depot": "https://github.com/SPIKE-the-Percussionist/noiz_demons",
@@ -1746,7 +1783,8 @@
    "description": "Felucca with randomization as a ritual: every new sound summons one of 30 demons of the Ars Goetia, its sigil takes the screen and its rank decides how wild the sound gets.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/noizdemons-666.fwsc",
-   "provenance_paquet": "dans le dépôt build/felucca.fwsc"
+   "provenance_paquet": "dans le dépôt build/felucca.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "obervave",
@@ -1758,7 +1796,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/obervave.fwsc",
+   "fichier": null,
    "sha256": "51d6a75588cad7e0e4c1b65ecbab502a1ce6325abbf0e35e6e9e7a23a6ddb2c8",
    "taille": 612196,
    "depot": "https://github.com/zvenson/obervave",
@@ -1767,7 +1805,8 @@
    "description": "An 8-voice analog-style poly in the spirit of the classic American polys of 1979-84, now on four tracks: each its own sound, arp and sequence; a mixer with chorus, delay, plate reverb and drive sends, a master with DJ filter and compressor. Tracks start on the bar, patterns keep their sounds.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/obervave-3.0.1.fwsc",
-   "provenance_paquet": "release download/v3.0.1/obervave-3.0.1.fwsc"
+   "provenance_paquet": "release download/v3.0.1/obervave-3.0.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "opn1",
@@ -1842,7 +1881,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/pigeon.fwsc",
+   "fichier": null,
    "sha256": "a6cbb4fbd80baa38eb99400bb4bef5ddd5d4167024a8342189a07bc6b8861bed",
    "taille": 611106,
    "depot": "https://github.com/TheShrimpBlimp/pigeon",
@@ -1851,7 +1890,8 @@
    "description": "An old-school hip-hop and house sampler after the SP-404 and the PO-33: two song samples and a 16-pad kit, up to 32 chops a song, a 64-step sequencer, patterns and a song arrangement. Built on Felucca.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/pigeon-0.5.0-beta.1.fwsc",
-   "provenance_paquet": "release download/v0.5.0-beta.1/pigeon-0.5.0-beta.1.fwsc"
+   "provenance_paquet": "release download/v0.5.0-beta.1/pigeon-0.5.0-beta.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "gammawave",
@@ -1863,7 +1903,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/gammawave.fwsc",
+   "fichier": null,
    "sha256": "f8fae2b0191662713225608cd0191e60a18f0347748f60fad0f6327d6f81dc4b",
    "taille": 610113,
    "depot": "https://github.com/fvalente/GammaWave-FM1",
@@ -1872,7 +1912,8 @@
    "description": "The companion to the GammaWave desktop synth: four industrial distortions, vowel and scream filters, an FFT spectrogram, a four-track tape deck screen and a song generator with 49 genres, trap and drill too.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/gammawave-1.2.1-GW.fwsc",
-   "provenance_paquet": "release download/v1.2.1-GW/felucca-1.2.1-GW.fwsc"
+   "provenance_paquet": "release download/v1.2.1-GW/felucca-1.2.1-GW.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "polly",
@@ -1884,7 +1925,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/polly.fwsc",
+   "fichier": null,
    "sha256": "2dea2914b4628f075cf3605fae7a75afc03a4b2ae2d7823d8ccf4bf16dd986c7",
    "taille": 610136,
    "depot": "https://github.com/charlesvestal/fm1-polly",
@@ -1893,7 +1934,8 @@
    "description": "A pocket arranger after the QY70: pick a style, play three keys for a chord and a band of eight follows, songs from sections, General MIDI sounds from Sonivox EAS, and a General MIDI module over MIDI in.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/polly-0.5.fwsc",
-   "provenance_paquet": "release download/v0.5/polly-0.5.fwsc"
+   "provenance_paquet": "release download/v0.5/polly-0.5.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "purplemonkey",
@@ -1905,7 +1947,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/purplemonkey.fwsc",
+   "fichier": null,
    "sha256": "edf961e7a85e8795747d1624b828a70bc8f6b0e065bdb019c106ee9a7d43b606",
    "taille": 609857,
    "depot": "https://github.com/Quixotic7/PurpleMonkeyFM1",
@@ -1914,7 +1956,8 @@
    "description": "A first instrument for toddlers: random key bashing and knob turning are rewarded with dancing animated pets and little musical sequences. Press a key, any key.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/purplemonkey-0.11.fwsc",
-   "provenance_paquet": "release download/v0.11/purplemonkey-0.11.fwsc"
+   "provenance_paquet": "release download/v0.11/purplemonkey-0.11.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "rainbow",
@@ -1935,7 +1978,8 @@
    "description": "A music toy for little children: 63 cartoon friends, every key in tune, chords, strumming, songs to follow and an ear game, notes on a staff, a volume cap for small ears.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/rainbow-1.1.5-rb+4b37e9c2.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "ravel",
@@ -1947,7 +1991,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/ravel.fwsc",
+   "fichier": null,
    "sha256": "7a4751e584630089effa07870631faca5c6f00ab0bc34a3a62f57dce2508f6d2",
    "taille": 609684,
    "depot": "https://github.com/De-Pattern/Ravel_FM1",
@@ -1956,7 +2000,8 @@
    "description": "An eight-track groovebox for sound design: thirteen synth engines, struck percussion and 33 drum machines after the Machinedrum, on an influence grid where any track can trigger, excite or modulate any other.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ravel-0.9.0.fwsc",
-   "provenance_paquet": "release download/v0.9.0/Ravel-FM1.fwsc"
+   "provenance_paquet": "release download/v0.9.0/Ravel-FM1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "s1vave",
@@ -1977,7 +2022,8 @@
    "description": "A synth after the Roland S-1 and the SH-101: a punchy sub-oscillator, a resonant filter, bass and lead sounds and hands-on controls for playing live. Built on OberVave.",
    "emulateur_fm1emu": "pas encore évalué",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/s1vave-1.0.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "shineon",
@@ -1989,7 +2035,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/shineon.fwsc",
+   "fichier": null,
    "sha256": "72070fba5d9c27b67ae8d62d663d41c9adf0992556ea3c36f1762eeccee5d835",
    "taille": 612204,
    "depot": "https://github.com/zvenson/shineon",
@@ -1998,7 +2044,8 @@
    "description": "A string ensemble in the spirit of the late-70s machines, grown out of OberVave: divide-down keyers with 16', 8' and 4' footages, register filters, a BBD ensemble and a phaser per sound. Now on four tracks with a mixer, delay, reverb, drive, a master and the step sequencer.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/shineon-3.0.1.fwsc",
-   "provenance_paquet": "release download/v3.0.1/shineon-3.0.1.fwsc"
+   "provenance_paquet": "release download/v3.0.1/shineon-3.0.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "sid1",
@@ -2052,7 +2099,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/skiff.fwsc",
+   "fichier": null,
    "sha256": "0622a752e8304777c042ccea0732ba023e1413baa6dbc8724576e2ec76de02e0",
    "taille": 610337,
    "depot": "https://github.com/illuminus5/skiff",
@@ -2061,7 +2108,8 @@
    "description": "Six tracks of synths and drums with a groovebox's workflow: fourteen engines, a 64-step sequencer with chords, ratchets, trig conditions and locks, songs, PERFORM with scenes, six themes and a browser editor; FM6 sounds built from scratch on the unit. Built on Felucca, with most of Felucca 1.6.1's work brought over (the second core, MIDI LEARN, INSERT); Felucca's sounds and projects load. Also runs on the SMK-37 Pro.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/skiff-1.4.fwsc",
-   "provenance_paquet": "release download/v1.4/skiff-1.4.fwsc"
+   "provenance_paquet": "release download/v1.4/skiff-1.4.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "sloop",
@@ -2178,7 +2226,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/tessera.fwsc",
+   "fichier": null,
    "sha256": "a37a34f497d1bcd3fae4211c771d26dab3d3fd2068bb3d56d3c65af672568e73",
    "taille": 610571,
    "depot": "https://github.com/Rastapopolix/tessera",
@@ -2187,7 +2235,8 @@
    "description": "Generative music on four tracks: each plays its own steps, an arpeggio or one of 13 generators (Turing, Euclid, Markov, Constellation, Chord and more), and the tracks evolve, follow and modulate each other. EVOLVE and FORM grow phrases into songs; 16 mod cords connect anything. A Melodee fork.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tessera-2.1.1.fwsc",
-   "provenance_paquet": "release download/v2.1.1/tessera-2.1.1.fwsc"
+   "provenance_paquet": "release download/v2.1.1/tessera-2.1.1.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "tonitor",
@@ -2220,7 +2269,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/tribe.fwsc",
+   "fichier": null,
    "sha256": "daa953ea5c37a5612d6db6f508a86879a79214768acc79d6ae04f2e0b93b6f6b",
    "taille": 609680,
    "depot": "https://github.com/apiel/fm1-tribe",
@@ -2229,7 +2278,8 @@
    "description": "A ten-track groovebox where any engine plays on any track: kicks, 909 and 808 voices, the 303, sixteen clips a track, scatter effects and four master knobs you assign. Built on X0X.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tribe-0.3-beta.fwsc",
-   "provenance_paquet": "gh-pages firmware/tribe-0.3-beta.fwsc"
+   "provenance_paquet": "gh-pages firmware/tribe-0.3-beta.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "tuna",
@@ -2250,7 +2300,8 @@
    "description": "Generative music built on Felucca: composer profiles write the music as it plays, you steer them. A work in progress.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tuna-1.0-b77b159.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "natif_seulement": true
   },
   {
    "id": "unholy",
@@ -2262,7 +2313,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": true,
-   "fichier": "firmwares/unholy.fwsc",
+   "fichier": null,
    "sha256": "025bec05d71da1b106ecb05d52e165ea6592812e92209cfe2626278047f7abba",
    "taille": 610567,
    "depot": "https://github.com/actuallysparky/FM-1-Unholy-Union-generative-drone-firmware",
@@ -2271,7 +2322,8 @@
    "description": "Generative ambient and drone: Immaculate Permutation rolls an arrangement in one key, a pad, a sequence and a chord arpeggio under a fourth voice for your hands. Keep a sermon you like, evolve it, or reveal another.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/unholy-0.2.3.fwsc",
-   "provenance_paquet": "release download/v0.2.3/unholyunion-permutation-0.2.3.fwsc"
+   "provenance_paquet": "release download/v0.2.3/unholyunion-permutation-0.2.3.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "vector37",
@@ -2304,7 +2356,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/waveloop.fwsc",
+   "fichier": null,
    "sha256": "e9529deb7ff626ee64b08fe06a550e39cd2a99c3cc1697bfcb65828f030cf22d",
    "taille": 609849,
    "depot": "https://github.com/ELI7VH/Felucca",
@@ -2313,7 +2365,8 @@
    "description": "Felucca played from an Arturia MiniLab 3: track faders, a DJ filter, momentary effect pads; 32 patches a bank, 12 evolving songs, revoiced 808 and CR78 kits.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/waveloop-1.0.5.2-midi23.fwsc",
-   "provenance_paquet": "release download/1.0.5.2-midi23/felucca-1.0.5.2-midi23.fwsc"
+   "provenance_paquet": "release download/1.0.5.2-midi23/felucca-1.0.5.2-midi23.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "winampfm",
@@ -2346,7 +2399,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/x0x.fwsc",
+   "fichier": null,
    "sha256": "a0c29deb930c65f1d40b5691b7d673f861418b438b7e65027cb9c671e6f44f5b",
    "taille": 609684,
    "depot": "https://github.com/charlesvestal/fm1-x0x",
@@ -2355,7 +2408,8 @@
    "description": "A groovebox: 909 and 808 drums, two 303s with TB-3PO, a breakbeat generator and song mode.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/x0x-1.1.0.fwsc",
-   "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc"
+   "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "x0xrmx",
@@ -2367,7 +2421,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/x0xrmx.fwsc",
+   "fichier": null,
    "sha256": "b343c135779c1de933d655236b14628103816036e170d65faed706aba620dcaa",
    "taille": 609680,
    "depot": "https://github.com/Mr-Roboto/fm1-x0x-rmx",
@@ -2376,7 +2430,8 @@
    "description": "X0X remixed after The Orb: banks and patterns reordered live per voice, Grids MAP and EUCLID drum generation, an extended TB-3PO with 22 scales and a morphing 303 waveform. Built on X0X.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/x0xrmx-1.1.0.fwsc",
-   "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc"
+   "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "zen",
@@ -2388,7 +2443,7 @@
    ],
    "licence": "GPL-3.0",
    "beta": false,
-   "fichier": "firmwares/zen.fwsc",
+   "fichier": null,
    "sha256": "e3c51c045b1a763b6d16d2a7e783289ee874b25790e9010c0a5a084ddb65a125",
    "taille": 609657,
    "depot": "https://github.com/aceyprime/zen-1",
@@ -2397,7 +2452,8 @@
    "description": "Ambient as a living window: cherry petals on a river, koi in a pond, fireflies under a real moon, and every movement a note. Set it down and let it play; the keys play along, the knobs shape the scene.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/zen-1.2.fwsc",
-   "provenance_paquet": "release download/v1.2/zen-1-1.2.fwsc"
+   "provenance_paquet": "release download/v1.2/zen-1-1.2.fwsc",
+   "natif_seulement": true
   },
   {
    "id": "zp12",

@@ -121,7 +121,7 @@ def test_optimised_first(page):
     assert set(order[1:k]) == {"optimise"} and set(order[k + 1:]) == {"emule"}
     tier = lambda i: page.evaluate("(id) => document.querySelector(`.fw-item[data-id=\"${id}\"]`).closest('.fw-sec').dataset.tier", i)
     assert tier("fm1va") == "optimise" and tier("x0x") == "optimise" and tier("felucca") == "optimise"
-    assert tier("zp12") == "emule" and tier("obervave") == "emule"
+    assert tier("zp12") == "emule" and tier("gator") == "emule" and tier("obervave") == "optimise"
 
 
 def test_layouts(browser, base_url):
@@ -159,9 +159,9 @@ def test_contextual_controls(page):
 def test_open_local(page):
     power_on(page)
     n = page.evaluate("window.__catalogue.length")
-    page.set_input_files("#fw-file", os.path.join(ROOT, "firmwares", "felucca.fwsc"))
-    wait_status(page, "felucca")
-    assert page.inner_text("#fw-name") == "felucca"
+    page.set_input_files("#fw-file", os.path.join(ROOT, "firmwares", "gator.fwsc"))
+    wait_status(page, "gator")
+    assert page.inner_text("#fw-name") == "gator"
     page.wait_for_timeout(3000)
     assert lit_pixels(page) >= 2000
     assert page.evaluate("window.__catalogue.length") == n

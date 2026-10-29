@@ -16,7 +16,7 @@ def table(entries):
     lines = ["| Firmware | Auteur | Licence | Source | État |", "|---|---|---|---|---|"]
     for e in sorted(entries, key=lambda e: e["nom"].lower()):
         src = f"[{e['commit_source'][:7]}]({e['depot']}/tree/{e['commit_source']})" if e.get("commit_source") else f"[dépôt]({e['depot']})"
-        state = STATE.get(e["emulateur_fm1emu"], e["emulateur_fm1emu"]) + (", bêta" if e.get("beta") else "") + ("" if e.get("fichier") else ", en ligne")
+        state = STATE.get(e["emulateur_fm1emu"], e["emulateur_fm1emu"]) + (", bêta" if e.get("beta") else "") + (", natif" if e.get("natif_seulement") else "" if e.get("fichier") else ", en ligne")
         lines.append(f"| {cell(e['nom'])} | {cell(e['auteur'])} | {cell(e['licence'])} | {src} | {state} |")
     return "\n".join(lines)
 
