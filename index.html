@@ -273,7 +273,6 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <summary>Ce qui manque encore</summary>
       <div class="note">
         <ul>
-          <li>Le séquenceur, en pas à pas : les lanes Drums et SFX, les accords du Note Engine, les notes longues avec REC tenu.</li>
           <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
           <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
         </ul>
@@ -1207,6 +1206,8 @@ class Engine extends AudioWorkletProcessor {
   key(n, on, v, src) {
     if (!this.p) return;
     const g = this.g, a = g.arp;
+    if (src === "r") { this.own(n, v, n, on, false); return; }    // step recording: the key alone, not the Note Engine
+    if (src === "mr") { if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n); return; }   // the same from MIDI
     if (a.on && (src !== "m" || (a.midiIn && g.local !== 0))) { if (on) this.ne.keyOn(n, v); else this.ne.keyOff(n); return; }
     if (src === "m") { if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n); return; }
     this.own(n, v, n, on, src === "p");
@@ -3265,7 +3266,7 @@ class Firmware {
         break;
       case "SEQ": this.pressSeq(); break;
       case "PLAY": this.pressPlay(); break;
-      case "REC": this.pressRec(); break;
+      case "REC": if (this.S.rec === "step") this.recEnd = true; else { this.recEnd = false; this.pressRec(); } break;   // held in step recording: long notes
       case "OCT-": case "OCT+": {
         const other = b === "OCT-" ? "OCT+" : "OCT-";
         if (this.held.has(other)) { this.octave = 0; this.used[b] = this.used[other] = true; this.message("Octave 0"); }
@@ -3286,6 +3287,7 @@ class Firmware {
       case "HOME": this.back(); break;
       case "SEL": this.enter(); break;
       case "PLAY": this.releasePlay(); break;
+      case "REC": if (this.recEnd) { this.recEnd = false; this.pressRec(); } break;
       case "ENV":
         if (this.stack.length && this.stack[0].root === "env") this.stack = [];
         else { this.q = null; this.nameEd = null; this.stack = [{ root: "env", list: () => this.envList(), sel: 0, top: 0 }]; }
@@ -3510,7 +3512,9 @@ class Firmware {
     const n = KEY0 + i + 12 * this.octave + this.kbdTr;
     this.keyNotes.set(id, n);
     this.seqKeyDown(n, id);
-    if (this.node) this.node.port.postMessage({ t: "key", n, on: true, v: this.G.velocity });   // Local Control: in the worklet
+    const src = this.G.seqOn && this.S.rec === "step" ? "r" : undefined;   // in step recording only the key sounds
+    (this.keySrc || (this.keySrc = new Map())).set(id, src);
+    if (this.node) this.node.port.postMessage({ t: "key", n, on: true, v: this.G.velocity, src });   // Local Control: in the worklet
     // on an 8-Bit preset's EDIT screen a key also opens the part it plays
     const top = this.top();
     if (this.stack.length && this.stack[0].root === "edit" && this.cur.engine === "b8" && !this.q && !this.nameEd) {
@@ -3536,7 +3540,9 @@ class Firmware {
     const n = this.keyNotes.get(id);
     if (n === undefined) return;
     this.keyNotes.delete(id);
-    if (this.node) this.node.port.postMessage({ t: "key", n, on: false, v: 0 });
+    const src = this.keySrc ? this.keySrc.get(id) : undefined;
+    if (this.keySrc) this.keySrc.delete(id);
+    if (this.node) this.node.port.postMessage({ t: "key", n, on: false, v: 0, src });
   }
   allNotesOff() { if (this.node) this.node.port.postMessage({ t: "allOff" }); this.keyNotes.clear(); this.midiOutOff(); }
   keyLit(i) {
@@ -3978,8 +3984,12 @@ Object.assign(Firmware.prototype, {
   pressRec() {
     const S = this.S;
     if (!this.G.seqOn) { this.seqOn(true); this.showGrid(); S.rec = "step"; S.cursor = 0; this.sendSeq(); return; }
-    if (S.rec) { if (S.rec === "step") S.ring = S.cursor; S.rec = null; this.endRtNotes(); }
-    else { S.rec = S.playing ? "rt" : "step"; S.cursor = S.playing && S.pos ? S.pos.step : S.ring; if (!this.inSeq()) this.showGrid(); }
+    if (S.rec) { if (S.rec === "step") S.ring = S.cursor; S.rec = null; this.endRtNotes(); if (this.top() && this.top().step !== undefined) this.stack.pop(); }   // ending it closes a step's list
+    else {
+      S.rec = S.playing ? "rt" : "step"; S.cursor = S.playing && S.pos ? S.pos.step : S.ring;
+      if (!this.inSeq()) this.showGrid();
+      else if (this.stack.length > 1 && !this.top().lane && this.top().step === undefined) this.stack = [this.stack[0]];   // from the pattern's settings
+    }
     this.sendSeq();
   },
   pressSeq() {
@@ -4011,23 +4021,22 @@ Object.assign(Firmware.prototype, {
   addNote(step, n, v, len) {
     const s = this.P.notes[step];
     const old = s.find((x) => x.n === n);
-    if (old) { old.v = v; old.len = Math.max(old.len, len); return; }
-    if (s.length >= 9) s.shift();                       // a step holds nine notes: a tenth drops the oldest
+    if (old) { old.v = v; old.len = Math.max(old.len, len); return true; }
+    if (s.length >= 9) {                                // a step holds nine notes: a tenth drops the oldest
+      if (this.cur.engine !== "b8") s.shift();
+      else {                                            // on an 8-Bit preset the oldest that is not a drum; only a drum takes a drum's place
+        const j = s.findIndex((x) => x.n >= 29);
+        if (j >= 0) s.splice(j, 1); else if (n < 29) s.shift(); else return false;
+      }
+    }
     s.push({ n, v, len });
+    return true;
   },
   seqKeyDown(n, id, v = this.G.velocity) {
     const S = this.S;
     if (!this.G.seqOn || !S.rec) return;
     n -= this.G.seqTr;                                  // patterns hold notes before the Sequencer's Transpose
-    if (S.rec === "step") {
-      const s = this.P.notes[S.cursor], at = s.findIndex((x) => x.n === n);
-      if (at >= 0) s.splice(at, 1);                     // the same note again on its step takes it off
-      else this.addNote(S.cursor, n, v, 1);
-      S.recHeld.set(id, n);
-      this.used.SEL = this.held.has("SEL") || this.used.SEL;
-      this.sendSeq();
-      return;
-    }
+    if (S.rec === "step") { this.stepKey(n, id, v); return; }
     let ph = this.playhead();
     if (ph === null) {
       // during the count-in a note sounds but is not recorded, unless it comes within half a step of step 1
@@ -4042,12 +4051,52 @@ Object.assign(Firmware.prototype, {
     this.addNote(start, n, v, 1);
     this.sendSeq();
   },
+  // a key in step recording (manual 9.8): onto the outlined step, or the open step; with the Note Engine on Auto-Arp or
+  // Auto-Chord the key's whole chord; with REC held a note held into the next step. On an 8-Bit preset a key writes
+  // in its own lane, and the drums and the effects keep the outline on their step in a lane
+  stepKey(n, id, v) {
+    const S = this.S, P = this.P, t = this.top(), open = t && t.step !== undefined, i = open ? t.step : S.cursor, s = P.notes[i];
+    const lane = this.onLane() ? t.lane : null, kl = this.laneOf(n), b8 = this.cur.engine === "b8";
+    let stay = open || this.held.has("SEL") || (b8 && !!lane && (kl === "drums" || kl === "sfx"));   // a drum or an effect in a lane: the outline stays
+    S.recHeld.set(id, n);
+    if (this.held.has("SEL")) this.used.SEL = true;
+    const a = this.G.arp, chordy = a.on && (a.ne === 1 || a.ne === 2) && (!id.startsWith("m") || a.midiIn);
+    const notes = chordy ? [n, ...this.chordOf(n).filter((x) => x !== n)] : [n];
+    if (s.some((x) => x.n === n)) {                     // the same key again on its step: off, with its chord
+      P.notes[i] = s.filter((x) => !notes.includes(x.n));
+    } else {
+      if (b8 && (lane === "drums" || lane === "sfx") && kl !== "drums" && s.length >= 9) { S.recStay = true; return; }   // a full step refuses it there
+      const hold = this.held.has("REC") && i < P.steps - 1;
+      if (this.held.has("REC")) this.used.REC = true;
+      let wrote = false;
+      for (const x of notes) {
+        if (s.length >= 9 && x !== n) break;            // the chord while the step has room
+        const prev = hold && P.notes.slice(0, i).findIndex((st, j) => st.some((y) => y.n === x && j + (y.len || 1) - 1 === i));
+        if (prev !== false && prev >= 0) { P.notes[prev].find((y) => y.n === x).len++; wrote = true; continue; }   // REC held again: longer
+        wrote = this.addNote(i, x, v, hold ? 2 : 1) || wrote;
+      }
+      if (!wrote) { S.recStay = true; return; }
+      if (b8 && lane && kl !== lane && !open) { this.stack.pop(); this.openLane(kl); }   // the screen changes to the key's lane
+    }
+    if (stay) S.recStay = true;
+    this.sendSeq();
+  },
+  // the Note Engine's chord for key n, as it would play it (the worklet's own code, run here)
+  chordOf(n) {
+    if (!this.harm) {
+      const make = new Function("AudioWorkletProcessor", "registerProcessor", "sampleRate", "currentTime", document.getElementById("engine-src").textContent + "\n;return Engine;");
+      const E = make(class { constructor() { this.port = { postMessage() {} }; } }, () => {}, 44100, 0);
+      this.harm = new E();
+    }
+    this.harm.g.arp = this.G.arp; this.harm.p = this.cur;
+    return this.harm.ne.chord(n);
+  },
   seqKeyUp(id) {
     const S = this.S, h = S.recHeld.get(id);
     if (h === undefined) return;
     S.recHeld.delete(id);
     if (S.rec === "step") {
-      if (!S.recHeld.size && !this.held.has("SEL")) S.cursor = (S.cursor + 1) % this.P.steps;
+      if (!S.recHeld.size) { if (!S.recStay && !this.held.has("SEL")) S.cursor = (S.cursor + 1) % this.P.steps; S.recStay = false; }
       return;
     }
     if (h === -1) { if (S.erase) S.erase.clear(); return; }
@@ -4289,7 +4338,7 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     if (S.rec === "rt") return;
     const i = S.rec === "step" ? S.cursor : S.ring;
-    this.stack.push({ list: () => this.stepList(i), sel: 0, top: 0 });
+    this.stack.push({ step: i, list: () => this.stepList(i), sel: 0, top: 0 });
   },
 
   // ---------------------------------------------------------------- the Flow grid: 64 steps as eight rows of eight
@@ -4673,7 +4722,11 @@ Object.assign(Firmware.prototype, {
     this.seqKeyUp(id);
     if (M.sus) M.susp.add(n); else this.midiKey(n, 0, false);
   },
-  midiKey(n, v, on) { if (this.node) this.node.port.postMessage({ t: "key", n, on, v, src: "m" }); },
+  midiKey(n, v, on) {
+    const M = this.mi;
+    if (on) M.src = Object.assign(M.src || {}, { [n]: this.G.seqOn && this.S.rec === "step" ? "mr" : "m" });
+    if (this.node) this.node.port.postMessage({ t: "key", n, on, v, src: (M.src && M.src[n]) || "m" });
+  },
   midiSustain(on) {
     const M = this.mi;
     M.sus = on;

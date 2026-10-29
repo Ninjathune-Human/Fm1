@@ -921,6 +921,8 @@ class Engine extends AudioWorkletProcessor {
   key(n, on, v, src) {
     if (!this.p) return;
     const g = this.g, a = g.arp;
+    if (src === "r") { this.own(n, v, n, on, false); return; }    // step recording: the key alone, not the Note Engine
+    if (src === "mr") { if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n); return; }   // the same from MIDI
     if (a.on && (src !== "m" || (a.midiIn && g.local !== 0))) { if (on) this.ne.keyOn(n, v); else this.ne.keyOff(n); return; }
     if (src === "m") { if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n); return; }
     this.own(n, v, n, on, src === "p");
