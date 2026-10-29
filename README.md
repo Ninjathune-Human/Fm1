@@ -22,7 +22,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 - **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, écrans et séquenceur. Ce n'est pas son firmware : FM-1+VA de Baud Girl n'est pas redistribué ici, et la réimplémentation ne reprend aucun code de son firmware.
 - **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `1c8661d`, puis publie le site.
-- **56 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
+- **57 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
 - Les paquets `.fwsc` sont ceux publiés par leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json)). Chacun a été démarré dans l'émulateur : voir le [rapport de vérification](docs/verification.md).
 
 ## Firmwares
@@ -41,7 +41,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
 | Chipbox | Pasquale Barilla | GPL-3.0 | [4851031](https://github.com/pbarilla/chipbox/tree/48510318cffe4db2a5ceccfc153a65dcd6c8d6ff) | fonctionne, natif |
-| DUB-1 | sbegueria | GPL-3.0 | [e6fe7b8](https://github.com/sbegueria/fm1-dub/tree/e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d) | fonctionne |
+| DUB-1 | sbegueria | GPL-3.0 | [e6fe7b8](https://github.com/sbegueria/fm1-dub/tree/e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d) | fonctionne, natif |
 | ESTAMPIE | Drew Robinson | GPL-3.0 | [b6be8f7](https://github.com/ocean/estampie/tree/b6be8f78adcee97d4b217db7b81f6a4eb02445e8) | vérifié, bêta, natif |
 | Felucca | Leo Kuroshita (Hügelton Instruments) | GPL-3.0 | [a53ecf4](https://github.com/hugelton/Felucca/tree/a53ecf428c29c780108fd70a31b71a32a6b5c313) | fonctionne, natif |
 | Felucca 8 Patterns | echoe | GPL-3.0 | [21fc592](https://github.com/echoe/Felucca_8_patterns/tree/21fc592dab76907b6bea34d97950dfe129ad9fd8) | fonctionne, natif |
