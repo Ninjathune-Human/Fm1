@@ -65,10 +65,12 @@ def test_linked_tempo(page):
     assert b.evaluate("window.__fw.globList().rows[0].dim()")           # le Tempo de FM1-B grisé
     a.evaluate("() => { const fw = window.__fw; fw.G.tempo = 150; fw.sendGlobal(); fw.seqOn(true); fw.sendSeq(); }")
     b.evaluate("""() => { const fw = window.__fw, P = fw.pats[0]; fw.G.tempo = 90; fw.sendGlobal(); P.rate = 7; P.steps = 16;
-      P.notes[0] = [{ n: 60, v: 100, len: 1 }]; fw.seqOn(true); fw.sendSeq();
+      P.notes[0] = [{ n: 60, v: 100, len: 1 }]; fw.sendSeq();
       window.__pos = []; const on = fw.onPos.bind(fw); fw.onPos = (m) => { window.__pos.push(m); on(m); }; }""")
     page.wait_for_timeout(500)                                          # l'horloge de FM1-A arrive déjà (Always)
-    a.evaluate("window.__fw.seqPlay()")                                 # PLAY sur FM1-A : Start vers FM1-B
+    assert b.evaluate("valText(window.__fw.globList().rows[0])") == "150"   # FM1-B montre le tempo qu'il suit
+    assert page.evaluate("document.querySelector('.duo-link').textContent").endswith("A → B")
+    a.evaluate("window.__fw.seqPlay()")                                 # PLAY sur FM1-A : Start vers FM1-B, qui allume son séquenceur
     page.wait_for_timeout(1500)
     pos = b.evaluate("window.__pos")
     assert len(pos) >= 8
@@ -81,3 +83,20 @@ def test_linked_tempo(page):
     page.click(".duo-link")
     page.wait_for_timeout(400)
     assert not b.evaluate("!!window.__fw.mi.follow")
+
+
+def test_native_follows(page):
+    """FM1-A natif, FM1-B FM-1+VA : B mène, et le natif reçoit l'horloge dans le format de son worklet."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.natif)")
+    ok = a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.natif && e.natif_dialecte === 'felucca'))")
+    assert ok
+    a.evaluate("() => { const n = window.__engine(), s = n.send.bind(n); window.__got = []; n.send = (m, t) => { if (m.type === 'midi') window.__got.push(m.data[0]); return s(m, t); }; }")
+    page.click(".duo-link")
+    page.wait_for_timeout(600)
+    assert page.evaluate("document.querySelector('.duo-link').textContent").endswith("B → A")
+    assert b.evaluate("!!window.__fw.mi.lead")
+    got = a.evaluate("window.__got")
+    assert got.count(0xF8) >= 10                                        # l'horloge de FM1-B

@@ -293,7 +293,7 @@ html.embed .deck { gap: 6px 14px; flex: none; }
           <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier : <kbd>Q</kbd>…<kbd>I</kbd> et <kbd>A</kbd>…<kbd>K</kbd> pour les blanches, <kbd>1</kbd>…<kbd>0</kbd> <kbd>-</kbd> pour les noires.</dd>
           <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>↑</kbd><kbd>↓</kbd> SELECT, <kbd>←</kbd><kbd>→</kbd> ALGORITHM, <kbd>Pg↑</kbd><kbd>Pg↓</kbd> PRESETS.</dd>
           <dt>Boutons</dt><dd><kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME, <kbd>Z</kbd> <kbd>X</kbd> OCT− et OCT+.</dd>
-          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : FM1-A mène, FM1-B suit son horloge et démarre avec lui (FM-1+VA des deux côtés). FM1-B prend FM-1+VA ou un firmware natif.</dd>
+          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif la reçoit aussi, et la suit s'il sait suivre une horloge MIDI. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
         <p>Les presets <span class="range">001–064</span> sont FM, <span class="range">065–080</span> et <span class="range">113–128</span> Virtual Analog, <span class="range">081–112</span> 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT− trois fois).</p>
@@ -1996,6 +1996,16 @@ class NativeFirmware {
   get gdirty() { return this.va.gdirty; }
   set gdirty(v) { this.va.gdirty = v; }
   send(m, t) { if (this.node) this.node.port.postMessage(m, t || []); }
+  // MIDI vers le firmware, dans le format de son worklet (un worklet qui ne lit pas le MIDI l'ignore)
+  midiIn(d) {
+    const s = d[0], a = d[1] || 0, b = d[2] || 0;
+    if (this.dialect === "choralroot") {               // un paquet USB-MIDI : son code, puis les trois octets
+      const cin = s >= 0xf8 ? 0xf : s >= 0x80 && s < 0xf0 ? s >> 4 : 0;
+      if (cin) this.send({ type: "midi", pkts: [(cin | (s << 8) | (a << 16) | (b << 24)) >>> 0] });
+    } else if (this.x0x) this.send({ type: "midi", b0: s, b1: a, b2: b });
+    else if (this.m2k) this.send({ t: "midi", s, a, b });
+    else this.send({ type: "midi", data: [s, a, b] });
+  }
 
   // démarre le firmware (une fois par page : son worklet garde l'état) ; ensuite, rebranche seulement
   async boot(ac) {
@@ -3126,7 +3136,7 @@ class Firmware {
   globList() {
     const G = () => this.G, g = { g: true }, notMono = () => !this.isMono();
     return { title: "Global Settings", rows: [
-      num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow }),
+      num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow, fmt: (v) => String(this.mi.follow && this.mi.tempo ? this.mi.tempo : v) }),
       onoff("Sync", G, "sync", g),
       group("MIDI", () => this.midiList()),
       onoff("Metronome", G, "metroOn", { g: true, after: () => this.sendSeq() }),
@@ -3184,7 +3194,7 @@ class Firmware {
       return [...three.map((r, i) => L(r, labels[i])), L(onoff("On/Off", () => this.cur.fx[b], "on"), "ON/OFF")];
     }
     const G = () => this.G, A = () => this.G.arp;
-    if (b === "global") return [L(num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow }), "TEMPO"),
+    if (b === "global") return [L(num("Tempo", G, "tempo", 30, 300, { g: true, dim: () => this.G.sync === 1 || !!this.mi.follow, fmt: (v) => String(this.mi.follow && this.mi.tempo ? this.mi.tempo : v) }), "TEMPO"),
       L(ch("Arp Rate", A, "rate", NE_RATES, { g: true }), "A.RATE"), L(num("Arp Gate", A, "gate", 20, 100, { g: true }), "A.GATE"),
       L(num("Glide Time", G, "glideTime", 0, 100, { g: true, dim: () => !this.isMono() }), "GLIDE")];
     if (b === "mixer") {
@@ -4901,7 +4911,8 @@ Object.assign(Firmware.prototype, {
   midiRealtime(st) {
     const S = this.S;
     if (st === 0xf8) { if (this.node) this.node.port.postMessage({ t: "clock" }); return; }
-    if (!this.G.seqOn || (st !== 0xfa && st !== 0xfb && st !== 0xfc)) return;
+    if (st !== 0xfa && st !== 0xfb && st !== 0xfc) return;
+    if (!this.G.seqOn) { if (this.mi.follow && st !== 0xfc) this.seqOn(true); else return; }   // Duo, tempo lié : Start lance aussi FM1-B
     if (st === 0xfc) { if (S.playing) this.seqPlay(); return; }   // as PLAY: from real-time into step recording
     if (S.playing) { if (st === 0xfa) { S.restart = true; this.sendSeq(); } return; }
     if (st === 0xfb) { S.from = S.contFrom || 0; S.cont = true; }
@@ -5594,7 +5605,10 @@ function buildPanel(fw) {
     navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess()).then((access) => {
       const known = new Set();
       const wire = (e) => {
-        for (const i of access.inputs.values()) i.onmidimessage = (m) => { if (current === va && window.__midiActive !== false) va.midiIn(m.data); };   // (Duo : le FM-1 affiché ou touché)
+        for (const i of access.inputs.values()) i.onmidimessage = (m) => {   // au firmware actif (Duo : au FM-1 affiché ou touché)
+          if (window.__midiActive === false) return;
+          if (current === va) va.midiIn(m.data); else if (current.kind === "natif") current.midiIn(m.data);
+        };
         va.mi.outs = [...access.outputs.values()].filter((o) => o.state === "connected");
         const p = e && e.port, here = p && p.state === "connected";
         if (p && here !== known.has(p.id)) {             // a device arriving or leaving, not a port opening
@@ -5936,7 +5950,7 @@ function buildPanel(fw) {
         <button type="button" role="radio" data-v="side">Côte à côte</button>
         <button type="button" role="radio" data-v="one">Un à la fois</button>
       </div>
-      <button type="button" class="duo-link" role="switch" aria-checked="false" title="FM1-A mène, FM1-B suit son horloge">Tempo lié<span class="track"></span></button>
+      <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
     </div>
     <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
   document.body.append(root);
@@ -5971,20 +5985,36 @@ function buildPanel(fw) {
   addEventListener("blur", () => setTimeout(() => { const f = document.activeElement; if (f && f.tagName === "IFRAME" && stage.dataset.layout !== "one") midiTo(f.name); }));
   for (const f of Object.values(frames)) f.addEventListener("load", () => midiTo(active));
 
-  // le tempo lié : l'horloge et Start, Stop, Continue de FM1-A vers FM1-B (FM-1+VA des deux côtés)
+  // le tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre FM-1 suit son horloge, Start, Stop et Continue,
+  // FM-1+VA ou firmware natif (un natif suit s'il sait suivre une horloge MIDI, souvent un réglage Sync à lui)
   linkBtn.addEventListener("click", () => { linked = !linked; keep("link", linked ? "1" : "0"); tick(); });
-  const fwOf = (k) => { try { const w = frames[k].contentWindow; return w.__fw && w.__engine && w.__engine() === w.__fw && w.__fw.on ? w.__fw : null; } catch { return null; } };
-  let wasA = null, wasB = null;
+  const engOf = (k) => {
+    try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? (e === w.__fw ? { va: e } : e.kind === "natif" ? { natif: e } : null) : null; } catch { return null; }
+  };
+  const fwOf = (k) => { const e = engOf(k); return e && e.va ? e.va : null; };
+  let was = { a: null, b: null };
   function tick() {
-    const A = fwOf("a"), B = fwOf("b"), can = !!(A && B), on = linked && can;
-    linkBtn.setAttribute("aria-checked", linked);
-    linkBtn.setAttribute("aria-disabled", !can);
-    linkBtn.title = can ? "FM1-A mène, FM1-B suit son horloge" : "Le tempo se lie entre deux FM-1+VA allumés";
-    if (wasA && wasA !== A) { wasA.mi.lead = false; wasA.mi.link = null; wasA.sendGlobal(); }
-    if (wasB && wasB !== B) { wasB.mi.follow = false; wasB.sendGlobal(); }
-    if (A && (!!A.mi.lead !== on)) { A.mi.lead = on; A.mi.link = on ? (bytes) => { const b = fwOf("b"); if (b) b.midiIn(Uint8Array.from(bytes)); } : null; A.sendGlobal(); }
-    if (B && (!!B.mi.follow !== on)) { B.mi.follow = on; B.sendGlobal(); }
-    wasA = A; wasB = B;
+    const E = { a: engOf("a"), b: engOf("b") };
+    const lead = E.a && E.a.va && E.b ? "a" : E.b && E.b.va && E.a ? "b" : null, other = lead === "a" ? "b" : "a";
+    const on = linked && !!lead;
+    linkBtn.setAttribute("aria-checked", on);
+    linkBtn.setAttribute("aria-disabled", !lead);
+    linkBtn.querySelector(".dir").textContent = on ? (lead === "a" ? " · A → B" : " · B → A") : "";
+    linkBtn.title = lead ? `FM1-${lead.toUpperCase()} mène, FM1-${other.toUpperCase()} suit son horloge` : "Le tempo se lie quand l'un des deux est un FM-1+VA allumé";
+    for (const k of ["a", "b"]) {                     // ce que chacun doit être maintenant
+      const e = E[k] && (E[k].va || E[k].natif), isLead = on && k === lead, isFollow = on && k === other;
+      if (was[k] && was[k] !== e && was[k].mi) { was[k].mi.lead = false; was[k].mi.follow = false; was[k].mi.link = null; was[k].sendGlobal(); }
+      was[k] = e;
+      if (!e || !e.mi) continue;
+      const to = E[other] && (E[other].va || E[other].natif);
+      if (!!e.mi.lead !== isLead || (isLead && e.mi.linkTo !== to)) {
+        e.mi.lead = isLead; e.mi.linkTo = isLead ? to : null;
+        e.mi.link = isLead ? (bytes) => { if (to && to.on) to.midiIn(Uint8Array.from(bytes)); } : null;
+        e.sendGlobal();
+      }
+      if (!!e.mi.follow !== isFollow) { e.mi.follow = isFollow; e.sendGlobal(); }
+      e.mi.tempo = isFollow && E[lead].va ? E[lead].va.G.tempo : 0;
+    }
     // les noms des firmwares et le battement de chaque FM-1
     for (const b of tabs.children) {
       const k = b.dataset.k;
