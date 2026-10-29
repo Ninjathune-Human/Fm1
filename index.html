@@ -275,7 +275,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
         <ul>
           <li>Le séquenceur, deuxième partie : la vue Lane, les verrous de paramètres, Ratchet, Tie &amp; Slide, Repeats, Time Multiplier.</li>
           <li>Jouer dans une tonalité : Key, Scale, Chord, Pattern, Lead Follows.</li>
-          <li>MIDI, horloge et Bluetooth.</li>
+          <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
           <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
         </ul>
         <p>Ce n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page.</p>
@@ -523,7 +523,7 @@ class FMVoice {
         else { const ne = E - envInc(q); if (ne <= T) { this.E[i] = T; s = s === 4 ? 5 : s + 1; } else this.E[i] = ne; }
         this.st[i] = s;
       }
-      const op = fm.ops[i], am = (p.lfo.amd / 99) * (AMSTAB[op.ams] / 255) * 6 * lfo.amp;
+      const op = fm.ops[i], am = eng.amd(p) * (AMSTAB[op.ams] / 255) * 6 * lfo.amp;
       const live = p.fm.ops[i].on !== 0;
       this.g0[i] = this.g1[i];
       this.g1[i] = live ? Math.pow(2, this.E[i] - am - 14) : 0;
@@ -547,7 +547,7 @@ class FMVoice {
       this.pitch = this.note + (this.pitch - this.note) * k;
       if (Math.abs(this.pitch - this.note) < 0.01) this.pitch = this.note;
     } else this.pitch = this.note;
-    const semis = this.pitch + (fm.transpose - 24) + this.peg * 12 + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * (p.lfo.pmd / 99) + eng.tune;
+    const semis = this.pitch + (fm.transpose - 24) + this.peg * 12 + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * eng.pmd(p) + eng.tune + eng.bend;
     const base = mtof(semis);
     for (let i = 0; i < 6; i++) { const r = this.ratio[i]; this.inc[i] = (r < 0 ? -r : base * r) / SR; }
     // preset Envelope (Off: a plain gate) and the filter
@@ -609,7 +609,7 @@ class VAVoice {
     else this.pitch = this.note;
     // drift: a few cents through the first half, wonky above it
     const d = va.drift / 100, cents = d <= 0.5 ? 12 * d : 6 + (d - 0.5) * 2 * 90, rate = 0.25 + (d > 0.5 ? (d - 0.5) * 2 * 5 : 0);
-    const semis = this.pitch + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * (p.lfo.pmd / 99) + eng.tune;
+    const semis = this.pitch + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * eng.pmd(p) + eng.tune + eng.bend;
     const spread = va.detune / 100 * 0.6;            // semitones, at the outer copies
     const OFF = [0, -1, -0.66, -0.33, 0.33, 0.66, 1];
     for (let i = 0; i < 7; i++) {
@@ -627,7 +627,7 @@ class VAVoice {
     const e = p.env;
     const lv = va.level <= 0 ? 0 : 3.2 * Math.pow(10, -(99 - va.level) * 0.74 / 20);
     const vl = 1 - (va.vel2lvl / 7) * 0.9 * (1 - this.vel / 127);
-    const am = 1 - (p.lfo.amd / 99) * 0.9 * lfo.amp;
+    const am = 1 - eng.amd(p) * 0.9 * lfo.amp;
     let ev;
     if (e.on) ev = this.env.step(true, e.a, e.d, e.s, e.r, dt);
     else ev = this.env.step(false, 0, 0, 100, e.r, dt);
@@ -738,7 +738,7 @@ class PartVoice {                                  // the bass or the lead
     const arp = this.chord;
     if (arp && arp.length > 1) {
       if (b.arpSync) { const s = eng.beatStep(part.speed); if (s !== this.beatStep) { this.beatStep = s; this.ai = (this.ai + 1) % arp.length; } }
-      else { const len = ARPSPEED[part.speed] * 60 / eng.g.tempo; this.at += dt; while (this.at >= len) { this.at -= len; this.ai = (this.ai + 1) % arp.length; } }
+      else { const len = ARPSPEED[part.speed] * 60 / eng.tempo; this.at += dt; while (this.at >= len) { this.at -= len; this.ai = (this.ai + 1) % arp.length; } }
     } else this.ai = 0;
     const off = arp ? arp[this.ai % arp.length] : 0;
     // glide (mono), sweep, vibrato
@@ -746,7 +746,7 @@ class PartVoice {                                  // the bass or the lead
     if (gt > 0) { this.pitch = this.note + (this.pitch - this.note) * Math.exp(-dt * 4 / gt); } else this.pitch = this.note;
     this.sweep += part.sweep * 0.8 * dt;
     const vib = part.vib > 0 && this.t > 0.12 ? (part.vib / 99) * Math.sin(TAU * 5.5 * this.t) : 0;
-    const semis = this.pitch + off + this.sweep + vib + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * (p.lfo.pmd / 99) + eng.tune;
+    const semis = this.pitch + off + this.sweep + vib + lfo.pitch * 12 * (PMSTAB[p.lfo.pms] / 255) * eng.pmd(p) + eng.tune + eng.bend;
     let f = mtof(semis);
     if (b.tuning) f = chipHz(f, part.wave);
     this.inc = f / SR;
@@ -767,7 +767,7 @@ class PartVoice {                                  // the bass or the lead
       case 3: this.e = S; break;
       case 4: this.e = R > 0 ? this.e * Math.exp(-dt * 6.9 / R) : 0; if (this.e < 1e-4) { this.e = 0; this.st = 5; this.active = false; } break;
     }
-    let lvl = this.e * (part.level / 99) * (0.55 + 0.45 * this.vel / 127) * (1 - (p.lfo.amd / 99) * 0.9 * lfo.amp);
+    let lvl = this.e * (part.level / 99) * (0.55 + 0.45 * this.vel / 127) * (1 - eng.amd(p) * 0.9 * lfo.amp);
     if (!b.tone) lvl = Math.round(lvl * 15) / 15;                                  // Raw: sixteen steps
     this.amp0 = this.amp1; this.amp1 = f > 0 ? lvl : 0;
     if (this.st === 3 && S <= 0) { this.st = 5; this.active = false; }
@@ -977,18 +977,19 @@ const NE_RATE = [4, 2, 4 / 3, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 1
 class NoteEngine {
   constructor(eng) { this.eng = eng; this.held = []; this.latched = []; this.t = 0; this.step = 0; this.out = []; this.idx = 0; this.dir = 1; this.order = []; this.phase = 0; }
   get s() { return this.eng.g.arp; }
-  keys() { return this.s.latch ? this.latched : this.held; }
+  keys() { return [...new Set(this.s.latch ? this.latched : this.held)]; }   // a note held on the keys and on MIDI counts once
   keyOn(n, v) {
     const a = this.s;
     if (a.latch) { if (!this.held.length) this.latched = []; if (!this.latched.includes(n)) this.latched.push(n); }
     this.held.push(n); this.vel = v;
-    if (a.ne === 2) { for (const x of this.chord(n)) this.eng.voiceOn(x, v, n); return; }
+    if (a.ne === 2) { for (const x of this.chord(n)) this.eng.own(x, v, n, true); return; }
     if (this.keys().length === 1 && !this.running) { this.running = true; this.t = 0; this.step = 0; this.idx = 0; this.dir = 1; }
   }
   keyOff(n) {
-    this.held = this.held.filter((x) => x !== n);
+    const i = this.held.indexOf(n);
+    if (i >= 0) this.held.splice(i, 1);
     const a = this.s;
-    if (a.ne === 2 && !a.latch) for (const x of this.chord(n)) this.eng.voiceOff(x, n);
+    if (a.ne === 2 && !a.latch) for (const x of this.chord(n)) this.eng.own(x, 0, n, false);
     if (!this.keys().length) { this.running = false; this.stopOut(); }
   }
   chord(n) {
@@ -996,7 +997,7 @@ class NoteEngine {
     return shape.map((x) => n + x).filter((x) => x >= 0 && x < 128);
   }
   allOff() { this.held = []; this.latched = []; this.running = false; this.stopOut(); }
-  stopOut() { for (const o of this.out) this.eng.voiceOff(o.n, o.n); this.out = []; }
+  stopOut() { for (const o of this.out) this.eng.own(o.n, 0, o.n, false); this.out = []; }
   sequence() {
     const a = this.s, k = this.keys().slice();
     if (a.ne === 1) return null;
@@ -1012,14 +1013,14 @@ class NoteEngine {
     const a = this.s;
     if (!a.on || a.ne === 2) return;
     const now = this.t;
-    for (const o of this.out.slice()) if (now >= o.off) { this.eng.voiceOff(o.n, o.n); this.out.splice(this.out.indexOf(o), 1); }
+    for (const o of this.out.slice()) if (now >= o.off) { this.eng.own(o.n, 0, o.n, false); this.out.splice(this.out.indexOf(o), 1); }
     if (!this.running) { this.t += dt; return; }
-    const len = NE_RATE[a.rate] * 60 / this.eng.g.tempo;
+    const len = NE_RATE[a.rate] * 60 / this.eng.tempo;
     const swing = (a.swing - 50) / 50 * len;
     const when = this.step * len + (this.step % 2 ? swing : 0);
     if (now >= when) {
       const gateLen = len * a.gate / 100;
-      const play = (n) => { if (n < 0 || n > 127) return; this.eng.voiceOn(n, this.vel || 100, n); this.out.push({ n, off: now + gateLen }); };
+      const play = (n) => { if (n < 0 || n > 127) return; this.eng.own(n, this.vel || 100, n, true); this.out.push({ n, off: now + gateLen }); };
       if (a.ne === 1) {                                 // Auto-Arp: each held key's chord, one note a step
         for (const k of this.keys()) { const c = this.chord(k); play(c[this.step % c.length]); }
       } else {
@@ -1041,7 +1042,10 @@ class Engine extends AudioWorkletProcessor {
   constructor() {
     super();
     this.p = null; this.clock = 0; this.tune = 0; this.lfoV = 0; this.beats = 0; this.lfoPh = 0; this.lfoSH = 0; this.lfoT = 0;
-    this.g = { tempo: 120, velocity: 100, glideMode: 0, glideTime: 20, drive: 0, master: 0.7, arp: { on: 0, ne: 0, mode: 0, oct: 1, rate: 7, gate: 50, swing: 50, latch: 0, arpeggio: 1 } };
+    this.g = { tempo: 120, velocity: 100, glideMode: 0, glideTime: 20, drive: 0, master: 0.7, sync: 0, clockOut: 0, local: 1, seqOut: 0,
+               arp: { on: 0, ne: 0, mode: 0, oct: 1, rate: 7, gate: 50, swing: 50, latch: 0, midiIn: 1, arpeggio: 1 } };
+    this.bend = 0; this.modP = 0; this.modA = 0;          // from MIDI: pitch bend in semitones, the controllers' depths 0..1
+    this.ck = { last: -1, iv: [], tempo: 0 }; this.pulseT = 0;
     this.voices = []; for (let i = 0; i < 12; i++) this.voices.push(new FMVoice(this));
     this.vav = []; for (let i = 0; i < 12; i++) this.vav.push(new VAVoice(this));
     this.parts = []; for (let i = 0; i < 12; i++) this.parts.push(new PartVoice(this));
@@ -1059,17 +1063,47 @@ class Engine extends AudioWorkletProcessor {
       this.p = m.p;
       if (m.same && old && old.engine === m.p.engine) for (const v of this.all()) if (v.active && v.p === old) v.p = m.p;
     } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); }
-    else if (m.t === "key") this.key(m.n, m.on, m.v);
+    else if (m.t === "key") this.key(m.n, m.on, m.v, m.src);
     else if (m.t === "seq") this.seqMsg(m);
+    else if (m.t === "ctl") { this.bend = m.bend; this.modP = m.modP; this.modA = m.modA; }
+    else if (m.t === "clock") this.clockIn();
     else if (m.t === "allOff") { this.ne.allOff(); for (const v of this.all()) if (v.active && v.gate) v.release(); this.down.clear(); }
   }
   all() { return [...this.voices, ...this.vav, ...this.parts, ...this.drums, ...this.sfx]; }
-  // a key from the panel: through the Note Engine, or straight to the voices
-  key(n, on, v) {
+  // a key from the panel (src "p": a step's preview) or from MIDI (src "m"): through the Note Engine, or straight to the voices.
+  // A MIDI note plays without being sent on, and skips the Note Engine with its MIDI In Off or with Local Control Off.
+  key(n, on, v, src) {
     if (!this.p) return;
-    if (this.g.arp.on) { if (on) this.ne.keyOn(n, v); else this.ne.keyOff(n); return; }
-    if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n);
+    const g = this.g, a = g.arp;
+    if (a.on && (src !== "m" || (a.midiIn && g.local !== 0))) { if (on) this.ne.keyOn(n, v); else this.ne.keyOff(n); return; }
+    if (src === "m") { if (on) this.voiceOn(n, v, n); else this.voiceOff(n, n); return; }
+    this.own(n, v, n, on, src === "p");
   }
+  // a note the FM-1 plays itself (its keys, the Note Engine, the Sequencer): sent over MIDI (manual 10.2.2), and
+  // sounded unless Local Control is Off (the Sequencer: unless its Seq Output is Ext)
+  own(n, v, key, on, seq) {
+    const g = this.g;
+    if (!seq || g.seqOut !== 1) this.port.postMessage({ t: "out", n, v, on, seq: !!seq });
+    if (seq ? g.seqOut === 2 : g.local === 0) return;
+    if (on) this.voiceOn(n, v, key); else this.voiceOff(n, key);
+  }
+  pmd(p) { return Math.min(1, p.lfo.pmd / 99 + this.modP); }   // the LFO's depths, deepened by the MIDI controllers
+  amd(p) { return Math.min(1, p.lfo.amd / 99 + this.modA); }
+  // ---------------------------------------------------------------- MIDI clock (manual 11.6, 11.7)
+  // the tempo: the one measured from an incoming clock while Sync is On, else the FM-1's own
+  get tempo() { return this.g.sync && this.ck.tempo ? this.ck.tempo : this.g.tempo; }
+  following() { const c = this.ck; return !!this.g.sync && c.last >= 0 && currentTime - c.last < Math.max(0.1, 7.5 / this.tempo); }   // three pulses
+  clockIn() {
+    const c = this.ck, now = currentTime;
+    if (c.last >= 0 && now - c.last < 0.25) {
+      c.iv.push(now - c.last); if (c.iv.length > 24) c.iv.shift();
+      const avg = c.iv.reduce((x, y) => x + y, 0) / c.iv.length;
+      if (avg > 0) c.tempo = clamp(60 / (24 * avg), 20, 400);
+    } else c.iv = [];
+    c.last = now;
+    if (this.g.sync) this.seqPulse();
+  }
+  sendRt(b) { if (this.g.clockOut && !this.following()) this.port.postMessage({ t: "rt", b }); }
   glideTime(p) {
     const mono = p.engine === "fm" ? p.fm.mono : p.engine === "va" ? p.va.mono : 0;
     if (!mono || this.g.glideTime <= 0) return 0;
@@ -1175,12 +1209,20 @@ class Engine extends AudioWorkletProcessor {
     const s = this.sq || (this.sq = { playing: false, step: -1, t: 0, dur: 0, offs: [], pat: 0, next: null, bt: 0, beat: 0 });
     s.pats = m.pats; s.tr = m.tr; s.rec = m.rec; s.metro = m.metro; s.metroLvl = m.metroLvl; s.next = m.next;
     if (!s.playing) s.pat = m.pat;
-    if (m.playing && !s.playing) { s.playing = true; s.step = -1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0; }
-    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); }
+    // a start (again from step 1 on a MIDI Start, or on from a step on a MIDI Continue); following a clock, step 1
+    // waits for its next pulse
+    if (m.playing && (!s.playing || m.restart)) {
+      if (s.playing) this.seqAllOff();
+      s.playing = true; s.step = (m.from || 0) - 1; s.t = 0; s.bt = 0; s.beat = 0; s.count = m.count ? 4 : -1; s.ct = 0;
+      s.first = m.cont ? 0xfb : 0xfa; s.arm = this.following(); s.locked = s.arm; s.pc = 0; s.wait = 0;
+    }
+    else if (!m.playing && s.playing) { s.playing = false; this.seqAllOff(); this.sendRt(0xfc); }
   }
-  seqAllOff() { const s = this.sq; for (const o of s.offs) this.voiceOff(o.n, o.key); s.offs = []; }
+  seqAllOff() { const s = this.sq; for (const o of s.offs) this.own(o.n, 0, o.key, false, true); s.offs = []; }
   seqAdvance() {
     const s = this.sq;
+    if (s.first) { this.sendRt(s.first); this.sendRt(0xf8); this.pulseT = 60 / (24 * this.tempo); s.first = 0; }   // Start, then step 1's pulse
+    s.at = currentTime;
     let P = s.pats[s.pat];
     s.step++;
     if (s.step >= P.steps) {
@@ -1189,12 +1231,12 @@ class Engine extends AudioWorkletProcessor {
       s.next = null;
       P = s.pats[s.pat];
     }
-    const L = (NE_RATE[P.rate] * 60) / this.g.tempo, sw = (P.swing - 50) / 50;
+    const L = (NE_RATE[P.rate] * 60) / this.tempo, sw = (P.swing - 50) / 50;
     s.dur = L * (s.step % 2 === 0 ? 1 + sw : 1 - sw);
     if (!this.p) return;
     for (const x of P.notes[s.step]) {
       const n = clamp(x.n + s.tr, 0, 127), key = "q" + n;
-      this.voiceOn(n, x.v, key);
+      this.own(n, x.v, key, true, true);
       s.offs.push({ n, key, t: Math.max(0.008, L * (x.len - 1) + (L * P.gate) / 100) });
     }
     this.port.postMessage({ t: "pos", pat: s.pat, step: s.step, at: currentTime, dur: s.dur });
@@ -1206,20 +1248,49 @@ class Engine extends AudioWorkletProcessor {
       s.ct -= dt;
       if (s.ct <= 0) {
         this.click = { t: 0, f: s.count === 4 ? 2000 : 1300, a: 0.5 * Math.max(30, s.metroLvl || 0) / 99 };
-        s.count--; s.ct += 60 / this.g.tempo;
+        s.count--; s.ct += 60 / this.tempo;
       }
       if (s.count > 0 || s.ct > 0) return;
       s.count = -1; s.t = 0; s.bt = 0; s.beat = 0;
     }
-    for (let i = s.offs.length - 1; i >= 0; i--) { const o = s.offs[i]; o.t -= dt; if (o.t <= 0) { this.voiceOff(o.n, o.key); s.offs.splice(i, 1); } }
-    s.t -= dt;
-    while (s.t <= 0) { this.seqAdvance(); s.t += s.dur; }
+    for (let i = s.offs.length - 1; i >= 0; i--) { const o = s.offs[i]; o.t -= dt; if (o.t <= 0) { this.own(o.n, 0, o.key, false, true); s.offs.splice(i, 1); } }
+    if (s.arm) return;                                   // step 1 waits for the clock's next pulse
+    if (s.locked) {                                      // following a clock: the steps begin on its pulses (seqPulse)
+      if (!this.following()) { s.locked = false; s.t = Math.max(0, s.at + s.dur - currentTime); }   // it stopped: on at its last tempo
+      else if (s.wait > 0) { s.wait -= dt; if (s.wait <= 0) { s.wait = 0; this.seqAdvance(); } }    // a swung step, after its pulse
+    }
+    if (!s.locked) {
+      s.t -= dt;
+      while (s.t <= 0) { this.seqAdvance(); s.t += s.dur; if (this.following()) { s.locked = true; s.pc = 0; break; } }   // a clock again: locks from the next step
+    }
     // the metronome, only while recording in real time: every beat, the bar's first higher
     s.bt -= dt;
     if (s.bt <= 0) {
       if (s.rec === "rt" && s.metro > 0) this.click = { t: 0, f: s.beat % 4 === 0 ? 2000 : 1300, a: 0.5 * s.metro / 99 };
-      s.beat++; s.bt += 60 / this.g.tempo;
+      s.beat++; s.bt += 60 / this.tempo;
     }
+  }
+  seqPulse() {
+    const s = this.sq;
+    if (!s || !s.playing || !s.pats || s.count >= 0) return;
+    if (s.arm) { s.arm = false; s.pc = 0; this.seqAdvance(); return; }
+    if (!s.locked) return;
+    const P = s.pats[s.pat];
+    if (++s.pc < Math.round(NE_RATE[P.rate] * 24)) return;
+    s.pc = 0;
+    const sw = (P.swing - 50) / 50, next = s.step + 1;
+    if (s.wait > 0) { s.wait = 0; this.seqAdvance(); }
+    if (sw > 0 && next % 2 === 1 && next < P.steps) s.wait = (sw * NE_RATE[P.rate] * 60) / this.tempo;   // Swing moves the note, not the pulse
+    else this.seqAdvance();
+  }
+  // Clock Out: 24 pulses a beat at the Tempo, Always or while the pattern plays, never while following a clock
+  clockOutTick(dt) {
+    const g = this.g, s = this.sq;
+    if (!g.clockOut || this.following()) return;
+    if (g.clockOut === 2 && !(s && s.playing && s.count < 0 && !s.first && !s.arm)) return;
+    const iv = 60 / (24 * this.tempo);
+    this.pulseT -= dt;
+    if (this.pulseT <= 0) { this.port.postMessage({ t: "rt", b: 0xf8 }); this.pulseT = Math.max(this.pulseT + iv, 0); }
   }
   process(inputs, outputs) {
     const out = outputs[0], L = this.L, R = this.R, n = out[0].length;
@@ -1228,9 +1299,10 @@ class Engine extends AudioWorkletProcessor {
     for (let off = 0; off < n; off += BLK) {
       const m = this.mono, b8 = this.b8;
       m.fill(0); b8.fill(0);
-      this.beats += dt * g.tempo / 60;
+      this.beats += dt * this.tempo / 60;
       this.lfoStep(dt);
       this.ne.tick(dt);
+      this.clockOutTick(dt);
       this.seqTick(dt);
       for (const v of this.voices) if (v.active) { v.control(this, dt); v.render(m, BLK); }
       for (const v of this.vav) if (v.active) { v.control(this, dt); v.render(m, BLK); }
@@ -2511,11 +2583,14 @@ class Firmware {
     this.splash = 0; this.on = false; this.held = new Set(); this.used = {}; this.octave = 0; this.kbdTr = 0;
     this.node = null; this.analyser = null; this.scope = new Float32Array(2048); this.lit = new Set(); this.keyNotes = new Map();
     this.moving = null; this.encT = {}; this.onLights = null; this.cc = [64, 64, 64, 64];
+    this.mi = { outs: [], ok: () => true, down: new Set(), sus: false, susp: new Set(), ctl: { at: 0, mod: 0, breath: 127, foot: 127 }, bend: 0,
+                turns: {}, out: new Map(), sent: null, q: new Map(), qt: 0, quiet: false, fromIn: false };   // MIDI (manual 11)
   }
   defaultGlobal() {
     return { tempo: 120, sync: 0, velocity: 100, glideMode: 0, glideTime: 20, drive: 0, theme: 4, knobBank: "preset", metro: 50,
-             master: 0.7, countIn: 0, bendUp: 12, bendDown: 12, midiCh: 0, fxCh: 1, cc7: 1, clockOut: 0, local: 1,
-             outCh: 1, seqOut: 0, seqCh: 0, sendCC: 0, sendPC: 0, arp: { on: 0, ne: 0, mode: 0, oct: 1, rate: 7, gate: 50, swing: 50, latch: 0, midiIn: 0, arpeggio: 1 } };
+             master: 0.7, countIn: 0, bendUp: 12, bendDown: 12, midiCh: 0, fxCh: 2, cc7: 1, clockOut: 0, local: 1,
+             map: { at: 1, mod: 1, breath: 2, foot: 2 },
+             outCh: 1, seqOut: 0, seqCh: 0, sendCC: 0, sendPC: 0, arp: { on: 0, ne: 0, mode: 0, oct: 1, rate: 7, gate: 50, swing: 50, latch: 0, midiIn: 1, arpeggio: 1 } };
   }
   get T() { return THEMES[this.G.theme] || THEMES[0]; }
 
@@ -2554,14 +2629,16 @@ class Firmware {
   }
 
   // ---------------------------------------------------------------- the engine
-  attach(node, analyser) { this.node = node; this.analyser = analyser; node.port.onmessage = (e) => { if (e.data.t === "lit") this.lit = new Set(e.data.keys); else if (e.data.t === "pos") this.onPos(e.data); }; this.sendPreset(false); this.sendGlobal(); this.sendSeq(); }
+  attach(node, analyser) { this.node = node; this.analyser = analyser; node.port.onmessage = (e) => { const t = e.data.t; if (t === "lit") this.lit = new Set(e.data.keys); else if (t === "pos") this.onPos(e.data); else if (t === "out") this.midiNoteOut(e.data); else if (t === "rt") this.midiSend([e.data.b]); }; this.sendPreset(false); this.sendGlobal(); this.sendSeq(); }
   sendPreset(same) { if (this.node) this.node.port.postMessage({ t: "preset", p: this.cur, same }); }
   sendGlobal() {
     const G = this.G;
-    if (this.node) this.node.port.postMessage({ t: "global", g: { tempo: G.tempo, velocity: G.velocity, glideMode: G.glideMode, glideTime: G.glideTime, drive: G.drive, master: G.master, arp: G.arp } });
+    if (this.node) this.node.port.postMessage({ t: "global", g: { tempo: G.tempo, velocity: G.velocity, glideMode: G.glideMode, glideTime: G.glideTime, drive: G.drive, master: G.master, arp: G.arp,
+      sync: G.sync, clockOut: G.clockOut, local: G.local, seqOut: G.seqOut } });
   }
   changed(global) {
     if (global) { this.gdirty = true; this.sendGlobal(); } else { this.dirty = true; this.sendPreset(true); }
+    this.ccSync(!this.mi.quiet);
   }
   turnRow(r, d) {
     if (!r || r.kind !== "value" || (r.dim && r.dim())) return false;
@@ -2582,6 +2659,7 @@ class Firmware {
     this.cur = clone(this.bank[this.idx]);
     this.dirty = false;
     this.sendPreset(false);
+    this.midiLoaded();
     if (this.stack.length && this.stack[0].root === "edit") this.stack = [this.stack[0]], this.stack[0].sel = 0, this.stack[0].top = 0;
     try { localStorage.setItem("fm1va.idx", String(this.idx)); } catch { /* fine */ }
   }
@@ -2758,7 +2836,7 @@ class Firmware {
       onoff("Metronome", G, "metroOn", { g: true, after: () => this.sendSeq() }),
       onoff("Count-in", G, "countIn", g),
       group("Keyboard", () => ({ title: "Keyboard Settings", rows: [num("Velocity", G, "velocity", 1, 127, g),
-        num("Bend Up", G, "bendUp", 1, 24, g), num("Bend Down", G, "bendDown", 1, 24, g)] })),
+        num("Bend Up", G, "bendUp", 1, 24, { g: true, after: () => this.midiCtl() }), num("Bend Down", G, "bendDown", 1, 24, { g: true, after: () => this.midiCtl() })] })),
       group("Glide", () => ({ title: "Glide Settings", rows: [ch("Glide Mode", G, "glideMode", ["Full Time", "Fingered"], { g: true, dim: notMono }),
         num("Glide Time", G, "glideTime", 0, 100, { g: true, dim: notMono })] })),
       ch("Drive", G, "drive", ["0 dB", "-6 dB"], g),
@@ -2766,7 +2844,7 @@ class Firmware {
       action("Reset Bank", () => this.askReset()),
       group("About", () => ({ title: "About", rows: [info("Version", () => "FM-1_102"), info("Built", () => "Emulator"), info("Engine", () => "Browser")] }))] };
   }
-  // the MIDI group (manual 10.2.1): kept and saved now, used once MIDI is connected
+  // the MIDI group (manual 10.2.1)
   midiList() {
     const G = () => this.G, g = { g: true }, off = { g: true, after: () => this.allNotesOff() };
     const chans = Array.from({ length: 16 }, (_, i) => String(i + 1));
@@ -2774,8 +2852,10 @@ class Firmware {
       vals("MIDI Channel", G, "midiCh", [0, ...chans.map(Number)], ["All", ...chans], g),
       num("FX Channel", G, "fxCh", 1, 16, { g: true, bar: false }),
       onoff("Ext Ctrl CC7 Vol", G, "cc7", g),
+      group("MIDI Mapping", () => ({ title: "MIDI Mapping", rows: [["Aftertouch", "at"], ["Mod Wheel", "mod"], ["Breath", "breath"], ["Foot", "foot"]]
+        .map(([n, k]) => ch(n, () => this.G.map, k, ["Off", "Pitch", "Amplitude", "Pitch + Amp"], { g: true, after: () => this.midiCtl() })) })),
       onoff("Sequencer", G, "seqOn", { g: true, after: (v) => { if (!v) this.seqStop(true); } }),
-      ch("Clock Out", G, "clockOut", ["Off", "Always", "Playing"], g),
+      ch("Clock Out", G, "clockOut", ["Off", "Always", "Playing"], { g: true, after: (v) => { if (!v && this.S.playing) this.midiSend([0xfc]); } }),
       ch("Local Control", G, "local", ["Off", "On"], off),
       group("MIDI Out", () => ({ title: "MIDI Out Settings", rows: [
         num("Out Channel", G, "outCh", 1, 16, Object.assign({ bar: false }, off)),
@@ -2816,7 +2896,9 @@ class Firmware {
         L(num("Bass Level", () => this.cur.b8.bass, "level", 0, 99), "BASS"), L(num("Lead Level", () => this.cur.b8.lead, "level", 0, 99), "LEAD"), metro];
       return [L(num("Preset Level", () => this.cur, "level", 0, 99), "LEVEL"), null, null, metro];
     }
-    return [74, 71, 73, 72].map((cc, i) => L(num("CC " + cc, () => this.cc, i, 0, 127, { g: true, volatile: true }), "CC" + cc));
+    // the MIDI CC bank: the knobs send their CC on the Out Channel, whatever Send CC says (manual 2.1.2)
+    return [74, 71, 73, 72].map((cc, i) => L(num("CC " + cc, () => this.cc, i, 0, 127, { g: true, volatile: true,
+      after: (v) => this.midiSend([0xb0 | (this.G.outCh - 1), cc, v]) }), "CC" + cc));
   }
   presetKnob(k) {
     const c = () => this.cur, e = this.cur.engine;
@@ -2895,7 +2977,7 @@ class Firmware {
   askBank(voices) {                                 // a DX7 bank of 32 patches waiting for an answer
     let b = Math.floor(this.idx / 32);
     this.ask({ title: "Replace 32 presets?", lines: () => ["DX7 bank into bank " + "ABCD"[b] + ",", String(b * 32 + 1).padStart(3, "0") + " to " + String(b * 32 + 32).padStart(3, "0") + ". No undo."],
-      options: ["Cancel", "Replace"], algo: (d) => { b = clampi(b + d, 0, 3); },
+      options: ["Cancel", "Replace"], dx7: true, algo: (d) => { b = clampi(b + d, 0, 3); },
       confirm: () => {
         for (let i = 0; i < 32; i++) { const old = this.bank[b * 32 + i]; const p = voices[i]; p.fx = clone(old.fx); this.bank[b * 32 + i] = p; }
         try { localStorage.setItem("fm1va.stored." + b, JSON.stringify(this.bank.slice(b * 32, b * 32 + 32))); } catch { /* fine */ }
@@ -2928,7 +3010,7 @@ class Firmware {
       case "FX": goto("fx", () => this.fxList()); break;
       case "LFO": goto("lfo", () => this.lfoList()); break;
       case "GLO": goto("glo", () => this.globList()); break;
-      case "SAVE": this.save(); break;
+      case "SAVE": if (!(this.q && this.q.dx7)) this.save(); break;   // not while a received DX7 bank waits
       case "ARP":
         if (this.stack.length && this.stack[0].root === "arp" && this.G.arp.on) { this.G.arp.on = 0; this.allNotesOff(); this.sendGlobal(); this.stack = []; }
         else { if (!this.G.arp.on) { this.G.arp.on = 1; this.allNotesOff(); this.sendGlobal(); } this.q = null; this.nameEd = null; this.stack = [{ root: "arp", list: () => this.arpList(), sel: 0, top: 0 }]; }
@@ -3168,7 +3250,7 @@ class Firmware {
     const n = KEY0 + i + 12 * this.octave + this.kbdTr;
     this.keyNotes.set(id, n);
     this.seqKeyDown(n, id);
-    if (this.node && this.G.local !== 0) this.node.port.postMessage({ t: "key", n, on: true, v: this.G.velocity });
+    if (this.node) this.node.port.postMessage({ t: "key", n, on: true, v: this.G.velocity });   // Local Control: in the worklet
     // on an 8-Bit preset's EDIT screen a key also opens the part it plays
     const top = this.top();
     if (this.stack.length && this.stack[0].root === "edit" && this.cur.engine === "b8" && !this.q && !this.nameEd) {
@@ -3196,7 +3278,7 @@ class Firmware {
     this.keyNotes.delete(id);
     if (this.node) this.node.port.postMessage({ t: "key", n, on: false, v: 0 });
   }
-  allNotesOff() { if (this.node) this.node.port.postMessage({ t: "allOff" }); this.keyNotes.clear(); }
+  allNotesOff() { if (this.node) this.node.port.postMessage({ t: "allOff" }); this.keyNotes.clear(); this.midiOutOff(); }
   keyLit(i) {
     const ek = EDIT_KEYS[i];
     if (ek && this.fmEditKeys()) {
@@ -3549,8 +3631,9 @@ Object.assign(Firmware.prototype, {
     if (!this.node) return;
     const S = this.S;
     this.node.port.postMessage({ t: "seq", pats: this.pats, pat: S.pat, next: S.next, tr: this.G.seqTr, playing: S.playing,
-      rec: S.rec, metro: this.G.metroOn ? this.G.metro : 0, metroLvl: this.G.metro, count: !!S.countReq });
-    S.countReq = false;
+      rec: S.rec, metro: this.G.metroOn ? this.G.metro : 0, metroLvl: this.G.metro, count: !!S.countReq,
+      from: S.from || 0, cont: !!S.cont, restart: !!S.restart });
+    S.countReq = false; S.from = 0; S.cont = false; S.restart = false;
   },
   onPos(m) {                                         // the worklet's step, with when it started
     const S = this.S;
@@ -3584,8 +3667,9 @@ Object.assign(Firmware.prototype, {
   seqPlay() {
     const S = this.S;
     if (S.playing) {                                  // stop; from real-time recording into step recording
+      const at = S.pos ? S.pos.step : 0;               // (seqStop forgets where the pattern was)
       this.seqStop(false);
-      if (S.rec === "rt") { S.rec = "step"; S.cursor = S.pos ? S.pos.step : 0; }
+      if (S.rec === "rt") { S.rec = "step"; S.cursor = at; }
     } else {
       if (S.next !== null) { S.pat = S.next; S.next = null; }
       S.playing = true; S.stopped = false;
@@ -3598,6 +3682,7 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     if (S.playing && S.next !== null) { S.pat = S.next; S.next = null; }
     if (S.playing) S.stopped = true;                  // PLAY's red : on a stopped the sequencer, not on a fresh start
+    if (S.pos) S.contFrom = (S.pos.step + 1) % this.pats[S.pos.pat].steps;   // where a MIDI Continue plays on
     S.playing = false; S.pos = null;
     if (endRec) S.rec = null;
     this.endRtNotes();
@@ -3655,10 +3740,9 @@ Object.assign(Firmware.prototype, {
     if (s.length >= 9) s.shift();                       // a step holds nine notes: a tenth drops the oldest
     s.push({ n, v, len });
   },
-  seqKeyDown(n, id) {
+  seqKeyDown(n, id, v = this.G.velocity) {
     const S = this.S;
     if (!this.G.seqOn || !S.rec) return;
-    const v = this.G.velocity;
     n -= this.G.seqTr;                                  // patterns hold notes before the Sequencer's Transpose
     if (S.rec === "step") {
       const s = this.P.notes[S.cursor], at = s.findIndex((x) => x.n === n);
@@ -3724,8 +3808,8 @@ Object.assign(Firmware.prototype, {
   previewStep(i) {
     if (!this.node) return;
     for (const x of this.P.notes[i]) {
-      this.node.port.postMessage({ t: "key", n: x.n + this.G.seqTr, on: true, v: x.v });
-      setTimeout(() => this.node.port.postMessage({ t: "key", n: x.n + this.G.seqTr, on: false, v: 0 }), 180);
+      this.node.port.postMessage({ t: "key", n: x.n + this.G.seqTr, on: true, v: x.v, src: "p" });
+      setTimeout(() => this.node.port.postMessage({ t: "key", n: x.n + this.G.seqTr, on: false, v: 0, src: "p" }), 180);
     }
   },
 
@@ -3812,6 +3896,244 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     if (!this.G.seqOn || S.rec !== "step") return null;
     return this.P.notes[S.cursor].some((x) => x.n + this.G.seqTr === note);
+  },
+});
+
+// FM-1+VA emulator: MIDI, after the manual's section 11. Every input and output the browser offers (Web MIDI) counts
+// as one of the FM-1's connections; the glue below wires them. Notes go to the worklet with src "m", which plays them
+// and never sends them on; the notes the FM-1 plays itself come back from the worklet ("out") to be sent.
+"use strict";
+const MIDI_BTN = { 102: "FX", 103: "SEL", 104: "ENV", 105: "LFO", 106: "EDIT", 107: "GLO", 108: "HOME",
+                   110: "ARP", 111: "SEQ", 112: "PLAY", 113: "REC", 114: "OCT-", 115: "OCT+" };   // 109, SAVE's place, has none
+const MIDI_TURN = { 89: ["ALGORITHM", -1], 90: ["ALGORITHM", 1], 116: ["PRESETS", -1], 117: ["PRESETS", 1], 118: ["SELECT", -1], 119: ["SELECT", 1] };
+const FX_CC = ["filter", "reverb", "delay", "dist", "chorus", "phaser"];                         // four CCs each from CC 0
+const PRESET_CCS = [74, 71, 73, 75, 70, 72, 76, 77, 78, 58, 24, 25, 26, 27, 28, 29, 30, 31, 52, 53, 54, 55, 56, 57];
+
+Object.assign(Firmware.prototype, {
+  // ---------------------------------------------------------------- what arrives
+  midiIn(d) {
+    if (!this.on || !d || !d.length) return;
+    const st = d[0];
+    if (st === 0xf0) return this.midiSysex(d);
+    if (st >= 0xf8) return this.midiRealtime(st);
+    if (st >= 0xf0 || st < 0x80) return;                // MIDI Time Code, Song Position Pointer: ignored
+    const G = this.G, ch = (st & 15) + 1, type = st & 0xf0, a = d[1] & 127, b = (d[2] || 0) & 127;
+    const main = G.midiCh === 0 || G.midiCh === ch;
+    if (type === 0xb0) {
+      // the FX Channel: CC 0 to 23 set the effects, a pedal is thrown away, the rest only if the MIDI Channel takes it
+      if (ch === G.fxCh && (a <= 23 || a === 64)) { if (a <= 23) this.midiFx(a, b); return; }
+      if (main) this.midiCC(a, b);
+      return;
+    }
+    if (!main) return;
+    if (type === 0x90 && b > 0) this.midiNote(a, b, true);
+    else if (type === 0x80 || type === 0x90) this.midiNote(a, 0, false);
+    else if (type === 0xe0) { this.mi.bend = ((b << 7) | a) - 8192; this.midiCtl(); }
+    else if (type === 0xd0) { this.mi.ctl.at = a; this.midiCtl(); }     // channel pressure; polyphonic aftertouch is ignored
+    else if (type === 0xc0) this.midiProgram(a);
+  },
+  // a note from a MIDI keyboard: not moved by OCT or Transpose, recorded as a key is, held by the pedal
+  midiNote(n, v, on) {
+    const M = this.mi, id = "m" + n;
+    if (on) {
+      if (this.splash) return;
+      if (M.susp.delete(n)) this.midiKey(n, 0, false);   // played again under the pedal: anew
+      M.down.add(n);
+      this.seqKeyDown(n, id, v);
+      this.midiKey(n, v, true);
+      return;
+    }
+    if (!M.down.delete(n)) return;
+    this.seqKeyUp(id);
+    if (M.sus) M.susp.add(n); else this.midiKey(n, 0, false);
+  },
+  midiKey(n, v, on) { if (this.node) this.node.port.postMessage({ t: "key", n, on, v, src: "m" }); },
+  midiSustain(on) {
+    const M = this.mi;
+    M.sus = on;
+    if (!on) { for (const n of M.susp) this.midiKey(n, 0, false); M.susp.clear(); }
+  },
+  midiNotesOff() {
+    const M = this.mi;
+    for (const n of M.down) { this.seqKeyUp("m" + n); this.midiKey(n, 0, false); }
+    for (const n of M.susp) this.midiKey(n, 0, false);
+    M.down.clear(); M.susp.clear();
+  },
+  // pitch bend and the four controllers, as the MIDI Mapping group sends them (manual 11.3.1): breath and foot are
+  // deepest at 0
+  midiCtl() {
+    const M = this.mi, G = this.G, c = M.ctl, m = G.map;
+    const depth = { at: c.at / 127, mod: c.mod / 127, breath: 1 - c.breath / 127, foot: 1 - c.foot / 127 };
+    let modP = 0, modA = 0;
+    for (const k in depth) { if (m[k] & 1) modP = Math.max(modP, depth[k]); if (m[k] & 2) modA = Math.max(modA, depth[k]); }
+    const bend = M.bend >= 0 ? (M.bend / 8191) * G.bendUp : (M.bend / 8192) * G.bendDown;
+    if (this.node) this.node.port.postMessage({ t: "ctl", bend, modP, modA });
+  },
+  midiCC(a, b) {
+    const M = this.mi, G = this.G;
+    if (a === 1 || a === 2 || a === 4) { M.ctl[{ 1: "mod", 2: "breath", 4: "foot" }[a]] = b; return this.midiCtl(); }
+    if (a === 64) return this.midiSustain(b >= 64);
+    if (a === 7) {                                       // volume, over MASTER's range (manual 11.9.1)
+      if (G.cc7) { G.master = b / 127; this.sendGlobal(); this.message("Volume " + Math.round(G.master * 100)); }
+      return;
+    }
+    if (a >= 85 && a <= 88) return this.midiKnob(a - 85, b);
+    if (MIDI_BTN[a]) {                                   // 64 or more presses the button, under 64 lets it go
+      const btn = MIDI_BTN[a];
+      if (b >= 64) { if (!this.held.has(btn)) this.press(btn); } else this.release(btn);
+      return;
+    }
+    if (MIDI_TURN[a]) return this.midiTurn(a, b);
+    if (a === 120 || a === 123) return this.midiNotesOff();
+    if (a === 121) { Object.assign(M.ctl, { at: 0, mod: 0, breath: 127, foot: 127 }); M.bend = 0; this.midiSustain(false); return this.midiCtl(); }
+    this.midiSet(this.presetCC(a), b, true, true);
+  },
+  // a turning control: a step at 64, another after 0.4 s, then one every 0.12 s until the value drops under 64
+  midiTurn(a, b) {
+    const [role, d] = MIDI_TURN[a], T = this.mi.turns;
+    if (b < 64) { clearTimeout(T[a]); delete T[a]; return; }
+    if (T[a]) return;
+    const again = () => { this.turn(role, d); T[a] = setTimeout(again, 120); };
+    this.turn(role, d);
+    T[a] = setTimeout(again, 400);
+  },
+  // CC 85 to 88: the value of what the knob bank has put on the knob, over its own range
+  midiKnob(k, b) {
+    const s = this.knobSpecs()[k];
+    this.col = k; this.colT = performance.now();
+    if (this.midiSet(s, b, true, false) && (this.stack.length || this.q || this.nameEd)) this.message(s.name + " " + valText(s));
+  },
+  // the effects on the FX Channel: on or off, then the values themselves, held to each setting's maximum (manual 11.8)
+  midiFx(a, b) {
+    const id = FX_CC[a >> 2], k = a & 3, f = this.cur.fx[id];
+    if (!f) return;
+    if (k === 0) {
+      const on = b ? 1 : 0;
+      if (f.on !== on) { f.on = on; this.midiChanged(false); this.message(FX_NAMES[id] + (on ? " On" : " Off")); }
+      return;
+    }
+    this.midiSet(this.fxRows(id)[k - 1], b, false, true);
+  },
+  fxRows(id) { const rows = this.effRows(id); return id === "dist" ? rows.slice(1) : rows; },   // Distortion Type has no CC
+  // the preset's settings (manual 11.9.2); null where the engine has nothing for the CC
+  presetCC(a) {
+    const c = this.cur, by = (L, n) => L.rows.find((r) => r.name === n) || null;
+    const env = { 73: "Attack", 75: "Decay", 70: "Sustain", 72: "Release" }[a];
+    if (env) return by(this.envList(), env);             // these switch the Envelope on first
+    const lfo = { 76: "Speed", 77: "Pitch Mod Depth", 78: "Delay" }[a];
+    if (lfo) return by(this.lfoList(), lfo);
+    if (c.engine === "fm") {
+      if (a === 74) return this.presetKnob(0);           // Brightness: every modulating operator's Output Level
+      if (a === 71) return num("Feedback", () => this.cur.fm, "fb", 0, 7);
+      if (a === 58) return num("Algorithm", () => this.cur.fm, "alg", 1, 32);   // heard from the next note
+      return null;
+    }
+    if (c.engine !== "va") return null;
+    if (a >= 24 && a <= 30) return this.oscList().rows[a - 24];
+    const name = { 74: "Cutoff", 71: "Resonance", 31: "Type", 52: "Envelope", 53: "Decay", 54: "Shape", 55: "Velocity", 56: "Key Tracking", 57: "LFO to Cutoff" }[a];
+    return name ? by(this.filtList(() => this.cur.va.filt, false), name) : null;
+  },
+  // sets a row from a CC: scaled, 0 to 127 over the whole range (a list in equal bands), or as the value itself
+  midiSet(r, b, scaled, show) {
+    if (!r || (r.dim && r.dim())) return false;
+    if (r.adj) {                                         // a knob that moves several settings together
+      const a0 = r.get();
+      if (a0 === null) return false;
+      r.adj(Math.round(r.min + (b / 127) * (r.max - r.min)) - a0);
+      if (r.get() === a0) return false;
+    } else {
+      if (r.kind !== "value") return false;
+      const n = r.max - r.min + 1;
+      let v = !scaled ? clampi(b, r.min, r.max) : r.labels ? r.min + Math.min(n - 1, Math.floor((b * n) / 128)) : Math.round(r.min + (b / 127) * (r.max - r.min));
+      if (scaled && r.inv) v = r.max - (v - r.min);
+      if (v === r.get()) return false;
+      r.set(v);
+      if (r.after) r.after(v);
+    }
+    this.midiChanged(r.g);
+    if (show) this.message(r.name + " " + valText(r));
+    return true;
+  },
+  midiChanged(g) { this.mi.quiet = true; this.changed(g); this.mi.quiet = false; },   // never sent back out
+  midiProgram(a) {                                       // as PRESETS: Program Change 0 is preset 001
+    const M = this.mi;
+    M.fromIn = true;
+    this.plist = { target: a, until: performance.now() + 1300, loadAt: 0 };
+    this.loadPreset(a);
+    M.fromIn = false;
+  },
+  midiSysex(d) {                                         // DX7 patches, a single voice or a bank of 32 (manual 11.5)
+    let r;
+    try { r = dx7Parse(d); } catch { return; }
+    if (r.single) this.takePatch(r.single);
+    else this.askBank(r.bank);
+  },
+  // Start, Stop and Continue while the Sequencer is on (manual 11.6.1); the clock itself goes to the worklet
+  midiRealtime(st) {
+    const S = this.S;
+    if (st === 0xf8) { if (this.node) this.node.port.postMessage({ t: "clock" }); return; }
+    if (!this.G.seqOn || (st !== 0xfa && st !== 0xfb && st !== 0xfc)) return;
+    if (st === 0xfc) { if (S.playing) this.seqPlay(); return; }   // as PLAY: from real-time into step recording
+    if (S.playing) { if (st === 0xfa) { S.restart = true; this.sendSeq(); } return; }
+    if (st === 0xfb) { S.from = S.contFrom || 0; S.cont = true; }
+    this.seqPlay();
+  },
+
+  // ---------------------------------------------------------------- what goes out
+  midiSend(bytes) {
+    const M = this.mi;
+    if (!M.outs.length || !M.ok()) return;
+    for (const o of M.outs) { try { o.send(bytes); } catch { /* a port that went away */ } }
+  },
+  // a note the FM-1 plays (the worklet's "out"): on the Out Channel, the Sequencer's on its Seq Channel
+  midiNoteOut(m) {
+    const G = this.G, O = this.mi.out, k = (m.seq ? "s" : "k") + m.n, o = O.get(k);
+    if (m.on) {
+      const ch = o ? o.ch : (m.seq && G.seqCh ? G.seqCh : G.outCh) - 1;
+      if (o) o.c++; else O.set(k, { ch, c: 1 });
+      this.midiSend([0x90 | ch, m.n, clampi(m.v, 1, 127)]);
+    } else if (o && --o.c <= 0) { O.delete(k); this.midiSend([0x80 | o.ch, m.n, 0]); }
+  },
+  midiOutOff() { const O = this.mi.out; for (const [k, o] of O) this.midiSend([0x80 | o.ch, +k.slice(1), 0]); O.clear(); },
+  midiLoaded() {                                         // a preset loads: Send Prog Chg; its values are not changes
+    const M = this.mi;
+    M.sent = null; this.ccSync(false);
+    if (this.G.sendPC && !M.fromIn) this.midiSend([0xc0 | (this.G.outCh - 1), this.idx & 127]);
+  },
+  // Send CC: every setting that has a CC, compared with what was last sent, the differences at most one every 10 ms
+  ccState() {
+    const st = new Map(), G = this.G, oc = G.outCh - 1, fc = G.fxCh - 1;
+    const put = (ch, cc, r, scaled) => {
+      const v = r ? r.get() : null;
+      if (v === null || v === undefined) return;
+      const n = r.max - r.min + 1;
+      st.set(ch * 128 + cc, !scaled ? clampi(v, 0, 127) : r.labels ? Math.min(127, Math.floor(((v - r.min + 0.5) * 128) / n)) : Math.round(((v - r.min) / (r.max - r.min)) * 127));
+    };
+    FX_CC.forEach((id, i) => {
+      const f = this.cur.fx[id];
+      if (!f) return;
+      st.set(fc * 128 + i * 4, f.on ? 127 : 0);
+      this.fxRows(id).forEach((r, j) => put(fc, i * 4 + 1 + j, r, false));
+    });
+    for (const a of PRESET_CCS) put(oc, a, this.presetCC(a), true);
+    return st;
+  },
+  ccSync(send) {
+    const M = this.mi;
+    if (!this.G.sendCC) { M.sent = null; return; }
+    const st = this.ccState(), old = M.sent;
+    M.sent = st;
+    if (!send || !old) return;
+    for (const [k, v] of st) if (old.get(k) !== v) M.q.set(k, v);
+    this.ccFlush();
+  },
+  ccFlush() {
+    const M = this.mi;
+    if (M.qt || !M.q.size) return;
+    const [k, v] = M.q.entries().next().value;
+    M.q.delete(k);
+    this.midiSend([0xb0 | (k >> 7), k & 127, v]);
+    M.qt = setTimeout(() => { M.qt = 0; this.ccFlush(); }, 10);
   },
 });
 
@@ -4417,6 +4739,7 @@ function buildPanel(fw) {
       va.attach(node, an);
       va.power();
       vaNode = node; vaAn = an; vaLive = true;
+      midiConnect();
       $("start").hidden = true;
       $("controls").inert = false;
       $("power").setAttribute("aria-checked", "true");
@@ -4430,6 +4753,29 @@ function buildPanel(fw) {
     }
   }
   $("go").addEventListener("click", switchOn);
+
+  // MIDI (manual 11): every input and output the browser offers, SysEx included when allowed (DX7 patches);
+  // FM-1+VA hears and sends only while it is the engine playing
+  va.mi.ok = () => current === va;
+  function midiConnect() {
+    if (!navigator.requestMIDIAccess) return;
+    navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess()).then((access) => {
+      const known = new Set();
+      const wire = (e) => {
+        for (const i of access.inputs.values()) i.onmidimessage = (m) => { if (current === va) va.midiIn(m.data); };
+        va.mi.outs = [...access.outputs.values()].filter((o) => o.state === "connected");
+        const p = e && e.port, here = p && p.state === "connected";
+        if (p && here !== known.has(p.id)) {             // a device arriving or leaving, not a port opening
+          if (here) known.add(p.id); else known.delete(p.id);
+          status.textContent = "MIDI : " + (p.name || "appareil") + (here ? " branché." : " débranché.");
+        }
+      };
+      for (const m of [access.inputs, access.outputs]) for (const p of m.values()) if (p.state === "connected") known.add(p.id);
+      wire();
+      va.ccSync(false);                                  // Send CC kept On from an earlier session: what is there now
+      access.onstatechange = wire;
+    }, () => { /* MIDI refused: the panel alone */ });
+  }
 
   // ---- les moteurs : un seul AudioContext, celui de l'allumage
   // le catalogue, et pour chaque firmware compilé depuis ses sources par l'action GitHub, son natif/<id>/
