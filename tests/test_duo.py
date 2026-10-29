@@ -17,15 +17,13 @@ def test_layouts(page):
     open_duo(page, 820, 1180)
     assert page.evaluate("document.querySelector('.duo-stage').dataset.layout") == "stack"
     page.set_viewport_size({"width": 1180, "height": 820})
-    page.wait_for_timeout(100)
-    assert page.evaluate("document.querySelector('.duo-stage').dataset.layout") == "one"
+    page.wait_for_function("document.querySelector('.duo-stage').dataset.layout === 'one'")
     page.click('[role="tab"][data-k="b"]')
     assert page.evaluate("document.querySelector('iframe[name=b]').classList.contains('shown')")
     assert page.evaluate("window.__duo.frames.b.contentWindow.__midiActive") is True
     assert page.evaluate("window.__duo.frames.a.contentWindow.__midiActive") is False   # le MIDI va au FM-1 affiché
     page.set_viewport_size({"width": 1600, "height": 900})
-    page.wait_for_timeout(100)
-    assert page.evaluate("document.querySelector('.duo-stage').dataset.layout") == "side"
+    page.wait_for_function("document.querySelector('.duo-stage').dataset.layout === 'side'")
     page.click('.duo-view [data-v="one"]')
     assert page.evaluate("document.querySelector('.duo-stage').dataset.layout") == "one"
 
