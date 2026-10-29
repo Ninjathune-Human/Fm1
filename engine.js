@@ -686,30 +686,119 @@ class FxFilter {
 }
 
 // ------------------------------------------------------------------ the Note Engine
+// ------------------------------------------------------------------ playing in a key (manual 6.5, 8.5)
+// h = { key: 1..12 (C..B, 0 Off), scale, acc, voicing, chord, pattern }. A key of the scale plays the chord built on it
+// from the scale's own notes (Harmonic Minor Practical: natural minor's chords, the harmonic one on V and vii). One
+// outside it plays, Borrowed: the chord on it in the natural minor, else the major, of the same key, else a
+// diminished one; Leading: the major chord it is the third of.
+const SCALES = [[0, 2, 4, 5, 7, 9, 11], [0, 2, 3, 5, 7, 8, 10], [0, 2, 3, 5, 7, 8, 11], [0, 2, 3, 5, 7, 8, 11], [0, 2, 3, 5, 7, 9, 10],
+  [0, 2, 4, 5, 7, 9, 10], [0, 1, 3, 5, 7, 8, 10], [0, 2, 4, 6, 7, 9, 11], [0, 2, 3, 5, 7, 9, 11]];
+const LOCRIAN = [0, 1, 3, 5, 6, 8, 10];
+const CHORD_STEPS = [[0, 2, 4], [0, 2, 4, 6], [0, 2, 4, 5], [0, 1, 4], [0, 3, 4], [0, 2, 4, 8], [0, 4]];   // Triad .. Power, in scale steps
+const LEADING = [[0, 4, 7], [0, 4, 7, 10], [0, 4, 7, 9], [0, 4, 7], [0, 4, 7], [0, 4, 7, 14], [0, 4, 7]];  // above its root
+const degNote = (sc, d) => sc[((d % 7) + 7) % 7] + 12 * Math.floor(d / 7);
+const fold = (x) => { while (x > 127) x -= 12; while (x < 0) x += 12; return x; };
+// the chord of key n: its notes in the Chord's order from the key's own note, and the same notes going up
+function keyChord(n, h) {
+  const t = h.key - 1, x = (((n - t) % 12) + 12) % 12, keys = SCALES[h.scale], steps = CHORD_STEPS[h.chord];
+  const build = (sc, d) => steps.map((st) => degNote(sc, d + st) - degNote(sc, d));
+  let rel, ro = 0;                                     // the chord above its root, and the root from the key
+  const d = keys.indexOf(x);
+  if (d >= 0) rel = build(h.scale === 2 && d !== 4 && d !== 6 ? SCALES[1] : keys, d);
+  else if (h.acc === 1) { rel = LEADING[h.chord]; ro = -4; }
+  else {
+    const src = [SCALES[1], SCALES[0]].find((sc) => sc !== keys && sc.includes(x));
+    rel = src ? build(src, src.indexOf(x)) : build(LOCRIAN, 0);
+  }
+  let v = rel.map((r) => { let y = ro + r; while (y < 0) y += 12; return y; });   // From Key: the key is the lowest note
+  const k = v.indexOf(0);
+  v = v.slice(k).concat(v.slice(0, k));
+  let list = v.map((y) => n + y);
+  if (h.voicing === 1) { const T = n - x; list = list.map((y) => T + ((((y - T) % 12) + 12) % 12)); }   // Close: within the tonic's octave
+  list = list.map(fold);
+  return { list, up: [...new Set(list)].sort((p, q) => p - q), t, keys };
+}
+// the order a chord's notes play in (Pattern); once: played once, then its last note held or repeated
+const PATTERNS = ["Off", "Up", "Down", "Up Down", "Up 8", "Down 8", "Up Down 8", "Wide", "Alberti", "Pedal", "Octave", "Octave Down",
+  "Two Octaves", "Bounce", "Gallop", "Plink", "Trill", "User"];
+function keyRun(n, h) {
+  const c = keyChord(n, h), s = c.up, N = s.length, lo = s[0], top = s[N - 1], down = s.slice().reverse(), i = (j) => s[Math.min(j, N - 1)];
+  let seq, once = false;
+  switch (h.pattern) {
+    case 1: seq = s; break;
+    case 2: seq = down; break;
+    case 3: seq = s.concat(down.slice(1, -1)); break;
+    case 4: seq = s.concat([lo + 12]); break;
+    case 5: seq = [lo + 12].concat(down); break;
+    case 6: seq = s.concat([lo + 12], down.slice(0, -1)); break;
+    case 7: seq = s.concat(s.map((y) => y + 12), [lo + 24]); break;
+    case 8: seq = [i(0), i(2), i(1), i(2)]; break;
+    case 9: seq = []; for (let j = 1; j < Math.max(2, N); j++) seq.push(lo, i(j)); break;
+    case 10: seq = [n, n + 12]; break;
+    case 11: seq = [n, n - 12]; break;
+    case 12: seq = [n, n + 12, n + 24]; break;
+    case 13: seq = [n, n + 12, n, n - 12]; break;
+    case 14: seq = [lo, lo, top]; break;                // Gallop: twice the low note, then the top
+    case 15: seq = [n + 12, n]; once = true; break;     // Plink: the octave above once, then the key
+    case 16: { let m = n + 1; while (!c.keys.includes((((m - c.t) % 12) + 12) % 12)) m++; seq = [n, m]; break; }   // Trill
+    default: seq = [n];
+  }
+  return { seq: seq.map(fold), once };
+}
+
 const NE_RATE = [4, 2, 4 / 3, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12];   // 1/1 .. 1/32T, in beats
 class NoteEngine {
-  constructor(eng) { this.eng = eng; this.held = []; this.latched = []; this.t = 0; this.step = 0; this.out = []; this.idx = 0; this.dir = 1; this.order = []; this.phase = 0; }
+  constructor(eng) { this.eng = eng; this.held = []; this.latched = []; this.t = 0; this.step = 0; this.out = []; this.idx = 0; this.dir = 1; this.order = []; this.phase = 0;
+    this.runs = new Map(); this.sounding = new Map(); this.cn = new Map(); }
   get s() { return this.eng.g.arp; }
   keys() { return [...new Set(this.s.latch ? this.latched : this.held)]; }   // a note held on the keys and on MIDI counts once
   keyOn(n, v) {
     const a = this.s;
-    if (a.latch) { if (!this.held.length) this.latched = []; if (!this.latched.includes(n)) this.latched.push(n); }
+    if (a.latch) {
+      if (!this.held.length) { this.latched = []; if (a.ne === 2) for (const k of [...this.sounding.keys()]) this.chordOff(k); }   // a new chord
+      if (!this.latched.includes(n)) this.latched.push(n);
+    }
     this.held.push(n); this.vel = v;
-    if (a.ne === 2) { for (const x of this.chord(n)) this.eng.own(x, v, n, true); return; }
+    if (a.ne === 2) { if (!this.sounding.has(n)) this.chordOn(n, v); return; }
     if (this.keys().length === 1 && !this.running) { this.running = true; this.t = 0; this.step = 0; this.idx = 0; this.dir = 1; }
   }
   keyOff(n) {
     const i = this.held.indexOf(n);
     if (i >= 0) this.held.splice(i, 1);
     const a = this.s;
-    if (a.ne === 2 && !a.latch) for (const x of this.chord(n)) this.eng.own(x, 0, n, false);
+    if (a.ne === 2 && !a.latch && !this.held.includes(n)) this.chordOff(n);
     if (!this.keys().length) { this.running = false; this.stopOut(); }
   }
+  // a key's chord: in the Key when one is set, else the Arpeggio's shape; at most four different notes together
   chord(n) {
-    const a = this.s, shape = a.arpeggio > 0 && a.arpeggio <= 31 ? ARPS[a.arpeggio] : [0];
-    return shape.map((x) => n + x).filter((x) => x >= 0 && x < 128);
+    const a = this.s;
+    if (a.key) return keyChord(n, a).list;
+    const shape = a.arpeggio > 0 && a.arpeggio <= 31 ? ARPS[a.arpeggio] : [0];
+    return [...new Set(shape.map((x) => fold(n + x)))].slice(0, 4);
   }
-  allOff() { this.held = []; this.latched = []; this.running = false; this.stopOut(); }
+  run(n) {                                             // Auto-Arp: a key's run, as the settings are when it starts
+    const a = this.s;
+    if (a.key) return Object.assign(keyRun(n, a), { i: 0 });
+    const shape = a.arpeggio > 0 && a.arpeggio <= 31 ? ARPS[a.arpeggio] : [0];
+    return { seq: shape.map((x) => fold(n + x)), once: false, i: 0 };
+  }
+  // Auto-Chord: a note two keys share sounds once
+  chordOn(n, v) {
+    const notes = this.chord(n);
+    this.sounding.set(n, notes);
+    for (const x of notes) { const c = this.cn.get(x) || 0; if (!c) this.eng.own(x, v, x, true); this.cn.set(x, c + 1); }
+  }
+  chordOff(n) {
+    const notes = this.sounding.get(n);
+    if (!notes) return;
+    this.sounding.delete(n);
+    for (const x of notes) { const c = (this.cn.get(x) || 1) - 1; if (c > 0) this.cn.set(x, c); else { this.cn.delete(x); this.eng.own(x, 0, x, false); } }
+  }
+  refresh() {                                          // a setting changed: Auto-Chord's chords change at once
+    if (this.s.ne !== 2) return;
+    for (const n of [...this.sounding.keys()]) { const now = this.chord(n); if (now.join() !== this.sounding.get(n).join()) { this.chordOff(n); this.chordOn(n, this.vel || 100); } }
+  }
+  allOff() { this.held = []; this.latched = []; this.running = false; this.stopOut(); for (const n of [...this.sounding.keys()]) this.chordOff(n); this.runs.clear(); }
   stopOut() { for (const o of this.out) this.eng.own(o.n, 0, o.n, false); this.out = []; }
   sequence() {
     const a = this.s, k = this.keys().slice();
@@ -735,7 +824,13 @@ class NoteEngine {
       const gateLen = len * a.gate / 100;
       const play = (n) => { if (n < 0 || n > 127) return; this.eng.own(n, this.vel || 100, n, true); this.out.push({ n, off: now + gateLen }); };
       if (a.ne === 1) {                                 // Auto-Arp: each held key's chord, one note a step
-        for (const k of this.keys()) { const c = this.chord(k); play(c[this.step % c.length]); }
+        const ks = this.keys();
+        for (const k of [...this.runs.keys()]) if (!ks.includes(k)) this.runs.delete(k);
+        for (const k of ks) {
+          let r = this.runs.get(k);
+          if (!r || (r.i >= r.seq.length && !r.once)) { r = this.run(k); this.runs.set(k, r); }   // a new run takes new settings
+          play(r.seq[Math.min(r.i, r.seq.length - 1)]); r.i++;   // Plink: after its run, its last note on every step
+        }
       } else {
         const seq = this.sequence();
         if (seq.length) {
@@ -775,7 +870,7 @@ class Engine extends AudioWorkletProcessor {
       const old = this.p;
       this.p = m.p;
       if (m.same && old && old.engine === m.p.engine) for (const v of this.all()) if (v.active && v.p === old) v.p = m.p;
-    } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); }
+    } else if (m.t === "global") { Object.assign(this.g, m.g); if (!this.g.arp.on) this.ne.allOff(); else this.ne.refresh(); }
     else if (m.t === "key") this.key(m.n, m.on, m.v, m.src);
     else if (m.t === "seq") this.seqMsg(m);
     else if (m.t === "ctl") { this.bend = m.bend; this.modP = m.modP; this.modA = m.modA; }
