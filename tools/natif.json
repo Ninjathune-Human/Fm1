@@ -70,7 +70,11 @@
    "id": "dub",
    "depot": "sbegueria/fm1-dub",
    "commit": "e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d",
-   "script": "web/app/build.sh"
+   "script": "web/emu/build.sh",
+   "avant": "mkdir -p build/gen build/emu && (python3 tools/gen_font.py build/gen/felucca_font.h || python3 tools/gen_font_noraqm.py tools/gen_font.py build/gen/felucca_font.h) && python3 tools/gen_words.py firmware/words.tsv web/words build/gen/ann_words.h",
+   "construction": "$ZIG cc -target wasm32-wasi -mexec-model=reactor -O2 -g0 -ffp-contract=off -std=gnu99 -w -DEN_HOST -DEN_WEB '-DEN_VERSION=\"1.3.0\"' -Ifirmware/src -Ifirmware/src/dsp -Ibuild/gen -Wl,--strip-debug -Wl,--export-dynamic -Wl,-z,stack-size=1048576 -Wl,--initial-memory=33554432 -o build/emu/amb.wasm web/emu/amb_web.c firmware/src/dsp/amb.c && cp web/emu/worklet.js build/emu/",
+   "wasm": "build/emu/amb.wasm",
+   "zig": "0.17.0"
   },
   {
    "id": "duell",
