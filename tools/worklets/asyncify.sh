@@ -9,8 +9,8 @@ OUT=$1; shift
 ZIG=${ZIG:-zig}
 WASM_OPT=${WASM_OPT:-wasm-opt}
 mkdir -p "$(dirname "$OUT")"
-$ZIG cc -target wasm32-wasi -mexec-model=reactor -O2 -w -I"$HERE/shim" "$@" \
-    -Wl,--export-dynamic -Wl,--export=__main_void -Wl,--export=malloc -Wl,-z,stack-size=1048576 -o "$OUT.brut"
+$ZIG cc -target wasm32-wasi -mexec-model=reactor -O2 -g0 -w -I"$HERE/shim" "$@" \
+    -Wl,--strip-debug -Wl,--export-dynamic -Wl,--export=__main_void -Wl,--export=malloc -Wl,-z,stack-size=1048576 -o "$OUT.brut"
 $WASM_OPT "$OUT.brut" --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext --enable-mutable-globals \
     --asyncify --pass-arg=asyncify-imports@env.emscripten_sleep -O2 -o "$OUT"
 rm -f "$OUT.brut"
