@@ -208,3 +208,12 @@ def test_no_dead_zone_between_keys(page):
       return out; }""")
     assert len([g for g in gaps if g[0] == "key"]) >= 10 and len([g for g in gaps if g[0] == "cap"]) >= 8, [g for g in gaps if g[0] == "cap"]
     assert all(g[2] for g in gaps), [g for g in gaps if not g[2]]
+
+
+def test_sheet_keeps_page_still(page):
+    page.set_viewport_size({"width": 834, "height": 1112})
+    page.goto(page.base + "index.html")
+    page.click("#fw-picker")
+    page.wait_for_timeout(300)
+    assert page.evaluate("scrollY") == 0
+    assert page.evaluate("document.getElementById('fw-sheet').getBoundingClientRect().bottom <= document.getElementById('fw-picker').getBoundingClientRect().top")

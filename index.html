@@ -195,7 +195,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 /* Duo : le lien vers deux FM-1, chaque FM-1 dans son cadre, et la page qui les tient */
 html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px, env(safe-area-inset-left, 0px)) 6px; overflow: hidden; }
 html.embed main { max-width: none; height: 100%; gap: 0; }
-html.embed .sheet { top: auto; bottom: calc(100% + 8px); }
+.sheet.up { top: auto; bottom: calc(100% + 8px); }
 html.embed .mast, html.embed .notes, html.embed .turn, html.embed #status { display: none; }
 html.embed .stage { height: 100%; display: flex; flex-direction: column; gap: 6px; }
 html.embed .frame { flex: none; padding: 4px 0 8px; margin: 0; overflow: visible; }   /* le FM-1 en haut, sa ligne juste dessous */
@@ -208,9 +208,8 @@ html.embed .swatch span { width: 26px; height: 26px; }
 @media (max-width: 760px) { html.embed .picker-k { display: none; } html.embed .deck { flex-wrap: nowrap; } html.embed .bar { flex-wrap: nowrap; } }
 @media (max-width: 620px) { html.embed .swatch { width: 32px; } html.embed .swatch span { width: 22px; height: 22px; } }
 .file .short { display: none; }
-.deck { container-type: inline-size; }
-@container (max-width: 860px) { .file .long { display: none; } .file .short { display: inline; } }
-@container (max-width: 720px) { .picker-k { display: none; } }   /* « Importer… » : la ligne reste entière */
+.deck[data-fit] .file .long { display: none; } .deck[data-fit] .file .short { display: inline; }   /* « Importer… » : la ligne reste entière */
+.deck[data-fit="2"] .picker-k { display: none; }
 @media (max-width: 560px) { html.embed .deck { gap: 6px 8px; } html.embed .swatch { width: 28px; } html.embed .bar { gap: 8px; } }
 html.embed .duo-tabs { margin-left: auto; }                              /* FM1-A | FM1-B au milieu de la ligne, en paysage */
 .fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
@@ -5792,9 +5791,11 @@ function buildPanel(fw) {
   function openSheet() {
     renderSections(); renderResults();
     sheet.hidden = false; scrim.hidden = false; picker.setAttribute("aria-expanded", "true");
-    if (FM1_ID && getComputedStyle(sheet).position === "absolute") {   // dans un cadre du Duo : la liste s'ouvre vers le haut, le cadre ne défile pas
-      sheet.style.maxHeight = Math.max(200, Math.min(640, picker.getBoundingClientRect().top - 16)) + "px";
-    } else if (getComputedStyle(sheet).position === "absolute") {
+    const abs = getComputedStyle(sheet).position === "absolute", above = picker.getBoundingClientRect().top - 16;
+    sheet.classList.toggle("up", abs && (FM1_ID || above >= 360));
+    if (sheet.classList.contains("up")) {   // au-dessus du contrôle, sur le FM-1 : la page ne bouge pas
+      sheet.style.maxHeight = Math.max(200, Math.min(640, above)) + "px";
+    } else if (abs) {
       // sous le contrôle : la liste tient dans la fenêtre, la page défile juste ce qu'il faut
       const want = Math.min(640, Math.round(innerHeight * 0.7)), room = innerHeight - picker.getBoundingClientRect().bottom - 24;
       if (room < want) {                      // la page doit pouvoir défiler sans l'aide de la liste : une réserve, le temps de l'ouverture
@@ -5813,6 +5814,9 @@ function buildPanel(fw) {
     document.body.style.paddingBottom = "";
     if (FM1_ID) scrollTo(0, 0);
   }
+  // la ligne sous le FM-1 se resserre quand la place manque : « Importer… », puis sans « Firmware »
+  const deckRow = box.closest(".deck");
+  new ResizeObserver(([en]) => { const w = en.contentRect.width; if (w > 860) delete deckRow.dataset.fit; else deckRow.dataset.fit = w > 720 ? "1" : "2"; }).observe(deckRow);
   if (FM1_ID) addEventListener("scroll", () => { if (sheet.hidden && (scrollX || scrollY)) scrollTo(0, 0); });   // un cadre du Duo reste en place (clavier, focus)
   picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
   scrim.addEventListener("click", closeSheet);

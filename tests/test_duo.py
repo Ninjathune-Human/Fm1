@@ -110,3 +110,12 @@ def test_sheet_opens_upward_frame_stays(page):
     page.wait_for_timeout(100)
     a.click("#fw-picker")
     assert a.evaluate("scrollY") == 0
+
+
+def test_sheet_visible_side_by_side(page):
+    a, _ = open_duo(page, 1366, 1024)
+    page.wait_for_function("document.querySelector('.duo-stage').dataset.layout === 'side'")
+    a.click("#fw-picker")
+    page.wait_for_timeout(400)
+    top, bottom, h = a.evaluate("() => { const r = document.getElementById('fw-sheet').getBoundingClientRect(); return [r.top, r.bottom, innerHeight]; }")
+    assert 0 <= top < bottom <= h + 1 and bottom - top > 200           # la liste dans le cadre, pas hors de vue
