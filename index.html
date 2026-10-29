@@ -27,6 +27,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .eyebrow { margin: 0; font: 600 0.8125rem/1.2 var(--body); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
 .mark { font: 600 clamp(2rem, 5vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; margin: 0; }
 .mark span { color: var(--accent); }
+.mast .mode { margin-left: auto; align-self: center; }
 
 .stage { display: grid; gap: 22px; }
 .turn { display: none; margin: 0; color: var(--muted); font-size: 0.9375rem; }
@@ -191,23 +192,25 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 .range { font-variant-numeric: tabular-nums; }
 
 /* Duo : le lien vers deux FM-1, chaque FM-1 dans son cadre, et la page qui les tient */
-.duo-go { font: 500 0.9375rem var(--body); color: var(--ink); text-decoration: none; background: var(--surface); border: 1px solid var(--rule);
-  border-radius: 999px; padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; }
-.duo-go:hover { border-color: var(--accent); }
 html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px, env(safe-area-inset-left, 0px)) 6px; overflow: hidden; }
 html.embed main { max-width: none; height: 100%; gap: 0; }
-html.embed .mast, html.embed .notes, html.embed .turn, html.embed .duo-go { display: none; }
+html.embed .mast, html.embed .notes, html.embed .turn, html.embed #status { display: none; }
 html.embed .stage { height: 100%; display: flex; flex-direction: column; gap: 6px; }
-html.embed .frame { flex: 1 1 0; min-height: 0; padding: 4px 0 10px; container-type: size; display: grid; place-items: center; margin: 0; overflow: visible; }
+html.embed .frame { flex: 1 1 0; min-height: 0; padding: 4px 0 10px; container-type: size; display: grid; place-items: end center; margin: 0; overflow: visible; }
 html.embed .device { width: min(100cqw, 100cqh * 1640 / 990); min-width: 0; height: auto; }
-html.embed .deck { gap: 6px 14px; flex: none; }
+html.embed .deck { gap: 6px 12px; flex: none; }                       /* une ligne : firmware, coloris, puis les actions à droite */
+html.embed .swatches { gap: 0; }
+html.embed .swatch { width: 38px; height: 44px; }
+html.embed .swatch span { width: 26px; height: 26px; }
+@media (max-width: 760px) { html.embed .picker-k { display: none; } html.embed .deck { flex-wrap: nowrap; } html.embed .bar { flex-wrap: nowrap; } }
+@media (max-width: 620px) { html.embed .swatch { width: 32px; } html.embed .swatch span { width: 22px; height: 22px; } }
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
-.duo-bar { flex: none; display: flex; align-items: center; justify-content: center; gap: 10px 16px; flex-wrap: wrap; padding: 8px 16px; }
-.duo-bar .duo-exit { margin-right: auto; }
+.duo-bar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px 16px; flex-wrap: wrap; padding: 8px 16px; }
+.duo-bar [role="tablist"] { margin-right: auto; }                        /* FM1-A | FM1-B à gauche, les réglages à droite */
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
-.seg button { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
+.seg a, .seg button { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
   font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; touch-action: manipulation; }
-.seg button[aria-selected="true"], .seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
+.seg button[aria-selected="true"], .seg button[aria-checked="true"], .seg a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
 .seg b { font-weight: 600; color: inherit; }
 .seg .fwn { max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .seg .beat { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); }
@@ -225,7 +228,6 @@ html.embed .deck { gap: 6px 14px; flex: none; }
 .duo-stage[data-layout="stack"] { grid-template-rows: 1fr 1fr; }
 .duo-stage[data-layout="stack"] iframe + iframe { border-top: 1px solid var(--rule); }
 .duo-stage[data-layout="side"] iframe + iframe { border-left: 1px solid var(--rule); }
-.fm1-id { font: 600 0.8125rem/1 var(--body); letter-spacing: 0.06em; color: var(--muted); }
 .duo-stage[data-layout="side"] { grid-template-columns: 1fr 1fr; }
 .duo-stage[data-layout="one"] iframe { grid-area: 1 / 1; }
 .duo-stage[data-layout="one"] iframe:not(.shown) { visibility: hidden; pointer-events: none; }
@@ -236,6 +238,7 @@ html.embed .deck { gap: 6px 14px; flex: none; }
   <header class="mast">
     <h1 class="mark">FM-1<span>+VA</span></h1>
     <p class="eyebrow">M-VAVE FM-1 · Émulateur · Version 102</p>
+    <nav class="seg mode" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav>
   </header>
 
   <section class="stage" aria-label="Le FM-1">
@@ -277,7 +280,6 @@ html.embed .deck { gap: 6px 14px; flex: none; }
       <span id="status" role="status">Éteint. Le son démarre à l'allumage.</span>
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
-        <a class="duo-go" href="?duo" title="Deux FM-1 à la fois">Duo</a>
         <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex">Importer un son DX7…</label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
@@ -5495,7 +5497,6 @@ function buildPanel(fw) {
 (function () {
   if (DUO_SHELL) return;                               // la page ?duo ne fait que les deux cadres (plus bas)
   const $ = (id) => document.getElementById(id);
-  if (FM1_ID) { const t = document.createElement("span"); t.className = "fm1-id"; t.textContent = "FM1-" + FM1_ID.toUpperCase(); document.querySelector(".deck").prepend(t); }
   const device = $("device"), status = $("status");
   new MutationObserver(() => { status.title = status.textContent; }).observe(status, { childList: true, characterData: true, subtree: true });   // le texte entier, quand la ligne le coupe
   const va = new Firmware($("screen"));
@@ -5941,7 +5942,6 @@ function buildPanel(fw) {
   root.className = "duo";
   root.innerHTML = `
     <div class="duo-bar">
-      <a class="duo-go duo-exit" href="./">Un FM-1</a>
       <div class="seg" role="tablist" aria-label="Le FM-1 affiché">
         <button type="button" role="tab" data-k="a"><span class="beat"></span><b>FM1-A</b><span class="fwn"></span></button>
         <button type="button" role="tab" data-k="b"><span class="beat"></span><b>FM1-B</b><span class="fwn"></span></button>
@@ -5950,6 +5950,7 @@ function buildPanel(fw) {
         <button type="button" role="radio" data-v="side">Côte à côte</button>
         <button type="button" role="radio" data-v="one">Un à la fois</button>
       </div>
+      <nav class="seg mode" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
       <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
     </div>
     <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
