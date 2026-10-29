@@ -273,7 +273,7 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
       <summary>Ce qui manque encore</summary>
       <div class="note">
         <ul>
-          <li>Le séquenceur : la vue Lane (l'écran Pattern, les lanes, Locks), le déplacement et la copie des pas.</li>
+          <li>Le séquenceur, en pas à pas : les lanes Drums et SFX, les accords du Note Engine, les notes longues avec REC tenu.</li>
           <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
           <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
         </ul>
@@ -2821,7 +2821,7 @@ class Firmware {
   }
   defaultGlobal() {
     return { tempo: 120, sync: 0, velocity: 100, glideMode: 0, glideTime: 20, drive: 0, theme: 4, knobBank: "preset", metro: 50,
-             master: 0.7, countIn: 0, bendUp: 12, bendDown: 12, midiCh: 0, fxCh: 2, cc7: 1, clockOut: 0, local: 1,
+             master: 0.7, countIn: 0, seqView: 0, bendUp: 12, bendDown: 12, midiCh: 0, fxCh: 2, cc7: 1, clockOut: 0, local: 1,
              map: { at: 1, mod: 1, breath: 2, foot: 2 },
              outCh: 1, seqOut: 0, seqCh: 0, sendCC: 0, sendPC: 0, arp: { on: 0, ne: 0, mode: 0, oct: 1, rate: 7, gate: 50, swing: 50, latch: 0, midiIn: 1, arpeggio: 1,
                key: 0, scale: 0, acc: 0, voicing: 0, chord: 0, pattern: 1, keyed: 0 } };
@@ -3081,6 +3081,7 @@ class Firmware {
       group("MIDI", () => this.midiList()),
       onoff("Metronome", G, "metroOn", { g: true, after: () => this.sendSeq() }),
       onoff("Count-in", G, "countIn", g),
+      ch("Sequencer View", G, "seqView", ["Lane", "Flow"], g),
       group("Keyboard", () => ({ title: "Keyboard Settings", rows: [num("Velocity", G, "velocity", 1, 127, g),
         num("Bend Up", G, "bendUp", 1, 24, { g: true, after: () => this.midiCtl() }), num("Bend Down", G, "bendDown", 1, 24, { g: true, after: () => this.midiCtl() })] })),
       group("Glide", () => ({ title: "Glide Settings", rows: [ch("Glide Mode", G, "glideMode", ["Full Time", "Fingered"], { g: true, dim: notMono }),
@@ -3279,6 +3280,7 @@ class Firmware {
     if (!this.held.has(b)) return;
     this.held.delete(b);
     if (b === "SEL" && this.locking) { this.locking = false; this.sendPreset(true); }   // the preset's own values again
+    if (b === "SEL" && this.S.carry) this.land();      // a carried step put down
     if (this.used[b] || this.splash) return;
     switch (b) {
       case "HOME": this.back(); break;
@@ -3310,12 +3312,13 @@ class Firmware {
       return;
     }
     if (this.nameEd) { this.cur.name = this.nameEd.chars.join("").replace(/\s+$/, "") || "INIT"; this.nameEd = null; this.changed(false); return; }
-    if (this.onGrid()) return this.seqEnter();
+    if (this.onGrid() || this.onLane()) return this.seqEnter();
     const top = this.top();
     if (!top) return;
     const L = top.list(), r = L.rows[top.sel];
     if (!r || (r.dim && r.dim())) return;
     if (r.press) return r.press();                    // a lock's row: SEL removes it
+    if (r.kind === "lane") return this.openLane(r.lane);
     if (r.kind === "group" || (r.kind === "value" && r.open)) this.stack.push({ list: r.open, sel: 0, top: 0 });   // a note's row opens its own list
     else if (r.kind === "action") r.run();
     else if (r.kind === "bank") { this.G.knobBank = r.bankId; this.gdirty = true; this.stack = []; this.message("Knobs: " + this.bankName(r.bankId)); }
@@ -3379,9 +3382,13 @@ class Firmware {
     const step = (o, k, lo, hi, d) => { const a = o[k]; o[k] = clampi(a + d, lo, hi); return o[k] !== a; };
     if (this.q) return step(this.q, "sel", 0, this.q.options.length - 1, Math.sign(n));
     if (this.nameEd) return step(this.nameEd, "pos", 0, 9, Math.sign(n));
+    if (this.inSeq()) { const h = this.seqSelect(n); if (h !== undefined) return h; }   // a carried copy, a lane's rows
     if (this.onGrid()) return this.gridSelect(n);
     const top = this.top();
     if (!top) { this.colT = performance.now(); return step(this, "col", 0, 3, Math.sign(n)); }
+    if (top.list().recMax !== undefined && this.S.rec) {   // the Pattern screen while recording: the lanes only
+      const s0 = top.sel; top.sel = clampi(top.sel + Math.sign(n), 0, top.list().recMax); this.fit(top, top.list().rows.length); return top.sel !== s0;
+    }
     const L = top.list(), sel0 = top.sel;
     if (this.held.has("SEL")) {
       this.used.SEL = true;
@@ -3425,6 +3432,7 @@ class Firmware {
       e.chars[e.pos] = CHARSET[c];
       return c !== c0;
     }
+    if (this.inSeq()) { const h = this.seqAlgo(n); if (h !== undefined) return h; }   // a carried step, a lane's cursor
     const top = this.top();
     const algoTurn = () => {                          // the first turn draws the algorithm, the next ones change it
       const now = performance.now();
@@ -3496,6 +3504,7 @@ class Firmware {
   }
   keyDown(i, id) {
     if (!this.on || this.splash) return;
+    if (this.S.carry) { this.carryBack(); return; }    // a key while SEL carries a step: back where it was
     const ek = EDIT_KEYS[i];
     if (ek && this.fmEditKeys()) { this.editKey(ek, id); return; }
     const n = KEY0 + i + 12 * this.octave + this.kbdTr;
@@ -3582,6 +3591,7 @@ class Firmware {
       const L = top.list();
       top.sel = clampi(top.sel, 0, Math.max(0, L.rows.length - 1)); this.fit(top, L.rows.length);
       if (L.grid) this.drawGrid();
+      else if (L.laneView) this.drawLane(L, top);
       else if (this.diag && L.rows[top.sel] && L.rows[top.sel].algo) { this.drawHeading("Algorithm " + this.cur.fm.alg); this.drawAlg(8, 40, 224, 190); }
       else this.drawList(L, top);
     } else this.drawHome();
@@ -3607,11 +3617,13 @@ class Firmware {
   drawList(L, st) {
     const c = this.ctx, T = this.T, rows = L.rows, now = performance.now();
     this.drawHeading(L.title);
+    if (L.dots) this.drawDots();
     const y0 = 33, h = 41;
     for (let k = 0; k < 5; k++) {
       const i = st.top + k, r = rows[i];
       if (!r) break;
       const y = y0 + k * h, hi = i === st.sel, dim = (r.dim && r.dim()) || (r.dimLook && r.dimLook());
+      if (r.kind === "lane") { this.drawLaneRow(r, y + 1, h - 2, hi); continue; }
       let flash = hi && L.fx && this.held.has("SEL") && this.moving && Math.floor((now - this.moving) / 250) % 2 === 1;
       if (hi && !flash) { c.fillStyle = T.acc; this.round(4, y + 1, 230, h - 2, 8); c.fill(); }
       const fg = hi && !flash ? T.bg : T.fg;
@@ -3862,6 +3874,9 @@ const SEQ_RATES = NE_RATES;
 const SEQ_RATE_BEATS = [4, 2, 4 / 3, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12];   // a step's length in beats                         // 1/1 .. 1/32T, as the arpeggiator's Rate
 const newPattern = () => ({ steps: 16, rate: 7, swing: 50, gate: 80, chain: -1, repeats: 1, preset: -1, notes: Array.from({ length: 64 }, () => []), set: [] });
 const REPEATS = [1, 2, 3, 4, 6, 8, 12, 16];
+const LANE_NAMES = { lead: "Lead", bass: "Bass", sfx: "SFX", drums: "Drums", notes: "Notes", locks: "Locks" };
+const LANE_SPAN = { drums: [17, 28], sfx: [29, 40], bass: [41, 76], lead: [77, 112], notes: [0, 127] };   // the notes each lane holds
+const LANE_ROWS = { drums: 12, sfx: 12, bass: 20, lead: 20, notes: 20 };
 const rateIdx = (beats) => SEQ_RATE_BEATS.findIndex((b) => Math.abs(b - beats) < 1e-9);   // -1: no such note value
 const noteName = (n) => NN[((n % 12) + 12) % 12] + (Math.floor(n / 12) - 1);
 
@@ -3916,9 +3931,10 @@ Object.assign(Firmware.prototype, {
     this.gdirty = true;
     if (!on) this.seqStop(true);
   },
-  showGrid() {
+  showGrid() {                                       // SEQ's screen: the Pattern screen, or the Flow grid (Sequencer View)
     this.q = null; this.nameEd = null; this.plist = null;
-    this.stack = [{ root: "seq", list: () => ({ title: "", grid: true, rows: [] }), sel: 0, top: 0 }];
+    const flow = this.G.seqView === 1;
+    this.stack = [{ root: "seq", view: flow ? "flow" : "lanes", list: () => (flow ? { title: "", grid: true, rows: [] } : this.patScreen()), sel: 0, top: 0 }];
   },
   seqPlay() {
     const S = this.S;
@@ -3929,7 +3945,7 @@ Object.assign(Firmware.prototype, {
     } else {
       if (S.next !== null) { S.pat = S.next; S.next = null; }
       this.patPreset();
-      S.playing = true; S.stopped = false;
+      S.playing = true; S.stopped = false; S.follow = true;   // the page follows the pattern again
       // PLAY in step recording: one bar of four clicks first, with Count-in on and Sync off (manual 9.10)
       if (S.rec === "step") { S.rec = "rt"; if (this.G.countIn && !this.G.sync) { S.countReq = true; S.countUntil = this.now() + (4 * 60) / this.G.tempo; } }
     }
@@ -3940,6 +3956,7 @@ Object.assign(Firmware.prototype, {
     if (S.playing && S.next !== null) { S.pat = S.next; S.next = null; }
     if (S.playing) S.stopped = true;                  // PLAY's red : on a stopped the sequencer, not on a fresh start
     if (S.pos) S.contFrom = (S.pos.step + 1) % this.pats[S.pos.pat].steps;   // where a MIDI Continue plays on
+    if (S.playing) S.page = this.viewPage();           // the page in view stays
     S.playing = false; S.pos = null;
     if (endRec) S.rec = null;
     this.endRtNotes();
@@ -3973,7 +3990,8 @@ Object.assign(Firmware.prototype, {
     } else this.showGrid();
   },
   inSeq() { return this.stack.length > 0 && this.stack[0].root === "seq"; },
-  onGrid() { return this.inSeq() && this.stack.length === 1; },
+  onGrid() { return this.inSeq() && this.stack.length === 1 && this.stack[0].view === "flow"; },
+  onLane() { const t = this.top(); return this.inSeq() && !!t && !!t.lane; },
   leaveRt() { if (this.S.rec === "rt") { this.S.rec = null; this.endRtNotes(); this.sendSeq(); } },
   // SEL held and PRESETS: the pattern; while one plays, the next one waits for the end of the pass
   choosePattern(n) {
@@ -4315,6 +4333,9 @@ Object.assign(Firmware.prototype, {
         c.stroke();
       }
     }
+    if (S.carry && S.carry.lane === "grid" && Math.floor((performance.now() - S.carry.t) / 250) % 2 === 0) {   // the step carried, flashing
+      const [x, y] = pos(S.carry.at); c.fillStyle = "#ffffff"; c.beginPath(); c.arc(x, y, r - 2, 0, Math.PI * 2); c.fill();
+    }
     // the white ring, or the red diamond while recording
     if (S.rec) {
       const [x, y] = pos(S.cursor % P.steps), d = 13;
@@ -4335,6 +4356,272 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     if (!this.G.seqOn || S.rec !== "step") return null;
     return this.P.notes[S.cursor].some((x) => x.n + this.G.seqTr === note);
+  },
+  // ---------------------------------------------------------------- the Pattern screen and its lanes (manual 9.2 to 9.5)
+  lanes() { return this.cur.engine === "b8" ? ["lead", "bass", "sfx", "drums", "locks"] : ["notes", "locks"]; },
+  laneOf(n) { return this.cur.engine !== "b8" ? "notes" : n < 29 ? "drums" : n < 41 ? "sfx" : n < 77 ? "bass" : "lead"; },
+  laneNotes(i, lane) { return this.P.notes[i].filter((x) => this.laneOf(x.n) === lane); },
+  // the lanes, then the pattern's own settings under them; while recording SELECT stays on the lanes
+  patScreen() {
+    const S = this.S, ids = this.lanes();
+    const rows = ids.map((lane) => ({ kind: "lane", lane, name: LANE_NAMES[lane], turn: (d) => this.turnPage(d) }));
+    return { title: "Pattern " + (S.pat + 1), dots: true, recMax: ids.length - 1, rows: rows.concat(this.patList().rows) };
+  },
+  pages() { return Math.max(1, Math.ceil(this.P.steps / 16)); },
+  playStep() { const ph = this.playhead(); return ph === null ? -1 : Math.floor(ph) % this.P.steps; },
+  // the page in view: the red outline's while recording, the playing one while it is followed, else the one turned to
+  viewPage() {
+    const S = this.S, last = this.pages() - 1, ps = this.playStep();
+    if (S.rec) return clampi(Math.floor(S.cursor / 16), 0, last);
+    if (ps >= 0 && S.follow !== false) return clampi(Math.floor(ps / 16), 0, last);
+    return clampi(S.page || 0, 0, last);
+  },
+  followIf() { const ps = this.playStep(); this.S.follow = ps < 0 || Math.floor(ps / 16) === this.S.page; },
+  turnPage(d) {                                         // ALGORITHM on a lane of the Pattern screen
+    const S = this.S, p0 = this.viewPage(), p = clampi(p0 + d, 0, this.pages() - 1);
+    if (p === p0) return false;
+    S.page = p;
+    if (S.rec === "step") S.cursor = p * 16;            // the red outline to the page's first step
+    this.followIf();
+    return true;
+  },
+  openLane(lane) {
+    const S = this.S, k = S.rec ? "cursor" : "ring";
+    S.page = Math.floor(S[k] / 16); this.followIf();     // a lane opens on the cursor's page
+    let base = 0;
+    if (lane !== "locks") {
+      const [lo, hi] = LANE_SPAN[lane], ns = this.P.notes.slice(0, this.P.steps).flat().filter((x) => this.laneOf(x.n) === lane).map((x) => x.n);
+      const rows = LANE_ROWS[lane];
+      base = clampi(ns.length ? Math.min(...ns) : lane === "notes" ? 48 : lo, lo, Math.max(lo, hi - rows + 1));
+    }
+    this.stack.push({ lane, base, sel: 0, top: 0, list: () => ({ title: "Pattern " + (S.pat + 1) + " " + LANE_NAMES[lane], laneView: true, rows: [] }) });
+  },
+  // SELECT in the Sequencer: SEL held carries a copy; in an open lane it scrolls the rows
+  seqSelect(n) {
+    if (this.held.has("SEL") && (this.onLane() || this.onGrid())) { this.used.SEL = true; return this.carryTurn("copy", n); }
+    const t = this.top();
+    if (!this.onLane()) return undefined;
+    if (t.lane === "locks") { const b0 = t.base; t.base = clampi(t.base + Math.sign(n), 0, Math.max(0, this.lockIds().length - 13)); return t.base !== b0; }
+    const [lo, hi] = LANE_SPAN[t.lane], b0 = t.base;
+    t.base = clampi(t.base - Math.sign(n), lo, Math.max(lo, hi - LANE_ROWS[t.lane] + 1));   // turning down shows lower notes
+    return t.base !== b0;
+  },
+  // ALGORITHM in the Sequencer: SEL held carries the step; in an open lane it moves the cursor
+  seqAlgo(n) {
+    if (this.held.has("SEL") && (this.onLane() || this.onGrid())) { this.used.SEL = true; return this.carryTurn("move", n); }
+    if (!this.onLane()) return undefined;
+    const S = this.S;
+    if (S.rec === "rt") return false;                   // no cursor while recording in real time
+    const k = S.rec === "step" ? "cursor" : "ring", a = S[k];
+    S[k] = clampi(a + n, 0, this.P.steps - 1);
+    if (S[k] === a) return false;
+    S.page = Math.floor(S[k] / 16); this.followIf();
+    if (S.rec === "step") this.previewStep(S.cursor);
+    return true;
+  },
+  lockIds() {                                           // every setting locked somewhere in the pattern, in order of appearance
+    const seen = new Map();
+    for (let i = 0; i < this.P.steps; i++) for (const l of ((this.P.set[i] || {}).locks || [])) if (!seen.has(l.id)) seen.set(l.id, l);
+    return [...seen.values()];
+  },
+
+  // ---------------------------------------------------------------- moving and copying steps (manual 9.6.3, 9.12)
+  carryTurn(mode, n) {
+    const S = this.S;
+    if (S.rec === "rt") return false;
+    const k = S.rec === "step" ? "cursor" : "ring";
+    if (!S.carry) {
+      const lane = this.onGrid() ? "grid" : this.top().lane, i = S[k];
+      if (!this.carryHas(i, lane)) return false;        // nothing to lift
+      S.carry = { mode, from: i, at: i, lane, k, t: performance.now() };
+    }
+    const c = S.carry, a = c.at;
+    c.at = clampi(c.at + n, 0, this.P.steps - 1);
+    S[k] = c.at; S.page = Math.floor(c.at / 16); this.followIf();
+    return c.at !== a;
+  },
+  carryHas(i, lane) {
+    const P = this.P, locks = ((P.set[i] || {}).locks || []).length;
+    if (lane === "grid") return P.notes[i].length > 0 || locks > 0;
+    if (lane === "locks") return locks > 0;
+    return this.laneNotes(i, lane).length > 0;
+  },
+  carryBack() { const S = this.S, c = S.carry; S.carry = null; S[c.k] = c.from; S.page = Math.floor(c.from / 16); this.followIf(); },
+  land() {
+    const S = this.S, c = S.carry, P = this.P;
+    S.carry = null;
+    if (!c || c.at === c.from) return;
+    const a = c.from, b = c.at, notes = P.notes.map((x) => x.slice()), set = P.set.slice(), kept = {};
+    const st = (i) => (set[i] ? clone(set[i]) : undefined), say = { move: "Step " + (a + 1) + " moved to " + (b + 1), swap: "Steps " + (a + 1) + ", " + (b + 1) + " swapped", copy: "Step " + (a + 1) + " copied to " + (b + 1) };
+    let what = c.mode;
+    if (c.lane === "grid") {                            // the whole step: notes, settings and locks
+      if (c.mode === "copy") { notes[b] = clone(P.notes[a]); set[b] = st(a); }
+      else if (!this.carryHas(b, "grid")) { notes[b] = notes[a]; set[b] = set[a]; notes[a] = []; set[a] = undefined; }
+      else { [notes[a], notes[b]] = [notes[b], notes[a]]; [set[a], set[b]] = [set[b], set[a]]; what = "swap"; }
+    } else if (c.lane === "locks") {                    // the locks alone
+      const la = ((set[a] = st(a) || this.stepSetOf()) .locks || []), lb = ((set[b] = st(b) || this.stepSetOf()).locks || []);
+      if (c.mode === "copy") set[b].locks = clone(la);
+      else if (!lb.length) { set[b].locks = la; set[a].locks = []; }
+      else { set[a].locks = lb; set[b].locks = la; what = "swap"; }
+    } else {                                            // one lane's notes; the step's settings too when no other lane has notes there
+      const mine = (i) => notes[i].filter((x) => this.laneOf(x.n) === c.lane), rest = (i) => notes[i].filter((x) => this.laneOf(x.n) !== c.lane);
+      const A = mine(a), B = mine(b), alone = !rest(a).length && !rest(b).length;
+      kept[a] = c.mode === "move" ? B.length : 0; kept[b] = A.length;   // the notes carried in are not the ones to drop
+      if (c.mode === "copy") { notes[b] = rest(b).concat(clone(A)); if (alone) set[b] = st(a); }
+      else if (!B.length) { notes[b] = rest(b).concat(A); notes[a] = rest(a); if (alone) { set[b] = set[a]; set[a] = undefined; } }
+      else { notes[a] = rest(a).concat(B); notes[b] = rest(b).concat(A); if (alone) [set[a], set[b]] = [set[b], set[a]]; what = "swap"; }
+    }
+    for (const i of [a, b]) if (!this.fitNine(notes, i, kept[i] || 0)) return;   // only drums to drop: refused, without a message
+    // the locks stay on their step in a lane of notes
+    if (c.lane !== "grid" && c.lane !== "locks") for (const i of [a, b]) if (set[i] || P.set[i]) {
+      const keep = ((P.set[i] || {}).locks || []);
+      if (set[i]) set[i] = Object.assign(clone(set[i]), { locks: clone(keep) }); else if (keep.length) set[i] = Object.assign(this.stepSetOf(), { locks: clone(keep) });
+    }
+    P.notes = notes; P.set = set;
+    this.gdirty = true; this.sendSeq(); this.message(say[what]);
+  },
+  stepSetOf() { return { ratchet: 1, gate: 0, chance: 100, tr: 0, acc: 0 }; },
+  // nine notes a step: the oldest goes; on an 8-Bit preset the oldest that is not a drum, and only drums: refused
+  fitNine(notes, i, kept) {
+    const s = notes[i];
+    while (s.length > 9) {
+      const j = this.cur.engine !== "b8" ? 0 : s.findIndex((x, k) => x.n >= 29 && k < s.length - kept);
+      if (j < 0 || j >= s.length - kept) return false;
+      s.splice(j, 1);
+    }
+    return true;
+  },
+
+  // ---------------------------------------------------------------- drawing the lanes
+  drawDots() {                                          // a dot for each page, the one in view filled
+    const c = this.ctx, T = this.T, n = this.pages(), v = this.viewPage();
+    if (n < 2) return;
+    for (let i = 0; i < n; i++) {
+      const x = 228 - (n - 1 - i) * 9;
+      c.beginPath(); c.arc(x, 16, 3, 0, Math.PI * 2);
+      if (i === v) { c.fillStyle = T.fg; c.fill(); } else { c.strokeStyle = T.mute; c.lineWidth = 1.2; c.stroke(); }
+    }
+  },
+  // the columns of a page: beats brighter, the playing step brightest, nothing past the last step; and the cursor
+  drawColumns(x0, cw, y, h) {
+    const c = this.ctx, T = this.T, S = this.S, page = this.viewPage(), ps = this.playStep();
+    for (let j = 0; j < 16; j++) {
+      const i = page * 16 + j;
+      if (i >= this.P.steps) break;
+      c.fillStyle = i === ps ? "#ffffff" : T.mute;
+      c.globalAlpha = i === ps ? 0.22 : j % 4 === 0 ? 0.14 : 0.07;
+      c.fillRect(x0 + j * cw + 0.5, y, cw - 1, h);
+    }
+    c.globalAlpha = 1;
+  },
+  drawCursor(x0, cw, y, h) {
+    const c = this.ctx, S = this.S, page = this.viewPage();
+    if (S.rec === "rt") { const ps = this.playStep(); if (ps >= 0 && Math.floor(ps / 16) === page) this.outline(x0 + (ps % 16) * cw, y, cw, h, "#ff4d4d"); return; }
+    const i = S.rec ? S.cursor : S.ring;
+    if (Math.floor(i / 16) !== page) return;
+    this.outline(x0 + (i % 16) * cw, y, cw, h, S.rec ? "#ff4d4d" : "#ffffff");
+  },
+  outline(x, y, w, h, col) { const c = this.ctx; c.strokeStyle = col; c.lineWidth = 1.6; c.strokeRect(x + 0.8, y + 0.8, w - 1.6, h - 1.6); },
+  // a lane's notes on the page: [{ n, from, to, i, x }], a held note carrying on from an earlier page
+  pageNotes(lane) {
+    const P = this.P, page = this.viewPage(), lo = page * 16, hi = Math.min(P.steps, lo + 16), out = [], S = this.S, carry = S.carry;
+    for (let i = 0; i < P.steps; i++) for (const x of P.notes[i]) {
+      if (lane !== "any" && this.laneOf(x.n) !== lane) continue;
+      const end = Math.min(P.steps - 1, i + (x.len || 1) - 1 + (x.tie && i < P.steps - 1 ? 1 : 0));
+      if (end < lo || i >= hi) continue;
+      out.push({ n: x.n, from: Math.max(i, lo) - lo, to: Math.min(end, hi - 1) - lo, i, x, start: i >= lo });
+    }
+    if (carry && carry.lane === lane) {                 // the notes carried travel with the outline, in white
+      const off = carry.at - carry.from;
+      for (const x of this.laneNotes(carry.from, lane)) {
+        const i = carry.at, end = Math.min(P.steps - 1, i + (x.len || 1) - 1);
+        if (i >= lo && i < hi) out.push({ n: x.n, from: i - lo, to: Math.min(end, hi - 1) - lo, i, x, start: true, carried: true });
+        void off;
+      }
+    }
+    return out;
+  },
+  drawBar(nt, x0, cw, y, col) {
+    const c = this.ctx, st = (this.P.set[nt.i] || {}), x = x0 + nt.from * cw + 1.5, w = (nt.to - nt.from + 1) * cw - 3;
+    c.fillStyle = col; c.fillRect(x, y - 1.5, w, 3);
+    if (nt.start && st.acc) { c.fillStyle = "#ffffff"; c.fillRect(x, y - 2.5, 3, 5); }   // Accent: a bright start
+    if (nt.start && (st.ratchet || 1) > 1) {             // Ratchet: cuts inside its first step
+      c.fillStyle = this.T.bg;
+      for (let k = 1; k < st.ratchet; k++) c.fillRect(x + (cw * k) / st.ratchet - 0.6, y - 2, 1.2, 4);
+    }
+  },
+  drawLaneRow(r, y, h, hi) {
+    const c = this.ctx, T = this.T, x0 = 44, cw = 12, ps = this.playStep();
+    if (hi) { c.fillStyle = T.acc; this.round(2, y + 4, 40, h - 8, 6); c.fill(); }
+    this.text(this.fitText(r.name, 36, 600, 12), 22, y + h / 2 + 4, 600, 12, hi ? T.bg : T.fg, "center");
+    this.drawColumns(x0, cw, y, h);
+    if (r.lane === "locks") {                           // a block for each lock, up to four, from the bottom
+      const page = this.viewPage(), bh = (h - 6) / 4;
+      for (let j = 0; j < 16; j++) {
+        const i = page * 16 + j, n = i < this.P.steps ? ((this.P.set[i] || {}).locks || []).length : 0;
+        c.fillStyle = i === ps ? "#ffffff" : T.acc;
+        for (let k = 0; k < n; k++) c.fillRect(x0 + j * cw + 2.5, y + h - 3 - (k + 1) * bh + 1, cw - 5, bh - 2);
+      }
+    } else {
+      const notes = this.pageNotes(r.lane), all = this.P.notes.slice(0, this.P.steps).flat().filter((x) => this.laneOf(x.n) === r.lane).map((x) => x.n);
+      const lo = Math.min(...all), span = Math.max(1, Math.max(...all) - lo);
+      for (const nt of notes) {
+        const yy = all.length > 1 && span > 0 ? y + h - 6 - ((nt.n - lo) / span) * (h - 12) : y + h / 2;
+        this.drawBar(nt, x0, cw, yy, nt.carried || nt.i === ps ? "#ffffff" : T.acc);
+      }
+    }
+    this.drawCursor(x0, cw, y, h);
+  },
+  // an open lane: a row for each note (twelve for the drums and the effects), or for each locked setting
+  drawLane(L, t) {
+    const c = this.ctx, T = this.T, x0 = 32, cw = 13, y0 = 33, H = 240 - y0 - 2, ps = this.playStep();
+    this.drawHeading(L.title); this.drawDots();
+    this.drawColumns(x0, cw, y0, H);
+    if (t.lane === "locks") return this.drawLocksLane(x0, cw, y0, H, t), this.drawCursor(x0, cw, y0, H);
+    const rows = LANE_ROWS[t.lane], rh = H / rows, fixed = t.lane === "drums" || t.lane === "sfx";
+    const noteAt = (k) => (fixed ? LANE_SPAN[t.lane][0] + k : t.base + rows - 1 - k);   // row k from the top
+    for (let k = 0; k < rows; k++) {
+      const n = noteAt(k), y = y0 + k * rh, black = [1, 3, 6, 8, 10].includes(((n % 12) + 12) % 12);
+      if (black && !fixed) { c.fillStyle = "#000000"; c.globalAlpha = 0.35; c.fillRect(0, y, 240, rh); c.globalAlpha = 1; }
+      this.text(noteName(n), 3, y + rh / 2 + 3.5, 500, Math.min(10, rh), T.mute);
+    }
+    const notes = this.pageNotes(t.lane), page = this.viewPage();
+    const top = noteAt(0), bottom = noteAt(rows - 1), lowN = Math.min(top, bottom), highN = Math.max(top, bottom);
+    for (const nt of notes) {
+      if (nt.n < lowN || nt.n > highN) continue;
+      const k = fixed ? nt.n - LANE_SPAN[t.lane][0] : t.base + rows - 1 - nt.n;
+      this.drawBar(nt, x0, cw, y0 + k * rh + rh / 2, nt.carried || nt.i === ps ? "#ffffff" : T.acc);
+    }
+    for (let j = 0; j < 16; j++) {                      // a white arrow: notes above or below the rows on screen
+      const i = page * 16 + j;
+      if (i >= this.P.steps) break;
+      const ns = this.laneNotes(i, t.lane).map((x) => x.n), x = x0 + j * cw + cw / 2;
+      c.fillStyle = "#ffffff";
+      if (ns.some((n) => n > highN)) { c.beginPath(); c.moveTo(x - 3, y0 + 5); c.lineTo(x + 3, y0 + 5); c.lineTo(x, y0 + 1); c.fill(); }
+      if (ns.some((n) => n < lowN)) { c.beginPath(); c.moveTo(x - 3, y0 + H - 5); c.lineTo(x + 3, y0 + H - 5); c.lineTo(x, y0 + H - 1); c.fill(); }
+    }
+    this.drawCursor(x0, cw, y0, H);
+  },
+  drawLocksLane(x0, cw, y0, H, t) {
+    const c = this.ctx, T = this.T, S = this.S, ids = this.lockIds(), page = this.viewPage(), ps = this.playStep();
+    const shown = Math.max(1, Math.min(13, ids.length)), rh = H / shown, cur = S.rec ? S.cursor : S.ring;
+    for (let k = 0; k < shown; k++) {
+      const l = ids[t.base + k], y = y0 + k * rh;
+      c.fillStyle = T.mute; c.globalAlpha = 0.3; c.fillRect(0, y + rh - 0.5, 240, 0.5); c.globalAlpha = 1;
+      if (!l) continue;
+      this.text(this.fitText(l.name, 29, 500, 8), 2, y + 9, 500, 8, T.mute);
+      const here = ((this.P.set[cur] || {}).locks || []).find((x) => x.id === l.id);
+      if (here && ids.length < 10) this.text(valText(this.lockRow(here)), 2, y + 19, 600, 8, T.fg);   // the outlined step's value
+      for (let j = 0; j < 16; j++) {
+        const i = page * 16 + j;
+        if (i >= this.P.steps) break;
+        const m = ((this.P.set[i] || {}).locks || []).find((x) => x.id === l.id);
+        if (!m) continue;
+        const x = x0 + j * cw + 2.5, w = cw - 5, col = i === ps ? "#ffffff" : T.acc;
+        if (this.lockRow(m).labels) { c.strokeStyle = col; c.lineWidth = 1.2; c.strokeRect(x, y + 2, w, rh - 4); }   // a named choice: a frame
+        else { const f = (m.v - m.min) / Math.max(1, m.max - m.min), bh = Math.max(1.5, (rh - 4) * f); c.fillStyle = col; c.fillRect(x, y + rh - 2 - bh, w, bh); }
+      }
+    }
   },
 });
 
