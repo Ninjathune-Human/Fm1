@@ -204,7 +204,10 @@
    "id": "hyp1",
    "depot": "RustyPawz/fm1-HYP1",
    "commit": "57c456db61826331d356458c9c1a136517da7cbf",
-   "script": "web/app/build.sh"
+   "script": "web/emu/build_clang.sh",
+   "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
+   "construction": "EN_VERSION=1.5.54 sh web/emu/build_clang.sh",
+   "wasm": "build/emu/amb.wasm"
   },
   {
    "id": "jiant",
@@ -283,7 +286,10 @@
    "id": "perf1",
    "depot": "deamonSLINKY/PERF-1",
    "commit": "d2ed6aa95867dd5b395eee36fb447bcb99b9949b",
-   "script": "web/app/build.sh"
+   "script": "web/emu/build_clang.sh",
+   "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
+   "construction": "EN_VERSION=0.13.0 sh web/emu/build_clang.sh",
+   "wasm": "build/emu/amb.wasm"
   },
   {
    "id": "pigeon",
