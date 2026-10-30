@@ -237,6 +237,14 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
   background: color-mix(in srgb, var(--muted) 16%, var(--surface)); border-color: color-mix(in srgb, var(--muted) 60%, var(--surface)); }
 #clavier .lettre { font: 500 13px var(--mono); fill: var(--muted); }
 #clavier .fonction { font-family: "Barlow Semi Condensed", var(--body); font-weight: 600; fill: var(--ink); }
+#fiche { display: grid; gap: 10px; }
+#fiche h3 { margin: 6px 0 0; font: 600 0.9375rem var(--body); color: var(--ink); }
+#fiche p, #fiche ul, #fiche dl { margin: 0; }
+#fiche ul { padding-left: 1.1rem; display: grid; gap: 6px; }
+#fiche dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; }
+#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: nowrap; }
+#fiche dd { margin: 0; min-width: 0; }
+.fiche-meta { min-height: 0; }
 .legende { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
 .legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 7px; vertical-align: -1px; border-radius: 3px;
   border: 1.5px solid var(--rule); background: var(--surface); }
@@ -397,27 +405,11 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         </dl>
       </div>
     </details>
-    <details>
-      <summary>Gestes du firmware</summary>
+    <details id="aide-fiche">
+      <summary><span>Fonctions de <span id="fiche-nom">FM-1+VA</span></span></summary>
       <div class="note">
-        <p>Les presets <span class="range">001–064</span> sont FM, <span class="range">065–080</span> et <span class="range">113–128</span> Virtual Analog, <span class="range">081–112</span> 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT− trois fois).</p>
-        <ul>
-          <li><b>EDIT</b>, <b>FX</b>, <b>ENV</b>, <b>LFO</b>, <b>GLO</b>, <b>ARP</b> ouvrent leurs listes ; SEL entre, HOME revient.</li>
-          <li><b>HOME</b> sur l'écran d'accueil : les banques de molettes. HOME maintenu + SELECT change de banque, HOME maintenu + une molette change ce qu'elle joue.</li>
-          <li><b>SEL</b> maintenu + ALGORITHM avance de dix ; SEL maintenu + SELECT déplace un effet dans la liste Effects.</li>
-          <li><b>ENV</b> maintenu une seconde allume ou éteint l'enveloppe. OCT− et OCT+ ensemble : octave 0.</li>
-          <li><b>SAVE</b> garde le preset, les réglages et les 16 patterns dans ce navigateur. Sans SAVE, PRESETS revient à la version enregistrée.</li>
-          <li><b>Séquenceur</b> : PLAY lance et arrête (maintenu : séquenceur allumé ou éteint), REC enregistre pas à pas, ou en temps réel pendant la lecture. SELECT déplace le losange ; SEL maintenu en jouant le garde sur son pas. SEQ ouvre les réglages du pattern, SEL maintenu + PRESETS choisit le pattern.</li>
-        </ul>
-      </div>
-    </details>
-    <details>
-      <summary>Ce qui manque encore</summary>
-      <div class="note">
-        <ul>
-          <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
-          <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
-        </ul>
+        <p class="fiche-meta" id="fiche-meta"></p>
+        <div id="fiche"></div>
       </div>
     </details>
   </section>
@@ -6004,6 +5996,45 @@ function buildPanel(fw) {
   let active = { id: "fm1va", nom: "FM-1+VA" }, expanded = null;
   try { const s = JSON.parse(localStorage.getItem(SKEY(LAST)) || "null"); if (s && s.id) { active = s; nameEl.textContent = s.nom; } } catch { /* rien de gardé */ }
 
+  // l'aide : la fiche du firmware choisi (firmwares/fiches/<id>.json), chargée à l'ouverture du volet, rendue par textContent
+  const ficheBox = $("fiche"), ficheMeta = $("fiche-meta"), ficheNom = $("fiche-nom"), ficheDetails = $("aide-fiche");
+  const fiches = new Map();
+  let ficheSeq = 0;
+  const mk = (tag, text, attrs) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; for (const k in attrs || {}) e.setAttribute(k, attrs[k]); return e; };
+  function ficheMessage(text) { ficheBox.replaceChildren(mk("p", text)); }
+  function renderFiche(x) {
+    const out = [mk("p", x.resume)];
+    const section = (titre, node) => { out.push(mk("h3", titre), node); };
+    if (x.commandes.length) { const dl = mk("dl"); for (const c of x.commandes) dl.append(mk("dt", c.commande), mk("dd", c.role)); section("Commandes", dl); }
+    if (x.gestes.length) { const ul = mk("ul"); for (const g of x.gestes) ul.append(mk("li", g)); section("Gestes", ul); }
+    if (x.modes.length) { const dl = mk("dl"); for (const m of x.modes) dl.append(mk("dt", m.nom), mk("dd", m.texte)); section("Modes et écrans", dl); }
+    if (x.a_savoir?.length) { const ul = mk("ul"); for (const t of x.a_savoir) ul.append(mk("li", t)); section("À savoir", ul); }
+    const p = mk("p"); p.append(mk("a", "Manuel complet", { href: x.source.url, target: "_blank", rel: "noopener" }));
+    if (x.d_apres_le_code) p.append(" · Rédigée d'après le code du firmware, faute de doc.");
+    out.push(p);
+    ficheBox.replaceChildren(...out);
+  }
+  async function showFiche() {
+    ficheNom.textContent = active.nom;
+    const my = ++ficheSeq, id = active.id;
+    ficheMeta.textContent = "";
+    if (id === "local") { ficheMessage("Pas de fiche pour ce firmware."); return; }
+    if (!ficheDetails.open) return;
+    if (!fiches.has(id)) fiches.set(id, fetch(`firmwares/fiches/${id}.json`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }));
+    let x;
+    try { x = await fiches.get(id); } catch { fiches.delete(id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
+    if (my !== ficheSeq) return;
+    renderFiche(x);
+    if (id === "fm1va") ficheMeta.textContent = "Réimplémentation d'après Baud Girl · 102 · GPL-3.0";
+    else {
+      await catalogueReady;
+      const e = catalogue.find((c) => c.id === id);
+      if (my === ficheSeq && e) ficheMeta.textContent = [e.auteur, e.version, e.licence].filter(Boolean).join(" · ");
+    }
+  }
+  ficheDetails.addEventListener("toggle", () => { if (ficheDetails.open) showFiche(); });
+  showFiche();
+
   function tagsOf(e) {
     const t = [];
     if (e.beta) t.push("bêta");
@@ -6144,7 +6175,7 @@ function buildPanel(fw) {
     if (emuBarred(e)) { status.textContent = "En Duo, FM1-B prend FM-1+VA ou un firmware natif."; return; }
     if (e.id !== "fm1va" && coreError) { status.textContent = "Cœur d'émulation indisponible."; return; }
     if (!ac) {
-      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
       return;
@@ -6154,7 +6185,7 @@ function buildPanel(fw) {
     const ok = await useEngine(e).catch(() => false);
     if (my !== pickSeq) return;
     if (ok) {
-      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : "";
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();

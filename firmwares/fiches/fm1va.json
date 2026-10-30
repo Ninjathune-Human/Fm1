@@ -1,0 +1,104 @@
+{
+ "id": "fm1va",
+ "resume": "Réimplémentation de FM-1+VA de Baud Girl, écrite d'après son manuel : trois moteurs (FM à six opérateurs et 32 algorithmes, Virtual Analog, 8-Bit), sept effets, un séquenceur de 16 patterns et 128 presets originaux.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Descend d'une octave ; avec OCT+ en même temps, revient à l'octave 0."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Monte d'une octave ; avec OCT- en même temps, revient à l'octave 0."
+  },
+  {
+   "commande": "FX",
+   "role": "Ouvre la liste des effets ; SEL entre, HOME revient."
+  },
+  {
+   "commande": "SEL",
+   "role": "Entre dans l'élément choisi d'une liste. Maintenu avec ALGORITHM, avance de dix ; maintenu avec SELECT dans la liste Effects, déplace un effet ; maintenu pendant le jeu du séquenceur, garde la note sur son pas ; maintenu avec PRESETS, choisit le pattern."
+  },
+  {
+   "commande": "ENV",
+   "role": "Ouvre la liste des enveloppes ; maintenu une seconde, allume ou éteint l'enveloppe."
+  },
+  {
+   "commande": "LFO",
+   "role": "Ouvre la liste des LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Ouvre la liste d'édition du son."
+  },
+  {
+   "commande": "GLO",
+   "role": "Ouvre les réglages globaux (MIDI, décompte, contrôle local, bend du clavier, thème)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Revient en arrière. Sur l'écran d'accueil, ouvre les banques de molettes ; maintenu avec SELECT, change de banque ; maintenu avec une molette, change ce qu'elle joue."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Garde le preset, les réglages et les 16 patterns dans ce navigateur."
+  },
+  {
+   "commande": "ARP",
+   "role": "Ouvre la liste de l'arpégiateur."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Ouvre les réglages du pattern."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête le séquenceur ; maintenu, l'allume ou l'éteint."
+  },
+  {
+   "commande": "REC",
+   "role": "Enregistre pas à pas, ou en temps réel pendant la lecture."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Déplace la sélection ; dans le séquenceur, déplace le losange."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Change de preset. Sans SAVE, revient à la version enregistrée."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Change l'algorithme FM, ou la valeur sélectionnée."
+  }
+ ],
+ "gestes": [
+  "HOME maintenu + SELECT : change de banque de molettes.",
+  "SEL maintenu + ALGORITHM : avance de dix.",
+  "SEL maintenu + SELECT : déplace un effet dans la liste Effects.",
+  "ENV maintenu une seconde : allume ou éteint l'enveloppe.",
+  "OCT- et OCT+ ensemble : octave 0."
+ ],
+ "modes": [
+  {
+   "nom": "Presets",
+   "texte": "Les presets 001-064 sont FM, 065-080 et 113-128 Virtual Analog, 081-112 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT- trois fois)."
+  },
+  {
+   "nom": "Séquenceur",
+   "texte": "PLAY lance et arrête ; maintenu, il allume ou éteint le séquenceur. REC enregistre pas à pas, ou en temps réel pendant la lecture. SELECT déplace le losange ; SEL maintenu en jouant le garde sur son pas. SEQ ouvre les réglages du pattern, SEL maintenu + PRESETS choisit le pattern."
+  },
+  {
+   "nom": "Import DX7",
+   "texte": "Le bouton Importer un son DX7, sous le FM-1, charge un fichier .syx de Yamaha DX7. Un patch seul remplace le preset affiché sans l'enregistrer (SAVE le garde). Une banque de 32 patches pose d'abord une question à l'écran : ALGORITHM choisit laquelle des quatre banques de presets remplacer. On peut aussi déposer le fichier sur le FM-1 ou l'envoyer en SysEx depuis un logiciel MIDI (section 11.5 du manuel)."
+  }
+ ],
+ "a_savoir": [
+  "Le Bluetooth (BT Mode, BT Peripherals) manque : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.",
+  "Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux."
+ ],
+ "source": {
+  "url": "https://baudgirl.com/work/FM-1+VA/manual",
+  "commit": null
+ },
+ "d_apres_le_code": false
+}
