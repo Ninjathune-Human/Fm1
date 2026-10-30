@@ -37,7 +37,7 @@ def test_native_then_emulated_then_back(page):
     page.set_default_timeout(30000)
     assert use(page, "felucca") is True
     page.evaluate("window.__host.keyDown(12, 't')")
-    assert use(page, "zp12") is True
+    assert use(page, "sloop") is True                                   # (un émulé : zp12 est natif)
     assert page.evaluate("window.__engine().kind") != "natif"
     page.wait_for_timeout(2000)
     assert lit_pixels(page) >= 2000
