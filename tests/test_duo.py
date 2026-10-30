@@ -126,3 +126,17 @@ def test_link_disabled_explains(page):
     page.click(".duo-link", force=True)                                 # aria-disabled : Playwright l'attendrait
     assert page.is_visible(".fs-tip") and "FM-1+VA" in page.inner_text(".fs-tip")
     assert page.evaluate("window.__duo.linked") is False                 # le réglage ne change pas
+
+
+def test_emulated_follows(page):
+    """FM1-A émulé, FM1-B FM-1+VA : B mène, l'émulé reçoit son horloge par sa prise MIDI IN."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function("window.__catalogue && window.__catalogue.length")
+    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'gator'))")
+    a.evaluate("() => { const e = window.__engine(), s = e.send.bind(e); window.__got = []; e.send = (m) => { if (m.type === 'midi') window.__got.push(...m.bytes); return s(m); }; }")
+    page.click(".duo-link")
+    page.wait_for_timeout(600)
+    assert page.evaluate("document.querySelector('.duo-link').textContent").endswith("B → A")
+    assert a.evaluate("window.__got").count(0xF8) >= 10

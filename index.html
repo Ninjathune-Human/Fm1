@@ -124,6 +124,18 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   padding: 0 16px; min-height: 40px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .bar button:hover, .file:hover { border-color: var(--accent); }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+/* MIDI : un bouton à encoche, son voyant ambre quand un message arrive, et sa bulle au-dessus (l'entrée, le canal) */
+.midi { position: relative; }
+#midi-btn .rxdot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); transition: background 80ms; }
+#midi-btn.rx .rxdot { background: #ffb020; transition: none; }
+#midi-btn[aria-expanded="true"] { border-color: var(--accent); }
+.midi-pop { position: absolute; z-index: 40; right: 0; bottom: calc(100% + 12px); width: min(300px, calc(100vw - 32px)); box-sizing: border-box;
+  display: grid; gap: 10px; padding: 14px; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); }
+.midi-pop::after { content: ""; position: absolute; right: 30px; bottom: -7px; width: 12px; height: 12px; background: var(--surface);
+  border: 1px solid var(--rule); border-width: 0 1px 1px 0; transform: rotate(45deg); }
+.midi-pop label { display: grid; gap: 4px; font: 600 0.75rem var(--body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.midi-pop select { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); }
+.midi-pop p { margin: 0; font-size: 0.8125rem; line-height: 1.35; color: var(--muted); }
 /* l'interrupteur marche / arrêt : le symbole et un curseur, menthe quand le FM-1 est allumé */
 #power { padding: 0 12px 0 14px; }
 #power svg { width: 16px; height: 16px; flex: none; }
@@ -229,8 +241,14 @@ html.embed .swatch span { width: 26px; height: 26px; }
 @media (max-width: 760px) { html.embed .picker-k { display: none; } html.embed .deck { flex-wrap: nowrap; } html.embed .bar { flex-wrap: nowrap; } }
 @media (max-width: 620px) { html.embed .swatch { width: 32px; } html.embed .swatch span { width: 22px; height: 22px; } }
 .file .short { display: none; }
-.deck[data-fit] .file .long { display: none; } .deck[data-fit] .file .short { display: inline; }   /* « Importer… » : la ligne reste entière */
-.deck[data-fit="2"] .picker-k { display: none; }
+/* la ligne se resserre par paliers jusqu'à tenir : « Importer… », sans « Firmware », des pastilles plus serrées, des boutons plus étroits */
+.deck[data-fit] .file .long { display: none; } .deck[data-fit] .file .short { display: inline; }
+.deck:is([data-fit="2"], [data-fit="3"], [data-fit="4"], [data-fit="5"]) .picker-k { display: none; }
+.deck:is([data-fit="3"], [data-fit="4"], [data-fit="5"]) .swatches { gap: 0; }
+.deck:is([data-fit="3"], [data-fit="4"]) .swatch { width: 34px; }
+.deck:is([data-fit="4"], [data-fit="5"]) .bar { gap: 6px; }
+.deck:is([data-fit="4"], [data-fit="5"]) :is(#midi-btn, .file, #fw-picker) { padding-inline: 11px; }
+.deck[data-fit="5"] { column-gap: 8px; } .deck[data-fit="5"] .swatch { width: 28px; }
 @media (max-width: 560px) { html.embed .deck { gap: 6px 8px; } html.embed .swatch { width: 28px; } html.embed .bar { gap: 8px; } }
 html.embed .duo-tabs { margin-left: auto; }                              /* FM1-A | FM1-B au milieu de la ligne, en paysage */
 .fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
@@ -318,6 +336,14 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <span id="status" role="status"></span>
       <div class="bar">
         <button id="fw-restart" type="button" hidden>Redémarrer</button>
+        <div class="midi" id="midi-box" hidden>
+          <button id="midi-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="midi-pop" title="L'entrée MIDI et son canal, pour tous les firmwares">MIDI<span class="rxdot" aria-hidden="true"></span><span class="notch" aria-hidden="true"></span></button>
+          <div class="midi-pop" id="midi-pop" role="dialog" aria-label="MIDI" hidden>
+            <label>Entrée<select id="midi-in"><option value="">Toutes</option><option value="-">Aucune</option></select></label>
+            <label>Canal<select id="midi-ch"><option value="0">Tel quel</option></select></label>
+            <p>Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.</p>
+          </div>
+        </div>
         <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">Importer…</span></label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
@@ -333,7 +359,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier, un piano : <kbd data-code="KeyA">A</kbd> <kbd data-code="KeyS">S</kbd> <kbd data-code="KeyD">D</kbd>…<kbd data-code="Quote">'</kbd> les blanches de Do 4 à Fa 5, <kbd data-code="KeyW">W</kbd> <kbd data-code="KeyE">E</kbd> <kbd data-code="KeyT">T</kbd> <kbd data-code="KeyY">Y</kbd> <kbd data-code="KeyU">U</kbd> <kbd data-code="KeyO">O</kbd> <kbd data-code="KeyP">P</kbd> les noires ; OCT− et OCT+ pour les autres.</dd>
           <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>←</kbd><kbd>→</kbd> SELECT, <kbd>↓</kbd><kbd>↑</kbd> PRESETS, <kbd data-code="Comma">,</kbd><kbd data-code="Period">.</kbd> ALGORITHM.</dd>
           <dt>Boutons</dt><dd><kbd data-code="Digit1">1</kbd>…<kbd data-code="Digit0">0</kbd> FX, SEL, ENV, LFO, EDIT, GLO, HOME, SAVE, ARP, SEQ ; <kbd>Espace</kbd> PLAY, <kbd data-code="KeyR">R</kbd> REC, <kbd data-code="KeyZ">Z</kbd> <kbd data-code="KeyX">X</kbd> OCT− et OCT+ ; <kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME.</dd>
-          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif la reçoit aussi, et la suit s'il sait suivre une horloge MIDI. FM1-B prend FM-1+VA ou un firmware natif.</dd>
+          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
         <p>Les presets <span class="range">001–064</span> sont FM, <span class="range">065–080</span> et <span class="range">113–128</span> Virtual Analog, <span class="range">081–112</span> 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT− trois fois).</p>
@@ -1768,7 +1794,7 @@ async function packageBytes(entry) {
 }
 class EmuFirmware {
   constructor(canvas, va) {
-    this.cv = canvas; this.va = va;
+    this.cv = canvas; this.va = va; this.kind = "emu";
     this.on = false; this.idx = 0; this.onTheme = null;
     this.node = null; this.an = null; this.wasm = null; this.mod = null; this.saveStore = null; this.moduleOf = null;
     this.seq = 0; this.requestId = 0; this.running = null; this.entry = null; this.hash = null; this.name = "";
@@ -1784,6 +1810,9 @@ class EmuFirmware {
   get gdirty() { return this.va.gdirty; }
   set gdirty(v) { this.va.gdirty = v; }
   send(m) { if (this.node) this.node.port.postMessage(m); }
+  // le MIDI, par la prise MIDI IN de l'appareil émulé (fm1-emu : l'UART1, à 31 250 bauds) ; l'horloge aussi : un
+  // firmware la suit s'il sait suivre celle de cette prise (Felucca et les siens : CLK sur TRS)
+  midiIn(d) { if (this.running) this.send({ type: "midi", bytes: Array.from(d) }); }
 
   async attach(ac, wasm) {
     if (!this.mod) this.mod = await import("./runtime/persistence.js");
@@ -5721,15 +5750,42 @@ function buildPanel(fw) {
   // MIDI (manual 11): every input and output the browser offers, SysEx included when allowed (DX7 patches);
   // FM-1+VA hears and sends only while it is the engine playing
   va.mi.ok = () => current === va;
+  // ---- MIDI : l'entrée et le canal, pour tous les firmwares (FM-1+VA, natifs, émulés), comme la page de fm1-emu
+  const midiBtn = $("midi-btn"), midiPop = $("midi-pop"), midiInSel = $("midi-in"), midiChSel = $("midi-ch");
+  const keepM = (k, v) => { try { if (v === undefined) return localStorage.getItem(SKEY("fm1.midi." + k)); localStorage.setItem(SKEY("fm1.midi." + k), v); } catch { return null; } };
+  let midiWant = keepM("in") ?? "", midiCh = +(keepM("ch") || 0), midiBlink = 0;   // entrée : "" toutes, "-" aucune, sinon son nom
+  $("midi-box").hidden = !navigator.requestMIDIAccess;
+  for (let c = 1; c <= 16; c++) midiChSel.add(new Option(String(c), String(c)));
+  midiChSel.value = String(midiCh);
+  function midiFill(access) {
+    const names = [...access.inputs.values()].filter((i) => i.state === "connected").map((i) => i.name || "Entrée");
+    if (midiWant && midiWant !== "-" && !names.includes(midiWant)) names.push(midiWant);   // gardée, même débranchée
+    midiInSel.replaceChildren(new Option("Toutes", ""), ...names.map((n) => new Option(n, n)), new Option("Aucune", "-"));
+    midiInSel.value = midiWant;
+  }
+  function midiRoute(port, data) {
+    if (window.__midiActive === false || midiWant === "-" || (midiWant && port.name !== midiWant)) return;
+    let d = data;
+    if (midiCh && d[0] >= 0x80 && d[0] < 0xf0) { d = Uint8Array.from(d); d[0] = (d[0] & 0xf0) | (midiCh - 1); }   // un canal imposé
+    if (d[0] !== 0xf8 && d[0] !== 0xfe) {                // le voyant : ce qui arrive (sans l'horloge ni l'Active Sensing)
+      midiBtn.classList.add("rx"); clearTimeout(midiBlink); midiBlink = setTimeout(() => midiBtn.classList.remove("rx"), 120);
+    }
+    if (current.midiIn) current.midiIn(d);
+  }
+  window.__midiRoute = midiRoute;                        // pour les tests
+  const midiOpen = (on) => { midiPop.hidden = !on; midiBtn.setAttribute("aria-expanded", String(on)); };
+  midiBtn.addEventListener("click", () => midiOpen(midiPop.hidden));
+  document.addEventListener("pointerdown", (e) => { if (!midiPop.hidden && !$("midi-box").contains(e.target)) midiOpen(false); });
+  $("midi-box").addEventListener("keydown", (e) => { if (e.key === "Escape" && !midiPop.hidden) { e.stopPropagation(); midiOpen(false); midiBtn.focus(); } });
+  midiInSel.addEventListener("change", () => { midiWant = midiInSel.value; keepM("in", midiWant); });
+  midiChSel.addEventListener("change", () => { midiCh = +midiChSel.value; keepM("ch", String(midiCh)); });
   function midiConnect() {
     if (!navigator.requestMIDIAccess) return;
     navigator.requestMIDIAccess({ sysex: true }).catch(() => navigator.requestMIDIAccess()).then((access) => {
       const known = new Set();
       const wire = (e) => {
-        for (const i of access.inputs.values()) i.onmidimessage = (m) => {   // au firmware actif (Duo : au FM-1 affiché ou touché)
-          if (window.__midiActive === false) return;
-          if (current === va) va.midiIn(m.data); else if (current.kind === "natif") current.midiIn(m.data);
-        };
+        for (const i of access.inputs.values()) i.onmidimessage = (m) => midiRoute(i, m.data);   // au firmware actif (Duo : au FM-1 affiché ou touché)
+        midiFill(access);
         va.mi.outs = [...access.outputs.values()].filter((o) => o.state === "connected");
         const p = e && e.port, here = p && p.state === "connected";
         if (p && here !== known.has(p.id)) {             // a device arriving or leaving, not a port opening
@@ -5919,7 +5975,16 @@ function buildPanel(fw) {
   }
   // la ligne sous le FM-1 se resserre quand la place manque : « Importer… », puis sans « Firmware »
   const deckRow = box.closest(".deck");
-  new ResizeObserver(([en]) => { const w = en.contentRect.width; if (w > 860) delete deckRow.dataset.fit; else deckRow.dataset.fit = w > 720 ? "1" : "2"; }).observe(deckRow);
+  const wraps = () => { const t = [...deckRow.children].filter((e) => e.offsetParent && e.id !== "status").map((e) => e.offsetTop); return Math.max(...t) - Math.min(...t) > 20; };
+  let fitW = -1;
+  const fit = () => { delete deckRow.dataset.fit; for (let lv = 1; lv <= 5 && wraps(); lv++) deckRow.dataset.fit = String(lv); };
+  new ResizeObserver(([en]) => {
+    const w = Math.round(en.contentRect.width);
+    if (w === fitW) return;                              // (le palier change la hauteur, pas la largeur : pas de boucle)
+    fitW = w; fit();
+  }).observe(deckRow);
+  // un élément qui arrive ou s'en va (FM1-A | FM1-B, le bouton d'import selon le firmware) : la ligne se refait
+  new MutationObserver(fit).observe(deckRow, { childList: true, subtree: true, attributeFilter: ["hidden"] });
   if (FM1_ID) addEventListener("scroll", () => { if (sheet.hidden && (scrollX || scrollY)) scrollTo(0, 0); });   // un cadre du Duo reste en place (clavier, focus)
   picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
   scrim.addEventListener("click", closeSheet);
@@ -6178,7 +6243,7 @@ function buildPanel(fw) {
     linked = !linked; keep("link", linked ? "1" : "0"); tick();
   });
   const engOf = (k) => {
-    try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? (e === w.__fw ? { va: e } : e.kind === "natif" ? { natif: e } : null) : null; } catch { return null; }
+    try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? (e === w.__fw ? { va: e } : e.kind === "natif" ? { natif: e } : e.kind === "emu" ? { emu: e } : null) : null; } catch { return null; }
   };
   const fwOf = (k) => { const e = engOf(k); return e && e.va ? e.va : null; };
   let was = { a: null, b: null };
@@ -6191,11 +6256,11 @@ function buildPanel(fw) {
     linkBtn.querySelector(".dir").textContent = on ? (lead === "a" ? " · A → B" : " · B → A") : "";
     linkBtn.title = lead ? `FM1-${lead.toUpperCase()} mène, FM1-${other.toUpperCase()} suit son horloge` : "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA";
     for (const k of ["a", "b"]) {                     // ce que chacun doit être maintenant
-      const e = E[k] && (E[k].va || E[k].natif), isLead = on && k === lead, isFollow = on && k === other;
+      const e = E[k] && (E[k].va || E[k].natif || E[k].emu), isLead = on && k === lead, isFollow = on && k === other;
       if (was[k] && was[k] !== e && was[k].mi) { was[k].mi.lead = false; was[k].mi.follow = false; was[k].mi.link = null; was[k].sendGlobal(); }
       was[k] = e;
       if (!e || !e.mi) continue;
-      const to = E[other] && (E[other].va || E[other].natif);
+      const to = E[other] && (E[other].va || E[other].natif || E[other].emu);
       if (!!e.mi.lead !== isLead || (isLead && e.mi.linkTo !== to)) {
         e.mi.lead = isLead; e.mi.linkTo = isLead ? to : null;
         e.mi.link = isLead ? (bytes) => { if (to && to.on) to.midiIn(Uint8Array.from(bytes)); } : null;
