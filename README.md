@@ -22,7 +22,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 - **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, écrans, séquenceur et MIDI (par Web MIDI : clavier, contrôleurs, horloge, patches DX7 en SysEx). Ce n'est pas son firmware : FM-1+VA de Baud Girl n'est pas redistribué ici, et la réimplémentation ne reprend aucun code de son firmware.
 - **Duo** (`index.html?duo`) : deux FM-1 dans la même page, FM1-A et FM1-B, chacun avec son firmware et sa mémoire ; en portrait l'un au-dessus de l'autre, en paysage l'un ou l'autre (ou côte à côte sur un grand écran), avec un tempo lié au choix entre deux FM-1+VA.
-- **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `1c8661d`, puis publie le site.
+- **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `93cb7ee`, puis publie le site.
 - **59 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub.
 - Les paquets `.fwsc` sont ceux publiés par leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json)). Chacun a été démarré dans l'émulateur : voir le [rapport de vérification](docs/verification.md).
 
@@ -183,6 +183,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 ## Licences et crédits
 
+- **Ce dépôt** : licence MIT (`LICENSE`), © 2026 Ninjathune-Human, sauf les fichiers ci-dessous, qui reprennent du code sous GPL-3.0 et restent donc sous GPL-3.0 (`LICENSES/GPL-3.0.txt`) :
+  - `index.html`, dont le panneau (dessin et gestes) est adapté de l'[émulateur DUB-1](https://github.com/sbegueria/fm1-dub). Le moteur FM-1+VA qu'elle contient, écrit ici d'après le manuel, est sous MIT, comme sa copie `engine.js` ;
+  - les adaptateurs de `tools/worklets/` écrits d'après le code de leur firmware : `chipbox.js`, `frodhes.js`, `hera.js`, `hortator.js`, `hortator_sim.c`, `ravel.js` (marqués `SPDX-License-Identifier: GPL-3.0-only`).
+- **Polices** : M PLUS Rounded 1c et Barlow Semi Condensed, incluses dans `index.html`, sont sous SIL Open Font License 1.1 (`LICENSES/OFL-1.1.txt`).
 - **fm1-emu** : licence MIT, © 2026 Joakim Eriksson. Ses fichiers d'exécution sont publiés avec leur licence (`runtime/LICENSE-fm1-emu.txt`).
 - **Firmwares** : chacun reste sous la licence de son auteur (GPL-3.0 pour la plupart, MPL-2.0 pour neuf d'entre eux, Apache-2.0 pour le firmware officiel V15). Les textes sont dans `firmwares/licences/`, et la colonne « Source » renvoie au code source exact de chaque paquet.
 - **Catalogue** : établi d'après le [FM-1 Firmware Hub](https://thefirmwarehub.com/) de zvenson.

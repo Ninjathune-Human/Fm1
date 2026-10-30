@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FM1_EMU_COMMIT: 1c8661daa1bbfddbb7d32d927bbaf831343b7d3b
-  RUNTIME_TAG: runtime-1c8661d
+  FM1_EMU_COMMIT: 93cb7ee3f7008b27959ba73073b864e37efd7289
+  RUNTIME_TAG: runtime-93cb7ee
   EMSDK_VERSION: 3.1.64
   NATIF_TAG: natif
 
@@ -144,6 +144,11 @@ jobs:
           name: site-natif
           path: natif.tar.gz
 
+      - uses: actions/upload-artifact@v4       # le cœur compilé, pour la vérification des firmwares émulés
+        with:
+          name: site-runtime
+          path: _site/runtime
+
       - name: Version runtime
         if: github.ref == 'refs/heads/main'    # une branche d'essai ne remplace pas les versions publiées
         env:
@@ -178,6 +183,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: site-natif
+      - uses: actions/download-artifact@v4
+        with:
+          name: site-runtime
+          path: runtime
       - name: Démarrage des firmwares natifs
         run: |
           tar -xzf natif.tar.gz
@@ -187,6 +196,14 @@ jobs:
           python -m pytest -q tests/test_natif.py::test_every_native_boots tests/test_natif.py::test_every_native_reacts tests/test_natif.py::test_pigeon_echantillons tests/test_natif.py::test_sim_gets_midi_in_its_format tests/test_natif.py::test_hortator_midi_and_saves tests/test_natif.py::test_zp12_midi_plays_pads > verif.txt 2>&1 || rc=$?; cat verif.txt
           r=$( { grep -E "^E |passed|failed|rror" verif.txt || tail -5 verif.txt; } | head -30 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
           if [ "$rc" = 0 ]; then echo "::notice title=vérification natifs::$r"; else echo "::error title=vérification natifs::$r"; fi
+          exit "$rc"
+      - name: Firmwares émulés, sur le cœur compilé
+        if: ${{ !cancelled() }}                # (aussi quand un natif a échoué)
+        run: |
+          rc=0
+          python -m pytest -q tests/test_emu.py tests/test_lights.py::test_emulated_play_colours tests/test_lights.py::test_emulated_levels > emu.txt 2>&1 || rc=$?; cat emu.txt
+          r=$( { grep -E "^E |passed|failed|rror" emu.txt || tail -5 emu.txt; } | head -30 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
+          if [ "$rc" = 0 ]; then echo "::notice title=vérification émulés::$r"; else echo "::error title=vérification émulés::$r"; fi
           exit "$rc"
 
   deploy:

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 // HERA (benbadio/hera-fm1, GPL-3.0) dans un AudioWorklet. Sa page fait tourner hera.wasm sur le fil principal
 // (web/hera.js : web_step sur un minuteur, web_audio dans un ScriptProcessor) ; ici, chaque quantum avance l'horloge
 // du firmware puis rend son audio. Il parle au panneau dans le protocole Felucca : load {wasm, sectors, master},

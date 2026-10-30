@@ -71,6 +71,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .cap.lit-red .legend { fill: #ff5246; filter: drop-shadow(0 0 1.5px rgb(255 110 100 / 0.9)); }
 .key.lit .lamp, .key.held .lamp { opacity: 1; }
 .key.lit .bloom, .key.held .bloom { opacity: 0.85; }
+.key.lv .lamp { opacity: var(--lv); transition: none; } .key.lv .bloom { opacity: calc(var(--lv) * 0.85); transition: none; }   /* une animation, image par image */
+.cap.lv .legend-bloom { opacity: calc(var(--lv) * 0.5); transition: none; }
+.cap.lv .legend { fill: color-mix(in srgb, #fffdf6 calc(var(--lv) * 100%), var(--cap, #24302d)); transition: none; }
 .knob { transition: none; }
 @media (prefers-reduced-motion: reduce) { .face, .cap .legend, .cap .legend-bloom, .key .lamp, .key .bloom, summary::after { transition: none; } }
 .start { position: absolute; inset: 0; border-radius: 5.85% / 9.7%; background: rgb(0 0 0 / 0.08); }
@@ -1639,7 +1642,11 @@ function rgb565ToRgba(src, dst) {
   }
 }
 const LIT = 0.25;
-const isLit = (leds, id) => !!leds && leds[id] > LIT;
+// fm1-emu donne la part du temps où chaque LED brille ; la matrice balaie 11 colonnes, une LED allumée ne l'est
+// qu'une colonne sur 11 : ramenée ici à 0..1 (allumée : 1)
+const EMU_COLS = 11;
+const emuLevel = (leds, id) => (leds && id >= 0 ? Math.min(1, leds[id] * EMU_COLS) : 0);
+const isLit = (leds, id) => emuLevel(leds, id) > LIT;
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
 // zones sensibles agrandies : chaque boîte [x, y, w, h] gagne jusqu'à `pad` de chaque côté, sans dépasser
@@ -1929,7 +1936,17 @@ class EmuFirmware {
   keyLit(i) { return isLit(this.leds, noteId(i)); }
   buttonLit(label) { return KEY_IDS[label] !== undefined && isLit(this.leds, KEY_IDS[label]); }
   // la verte de PLAY vient à part (fm1_play_green, ajoutée à fm1-emu par l'action GitHub) ; la rouge est la LED du bouton
-  playLight() { return this.green > LIT ? "green" : isLit(this.leds, KEY_IDS.PLAY) ? "red" : null; }
+  playLight() { return this.green * EMU_COLS > LIT ? "green" : isLit(this.leds, KEY_IDS.PLAY) ? "red" : null; }
+  // une LED entre éteinte et allumée (une animation, une lueur, un fondu) : le panneau dessine alors chaque niveau,
+  // et le garde un instant (une mesure à cheval sur un allumage n'y fait pas basculer le panneau d'une image à l'autre)
+  ledLevels() {
+    const L = this.leds, lv = new Array(41).fill(0);
+    for (const [label, b] of Object.entries(NATIVE_BUTTONS)) lv[b] = emuLevel(L, KEY_IDS[label]);
+    for (let i = 0; i < 27; i++) lv[14 + i] = emuLevel(L, noteId(i));
+    const now = performance.now();
+    if (lv.some((v) => v > 0.04 && v < 0.8)) this.midUntil = now + 300;
+    return now < (this.midUntil || 0) ? lv.map(Math.sqrt) : null;
+  }
   takePatch() { throw new Error("Réservé à FM-1+VA"); }
   askBank() { throw new Error("Réservé à FM-1+VA"); }
 }
@@ -1993,6 +2010,28 @@ const nativeFlash = {                     // la flash gardée de chaque firmware
     return new Promise((ok, ko) => { const t = db.transaction("flash", "readwrite"); t.objectStore("flash").put(sectors, SKEY(id)); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
   },
 };
+// L'animation lumineuse de l'allumage, celle de Felucca 1.1 (Leo Kuroshita, Hügelton Instruments, GPL-3.0 ;
+// firmware/hal/fm1_led_anim.h, Discussion #135) : une lumière douce court sur les touches de gauche à droite, tête
+// vive et traîne qui s'éteint, puis les boutons montent ensemble et retombent. En images de 1,1 ms, 640 en tout (0,70 s).
+// Un niveau : 0..64 (/64 de l'allumé) | 0x80 la lueur dessous ; 0..13 les boutons dans l'ordre du panneau, 14..40 les touches F3..G5.
+const SWEEP = { FRAMES: 640, RUN: 512, H0: -24, H1: 608, BTN0: 352, BTN_PK: 496, GLOW: 0x80,
+  X: [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 28, 29, 30],
+  POW: [1024, 981, 939, 899, 861, 825, 790, 756, 724, 693, 664, 636, 609, 583, 558, 535] };
+function sweepLevel(f, id, glow) {
+  const S = SWEEP, bright = (e) => (e >= 176 ? 0 : S.POW[e & 15] >> (e >> 4));
+  const q = (b, floor) => { const l = (b + 8) >> 4; return l >= 4 ? Math.min(l, 64) | S.GLOW : b >= 20 || floor ? S.GLOW : 0; };
+  if (f >= S.FRAMES) return glow ? S.GLOW : 0;
+  if (id < 14) {
+    if (f < S.BTN0) return 0;
+    const e = f < S.BTN_PK ? 96 - Math.trunc(((f - S.BTN0) * 64) / (S.BTN_PK - S.BTN0)) : 32 + Math.trunc(((f - S.BTN_PK) * 48) / (S.FRAMES - S.BTN_PK));
+    return q(bright(e), glow && f >= S.BTN_PK);
+  }
+  if (id >= 41) return 0;
+  const d = S.H0 + Math.trunc(((S.H1 - S.H0) * Math.min(f, S.RUN)) / S.RUN) - 16 * S.X[id - 14];
+  return q(bright(d >= 0 ? (d * 3) >> 2 : (-d * 5) >> 1), glow && d > 0);
+}
+// un niveau comme l'œil le voit, 0..1 : la part de l'allumé, la lueur au moins 1/30
+const sweepShow = (v) => Math.sqrt(Math.max((v & 0x7f) / 64, v & SWEEP.GLOW ? 1 / 30 : 0));
 class NativeFirmware {
   constructor(canvas, va, entry) {
     this.cv = canvas; this.va = va; this.entry = entry; this.name = entry.nom; this.kind = "natif";
@@ -2107,6 +2146,7 @@ class NativeFirmware {
       else this.leds = m.leds;
     }
     if (m.buttons !== undefined) this.leds = [m.buttons, m.keys, 0, m.dim | 0, 0, 0, 0, 0];
+    if (m.anim !== undefined) this.anim = m.anim;          // famille Felucca : l'animation de l'allumage, niveau par LED
     if (m.load !== undefined) this.load = this.x0x || this.dialect === "choralroot" ? m.load / 100 : m.load;
     const saved = m.sectors || m.store || m.settings;
     if (saved) this.save(saved);
@@ -2217,6 +2257,7 @@ class NativeFirmware {
   }
   keyLit(i) { return !!(this.leds[1] & (1 << i)); }
   buttonLit(label) { const b = NATIVE_BUTTONS[label]; return b !== undefined && !!(this.leds[0] & (1 << b)); }
+  ledLevels() { return this.anim ? Array.from(this.anim, sweepShow) : null; }
   // famille Felucca : bit 14 la verte de PLAY, bit 10 sa rouge ; famille X0X : un seul bit, vert (rouge en enregistrement sur l'appareil)
   playLight() {
     const b = this.leds[0];
@@ -3899,7 +3940,14 @@ class Firmware {
     this.text("FM-1+VA", 120, 118, 600, 40, T.acc, "center");
     this.text("VERSION - 102", 120, 146, 600, 13, T.mute, "center");
   }
-  power() { this.on = true; this.splash = performance.now() + 1100; }
+  power() { this.on = true; this.splash = performance.now() + 1100; this.sweepT0 = performance.now(); }
+  // l'animation lumineuse de l'allumage (sweepLevel), pendant l'écran d'accueil ; puis les LED du firmware
+  ledLevels() {
+    if (this.sweepT0 == null) return null;
+    const f = Math.floor((performance.now() - this.sweepT0) / 1.1);
+    if (f >= SWEEP.FRAMES) { this.sweepT0 = null; return null; }
+    return Array.from({ length: 41 }, (_, id) => sweepShow(sweepLevel(f, id, false)));
+  }
 }
 
 const KNOB_CHOICES = {
@@ -5292,6 +5340,7 @@ function buildPanel(fw) {
     set("sk-dot", "fill", dk(r, 0.8));
     set("sk-shade", "fill", dk(r, 0.72));
     set("sk-cap", "fill", sk.cap);
+    device.style.setProperty("--cap", sk.cap);          // (une animation éclaircit les légendes depuis cette couleur)
     device.dataset.skin = k;
   }
 
@@ -5496,7 +5545,12 @@ function buildPanel(fw) {
 
   // lights, each frame
   function lights() {
+    const lv = fw.ledLevels ? fw.ledLevels() : null;    // une animation : un niveau par LED (0..1), sinon allumée ou non
+    const level = (o, v) => { if (!o.lv) { o.lv = true; o.g.classList.add("lv"); } o.g.style.setProperty("--lv", v.toFixed(3)); };
+    const unlevel = (o) => { if (o.lv) { o.lv = false; o.g.classList.remove("lv"); o.lit = undefined; } };
     for (const b of Object.values(buttons)) {
+      if (lv && NATIVE_BUTTONS[b.label] !== undefined && !(b.label === "PLAY" && fw.playLight())) { level(b, lv[NATIVE_BUTTONS[b.label]]); continue; }   // (PLAY allumé garde sa couleur)
+      unlevel(b);
       const on = b.label === "PLAY" ? fw.playLight() : fw.buttonLit(b.label);   // PLAY : "green", "red" ou null
       if (on !== b.lit) {
         b.lit = on;
@@ -5505,7 +5559,11 @@ function buildPanel(fw) {
         b.g.classList.toggle("lit-red", on === "red");
       }
     }
-    keys.forEach((k, i) => { const on = fw.keyLit(i); if (on !== k.lit) { k.lit = on; k.g.classList.toggle("lit", on); } });
+    keys.forEach((k, i) => {
+      if (lv) return level(k, lv[14 + i]);
+      unlevel(k);
+      const on = fw.keyLit(i); if (on !== k.lit) { k.lit = on; k.g.classList.toggle("lit", on); }
+    });
   }
   return { setBody, setSkin, lights, knobs };
 }

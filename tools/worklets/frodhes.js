@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 // frodhes (leonardoMirabal/frodhes, GPL-3.0) dans un AudioWorklet, d'après sa page (web/app.js, web/web_hal.c) :
 // compilé par tools/worklets/asyncify.sh, mené par la coroutine de coroutine.js.
 import { Coroutine } from "./coroutine.js";

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 // chipbox (pbarilla/chipbox, GPL-3.0) dans un AudioWorklet, d'après sa page (site/play/index.html, tests/host.c) :
 // compilé par tools/worklets/asyncify.sh, mené par la coroutine de coroutine.js.
 import { Coroutine } from "./coroutine.js";
