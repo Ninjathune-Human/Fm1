@@ -204,3 +204,47 @@ def test_sim_gets_midi_in_its_format(page):
     page.evaluate("window.__engine().midiIn(Uint8Array.from([0x80, 60, 0]))")
     assert page.evaluate("window.__sent[0]") == {"t": "midi", "d": [0x90, 60, 110]}
     assert level > 0.001, level
+
+
+def _natif(i):
+    import json, os, pytest
+    from conftest import ROOT
+    try:
+        if i not in json.load(open(os.path.join(ROOT, "natif/manifest.json"))): pytest.skip(f"{i} pas encore natif ici")
+    except FileNotFoundError:
+        pytest.skip("pas de natif/")
+
+
+def _note(page, msg, wait=500):
+    page.evaluate(f"window.__engine().midiIn(Uint8Array.from({msg}))")
+    page.wait_for_timeout(wait)
+    return rms(page)
+
+
+def test_hortator_midi_and_saves(page):
+    """Hortator : une note MIDI (canal 10, 36 la grosse caisse) frappe sa piste ; ses démos, écrites au premier
+    démarrage, reviennent à l'ouverture suivante."""
+    _natif("hortator")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "hortator") is True
+    page.wait_for_timeout(3000)
+    quiet = rms(page)
+    level = _note(page, "[0x99, 36, 120]", 150)
+    assert level > max(0.001, quiet * 2), (quiet, level)
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=8000)
+    power_on(page)
+    assert use(page, "hortator") is True
+    assert len(page.evaluate("Object.keys(window.__engine().lastLoadSectors || {})")) > 0
+
+
+def test_zp12_midi_plays_pads(page):
+    """zp12 : les notes 36 à 67 jouent ses 32 pads, sur tout canal."""
+    _natif("zp12")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "zp12") is True
+    page.wait_for_timeout(3500)
+    quiet = rms(page)
+    level = _note(page, "[0x90, 36, 120]", 150)
+    assert level > max(0.001, quiet * 2), (quiet, level)
