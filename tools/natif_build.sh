@@ -38,8 +38,8 @@ while :; do
   [ "$P" = . ] && break; P=$(dirname "$P")
 done
 
+export HERE                                # (NATIF_AVANT et NATIF_CONSTRUCTION y trouvent nos scripts)
 if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo "natif $ID : préparation en échec (on continue)"; fi
-export HERE
 if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
 else EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; fi; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 

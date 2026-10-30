@@ -422,7 +422,8 @@
    "depot": "zvenson/zp12",
    "commit": "7b8b97586ef87854d1859aad907e5f10ca49898d",
    "script": "sim/build.sh",
-   "zig": "0.17.0"
+   "zig": "0.17.0",
+   "avant": "bash \"$HERE/tools/worklets/zp12_avant.sh\""
   }
  ]
 }
