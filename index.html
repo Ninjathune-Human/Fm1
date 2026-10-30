@@ -73,6 +73,24 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .key.lit .bloom, .key.held .bloom { opacity: 0.85; }
 .key.lv .lamp { opacity: var(--lv); transition: none; } .key.lv .bloom { opacity: calc(var(--lv) * 0.85); transition: none; }   /* une animation, image par image */
 .cap.lv .legend-bloom { opacity: calc(var(--lv) * 0.5); transition: none; }
+/* sous l'allumé (natifs Felucca, web/emu) : la lueur de repos, le niveau moyen des temps DRUM, et ce qui respire,
+   d'éteint à ~60 % de l'allumé en 1,13 s (~30 % avec LEDS DIM LO) ; à l'écran, la part de la LED corrigée du gamma */
+.key.dim:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.3; }
+.key.mid:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.45; }
+.dimlo .key.mid:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.36; }
+.cap.dim:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { fill: color-mix(in srgb, #fffdf6 30%, var(--cap, #24302d)); }
+@keyframes breath-lamp { 0%, 100% { opacity: 0; } 50% { opacity: 0.8; } }
+@keyframes breath-lamp-lo { 0%, 100% { opacity: 0; } 50% { opacity: 0.58; } }
+@keyframes breath-legend { 0%, 100% { fill: var(--cap, #24302d); } 50% { fill: color-mix(in srgb, #fffdf6 80%, var(--cap, #24302d)); } }
+@keyframes breath-legend-lo { 0%, 100% { fill: var(--cap, #24302d); } 50% { fill: color-mix(in srgb, #fffdf6 58%, var(--cap, #24302d)); } }
+.key.breath:not(.lit):not(.held):not(.lv) .lamp { animation: breath-lamp 1.13s ease-in-out infinite; }
+.dimlo .key.breath:not(.lit):not(.held):not(.lv) .lamp { animation-name: breath-lamp-lo; }
+.cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation: breath-legend 1.13s ease-in-out infinite; }
+.dimlo .cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation-name: breath-legend-lo; }
+@media (prefers-reduced-motion: reduce) {
+  .key.breath:not(.lit):not(.held):not(.lv) .lamp { animation: none; opacity: 0.58; }
+  .cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation: none; fill: color-mix(in srgb, #fffdf6 58%, var(--cap, #24302d)); }
+}
 .cap.lv .legend { fill: color-mix(in srgb, #fffdf6 calc(var(--lv) * 100%), var(--cap, #24302d)); transition: none; }
 .knob { transition: none; }
 @media (prefers-reduced-motion: reduce) { .face, .cap .legend, .cap .legend-bloom, .key .lamp, .key .bloom, summary::after { transition: none; } }
@@ -2258,6 +2276,12 @@ class NativeFirmware {
   keyLit(i) { return !!(this.leds[1] & (1 << i)); }
   buttonLit(label) { const b = NATIVE_BUTTONS[label]; return b !== undefined && !!(this.leds[0] & (1 << b)); }
   ledLevels() { return this.anim ? Array.from(this.anim, sweepShow) : null; }
+  // les couches de Felucca sous l'allumé (web/emu : leds [2..7]) : la lueur de repos, son niveau bas (LEDS DIM LO),
+  // ce qui respire (ce qu'on peut presser, #119) et le niveau moyen des temps de la grille DRUM ; X0X : sa lueur
+  ledLayers() {
+    const l = this.leds;
+    return l.length < 4 ? null : { dimB: l[2] | 0, dimK: l[3] | 0, dimLo: !!l[4], brB: l[5] | 0, brK: l[6] | 0, midK: l[7] | 0 };
+  }
   // famille Felucca : bit 14 la verte de PLAY, bit 10 sa rouge ; famille X0X : un seul bit, vert (rouge en enregistrement sur l'appareil)
   playLight() {
     const b = this.leds[0];
@@ -5274,7 +5298,7 @@ function buildPanel(fw) {
     const w = 74, x = cx - w / 2, y = cy - h / 2, rx = w / 2;
     el("rect", { x: x + 6, y: y + 13, width: w - 4, height: h, rx, fill: "#173d33", opacity: 0.65, filter: "url(#fShadowS)", class: "sk-shade" }, base);
     el("rect", { x, y: y + 6, width: w, height: h, rx, fill: "url(#gWall)" }, base);
-    const g = el("g", { class: "key" }, live), face = el("g", { class: "face" }, g);
+    const g = el("g", { class: "key", "data-key": i }, live), face = el("g", { class: "face" }, g);
     el("rect", { x, y, width: w, height: h, rx, fill: "url(#gKey)" }, face);
     el("rect", { x: x + 7, y: y + 7, width: w - 14, height: h - 14, rx: rx - 7, fill: "url(#gKeyDish)" }, face);
     el("rect", { x: x + 2, y: y + 2, width: w - 4, height: h - 4, rx: rx - 2, fill: "none", stroke: "url(#gKeyRim)", "stroke-width": 3.2 }, face);
@@ -5566,6 +5590,19 @@ function buildPanel(fw) {
         b.g.classList.toggle("lit-red", on === "red");
       }
     }
+    // les couches sous l'allumé (natifs Felucca) : lueur, respiration, niveau moyen ; l'allumé et l'animation passent devant
+    const lay = fw.ledLayers ? fw.ledLayers() : null;
+    const layer = (o, dim, br, mid) => {
+      if (dim !== o.dim) { o.dim = dim; o.g.classList.toggle("dim", dim); }
+      if (br !== o.br) { o.br = br; o.g.classList.toggle("breath", br); }
+      if (mid !== o.mid) { o.mid = mid; o.g.classList.toggle("mid", mid); }
+    };
+    if (!!(lay && lay.dimLo) !== !!lights.dimLo) { lights.dimLo = !!(lay && lay.dimLo); document.getElementById("device").classList.toggle("dimlo", lights.dimLo); }
+    for (const b of Object.values(buttons)) {
+      const bit = NATIVE_BUTTONS[b.label];
+      layer(b, !!(lay && bit !== undefined && lay.dimB & (1 << bit)), !!(lay && bit !== undefined && lay.brB & (1 << bit)), false);
+    }
+    keys.forEach((k, i) => layer(k, !!(lay && lay.dimK & (1 << i)), !!(lay && lay.brK & (1 << i)), !!(lay && lay.midK & (1 << i))));
     keys.forEach((k, i) => {
       if (lv) return level(k, lv[14 + i]);
       unlevel(k);

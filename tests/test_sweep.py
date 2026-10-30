@@ -3,7 +3,7 @@ from conftest import power_on
 
 
 def levels(page):
-    return page.evaluate("() => [...document.querySelectorAll('#device .key')].map((k) => k.classList.contains('lv') ? +k.style.getPropertyValue('--lv') : null)")
+    return page.evaluate("() => [...document.querySelectorAll('#device .key')].sort((a, b) => a.dataset.key - b.dataset.key).map((k) => k.classList.contains('lv') ? +k.style.getPropertyValue('--lv') : null)")
 
 
 def test_sweep_math(page):
