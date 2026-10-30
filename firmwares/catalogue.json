@@ -1169,7 +1169,7 @@
   {
    "id": "hortator",
    "nom": "Hortator",
-   "version": "0.25.0",
+   "version": "0.26.0",
    "auteur": "DEADACTIVE",
    "categories": [
     "Boîte à rythmes"
@@ -1177,15 +1177,15 @@
    "licence": "GPL-3.0",
    "beta": true,
    "fichier": "firmwares/hortator.fwsc",
-   "sha256": "1357913314e94d5444b2df5d2dda1b24878fdfe72d74a2bf09b93e1835650d0e",
+   "sha256": "f630e3c573174fe9c0240cdd1fa726d0092601a9f8b5d08d0327968a83e901d5",
    "taille": 609649,
    "depot": "https://github.com/deadactive/hortator",
-   "commit_source": "9aa704bb9129516ec9d86c056dff5995282093b2",
+   "commit_source": "4e40f27232518e34881d02727eb3df3ee9940f03",
    "source_c": 206,
    "description": "A drum machine: eight tracks of drums, a step sequencer, Grids, a pumping compressor, LFOs, resonators and live effects. Play it in the browser first.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/hortator-0.25.0.fwsc",
-   "provenance_paquet": "gh-pages firmware/felucca-drum-0.25.0-9aa704b-ble.fwsc"
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/hortator-0.26.0.fwsc",
+   "provenance_paquet": "gh-pages firmware/felucca-drum-0.26.0-4e40f27-ble.fwsc"
   },
   {
    "id": "hyp1",

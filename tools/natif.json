@@ -1,45 +1,36 @@
 {
  "firmwares": [
   {
-   "id": "386dx",
-   "depot": "seajaysec/386-DX-FM1-KaraokeBot",
-   "commit": "2caa8fbb990a108d1856496b54d83519bb0f2ba8",
-   "script": "tools/build_web.py",
-   "avant": "git clone --branch 1.52.0 --depth 1 https://github.com/espeak-ng/espeak-ng.git vendor/espeak-ng",
-   "construction": "python3 tools/build_web.py",
-   "wasm": "web/emu/app.wasm"
+   "id": "hortator",
+   "depot": "deadactive/hortator",
+   "commit": "4e40f27232518e34881d02727eb3df3ee9940f03",
+   "script": "tools/build_sim.sh",
+   "construction": "bash \"$HERE/tools/worklets/hortator.sh\" build/natif/hortator.wasm",
+   "wasm": "build/natif/hortator.wasm",
+   "worklet": "tools/worklets/hortator.js",
+   "dialecte": "felucca"
   },
   {
-   "id": "berlinan",
-   "depot": "jiripisa/fm1-berlinan",
-   "commit": "afe2d937442fd248d145a34e8907d1c67ee4c3d6",
-   "script": "build.sh",
-   "construction": "sh build.sh --web",
-   "wasm": "app/build/emu/app.wasm"
+   "id": "obervave",
+   "depot": "zvenson/obervave",
+   "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8",
+   "script": "web/sim/build.sh",
+   "zig": "0.17.0"
   },
   {
-   "id": "ctl",
-   "depot": "charlesvestal/fm1-ctl",
-   "commit": "c3c2a7e51f3d14dd7a94f8b3775e838f097ec367",
-   "script": "build.sh",
-   "construction": "sh build.sh --web",
-   "wasm": "app/build/emu/app.wasm"
-  },
-  {
-   "id": "delrio",
-   "depot": "jsopdebeeck/fm1-delrio",
-   "commit": "c604e5659b4505c98788b30982364289a8348178",
-   "script": "build.sh",
-   "construction": "sh build.sh --web",
-   "wasm": "app/build/emu/app.wasm"
-  },
-  {
-   "id": "loom",
-   "depot": "charlesvestal/fm1-loom",
-   "commit": "92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f",
-   "script": "build.sh",
-   "construction": "sh build.sh --web",
-   "wasm": "app/build/emu/app.wasm"
+   "id": "zp12",
+   "depot": "zvenson/zp12",
+   "commit": "7b8b97586ef87854d1859aad907e5f10ca49898d",
+   "script": "sim/build.sh",
+   "zig": "0.17.0",
+   "avant": "bash \"$HERE/tools/worklets/zp12_avant.sh\"",
+   "wasm": "docs/sim/zp12.wasm",
+   "worklet": "tools/worklets/zp12.js",
+   "dialecte": "felucca",
+   "outils": [
+    "web/zp12link.js"
+   ],
+   "echantillons": "web/zp12link.js"
   }
  ]
 }

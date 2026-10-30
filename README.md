@@ -146,7 +146,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Cut-A-Dor | Kid Bunka | GPL-3.0 | [d9799ab](https://github.com/kidbee85-beep/cut-a-dor-release/tree/d9799abb84fef0cc59deb05e2f6a4c41032c32f1) | fonctionne |
 | Del Rio | Jess Del Rio | MPL-2.0 | [c604e56](https://github.com/jsopdebeeck/fm1-delrio/tree/c604e5659b4505c98788b30982364289a8348178) | fonctionne, bêta |
 | FOMAJAM | konsumer | GPL-3.0 | [a80681b](https://github.com/konsumer/fomajam/tree/a80681b6102c731b5b84b2469d5a67d18ee5f5aa) | fonctionne, bêta |
-| Hortator | DEADACTIVE | GPL-3.0 | [9aa704b](https://github.com/deadactive/hortator/tree/9aa704bb9129516ec9d86c056dff5995282093b2) | fonctionne, bêta |
+| Hortator | DEADACTIVE | GPL-3.0 | [4e40f27](https://github.com/deadactive/hortator/tree/4e40f27232518e34881d02727eb3df3ee9940f03) | fonctionne, bêta |
 | PIGEON | The Shrimp Blimp | GPL-3.0 | [48f028f](https://github.com/TheShrimpBlimp/pigeon/tree/48f028f2ee7f6a0140dfef9d9426dc3237f2e466) | fonctionne, bêta, natif |
 | zp12 | zvenson | GPL-3.0 | [7b8b975](https://github.com/zvenson/zp12/tree/7b8b97586ef87854d1859aad907e5f10ca49898d) | fonctionne |
 
