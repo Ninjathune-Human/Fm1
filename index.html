@@ -2226,7 +2226,8 @@ class NativeFirmware {
       reload: () => call("reload"), assign: async (pad, wave) => { if (await call("assign", { a: (pad & 31) | (wave & 63) << 8 })) throw new Error("pad refusé"); } };
     const d = await Z.readDir(link), names = [];
     for (const f of files.slice(0, 16)) {
-      const buf = await ac.decodeAudioData(await f.arrayBuffer()), x = new Float32Array(buf.length);
+      const buf = await ac.decodeAudioData(await f.arrayBuffer()).catch(() => { throw new Error(`« ${f.name} » n'est pas un son que ce navigateur sait lire`); });
+      const x = new Float32Array(buf.length);
       for (let c = 0; c < buf.numberOfChannels; c++) { const ch = buf.getChannelData(c); for (let i = 0; i < x.length; i++) x[i] += ch[i] / buf.numberOfChannels; }
       const s = { y: Z.encode(x, buf.sampleRate), rate: Z.RATES[0], name: f.name.replace(/\.[^.]*$/, "") };
       let slot;
@@ -6043,6 +6044,9 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
+    // les types que l'app Fichiers de l'iPad laisse choisir : les sons par leurs extensions aussi, et
+    // application/octet-stream (sans lui, une extension que l'iPad ne connaît pas, .kob, grise tout)
+    $("samples").accept = (current.entry?.id === "zp12" ? "" : ".kob,") + "audio/*,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream";
     $("samples-box").title = current.entry?.id === "zp12" ? "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad."
       : "Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob.";
   }
