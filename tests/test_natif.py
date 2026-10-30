@@ -170,6 +170,7 @@ def _wav(path, seconds, hz, rate=22050):
 
 def test_pigeon_echantillons(page, tmp_path):
     """pigeon, un échantillonneur livré vide : un son long devient sa chanson, les courts ses pads, et il joue ; la banque revient."""
+    _natif("pigeon")
     power_on(page)
     page.set_default_timeout(30000)
     assert use(page, "pigeon") is True
