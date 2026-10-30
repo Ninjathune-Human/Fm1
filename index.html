@@ -2023,6 +2023,7 @@ class NativeFirmware {
       if (cin) this.send({ type: "midi", pkts: [(cin | (s << 8) | (a << 16) | (b << 24)) >>> 0] });
     } else if (this.x0x) this.send({ type: "midi", b0: s, b1: a, b2: b });
     else if (this.m2k) this.send({ t: "midi", s, a, b });
+    else if (this.dialect === "sim") this.send({ t: "midi", d: [s, a, b] });   // OberVave, ShineOn, S1Vave, zp12 : sim_midi
     else this.send({ type: "midi", data: [s, a, b] });
   }
 
