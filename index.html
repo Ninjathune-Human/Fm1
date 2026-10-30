@@ -312,9 +312,9 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <summary>Jouer</summary>
       <div class="note">
         <dl>
-          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier : <kbd>Q</kbd>…<kbd>I</kbd> et <kbd>A</kbd>…<kbd>K</kbd> pour les blanches, <kbd>1</kbd>…<kbd>0</kbd> <kbd>-</kbd> pour les noires.</dd>
-          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>↑</kbd><kbd>↓</kbd> SELECT, <kbd>←</kbd><kbd>→</kbd> ALGORITHM, <kbd>Pg↑</kbd><kbd>Pg↓</kbd> PRESETS.</dd>
-          <dt>Boutons</dt><dd><kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME, <kbd>Z</kbd> <kbd>X</kbd> OCT− et OCT+.</dd>
+          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier, un piano : <kbd data-code="KeyA">A</kbd> <kbd data-code="KeyS">S</kbd> <kbd data-code="KeyD">D</kbd>…<kbd data-code="Quote">'</kbd> les blanches de Do 4 à Fa 5, <kbd data-code="KeyW">W</kbd> <kbd data-code="KeyE">E</kbd> <kbd data-code="KeyT">T</kbd> <kbd data-code="KeyY">Y</kbd> <kbd data-code="KeyU">U</kbd> <kbd data-code="KeyO">O</kbd> <kbd data-code="KeyP">P</kbd> les noires ; OCT− et OCT+ pour les autres.</dd>
+          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>←</kbd><kbd>→</kbd> SELECT, <kbd>↓</kbd><kbd>↑</kbd> PRESETS, <kbd data-code="Comma">,</kbd><kbd data-code="Period">.</kbd> ALGORITHM.</dd>
+          <dt>Boutons</dt><dd><kbd data-code="Digit1">1</kbd>…<kbd data-code="Digit0">0</kbd> FX, SEL, ENV, LFO, EDIT, GLO, HOME, SAVE, ARP, SEQ ; <kbd>Espace</kbd> PLAY, <kbd data-code="KeyR">R</kbd> REC, <kbd data-code="KeyZ">Z</kbd> <kbd data-code="KeyX">X</kbd> OCT− et OCT+ ; <kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME.</dd>
           <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif la reçoit aussi, et la suit s'il sait suivre une horloge MIDI. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
@@ -5507,16 +5507,23 @@ function buildPanel(fw) {
   knobs.MASTER.angle = -135 + 270 * fw.G.master;
   for (const k of Object.values(knobs)) drawKnob(k);
 
-  // ---------------------------------------------------------------- the computer keyboard, while the FM-1 has the focus
+  // ---------------------------------------------------------------- the computer keyboard
+  // Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
+  // boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
+  // touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
   const KEYMAP = {};
-  "qwertyui".split("").forEach((c, i) => (KEYMAP["Key" + c.toUpperCase()] = { key: WHITE_K[i] }));
-  "asdfghjk".split("").forEach((c, i) => (KEYMAP["Key" + c.toUpperCase()] = { key: WHITE_K[8 + i] }));
-  "1234567890".split("").forEach((c, i) => (KEYMAP["Digit" + c] = { key: BLACK_K[i] }));
-  KEYMAP.Minus = { key: BLACK_K[10] };
-  Object.assign(KEYMAP, { Enter: { btn: "SEL" }, Escape: { btn: "HOME" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" } });
-  const ENCMAP = { ArrowUp: ["SELECT", -1], ArrowDown: ["SELECT", 1], ArrowRight: ["ALGORITHM", 1], ArrowLeft: ["ALGORITHM", -1], PageUp: ["PRESETS", -1], PageDown: ["PRESETS", 1] };
-  device.addEventListener("keydown", (e) => {
+  ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
+    .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
+  ["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
+  Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
+  // l'aide dit les lettres du clavier de la personne (AZERTY : Q Z S E…), là où le navigateur les donne
+  navigator.keyboard?.getLayoutMap?.().then((m) => {
+    for (const k of document.querySelectorAll("kbd[data-code]")) { const c = m.get(k.dataset.code); if (c) k.textContent = c.toUpperCase(); }
+  }).catch(() => {});
+  const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
+  document.addEventListener("keydown", (e) => {
     if (!fw.on || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target !== document.body && !device.contains(e.target)) return;   // un champ, un bouton de la page : les leurs
     const en = ENCMAP[e.code];
     if (en) {
       e.preventDefault();
