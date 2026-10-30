@@ -8,7 +8,7 @@ import vm from "node:vm";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(join(ROOT, "index.html"), "utf8");
 const m = html.match(/<script id="fm1-lib">([\s\S]*?)<\/script>/);
-const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, CATEGORY_ORDER, HIDDEN, groupCatalogue, rankCatalogue, widenBoxes })") : {};
+const lib = m ? vm.runInNewContext(m[1] + "\n;({ KEY_IDS, noteId, ENC_IDS, potAfter, rgb565ToRgba, LIT, isLit, emuLevel, CATEGORY_ORDER, HIDDEN, groupCatalogue, rankCatalogue, widenBoxes })") : {};
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8")).firmwares;
 const plain = (x) => JSON.parse(JSON.stringify(x));   // objets du contexte vm vers ce contexte
 const fold = (s) => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
@@ -42,9 +42,10 @@ test("conversion RGB565 vers RGBA", () => {
 
 test("voyants", () => {
   const leds = new Float32Array(41);
-  leds[12] = 0.3; leds[13] = 0.2;
+  leds[12] = 1 / 11; leds[13] = 0.02;                                   // fm1-emu : allumée, une colonne sur 11
   assert.equal(lib.isLit(leds, 12), true);
   assert.equal(lib.isLit(leds, 13), false);
+  assert.equal(lib.emuLevel(leds, 12), 1);
 });
 
 test("catalogue groupé sans recherche", () => {

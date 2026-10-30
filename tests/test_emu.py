@@ -39,7 +39,7 @@ def test_same_audiocontext(page):
     page.evaluate("window.__ac0 = window.__ac")
     assert use(page, "gator") is True
     assert use(page, "fm1va") is True
-    assert use(page, "zp12") is True
+    assert use(page, "sloop") is True                    # (un émulé : zp12 est natif)
     assert page.evaluate("window.__ac === window.__ac0")
 
 
@@ -72,7 +72,7 @@ def _seed_sector(page, fid):
 def test_saves_kept(page):
     power_on(page)
     assert use(page, "gator") is True
-    assert use(page, "zp12") is True
+    assert use(page, "sloop") is True                    # (un émulé : zp12 est natif)
     _seed_sector(page, "gator")
     assert use(page, "gator") is True
     page.wait_for_timeout(500)
@@ -83,7 +83,7 @@ def test_saves_kept(page):
 def test_factory_reset_emu(page):
     power_on(page)
     assert use(page, "gator") is True
-    assert use(page, "zp12") is True
+    assert use(page, "sloop") is True                    # (un émulé : zp12 est natif)
     _seed_sector(page, "gator")
     assert use(page, "gator") is True
     page.wait_for_timeout(500)
@@ -113,7 +113,7 @@ def test_audio_ahead_default(page):
     page.evaluate("""() => { const e = window.__engine(); window.__sent = [];
       const orig = EmuFirmware.prototype.send;
       EmuFirmware.prototype.send = function (m) { window.__sent.push(m.type === 'boot' ? { type: 'boot', ahead: m.ahead } : { type: m.type }); return orig.call(this, m); }; }""")
-    assert use(page, "zp12") is True
+    assert use(page, "sloop") is True                    # (un émulé : zp12 est natif)
     assert page.evaluate("window.__sent.find((m) => m.type === 'boot').ahead") is None
     page.wait_for_timeout(1500)
     page.evaluate("window.__host.keyDown(12, 't')")
