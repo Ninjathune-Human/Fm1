@@ -326,7 +326,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
             <div id="fw-sections"></div>
             <div id="fw-results" hidden></div>
           </div>
-          <label class="open-local" for="fw-file"><input type="file" id="fw-file" accept=".fwsc">Ouvrir un .fwsc…</label>
+          <label class="open-local" for="fw-file"><input type="file" id="fw-file" accept=".fwsc,application/octet-stream">Ouvrir un .fwsc…</label>
         </div>
       </div>
       <div class="skins" role="radiogroup" aria-labelledby="skin-name">
@@ -345,7 +345,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           </div>
         </div>
         <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">Importer…</span></label>
-        <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept="audio/*,.kob" multiple>Échantillons…</label>
+        <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept=".kob,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream" multiple>Échantillons…</label>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
     </div>
@@ -6044,9 +6044,9 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
-    // les types que l'app Fichiers de l'iPad laisse choisir : les sons par leurs extensions aussi, et
-    // application/octet-stream (sans lui, une extension que l'iPad ne connaît pas, .kob, grise tout)
-    $("samples").accept = (current.entry?.id === "zp12" ? "" : ".kob,") + "audio/*,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream";
+    // sur l'iPad, l'app Fichiers directement : les sons par leurs extensions et application/octet-stream, sans
+    // audio/* (qui propose la photothèque et l'appareil photo) ; .kob pour Pigeon seulement
+    $("samples").accept = (current.entry?.id === "zp12" ? "" : ".kob,") + ".wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream";
     $("samples-box").title = current.entry?.id === "zp12" ? "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad."
       : "Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob.";
   }
