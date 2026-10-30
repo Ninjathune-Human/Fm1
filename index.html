@@ -1642,7 +1642,11 @@ function rgb565ToRgba(src, dst) {
   }
 }
 const LIT = 0.25;
-const isLit = (leds, id) => !!leds && leds[id] > LIT;
+// fm1-emu donne la part du temps où chaque LED brille ; la matrice balaie 11 colonnes, une LED allumée ne l'est
+// qu'une colonne sur 11 : ramenée ici à 0..1 (allumée : 1)
+const EMU_COLS = 11;
+const emuLevel = (leds, id) => (leds && id >= 0 ? Math.min(1, leds[id] * EMU_COLS) : 0);
+const isLit = (leds, id) => emuLevel(leds, id) > LIT;
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
 // zones sensibles agrandies : chaque boîte [x, y, w, h] gagne jusqu'à `pad` de chaque côté, sans dépasser
@@ -1932,7 +1936,17 @@ class EmuFirmware {
   keyLit(i) { return isLit(this.leds, noteId(i)); }
   buttonLit(label) { return KEY_IDS[label] !== undefined && isLit(this.leds, KEY_IDS[label]); }
   // la verte de PLAY vient à part (fm1_play_green, ajoutée à fm1-emu par l'action GitHub) ; la rouge est la LED du bouton
-  playLight() { return this.green > LIT ? "green" : isLit(this.leds, KEY_IDS.PLAY) ? "red" : null; }
+  playLight() { return this.green * EMU_COLS > LIT ? "green" : isLit(this.leds, KEY_IDS.PLAY) ? "red" : null; }
+  // une LED entre éteinte et allumée (une animation, une lueur, un fondu) : le panneau dessine alors chaque niveau,
+  // et le garde un instant (une mesure à cheval sur un allumage n'y fait pas basculer le panneau d'une image à l'autre)
+  ledLevels() {
+    const L = this.leds, lv = new Array(41).fill(0);
+    for (const [label, b] of Object.entries(NATIVE_BUTTONS)) lv[b] = emuLevel(L, KEY_IDS[label]);
+    for (let i = 0; i < 27; i++) lv[14 + i] = emuLevel(L, noteId(i));
+    const now = performance.now();
+    if (lv.some((v) => v > 0.04 && v < 0.8)) this.midUntil = now + 300;
+    return now < (this.midUntil || 0) ? lv.map(Math.sqrt) : null;
+  }
   takePatch() { throw new Error("Réservé à FM-1+VA"); }
   askBank() { throw new Error("Réservé à FM-1+VA"); }
 }
@@ -5535,7 +5549,7 @@ function buildPanel(fw) {
     const level = (o, v) => { if (!o.lv) { o.lv = true; o.g.classList.add("lv"); } o.g.style.setProperty("--lv", v.toFixed(3)); };
     const unlevel = (o) => { if (o.lv) { o.lv = false; o.g.classList.remove("lv"); o.lit = undefined; } };
     for (const b of Object.values(buttons)) {
-      if (lv && NATIVE_BUTTONS[b.label] !== undefined) { level(b, lv[NATIVE_BUTTONS[b.label]]); continue; }
+      if (lv && NATIVE_BUTTONS[b.label] !== undefined && !(b.label === "PLAY" && fw.playLight())) { level(b, lv[NATIVE_BUTTONS[b.label]]); continue; }   // (PLAY allumé garde sa couleur)
       unlevel(b);
       const on = b.label === "PLAY" ? fw.playLight() : fw.buttonLit(b.label);   // PLAY : "green", "red" ou null
       if (on !== b.lit) {

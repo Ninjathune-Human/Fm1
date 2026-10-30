@@ -47,7 +47,7 @@ def test_launch_state(page):
 def test_emulated_play_colours(page):
     power_on(page)
     page.set_default_timeout(30000)
-    assert use(page, "zp12") is True
+    assert use(page, "gator") is True                                   # (un émulé : zp12 est natif maintenant)
     r = page.evaluate("""() => { const e = window.__engine(); e.onHalt = null; const seq = e.running.seq;
       const leds = new Float32Array(41), out = [];
       e.onWorklet({ data: { type: 'frame', seq, leds: leds.slice(), green: 0.9 } }); out.push(e.playLight());
@@ -80,3 +80,18 @@ def test_seq_dark_before_power_on(page):
       setTimeout(() => { clearInterval(t); done(lit); }, 2500); })""")
     assert seen == 0, seen
     assert page.evaluate("document.querySelector('.cap[data-label=\"SEQ\"]').classList.contains('lit')") is False
+
+
+def test_emulated_levels(page):
+    """fm1-emu mesure la part du temps où une LED brille : allumée, une colonne sur 11 de la matrice. Ramenée à 0..1 :
+    1/11 est allumée ; un tiers de cela, une lueur que le panneau dessine à son niveau."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "gator") is True
+    r = page.evaluate("""() => { const e = window.__engine(); e.onHalt = null; const seq = e.running.seq, leds = new Float32Array(41);
+      leds[8] = 1 / 11; e.onWorklet({ data: { type: 'frame', seq, leds: leds.slice(), green: 0 } });
+      const full = [e.buttonLit('HOME'), e.ledLevels()];
+      leds[14] = 1 / 33; e.onWorklet({ data: { type: 'frame', seq, leds: leds.slice(), green: 0 } });
+      const lv = e.ledLevels(); return [full, lv && [lv[6], lv[14]]]; }""")
+    assert r[0] == [True, None]                                          # tout allumé ou éteint : le dessin habituel
+    assert r[1][0] == 1 and abs(r[1][1] - (1 / 3) ** 0.5) < 0.01        # une lueur : son niveau
