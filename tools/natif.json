@@ -1,6 +1,15 @@
 {
  "firmwares": [
   {
+   "id": "386dx",
+   "depot": "seajaysec/386-DX-FM1-KaraokeBot",
+   "commit": "2caa8fbb990a108d1856496b54d83519bb0f2ba8",
+   "script": "tools/build_web.py",
+   "avant": "git clone --branch 1.52.0 --depth 1 https://github.com/espeak-ng/espeak-ng.git vendor/espeak-ng",
+   "construction": "python3 tools/build_web.py",
+   "wasm": "web/emu/app.wasm"
+  },
+  {
    "id": "amb",
    "depot": "charlesvestal/fm1-amb",
    "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395",
@@ -11,6 +20,14 @@
    "depot": "PolarPatch/Arctic-scream-FM-1",
    "commit": "7b5b8b261bf8ea4d5d64485c082636c5b1579854",
    "script": "web/build_web.sh"
+  },
+  {
+   "id": "berlinan",
+   "depot": "jiripisa/fm1-berlinan",
+   "commit": "afe2d937442fd248d145a34e8907d1c67ee4c3d6",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
   },
   {
    "id": "bunker",
@@ -59,6 +76,22 @@
    "depot": "twochannels/CS-1",
    "commit": "5dce8fadd3aa86cf47a3290289ee1c10b7c102e4",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "ctl",
+   "depot": "charlesvestal/fm1-ctl",
+   "commit": "c3c2a7e51f3d14dd7a94f8b3775e838f097ec367",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
+  },
+  {
+   "id": "delrio",
+   "depot": "jsopdebeeck/fm1-delrio",
+   "commit": "c604e5659b4505c98788b30982364289a8348178",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
   },
   {
    "id": "drift",
@@ -224,6 +257,14 @@
    "depot": "juanjiant-bit/JIANT",
    "commit": "c6e7aa189525043806e6b3052dd1f8b3c39c3e33",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "loom",
+   "depot": "charlesvestal/fm1-loom",
+   "commit": "92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
   },
   {
    "id": "loomfm1",
