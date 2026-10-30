@@ -252,3 +252,28 @@ def test_zp12_midi_plays_pads(page):
     quiet = rms(page)
     level = _note(page, "[0x90, 36, 120]", 150)
     assert level > max(0.001, quiet * 2), (quiet, level)
+
+
+def test_zp12_samples(page, tmp_path):
+    """zp12 : deux sons de l'ordinateur sur les pads C1 et C2, comme son éditeur web les met sur l'appareil ; une note
+    MIDI les joue (C1 : la note 52), et ils reviennent à l'ouverture suivante."""
+    _natif("zp12")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "zp12") is True
+    page.wait_for_timeout(3500)
+    assert page.is_visible("#samples-box")
+    _wav(tmp_path / "bip.wav", 0.4, 660); _wav(tmp_path / "boum.wav", 0.6, 110)
+    page.set_input_files("#samples", [str(tmp_path / "bip.wav"), str(tmp_path / "boum.wav")])
+    page.wait_for_function("document.getElementById('status').textContent.startsWith('zp12 : 2 sons')", timeout=30000)
+    assert "C1 à C2" in page.inner_text("#status")
+    page.wait_for_timeout(300)
+    quiet = rms(page)
+    level = _note(page, "[0x90, 52, 120]", 150)
+    assert level > max(0.001, quiet * 2), (quiet, level)
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=8000)
+    power_on(page)
+    assert use(page, "zp12") is True
+    keys = page.evaluate("Object.keys(window.__engine().lastLoadSectors || {}).map(Number)")
+    assert 0xD8000 in keys or 0xD9000 in keys                            # le répertoire
+    assert any(k >= 0xDA000 for k in keys if k not in (0xD8000, 0xD9000))   # les sons, hors de sa réserve

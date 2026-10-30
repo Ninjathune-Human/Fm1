@@ -236,7 +236,7 @@
   {
    "id": "hortator",
    "depot": "deadactive/hortator",
-   "commit": "9aa704bb9129516ec9d86c056dff5995282093b2",
+   "commit": "4e40f27232518e34881d02727eb3df3ee9940f03",
    "script": "tools/build_sim.sh",
    "construction": "bash \"$HERE/tools/worklets/hortator.sh\" build/natif/hortator.wasm",
    "wasm": "build/natif/hortator.wasm",
@@ -464,7 +464,14 @@
    "commit": "7b8b97586ef87854d1859aad907e5f10ca49898d",
    "script": "sim/build.sh",
    "zig": "0.17.0",
-   "avant": "bash \"$HERE/tools/worklets/zp12_avant.sh\""
+   "avant": "bash \"$HERE/tools/worklets/zp12_avant.sh\"",
+   "wasm": "docs/sim/zp12.wasm",
+   "worklet": "tools/worklets/zp12.js",
+   "dialecte": "felucca",
+   "outils": [
+    "web/zp12link.js"
+   ],
+   "echantillons": "web/zp12link.js"
   }
  ]
 }

@@ -2178,6 +2178,11 @@ class NativeFirmware {
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
     if (t === "flash" || t === "store") { this.save(m.data || m.bytes); return; }   // ChoralRoot, sim, mono2k : la mémoire entière
+    if (t === "zp12-done") {                                              // zp12 : réponse à une opération de son lien
+      const w = this.waits && this.waits.get(m.id);
+      if (w) { this.waits.delete(m.id); clearTimeout(w.timer); m.error ? w.ko(new Error(m.error)) : w.ok(m.value); }
+      return;
+    }
     if (t === "bank-loaded" || t === "bank-error") {                      // pigeon : réponse à une banque envoyée
       const w = this.waits && this.waits.get(m.id);
       if (w) { this.waits.delete(m.id); clearTimeout(w.timer); t === "bank-error" ? w.ko(new Error(m.message)) : w.ok(); }
@@ -2201,7 +2206,40 @@ class NativeFirmware {
   // des sons (un long : la chanson, jusqu'à deux ; les courts : les pads, seize au plus) ou une banque .kob deviennent la
   // banque d'échantillons du firmware, préparée par l'outil de sa propre page (natif/<id>/outils/) ; au-delà des 500 Kio
   // du FM-1, la banque passe en mode illimité, comme sa page le propose
+  // une demande au worklet, sa réponse attendue (zp12-done)
+  ask(m) {
+    return new Promise((ok, ko) => {
+      this.waits ||= new Map();
+      const id = this.reqId = (this.reqId || 0) + 1;
+      this.waits.set(id, { ok, ko, timer: setTimeout(() => { this.waits.delete(id); ko(new Error("délai dépassé")); }, 10000) });
+      this.send({ ...m, id });
+    });
+  }
+  // zp12 : des sons sur les pads C1 à D8 (16 au plus), comme son éditeur web les met sur l'appareil (web/zp12link.js :
+  // 12 bits à 26 kHz, normalisés, dans les places libres de sa flash, le répertoire à jour) ; il les garde, EDIT > WAVE
+  // les change de pad
+  async takeZp12(files, ac) {
+    await import(new URL(this.entry.natif + this.entry.natif_echantillons, location.href).href);
+    const Z = window.ZP12Link, call = (op, o = {}) => this.ask({ type: "zp12", op, ...o });
+    const link = { info: { proto: 5, kit: await call("kit") }, hold: async () => {}, reboot: async () => {},
+      erase: (a) => call("erase", { a }), write: (a, data) => call("write", { a, data }), read: (a, n) => call("read", { a, n }),
+      reload: () => call("reload"), assign: async (pad, wave) => { if (await call("assign", { a: (pad & 31) | (wave & 63) << 8 })) throw new Error("pad refusé"); } };
+    const d = await Z.readDir(link), names = [];
+    for (const f of files.slice(0, 16)) {
+      const buf = await ac.decodeAudioData(await f.arrayBuffer()), x = new Float32Array(buf.length);
+      for (let c = 0; c < buf.numberOfChannels; c++) { const ch = buf.getChannelData(c); for (let i = 0; i < x.length; i++) x[i] += ch[i] / buf.numberOfChannels; }
+      const s = { y: Z.encode(x, buf.sampleRate), rate: Z.RATES[0], name: f.name.replace(/\.[^.]*$/, "") };
+      let slot;
+      try { slot = await Z.upload(link, d, s); }
+      catch (err) { if (names.length) break; throw new Error(/room|places/.test(err.message) ? "plus de place dans sa mémoire" : err.message); }
+      await link.assign(16 + names.length, link.info.kit + slot);
+      names.push(Z.cleanName(s.name));
+    }
+    const pad = (i) => "CD"[i >> 3] + ((i & 7) + 1);
+    return `zp12 : ${names.length} son${names.length > 1 ? "s" : ""} sur ${names.length > 1 ? `les pads ${pad(0)} à ${pad(names.length - 1)}` : "le pad C1"} (${names.join(", ")}).`;
+  }
   async takeSamples(files, ac) {
+    if (this.entry.id === "zp12") return this.takeZp12(files, ac);
     let image, what;
     if (files.length === 1 && /\.kob$/i.test(files[0].name)) {
       image = new Uint8Array(await files[0].arrayBuffer()); what = `banque « ${files[0].name} »`;
@@ -6005,6 +6043,8 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
+    $("samples-box").title = current.entry?.id === "zp12" ? "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad."
+      : "Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob.";
   }
   let pickSeq = 0;
   const restartBtn = $("fw-restart");
