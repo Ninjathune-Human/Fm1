@@ -95,3 +95,22 @@ def test_emulated_levels(page):
       const lv = e.ledLevels(); return [full, lv && [lv[6], lv[14]]]; }""")
     assert r[0] == [True, None]                                          # tout allumé ou éteint : le dessin habituel
     assert r[1][0] == 1 and abs(r[1][1] - (1 / 3) ** 0.5) < 0.01        # une lueur : son niveau
+
+
+def test_felucca_layers(page):
+    """Natif Felucca : la lueur de repos, ce qui respire et le niveau moyen des temps DRUM se voient sous l'allumé."""
+    from test_natif import _natif
+    _natif("felucca")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.wait_for_timeout(2500)
+    page.evaluate("""() => { const e = window.__engine(); e.anim = null; e.onWorklet = ((f) => (ev) => { if (!ev.data.mine) return; f.call(e, ev); })(e.onWorklet);
+      e.onWorklet({ data: { mine: 1, type: 'frame', leds: [1 << 0, 1 << 0, 1 << 1, 0b110, 0, 1 << 2, 1 << 3, 1 << 4, 0] } }); }""")
+    page.wait_for_timeout(300)
+    keys = page.evaluate("() => [0, 1, 2, 3, 4].map((i) => document.querySelector(`#device .key[data-key='${i}']`)).map((k) => [k.className.baseVal || k.className, +getComputedStyle(k.querySelector('.lamp')).opacity])")
+    caps = page.evaluate("() => ['FX', 'SEL', 'ENV'].map((l) => document.querySelector(`#device .cap[data-label='${l}']`)?.getAttribute('class'))")
+    assert "lit" in keys[0][0] and keys[0][1] == 1                       # l'allumé passe devant la lueur
+    assert "dim" in keys[1][0] and abs(keys[1][1] - 0.3) < 0.01          # la lueur
+    assert "breath" in keys[3][0] and "mid" in keys[4][0] and abs(keys[4][1] - 0.45) < 0.01
+    assert page.evaluate("getComputedStyle(document.querySelector(`#device .key[data-key='3'] .lamp`)).animationName") == "breath-lamp"

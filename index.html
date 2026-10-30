@@ -73,6 +73,24 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .key.lit .bloom, .key.held .bloom { opacity: 0.85; }
 .key.lv .lamp { opacity: var(--lv); transition: none; } .key.lv .bloom { opacity: calc(var(--lv) * 0.85); transition: none; }   /* une animation, image par image */
 .cap.lv .legend-bloom { opacity: calc(var(--lv) * 0.5); transition: none; }
+/* sous l'allumé (natifs Felucca, web/emu) : la lueur de repos, le niveau moyen des temps DRUM, et ce qui respire,
+   d'éteint à ~60 % de l'allumé en 1,13 s (~30 % avec LEDS DIM LO) ; à l'écran, la part de la LED corrigée du gamma */
+.key.dim:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.3; }
+.key.mid:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.45; }
+.dimlo .key.mid:not(.lit):not(.held):not(.lv) .lamp { opacity: 0.36; }
+.cap.dim:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { fill: color-mix(in srgb, #fffdf6 30%, var(--cap, #24302d)); }
+@keyframes breath-lamp { 0%, 100% { opacity: 0; } 50% { opacity: 0.8; } }
+@keyframes breath-lamp-lo { 0%, 100% { opacity: 0; } 50% { opacity: 0.58; } }
+@keyframes breath-legend { 0%, 100% { fill: var(--cap, #24302d); } 50% { fill: color-mix(in srgb, #fffdf6 80%, var(--cap, #24302d)); } }
+@keyframes breath-legend-lo { 0%, 100% { fill: var(--cap, #24302d); } 50% { fill: color-mix(in srgb, #fffdf6 58%, var(--cap, #24302d)); } }
+.key.breath:not(.lit):not(.held):not(.lv) .lamp { animation: breath-lamp 1.13s ease-in-out infinite; }
+.dimlo .key.breath:not(.lit):not(.held):not(.lv) .lamp { animation-name: breath-lamp-lo; }
+.cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation: breath-legend 1.13s ease-in-out infinite; }
+.dimlo .cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation-name: breath-legend-lo; }
+@media (prefers-reduced-motion: reduce) {
+  .key.breath:not(.lit):not(.held):not(.lv) .lamp { animation: none; opacity: 0.58; }
+  .cap.breath:not(.lit):not(.lit-green):not(.lit-red):not(.lv) .legend { animation: none; fill: color-mix(in srgb, #fffdf6 58%, var(--cap, #24302d)); }
+}
 .cap.lv .legend { fill: color-mix(in srgb, #fffdf6 calc(var(--lv) * 100%), var(--cap, #24302d)); transition: none; }
 .knob { transition: none; }
 @media (prefers-reduced-motion: reduce) { .face, .cap .legend, .cap .legend-bloom, .key .lamp, .key .bloom, summary::after { transition: none; } }
@@ -312,9 +330,9 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <summary>Jouer</summary>
       <div class="note">
         <dl>
-          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier : <kbd>Q</kbd>…<kbd>I</kbd> et <kbd>A</kbd>…<kbd>K</kbd> pour les blanches, <kbd>1</kbd>…<kbd>0</kbd> <kbd>-</kbd> pour les noires.</dd>
-          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>↑</kbd><kbd>↓</kbd> SELECT, <kbd>←</kbd><kbd>→</kbd> ALGORITHM, <kbd>Pg↑</kbd><kbd>Pg↓</kbd> PRESETS.</dd>
-          <dt>Boutons</dt><dd><kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME, <kbd>Z</kbd> <kbd>X</kbd> OCT− et OCT+.</dd>
+          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier, un piano : <kbd data-code="KeyA">A</kbd> <kbd data-code="KeyS">S</kbd> <kbd data-code="KeyD">D</kbd>…<kbd data-code="Quote">'</kbd> les blanches de Do 4 à Fa 5, <kbd data-code="KeyW">W</kbd> <kbd data-code="KeyE">E</kbd> <kbd data-code="KeyT">T</kbd> <kbd data-code="KeyY">Y</kbd> <kbd data-code="KeyU">U</kbd> <kbd data-code="KeyO">O</kbd> <kbd data-code="KeyP">P</kbd> les noires ; OCT− et OCT+ pour les autres.</dd>
+          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>←</kbd><kbd>→</kbd> SELECT, <kbd>↓</kbd><kbd>↑</kbd> PRESETS, <kbd data-code="Comma">,</kbd><kbd data-code="Period">.</kbd> ALGORITHM.</dd>
+          <dt>Boutons</dt><dd><kbd data-code="Digit1">1</kbd>…<kbd data-code="Digit0">0</kbd> FX, SEL, ENV, LFO, EDIT, GLO, HOME, SAVE, ARP, SEQ ; <kbd>Espace</kbd> PLAY, <kbd data-code="KeyR">R</kbd> REC, <kbd data-code="KeyZ">Z</kbd> <kbd data-code="KeyX">X</kbd> OCT− et OCT+ ; <kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME.</dd>
           <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif la reçoit aussi, et la suit s'il sait suivre une horloge MIDI. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
@@ -2258,6 +2276,12 @@ class NativeFirmware {
   keyLit(i) { return !!(this.leds[1] & (1 << i)); }
   buttonLit(label) { const b = NATIVE_BUTTONS[label]; return b !== undefined && !!(this.leds[0] & (1 << b)); }
   ledLevels() { return this.anim ? Array.from(this.anim, sweepShow) : null; }
+  // les couches de Felucca sous l'allumé (web/emu : leds [2..7]) : la lueur de repos, son niveau bas (LEDS DIM LO),
+  // ce qui respire (ce qu'on peut presser, #119) et le niveau moyen des temps de la grille DRUM ; X0X : sa lueur
+  ledLayers() {
+    const l = this.leds;
+    return l.length < 4 ? null : { dimB: l[2] | 0, dimK: l[3] | 0, dimLo: !!l[4], brB: l[5] | 0, brK: l[6] | 0, midK: l[7] | 0 };
+  }
   // famille Felucca : bit 14 la verte de PLAY, bit 10 sa rouge ; famille X0X : un seul bit, vert (rouge en enregistrement sur l'appareil)
   playLight() {
     const b = this.leds[0];
@@ -5274,7 +5298,7 @@ function buildPanel(fw) {
     const w = 74, x = cx - w / 2, y = cy - h / 2, rx = w / 2;
     el("rect", { x: x + 6, y: y + 13, width: w - 4, height: h, rx, fill: "#173d33", opacity: 0.65, filter: "url(#fShadowS)", class: "sk-shade" }, base);
     el("rect", { x, y: y + 6, width: w, height: h, rx, fill: "url(#gWall)" }, base);
-    const g = el("g", { class: "key" }, live), face = el("g", { class: "face" }, g);
+    const g = el("g", { class: "key", "data-key": i }, live), face = el("g", { class: "face" }, g);
     el("rect", { x, y, width: w, height: h, rx, fill: "url(#gKey)" }, face);
     el("rect", { x: x + 7, y: y + 7, width: w - 14, height: h - 14, rx: rx - 7, fill: "url(#gKeyDish)" }, face);
     el("rect", { x: x + 2, y: y + 2, width: w - 4, height: h - 4, rx: rx - 2, fill: "none", stroke: "url(#gKeyRim)", "stroke-width": 3.2 }, face);
@@ -5507,16 +5531,23 @@ function buildPanel(fw) {
   knobs.MASTER.angle = -135 + 270 * fw.G.master;
   for (const k of Object.values(knobs)) drawKnob(k);
 
-  // ---------------------------------------------------------------- the computer keyboard, while the FM-1 has the focus
+  // ---------------------------------------------------------------- the computer keyboard
+  // Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
+  // boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
+  // touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
   const KEYMAP = {};
-  "qwertyui".split("").forEach((c, i) => (KEYMAP["Key" + c.toUpperCase()] = { key: WHITE_K[i] }));
-  "asdfghjk".split("").forEach((c, i) => (KEYMAP["Key" + c.toUpperCase()] = { key: WHITE_K[8 + i] }));
-  "1234567890".split("").forEach((c, i) => (KEYMAP["Digit" + c] = { key: BLACK_K[i] }));
-  KEYMAP.Minus = { key: BLACK_K[10] };
-  Object.assign(KEYMAP, { Enter: { btn: "SEL" }, Escape: { btn: "HOME" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" } });
-  const ENCMAP = { ArrowUp: ["SELECT", -1], ArrowDown: ["SELECT", 1], ArrowRight: ["ALGORITHM", 1], ArrowLeft: ["ALGORITHM", -1], PageUp: ["PRESETS", -1], PageDown: ["PRESETS", 1] };
-  device.addEventListener("keydown", (e) => {
+  ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
+    .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
+  ["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
+  Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
+  // l'aide dit les lettres du clavier de la personne (AZERTY : Q Z S E…), là où le navigateur les donne
+  navigator.keyboard?.getLayoutMap?.().then((m) => {
+    for (const k of document.querySelectorAll("kbd[data-code]")) { const c = m.get(k.dataset.code); if (c) k.textContent = c.toUpperCase(); }
+  }).catch(() => {});
+  const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
+  document.addEventListener("keydown", (e) => {
     if (!fw.on || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target !== document.body && !device.contains(e.target)) return;   // un champ, un bouton de la page : les leurs
     const en = ENCMAP[e.code];
     if (en) {
       e.preventDefault();
@@ -5559,6 +5590,19 @@ function buildPanel(fw) {
         b.g.classList.toggle("lit-red", on === "red");
       }
     }
+    // les couches sous l'allumé (natifs Felucca) : lueur, respiration, niveau moyen ; l'allumé et l'animation passent devant
+    const lay = fw.ledLayers ? fw.ledLayers() : null;
+    const layer = (o, dim, br, mid) => {
+      if (dim !== o.dim) { o.dim = dim; o.g.classList.toggle("dim", dim); }
+      if (br !== o.br) { o.br = br; o.g.classList.toggle("breath", br); }
+      if (mid !== o.mid) { o.mid = mid; o.g.classList.toggle("mid", mid); }
+    };
+    if (!!(lay && lay.dimLo) !== !!lights.dimLo) { lights.dimLo = !!(lay && lay.dimLo); document.getElementById("device").classList.toggle("dimlo", lights.dimLo); }
+    for (const b of Object.values(buttons)) {
+      const bit = NATIVE_BUTTONS[b.label];
+      layer(b, !!(lay && bit !== undefined && lay.dimB & (1 << bit)), !!(lay && bit !== undefined && lay.brB & (1 << bit)), false);
+    }
+    keys.forEach((k, i) => layer(k, !!(lay && lay.dimK & (1 << i)), !!(lay && lay.brK & (1 << i)), !!(lay && lay.midK & (1 << i))));
     keys.forEach((k, i) => {
       if (lv) return level(k, lv[14 + i]);
       unlevel(k);
