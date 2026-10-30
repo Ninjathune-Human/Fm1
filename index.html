@@ -1770,6 +1770,63 @@ function rankCatalogue(entries, query) {
   const near = scored.sort((a, b) => b.matched - a.matched || b.score - a.score || byName(a, b)).slice(0, 12);
   return { items: near.map((s) => s.e), approchants: near.length > 0 };
 }
+// ---------------------------------------------------------------- the computer keyboard
+// Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
+// boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
+// touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
+const KEYMAP = {};
+["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
+  .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
+["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
+Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
+const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
+
+// L'aide dessine ce clavier : le nom des notes (la touche 0 est Fa 3), les lettres de la disposition, la géométrie.
+const keyNoteName = (i) => ["Do", "Do♯", "Ré", "Ré♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"][(i + 5) % 12] + " " + (3 + Math.floor((i + 5) / 12));
+const isAzerty = (lang) => /^fr(-(fr|be))?$/i.test(lang || "");
+const KB_NAMED = { Escape: "Échap", Backspace: "⌫", Tab: "⇥", CapsLock: "⇪", Enter: "Entrée", ShiftLeft: "⇧", ShiftRight: "⇧", Space: "Espace",
+  ArrowLeft: "←", ArrowRight: "→", ArrowUp: "↑", ArrowDown: "↓" };
+const KB_QWERTY = { Backquote: "`", Minus: "-", Equal: "=", BracketLeft: "[", BracketRight: "]", Backslash: "\\", Semicolon: ";", Quote: "'",
+  Comma: ",", Period: ".", Slash: "/" };
+const KB_AZERTY = { KeyQ: "A", KeyA: "Q", KeyW: "Z", KeyZ: "W", KeyM: ",", Semicolon: "M", Quote: "Ù", Comma: ";", Period: ":", Slash: "!",
+  BracketLeft: "^", BracketRight: "$", Backslash: "*", Backquote: "²", Minus: ")", Equal: "=" };
+// la lettre d'une touche : la carte du navigateur (Chrome, Edge), sinon AZERTY en français de France et de Belgique, sinon QWERTY
+function keyLetters(lang, layoutMap) {
+  const az = isAzerty(lang);
+  return (code) => {
+    if (KB_NAMED[code]) return KB_NAMED[code];
+    if (/^Digit\d$/.test(code)) return code.slice(5);
+    const c = layoutMap && layoutMap.get(code);
+    if (c) return c.toUpperCase();
+    if (az && KB_AZERTY[code]) return KB_AZERTY[code];
+    return KB_QWERTY[code] || (/^Key[A-Z]$/.test(code) ? code.slice(3) : code);
+  };
+}
+// les rangées, en unités de touche : [code, largeur] ou [code, largeur, x] quand la touche ne suit pas la précédente
+const KB_ROWS = [
+  [["Escape", 1]],
+  [["Backquote", 1], ..."1234567890".split("").map((d) => ["Digit" + d, 1]), ["Minus", 1], ["Equal", 1], ["Backspace", 2]],
+  [["Tab", 1.5], ..."QWERTYUIOP".split("").map((c) => ["Key" + c, 1]), ["BracketLeft", 1], ["BracketRight", 1], ["Backslash", 1.5]],
+  [["CapsLock", 1.75], ..."ASDFGHJKL".split("").map((c) => ["Key" + c, 1]), ["Semicolon", 1], ["Quote", 1], ["Enter", 2.25]],
+  [["ShiftLeft", 2.25], ..."ZXCVBNM".split("").map((c) => ["Key" + c, 1]), ["Comma", 1], ["Period", 1], ["Slash", 1], ["ShiftRight", 2.75], ["ArrowUp", 1, 16.5]],
+  [["Space", 6.25, 3.75], ["ArrowLeft", 1, 15.5], ["ArrowDown", 1, 16.5], ["ArrowRight", 1, 17.5]],
+];
+// chaque touche : sa place, sa lettre, sa fonction (une note, un bouton, une molette et son sens) et sa famille
+function keyboardModel(letter) {
+  const keys = [];
+  KB_ROWS.forEach((row, y) => {
+    let x = 0;
+    for (const [code, w, at] of row) {
+      if (at !== undefined) x = at;
+      const k = KEYMAP[code], e = ENCMAP[code];
+      const family = k ? (k.key !== undefined ? "note" : "bouton") : e ? "molette" : null;
+      const label = !family ? "" : family === "note" ? keyNoteName(k.key) : family === "bouton" ? k.btn.replace("-", "−") : e[0] + (e[1] < 0 ? " −" : " +");
+      keys.push({ code, x, y, w, letter: letter(code), label, family });
+      x += w;
+    }
+  });
+  return { width: 18.5, height: KB_ROWS.length, keys };
+}
 </script>
 <script id="fm1-emu">
 "use strict";
@@ -5599,20 +5656,11 @@ function buildPanel(fw) {
   knobs.MASTER.angle = -135 + 270 * fw.G.master;
   for (const k of Object.values(knobs)) drawKnob(k);
 
-  // ---------------------------------------------------------------- the computer keyboard
-  // Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
-  // boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
-  // touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
-  const KEYMAP = {};
-  ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
-    .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
-  ["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
-  Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
+  // ---------------------------------------------------------------- the computer keyboard (KEYMAP, ENCMAP : fm1-lib)
   // l'aide dit les lettres du clavier de la personne (AZERTY : Q Z S E…), là où le navigateur les donne
   navigator.keyboard?.getLayoutMap?.().then((m) => {
     for (const k of document.querySelectorAll("kbd[data-code]")) { const c = m.get(k.dataset.code); if (c) k.textContent = c.toUpperCase(); }
   }).catch(() => {});
-  const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
   document.addEventListener("keydown", (e) => {
     if (!fw.on || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.target !== document.body && !device.contains(e.target)) return;   // un champ, un bouton de la page : les leurs
