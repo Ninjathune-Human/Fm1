@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 // Hortator (deadactive/hortator, GPL-3.0) dans un AudioWorklet, d'après sa page (web/sim/engine.js, worklet.js) :
 // son simulateur, compilé par tools/worklets/hortator.sh. sim_render est l'horloge de l'appareil (l'audio par
 // demi-tampon, l'interface toutes les 15 ms). Il parle au panneau dans le protocole Felucca : load {wasm, sectors,

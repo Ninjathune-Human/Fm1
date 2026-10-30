@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 // Ravel (De-Pattern/Ravel_FM1, GPL-3.0) dans un AudioWorklet. Sa page fait tourner ravel.wasm sur le fil principal
 // (web/emu/index.html : rv_run(ms) avance l'appareil de ms millisecondes et rend l'audio qui va avec, dans une file
 // que lit un ScriptProcessor) ; ici, la même file, remplie à chaque quantum. Il parle au panneau dans le protocole

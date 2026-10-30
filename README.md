@@ -183,6 +183,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 ## Licences et crédits
 
+- **Ce dépôt** : licence MIT (`LICENSE`), © 2026 Ninjathune-Human, sauf les fichiers ci-dessous, qui reprennent du code sous GPL-3.0 et restent donc sous GPL-3.0 (`LICENSES/GPL-3.0.txt`) :
+  - `index.html`, dont le panneau (dessin et gestes) est adapté de l'[émulateur DUB-1](https://github.com/sbegueria/fm1-dub). Le moteur FM-1+VA qu'elle contient, écrit ici d'après le manuel, est sous MIT, comme sa copie `engine.js` ;
+  - les adaptateurs de `tools/worklets/` écrits d'après le code de leur firmware : `chipbox.js`, `frodhes.js`, `hera.js`, `hortator.js`, `hortator_sim.c`, `ravel.js` (marqués `SPDX-License-Identifier: GPL-3.0-only`).
+- **Polices** : M PLUS Rounded 1c et Barlow Semi Condensed, incluses dans `index.html`, sont sous SIL Open Font License 1.1 (`LICENSES/OFL-1.1.txt`).
 - **fm1-emu** : licence MIT, © 2026 Joakim Eriksson. Ses fichiers d'exécution sont publiés avec leur licence (`runtime/LICENSE-fm1-emu.txt`).
 - **Firmwares** : chacun reste sous la licence de son auteur (GPL-3.0 pour la plupart, MPL-2.0 pour neuf d'entre eux, Apache-2.0 pour le firmware officiel V15). Les textes sont dans `firmwares/licences/`, et la colonne « Source » renvoie au code source exact de chaque paquet.
 - **Catalogue** : établi d'après le [FM-1 Firmware Hub](https://thefirmwarehub.com/) de zvenson.
