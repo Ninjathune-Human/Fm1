@@ -189,3 +189,18 @@ def test_pigeon_echantillons(page, tmp_path):
     power_on(page)
     assert use(page, "pigeon") is True
     assert page.evaluate("!!(window.__engine().bank && window.__engine().bank.image.length > 4096)")
+
+
+def test_sim_gets_midi_in_its_format(page):
+    """Les firmwares sim (OberVave, zp12…) lisent {t: 'midi', d} : une note MIDI y arrive et sonne."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "obervave") is True
+    page.wait_for_timeout(3000)
+    page.evaluate("() => { const n = window.__engine(), s = n.send.bind(n); window.__sent = []; n.send = (m, t) => { window.__sent.push(m); return s(m, t); }; }")
+    page.evaluate("window.__engine().midiIn(Uint8Array.from([0x90, 60, 110]))")
+    page.wait_for_timeout(500)
+    level = rms(page)
+    page.evaluate("window.__engine().midiIn(Uint8Array.from([0x80, 60, 0]))")
+    assert page.evaluate("window.__sent[0]") == {"t": "midi", "d": [0x90, 60, 110]}
+    assert level > 0.001, level
