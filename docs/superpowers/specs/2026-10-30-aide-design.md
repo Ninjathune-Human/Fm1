@@ -67,7 +67,8 @@ Le dessin a `role="img"` et un `aria-label` qui énumère les raccourcis.
 2. **Commandes** : une liste de définitions, commande → rôle ;
 3. **Gestes** ;
 4. **Modes et écrans** : une rubrique par mode ;
-5. **Manuel complet** : le lien vers la source, et la mention « Rédigée d'après le code du firmware, faute de doc. » quand c'est le cas.
+5. **À savoir**, si la fiche en a ;
+6. **Manuel complet** : le lien vers la source, et la mention « Rédigée d'après le code du firmware, faute de doc. » quand c'est le cas.
 
 **Les cas particuliers :**
 
@@ -93,6 +94,7 @@ Un fichier par firmware, `firmwares/fiches/<id>.json`, plutôt qu'un fichier uni
   ],
   "gestes": ["SEL maintenu + ALGORITHM : …"],
   "modes": [{ "nom": "…", "texte": "…" }],
+  "a_savoir": ["…"],
   "source": { "url": "https://github.com/hugelton/Felucca/blob/<commit>/README.md", "commit": "<commit>" },
   "d_apres_le_code": false
 }
@@ -102,7 +104,7 @@ Un fichier par firmware, `firmwares/fiches/<id>.json`, plutôt qu'un fichier uni
 
 - `commande` est pris dans une liste fermée : les 14 boutons (`OCT-`, `OCT+`, `FX`, `SEL`, `ENV`, `LFO`, `EDIT`, `GLO`, `HOME`, `SAVE`, `ARP`, `SEQ`, `PLAY`, `REC`), les 4 molettes (`MASTER`, `SELECT`, `PRESETS`, `ALGORITHM`), et `Touches`, `Touches blanches`, `Touches noires`.
 - Chaque commande figure une fois au plus, dans l'ordre de cette liste. Un rôle qui change selon le mode le dit dans son texte.
-- `gestes` et `modes` peuvent être vides ; `resume` et `commandes` non.
+- `gestes` et `modes` peuvent être vides ; `resume` et `commandes` non. `a_savoir` est facultatif : ce qui n'est ni commande, ni geste, ni mode (une limite, une différence avec l'appareil), rendu « À savoir ».
 - Pour un firmware du catalogue, `source.commit` vaut le `commit_source` du catalogue, et `source.url` commence par son `depot`. Pour FM-1+VA, `source.url` est le manuel de Baud Girl et `source.commit` vaut `null`.
 - Le texte est du texte brut. La page l'insère par `textContent`, jamais comme du HTML.
 
