@@ -130,8 +130,10 @@ def test_every_native_boots(page):
     for i in ids:
         if use(page, i) is not True or page.evaluate("window.__engine().kind") != "natif":
             bad.append((i, "démarrage")); continue
-        page.wait_for_timeout(1500)
-        if lit_pixels(page) < 500: bad.append((i, "écran"))
+        for _ in range(10):                         # jusqu'à 5 s : un écran de démarrage sombre (386DX) s'allume plus tard
+            page.wait_for_timeout(500)
+            if lit_pixels(page) >= 500: break
+        else: bad.append((i, "écran"))
     assert not bad, bad
 
 
@@ -194,6 +196,7 @@ def test_pigeon_echantillons(page, tmp_path):
 
 def test_sim_gets_midi_in_its_format(page):
     """Les firmwares sim (OberVave, zp12…) lisent {t: 'midi', d} : une note MIDI y arrive et sonne."""
+    _natif("obervave")
     power_on(page)
     page.set_default_timeout(30000)
     assert use(page, "obervave") is True
