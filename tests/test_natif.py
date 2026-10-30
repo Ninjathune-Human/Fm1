@@ -267,7 +267,7 @@ def test_zp12_samples(page, tmp_path):
     page.set_input_files("#samples", [str(tmp_path / "bip.wav"), str(tmp_path / "boum.wav")])
     page.wait_for_function("document.getElementById('status').textContent.startsWith('zp12 : 2 sons')", timeout=30000)
     assert "C1 à C2" in page.inner_text("#status")
-    page.wait_for_timeout(300)
+    page.wait_for_timeout(1500)                                         # (ASSIGN fait entendre le son tout de suite : qu'il finisse)
     quiet = rms(page)
     level = _note(page, "[0x90, 52, 120]", 150)
     assert level > max(0.001, quiet * 2), (quiet, level)
