@@ -1,0 +1,96 @@
+{
+ "id": "ravel",
+ "resume": "Groovebox de huit pistes pour la conception sonore : treize moteurs de synthèse, percussions frappées et 33 boîtes à rythmes d'après la Machinedrum, avec une grille d'influence où chaque piste peut en déclencher, exciter ou moduler une autre.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Descend le clavier d'une octave. Sur SEQ, change de page de pas ; sur les pages à plus de réglages que de potards, passe à la rangée suivante."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Monte le clavier d'une octave. Sur SEQ, change de page de pas ; sur les pages à plus de réglages que de potards, passe à la rangée suivante."
+  },
+  {
+   "commande": "FX",
+   "role": "Bus : delay, space, BED, feedback, master. Maintenu + touches blanches 1 à 8 : punch-ins (boucle, inverse, stutter, freeze, passe-bas, passe-haut, throw, fill)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Section Scale (nommée SCL dans la doc) : tonique, gamme, transposition. Maintenu, une touche règle la tonique."
+  },
+  {
+   "commande": "ENV",
+   "role": "Articulation : début, tenue et fin de la note, FILTER ENV, enveloppes de pas."
+  },
+  {
+   "commande": "LFO",
+   "role": "Modulation : matrice, deux LFO, dust, macros. Maintenu + KNOB 1 à 4 : les macros 1 à 4."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Le son de la piste : moteur, hauteur, filtre, mix, envois."
+  },
+  {
+   "commande": "GLO",
+   "role": "Morceau : mixeurs, scènes, arrangement, horloge. Maintenu + touches blanches 1 à 8 / 9 à 16 : mute / solo ; + touche noire 1 : tempo par tapotement."
+  },
+  {
+   "commande": "HOME",
+   "role": "Les huit pistes d'un coup d'oeil et la grille d'influence."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Projets et sons. Maintenu + une touche blanche : range la scène 1 à 16."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpégiateur de la piste : mode, vitesse, octaves, maintien."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Pas, tempo, graphe. Maintenu : les touches blanches deviennent les pas, depuis n'importe quelle page."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête le séquenceur."
+  },
+  {
+   "commande": "REC",
+   "role": "Arme l'enregistrement sur la piste courante ; puis PLAY. Les notes jouées et les potards tournés s'écrivent dans les pas."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume de sortie."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Page suivante (à droite) ou précédente (à gauche) dans la section."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Parcourt la liste de la page : sons, patterns sur SEQ, scènes sur SONG, emplacements sur SAVE."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit la piste T1 à T8 ; les touches jouent cette piste."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent la piste courante, ou servent de pas, de scènes ou d'interrupteurs selon la page et ce qu'on maintient."
+  }
+ ],
+ "gestes": [
+  "Un appui court sur un bouton de section ouvre sa page ; le maintenir en utilisant touches et potards en fait une couche (SEQ maintenu : pas ; LFO maintenu : macros ; FX maintenu : punch-ins), et relâcher ne change pas la page.",
+  "Enregistrer : toucher REC, puis PLAY ; sur les pages SEQ les touches jouent alors des notes, SEQ maintenu les remet en pas."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Chaque effet démarre à zéro : un nouveau projet n'envoie rien dans les bus.",
+  "Le T8 peut devenir le compresseur de bus (HOME, TRACKS, KIND = COMP)."
+ ],
+ "source": {
+  "url": "https://github.com/De-Pattern/Ravel_FM1/blob/6a7696d75ae4ffaeff21827f973abf2b93771326/README.md",
+  "commit": "6a7696d75ae4ffaeff21827f973abf2b93771326"
+ },
+ "d_apres_le_code": false
+}

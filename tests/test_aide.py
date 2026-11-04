@@ -125,9 +125,19 @@ def test_fiche_local(page):
     page.wait_for_function("document.getElementById('fiche').textContent.includes('Pas de fiche pour ce firmware.')")
 
 
-def test_fiche_indisponible(page):
+def test_fiche_absente(page):
     stub_core(page)
     fake(page, "amb", status=404)
+    page.goto(page.base + "index.html")
+    open_fiche(page)
+    page.click("#fw-picker")
+    click_row(page, "amb")
+    page.wait_for_function("document.getElementById('fiche').textContent.includes('Pas de fiche pour ce firmware pour')")
+
+
+def test_fiche_indisponible(page):
+    stub_core(page)
+    fake(page, "amb", status=500)
     page.goto(page.base + "index.html")
     open_fiche(page)
     page.click("#fw-picker")

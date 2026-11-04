@@ -6020,10 +6020,11 @@ function buildPanel(fw) {
     ficheMeta.textContent = "";
     if (id === "local") { ficheMessage("Pas de fiche pour ce firmware."); return; }
     if (!ficheDetails.open) return;
-    if (!fiches.has(id)) fiches.set(id, fetch(`firmwares/fiches/${id}.json`).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }));
+    if (!fiches.has(id)) fiches.set(id, fetch(`firmwares/fiches/${id}.json`).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); }));
     let x;
     try { x = await fiches.get(id); } catch { fiches.delete(id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
     if (my !== ficheSeq) return;
+    if (!x) { ficheMessage("Pas de fiche pour ce firmware pour l'instant."); return; }
     renderFiche(x);
     if (id === "fm1va") ficheMeta.textContent = "Réimplémentation d'après Baud Girl · 102 · GPL-3.0";
     else {

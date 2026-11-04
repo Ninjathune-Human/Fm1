@@ -1,0 +1,92 @@
+{
+ "id": "hortator",
+ "resume": "Boîte à rythmes de huit pistes avec séquenceur pas à pas jusqu'à 64 pas, Grids, compresseur, deux LFO par piste, résonateurs et effets en direct. Les touches blanches sont les pas ; une version bêta.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Banque précédente des pas sur SEQ ; avec SEL actif, octave de -2 à +2."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Banque suivante des pas sur SEQ ; maintenu avec un pas, son accent ; avec SEL actif, octave de -2 à +2."
+  },
+  {
+   "commande": "FX",
+   "role": "FX, SLICER, RESON, delay, reverb, chorus. Maintenu : PERFORM (effets de jeu sur les touches noires, mutes sur les touches blanches)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Mode KEYS : les touches jouent la piste choisie (le bouton est étiqueté SCL sur l'appareil)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Bascule STEPS / TRACKS : en STEPS, les touches blanches sont les pas de la piste, quelle que soit la page."
+  },
+  {
+   "commande": "LFO",
+   "role": "Les deux LFO de la piste (LFO 1 sur KNOB 1-2, LFO 2 sur KNOB 3-4), puis DEST."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Le son de la piste choisie : modèle et ses réglages."
+  },
+  {
+   "commande": "GLO",
+   "role": "Appui court : réglages globaux. Maintenu : l'écran MUTE."
+  },
+  {
+   "commande": "HOME",
+   "role": "Bascule entre TRACKS (niveaux, longueurs, panoramiques) et HOME ; maintenu : le menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Appui court : projets (sauver, charger, nommer). Maintenu : la carte des cues."
+  },
+  {
+   "commande": "ARP",
+   "role": "Grids, le générateur de patterns."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Les pas sur les touches blanches (appui court : allume ou éteint), puis PATTERN, MOTION et SONG."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête la lecture ; l'enregistrement armé ne démarre qu'avec PLAY."
+  },
+  {
+   "commande": "REC",
+   "role": "Sur TRACKS : arme la piste choisie. Ailleurs : REC ALL, toutes les pistes armées pour jouer la batterie en direct."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tourne les pages d'une section ; sur TRACKS, règle le tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Charge le preset suivant ou précédent sur la piste choisie ; EDIT maintenu ouvre la liste."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit la piste, partout."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Les pas de la piste (de 16 en 16 par banque) ; sur HOME ou TRACKS, elles jouent les huit pistes."
+  }
+ ],
+ "gestes": [
+  "FX maintenu : PERFORM, avec des filtres et des effets en direct.",
+  "GLO maintenu : écran MUTE, une touche blanche par piste."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Version bêta, peu testée sur du vrai matériel.",
+  "Quatre emplacements de projet, A à D ; le dernier sauvé se charge à l'allumage."
+ ],
+ "source": {
+  "url": "https://github.com/deadactive/hortator/blob/4e40f27232518e34881d02727eb3df3ee9940f03/README.md",
+  "commit": "4e40f27232518e34881d02727eb3df3ee9940f03"
+ },
+ "d_apres_le_code": false
+}

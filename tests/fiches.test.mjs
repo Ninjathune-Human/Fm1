@@ -41,3 +41,10 @@ test("chaque fiche suit le format", () => {
     assert.ok([`${e.depot}/blob/${e.commit_source}/`, `${e.depot}/tree/${e.commit_source}/`].some((p) => x.source.url.startsWith(p)), `${id} : url`);
   }
 });
+
+test("chaque firmware optimisé (natif) a sa fiche, FM-1+VA aussi", () => {
+  const natifs = JSON.parse(readFileSync(join(ROOT, "tools/natif.json"), "utf8")).firmwares.map((f) => f.id);
+  const ids = new Set(files.map((f) => f.replace(/\.json$/, "")));
+  const manquantes = [...natifs, "fm1va"].filter((id) => !ids.has(id));
+  assert.deepEqual(manquantes, []);
+});
