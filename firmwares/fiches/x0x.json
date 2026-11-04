@@ -1,0 +1,96 @@
+{
+ "id": "x0x",
+ "resume": "X0X fait du FM-1 une groovebox : une 909, une 808, deux 303 avec générateur de lignes acid et un lecteur de breakbeat, tous ensemble, chacun avec son pattern. On peut chaîner les patterns en chanson et enregistrer les mouvements de boutons.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Les pas par 16 ; sur HOME et SONG, patterns 1 à 16 ; au clavier 303, l'octave ; sur TB-3PO, mute la ligne."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Les pas par 16 ; sur HOME et SONG, patterns 17 à 32 ; au clavier 303, l'octave ; sur TB-3PO, écrit une nouvelle ligne."
+  },
+  {
+   "commande": "FX",
+   "role": "La reverb et le delay."
+  },
+  {
+   "commande": "SEL",
+   "role": "Tout l'écran en liste ; dans une question, oui."
+  },
+  {
+   "commande": "ENV",
+   "role": "Maintenu en appuyant sur des touches : un accent."
+  },
+  {
+   "commande": "LFO",
+   "role": "Le mixer et le master. Maintenu en appuyant sur des touches : un slide."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Le son de la part choisie."
+  },
+  {
+   "commande": "GLO",
+   "role": "Les réglages."
+  },
+  {
+   "commande": "HOME",
+   "role": "Le pattern : les cinq parts, quel pattern, les mutes ; encore, la chanson. Dans une liste, retour."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Sauve tout. Maintenu, copie le pattern ; une touche blanche le colle."
+  },
+  {
+   "commande": "ARP",
+   "role": "TB-3PO, le générateur de lignes 303 (sur une 303)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Les pas de la part choisie, avec LENGTH et RATE."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête."
+  },
+  {
+   "commande": "REC",
+   "role": "Enregistre : coups de batterie, notes de 303, mouvements de boutons, chanson. Sur une 303, les touches deviennent un clavier."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Page précédente ou suivante ; dans une liste, déplace."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Pattern suivant : de la part sur son écran, de toutes les parts sur HOME."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit la part : 909, 808, 303A, 303B ou BREAK."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Les pas ; sur HOME, les patterns."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Les pistes de batterie ou les tranches du break ; sur HOME, elles coupent les parts."
+  }
+ ],
+ "gestes": [
+  "HOME maintenu + REC : annule ; + PLAY : rétablit ; + SELECT : tempo.",
+  "SAVE maintenu : copie le pattern, puis une touche blanche le colle."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "X0X est en bêta : un pattern très chargé peut pousser le FM-1 à sa limite ; X0X sacrifie alors un peu de qualité sonore pour continuer à jouer.",
+  "Aucun break enregistré n'est fourni, seulement deux boucles jouées par sa 909."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-x0x/blob/27f6fac7e07ce97b5de158b45aec99f59a9e23fd/docs/MANUAL.md",
+  "commit": "27f6fac7e07ce97b5de158b45aec99f59a9e23fd"
+ },
+ "d_apres_le_code": false
+}

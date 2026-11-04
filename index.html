@@ -224,6 +224,30 @@ details[open] summary::after { transform: rotate(-135deg) translate(-2px, -1px);
 .note b { color: var(--ink); font-weight: 600; }
 kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 5px; padding: 0 5px; }
 .range { font-variant-numeric: tabular-nums; }
+/* Raccourcis clavier : le clavier dessiné, sur toute la largeur quand le volet est ouvert */
+#aide-clavier[open] { grid-column: 1 / -1; }
+.clavier-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+#clavier { display: block; width: 100%; min-width: 760px; height: auto; }
+#clavier rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+#clavier [data-family=""] { opacity: 0.45; }
+#clavier [data-family="note"] rect, .legende .l-note::before { fill: color-mix(in srgb, var(--accent) 20%, var(--surface)); stroke: color-mix(in srgb, var(--accent) 60%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 20%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 60%, var(--surface)); }
+#clavier [data-family="bouton"] rect, .legende .l-bouton::before { stroke: color-mix(in srgb, var(--ink) 55%, var(--surface)); border-color: color-mix(in srgb, var(--ink) 55%, var(--surface)); }
+#clavier [data-family="molette"] rect, .legende .l-molette::before { fill: color-mix(in srgb, var(--muted) 16%, var(--surface)); stroke: color-mix(in srgb, var(--muted) 60%, var(--surface));
+  background: color-mix(in srgb, var(--muted) 16%, var(--surface)); border-color: color-mix(in srgb, var(--muted) 60%, var(--surface)); }
+#clavier .lettre { font: 500 13px var(--mono); fill: var(--muted); }
+#clavier .fonction { font-family: "Barlow Semi Condensed", var(--body); font-weight: 600; fill: var(--ink); }
+#fiche { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+#fiche h3 { margin: 6px 0 0; font: 600 0.9375rem var(--body); color: var(--ink); }
+#fiche p, #fiche ul, #fiche dl { margin: 0; }
+#fiche ul { padding-left: 1.1rem; display: grid; gap: 6px; }
+#fiche dl { display: grid; grid-template-columns: fit-content(45%) minmax(0, 1fr); gap: 6px 14px; }
+#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: normal; overflow-wrap: anywhere; }
+#fiche dd { margin: 0; min-width: 0; }
+.fiche-meta { min-height: 0; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
+.legende span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 7px; vertical-align: -1px; border-radius: 3px;
+  border: 1.5px solid var(--rule); background: var(--surface); }
 
 /* Duo : le lien vers deux FM-1, chaque FM-1 dans son cadre, et la page qui les tient */
 html.embed body { height: 100dvh; box-sizing: border-box; padding: 6px max(10px, env(safe-area-inset-left, 0px)) 6px; overflow: hidden; }
@@ -352,40 +376,40 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
   </section>
 
   <section class="notes" aria-label="Mode d'emploi">
-    <details>
-      <summary>Jouer</summary>
+    <details id="aide-manuel">
+      <summary>Manuel d'utilisation</summary>
       <div class="note">
         <dl>
-          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Au clavier, un piano : <kbd data-code="KeyA">A</kbd> <kbd data-code="KeyS">S</kbd> <kbd data-code="KeyD">D</kbd>…<kbd data-code="Quote">'</kbd> les blanches de Do 4 à Fa 5, <kbd data-code="KeyW">W</kbd> <kbd data-code="KeyE">E</kbd> <kbd data-code="KeyT">T</kbd> <kbd data-code="KeyY">Y</kbd> <kbd data-code="KeyU">U</kbd> <kbd data-code="KeyO">O</kbd> <kbd data-code="KeyP">P</kbd> les noires ; OCT− et OCT+ pour les autres.</dd>
-          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité. <kbd>←</kbd><kbd>→</kbd> SELECT, <kbd>↓</kbd><kbd>↑</kbd> PRESETS, <kbd data-code="Comma">,</kbd><kbd data-code="Period">.</kbd> ALGORITHM.</dd>
-          <dt>Boutons</dt><dd><kbd data-code="Digit1">1</kbd>…<kbd data-code="Digit0">0</kbd> FX, SEL, ENV, LFO, EDIT, GLO, HOME, SAVE, ARP, SEQ ; <kbd>Espace</kbd> PLAY, <kbd data-code="KeyR">R</kbd> REC, <kbd data-code="KeyZ">Z</kbd> <kbd data-code="KeyX">X</kbd> OCT− et OCT+ ; <kbd>Entrée</kbd> SEL, <kbd>Échap</kbd> HOME.</dd>
-          <dt>Duo</dt><dd>Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.</dd>
+          <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
+          <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.</dd>
+          <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.</dd>
+          <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
+          <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.</dd>
+          <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
+          <dt>Plein écran</dt><dd>Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.</dd>
+          <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe.</dd>
+          <dt>Crédits et licences</dt><dd>FM-1+VA n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page. Les firmwares émulés tournent sur le cœur <a href="https://github.com/joakimeriksson/fm1-emu" target="_blank" rel="noopener">fm1-emu</a> de Joakim Eriksson, sous licence MIT. Chaque firmware garde sa licence, rappelée dans le volet de ses fonctions ; leurs textes sont dans le dossier <a href="https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences" target="_blank" rel="noopener">firmwares/licences</a> du dépôt.</dd>
+        </dl>
+      </div>
+    </details>
+    <details id="aide-clavier">
+      <summary>Raccourcis clavier</summary>
+      <div class="note">
+        <div class="clavier-scroll"><svg id="clavier" role="img"></svg></div>
+        <p class="legende"><span class="l-note">Notes</span><span class="l-bouton">Boutons</span><span class="l-molette">Molettes</span></p>
+        <dl>
+          <dt>Clavier</dt><dd>Il joue dès que la page a le focus, FM-1 allumé ; un champ ou un bouton de la page garde ses propres touches. C'est la place des touches qui compte : le piano reste un piano en AZERTY.</dd>
+          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois.</dd>
+          <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité, à la souris comme au clavier.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
-        <p>Les presets <span class="range">001–064</span> sont FM, <span class="range">065–080</span> et <span class="range">113–128</span> Virtual Analog, <span class="range">081–112</span> 8-Bit. Sur un preset 8-Bit, la batterie est trois octaves plus bas (OCT− trois fois).</p>
       </div>
     </details>
-    <details>
-      <summary>Gestes du firmware</summary>
+    <details id="aide-fiche">
+      <summary><span>Fonctions de <span id="fiche-nom">FM-1+VA</span></span></summary>
       <div class="note">
-        <ul>
-          <li><b>EDIT</b>, <b>FX</b>, <b>ENV</b>, <b>LFO</b>, <b>GLO</b>, <b>ARP</b> ouvrent leurs listes ; SEL entre, HOME revient.</li>
-          <li><b>HOME</b> sur l'écran d'accueil : les banques de molettes. HOME maintenu + SELECT change de banque, HOME maintenu + une molette change ce qu'elle joue.</li>
-          <li><b>SEL</b> maintenu + ALGORITHM avance de dix ; SEL maintenu + SELECT déplace un effet dans la liste Effects.</li>
-          <li><b>ENV</b> maintenu une seconde allume ou éteint l'enveloppe. OCT− et OCT+ ensemble : octave 0.</li>
-          <li><b>SAVE</b> garde le preset, les réglages et les 16 patterns dans ce navigateur. Sans SAVE, PRESETS revient à la version enregistrée.</li>
-          <li><b>Séquenceur</b> : PLAY lance et arrête (maintenu : séquenceur allumé ou éteint), REC enregistre pas à pas, ou en temps réel pendant la lecture. SELECT déplace le losange ; SEL maintenu en jouant le garde sur son pas. SEQ ouvre les réglages du pattern, SEL maintenu + PRESETS choisit le pattern.</li>
-        </ul>
-      </div>
-    </details>
-    <details>
-      <summary>Ce qui manque encore</summary>
-      <div class="note">
-        <ul>
-          <li>Le Bluetooth (BT Mode, BT Peripherals) : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.</li>
-          <li>Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux.</li>
-        </ul>
-        <p>Ce n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page.</p>
+        <p class="fiche-meta" id="fiche-meta"></p>
+        <div id="fiche"></div>
       </div>
     </details>
   </section>
@@ -1769,6 +1793,63 @@ function rankCatalogue(entries, query) {
   if (exact.length) return { items: exact.map((s) => s.e), approchants: false };
   const near = scored.sort((a, b) => b.matched - a.matched || b.score - a.score || byName(a, b)).slice(0, 12);
   return { items: near.map((s) => s.e), approchants: near.length > 0 };
+}
+// ---------------------------------------------------------------- the computer keyboard
+// Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
+// boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
+// touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
+const KEYMAP = {};
+["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
+  .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
+["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
+Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
+const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
+
+// L'aide dessine ce clavier : le nom des notes (la touche 0 est Fa 3), les lettres de la disposition, la géométrie.
+const keyNoteName = (i) => ["Do", "Do♯", "Ré", "Ré♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"][(i + 5) % 12] + " " + (3 + Math.floor((i + 5) / 12));
+const isAzerty = (lang) => /^fr(-(fr|be))?$/i.test(lang || "");
+const KB_NAMED = { Escape: "Échap", Backspace: "⌫", Tab: "⇥", CapsLock: "⇪", Enter: "Entrée", ShiftLeft: "⇧", ShiftRight: "⇧", Space: "Espace",
+  ArrowLeft: "←", ArrowRight: "→", ArrowUp: "↑", ArrowDown: "↓" };
+const KB_QWERTY = { Backquote: "`", Minus: "-", Equal: "=", BracketLeft: "[", BracketRight: "]", Backslash: "\\", Semicolon: ";", Quote: "'",
+  Comma: ",", Period: ".", Slash: "/" };
+const KB_AZERTY = { KeyQ: "A", KeyA: "Q", KeyW: "Z", KeyZ: "W", KeyM: ",", Semicolon: "M", Quote: "Ù", Comma: ";", Period: ":", Slash: "!",
+  BracketLeft: "^", BracketRight: "$", Backslash: "*", Backquote: "²", Minus: ")", Equal: "=" };
+// la lettre d'une touche : la carte du navigateur (Chrome, Edge), sinon AZERTY en français de France et de Belgique, sinon QWERTY
+function keyLetters(lang, layoutMap) {
+  const az = isAzerty(lang);
+  return (code) => {
+    if (KB_NAMED[code]) return KB_NAMED[code];
+    if (/^Digit\d$/.test(code)) return code.slice(5);
+    const c = layoutMap && layoutMap.get(code);
+    if (c) return c.toUpperCase();
+    if (az && KB_AZERTY[code]) return KB_AZERTY[code];
+    return KB_QWERTY[code] || (/^Key[A-Z]$/.test(code) ? code.slice(3) : code);
+  };
+}
+// les rangées, en unités de touche : [code, largeur] ou [code, largeur, x] quand la touche ne suit pas la précédente
+const KB_ROWS = [
+  [["Escape", 1]],
+  [["Backquote", 1], ..."1234567890".split("").map((d) => ["Digit" + d, 1]), ["Minus", 1], ["Equal", 1], ["Backspace", 2]],
+  [["Tab", 1.5], ..."QWERTYUIOP".split("").map((c) => ["Key" + c, 1]), ["BracketLeft", 1], ["BracketRight", 1], ["Backslash", 1.5]],
+  [["CapsLock", 1.75], ..."ASDFGHJKL".split("").map((c) => ["Key" + c, 1]), ["Semicolon", 1], ["Quote", 1], ["Enter", 2.25]],
+  [["ShiftLeft", 2.25], ..."ZXCVBNM".split("").map((c) => ["Key" + c, 1]), ["Comma", 1], ["Period", 1], ["Slash", 1], ["ShiftRight", 2.75], ["ArrowUp", 1, 16.5]],
+  [["Space", 6.25, 3.75], ["ArrowLeft", 1, 15.5], ["ArrowDown", 1, 16.5], ["ArrowRight", 1, 17.5]],
+];
+// chaque touche : sa place, sa lettre, sa fonction (une note, un bouton, une molette et son sens) et sa famille
+function keyboardModel(letter) {
+  const keys = [];
+  KB_ROWS.forEach((row, y) => {
+    let x = 0;
+    for (const [code, w, at] of row) {
+      if (at !== undefined) x = at;
+      const k = KEYMAP[code], e = ENCMAP[code];
+      const family = k ? (k.key !== undefined ? "note" : "bouton") : e ? "molette" : null;
+      const label = !family ? "" : family === "note" ? keyNoteName(k.key) : family === "bouton" ? k.btn.replace("-", "−") : e[0] + (e[1] < 0 ? " −" : " +");
+      keys.push({ code, x, y, w, letter: letter(code), label, family });
+      x += w;
+    }
+  });
+  return { width: 18.5, height: KB_ROWS.length, keys };
 }
 </script>
 <script id="fm1-emu">
@@ -5599,20 +5680,7 @@ function buildPanel(fw) {
   knobs.MASTER.angle = -135 + 270 * fw.G.master;
   for (const k of Object.values(knobs)) drawKnob(k);
 
-  // ---------------------------------------------------------------- the computer keyboard
-  // Comme la page de fm1-emu : un piano sur la rangée du milieu (A..' : Do 4 à Fa 5, les noires au-dessus), les
-  // boutons sur les chiffres, Espace PLAY, R REC, Z X les octaves, les flèches et , . les molettes. Par la place des
-  // touches (e.code), pas leur lettre : le piano reste un piano sur un clavier AZERTY.
-  const KEYMAP = {};
-  ["KeyA", "KeyW", "KeyS", "KeyE", "KeyD", "KeyF", "KeyT", "KeyG", "KeyY", "KeyH", "KeyU", "KeyJ", "KeyK", "KeyO", "KeyL", "KeyP", "Semicolon", "Quote"]
-    .forEach((c, i) => (KEYMAP[c] = { key: 7 + i }));                      // Do 4 : la touche 7 (Fa 3 : 0)
-  ["FX", "SEL", "ENV", "LFO", "EDIT", "GLO", "HOME", "SAVE", "ARP", "SEQ"].forEach((b, i) => (KEYMAP["Digit" + ((i + 1) % 10)] = { btn: b }));
-  Object.assign(KEYMAP, { Space: { btn: "PLAY" }, KeyR: { btn: "REC" }, KeyZ: { btn: "OCT-" }, KeyX: { btn: "OCT+" }, Enter: { btn: "SEL" }, Escape: { btn: "HOME" } });
-  // l'aide dit les lettres du clavier de la personne (AZERTY : Q Z S E…), là où le navigateur les donne
-  navigator.keyboard?.getLayoutMap?.().then((m) => {
-    for (const k of document.querySelectorAll("kbd[data-code]")) { const c = m.get(k.dataset.code); if (c) k.textContent = c.toUpperCase(); }
-  }).catch(() => {});
-  const ENCMAP = { ArrowLeft: ["SELECT", -1], ArrowRight: ["SELECT", 1], ArrowDown: ["PRESETS", -1], ArrowUp: ["PRESETS", 1], Comma: ["ALGORITHM", -1], Period: ["ALGORITHM", 1] };
+  // ---------------------------------------------------------------- the computer keyboard (KEYMAP, ENCMAP : fm1-lib)
   document.addEventListener("keydown", (e) => {
     if (!fw.on || e.metaKey || e.ctrlKey || e.altKey) return;
     if (e.target !== document.body && !device.contains(e.target)) return;   // un champ, un bouton de la page : les leurs
@@ -5928,6 +5996,45 @@ function buildPanel(fw) {
   let active = { id: "fm1va", nom: "FM-1+VA" }, expanded = null;
   try { const s = JSON.parse(localStorage.getItem(SKEY(LAST)) || "null"); if (s && s.id) { active = s; nameEl.textContent = s.nom; } } catch { /* rien de gardé */ }
 
+  // l'aide : la fiche du firmware choisi (firmwares/fiches/<id>.json), chargée à l'ouverture du volet, rendue par textContent
+  const ficheBox = $("fiche"), ficheMeta = $("fiche-meta"), ficheNom = $("fiche-nom"), ficheDetails = $("aide-fiche");
+  const fiches = new Map();
+  let ficheSeq = 0;
+  const mk = (tag, text, attrs) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; for (const k in attrs || {}) e.setAttribute(k, attrs[k]); return e; };
+  function ficheMessage(text) { ficheBox.replaceChildren(mk("p", text)); }
+  function renderFiche(x) {
+    const out = [mk("p", x.resume)];
+    const section = (titre, node) => { out.push(mk("h3", titre), node); };
+    if (x.commandes.length) { const dl = mk("dl"); for (const c of x.commandes) dl.append(mk("dt", c.commande), mk("dd", c.role)); section("Commandes", dl); }
+    if (x.gestes.length) { const ul = mk("ul"); for (const g of x.gestes) ul.append(mk("li", g)); section("Gestes", ul); }
+    if (x.modes.length) { const dl = mk("dl"); for (const m of x.modes) dl.append(mk("dt", m.nom), mk("dd", m.texte)); section("Modes et écrans", dl); }
+    if (x.a_savoir?.length) { const ul = mk("ul"); for (const t of x.a_savoir) ul.append(mk("li", t)); section("À savoir", ul); }
+    const p = mk("p"); p.append(mk("a", "Manuel complet", { href: x.source.url, target: "_blank", rel: "noopener" }));
+    if (x.d_apres_le_code) p.append(" · Rédigée d'après le code du firmware, faute de doc.");
+    out.push(p);
+    ficheBox.replaceChildren(...out);
+  }
+  async function showFiche() {
+    ficheNom.textContent = active.nom;
+    const my = ++ficheSeq, id = active.id;
+    ficheMeta.textContent = "";
+    if (id === "local") { ficheMessage("Pas de fiche pour ce firmware."); return; }
+    if (!ficheDetails.open) return;
+    if (!fiches.has(id)) fiches.set(id, fetch(`firmwares/fiches/${id}.json`).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); }));
+    let x;
+    try { x = await fiches.get(id); } catch { fiches.delete(id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
+    if (my !== ficheSeq) return;
+    if (x) renderFiche(x); else ficheMessage("Pas de fiche pour ce firmware pour l'instant.");
+    if (id === "fm1va") ficheMeta.textContent = "Réimplémentation d'après Baud Girl · 102 · GPL-3.0";
+    else {
+      await catalogueReady;
+      const e = catalogue.find((c) => c.id === id);
+      if (my === ficheSeq && e) ficheMeta.textContent = [e.auteur, e.version, e.licence].filter(Boolean).join(" · ");
+    }
+  }
+  ficheDetails.addEventListener("toggle", () => { if (ficheDetails.open) showFiche(); });
+  showFiche();
+
   function tagsOf(e) {
     const t = [];
     if (e.beta) t.push("bêta");
@@ -6068,7 +6175,7 @@ function buildPanel(fw) {
     if (emuBarred(e)) { status.textContent = "En Duo, FM1-B prend FM-1+VA ou un firmware natif."; return; }
     if (e.id !== "fm1va" && coreError) { status.textContent = "Cœur d'émulation indisponible."; return; }
     if (!ac) {
-      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
       return;
@@ -6078,7 +6185,7 @@ function buildPanel(fw) {
     const ok = await useEngine(e).catch(() => false);
     if (my !== pickSeq) return;
     if (ok) {
-      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom;
+      active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : "";
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
@@ -6164,6 +6271,38 @@ function buildPanel(fw) {
   });
 })();
 
+</script>
+<script>
+// l'aide : le clavier d'ordinateur dessiné (Raccourcis clavier), d'après KEYMAP et ENCMAP (fm1-lib)
+"use strict";
+(function () {
+  const svg = document.getElementById("clavier");
+  if (!svg) return;
+  const NS = "http://www.w3.org/2000/svg", U = 60, G = 5;
+  const el = (n, a, t) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t !== undefined) e.textContent = t; return e; };
+  function drawKeyboard(letter) {
+    const m = keyboardModel(letter), said = [];
+    svg.setAttribute("viewBox", `0 0 ${m.width * U} ${m.height * U}`);
+    svg.replaceChildren();
+    for (const k of m.keys) {
+      const x = k.x * U + G / 2, y = k.y * U + G / 2, w = k.w * U - G, h = U - G;
+      const g = el("g", { "data-code": k.code, "data-family": k.family || "" });
+      g.append(el("rect", { x, y, width: w, height: h, rx: 8 }), el("text", { class: "lettre", x: x + 9, y: y + 19 }, k.letter));
+      if (k.family) {
+        const [name, sign] = k.family === "molette" ? k.label.split(" ") : [k.label];     // une molette : son nom en bas, son sens en haut à droite
+        const t = el("text", { class: "fonction", x: x + 9, y: y + h - 10, "font-size": Math.min(13, (w - 14) / (name.length * 0.47)).toFixed(1) });
+        t.append(el("tspan", {}, name));
+        if (sign) t.append(el("tspan", { x: x + w - 9, y: y + 20, "text-anchor": "end", "font-size": 16 }, " " + sign));
+        g.append(t);
+        said.push(`${k.letter} ${k.label}`);
+      }
+      svg.append(g);
+    }
+    svg.setAttribute("aria-label", "Raccourcis clavier : " + said.join(", "));
+  }
+  drawKeyboard(keyLetters(navigator.language, null));
+  navigator.keyboard?.getLayoutMap?.().then((map) => drawKeyboard(keyLetters(navigator.language, map))).catch(() => {});
+})();
 </script>
 <script>
 // le plein écran : l'API du navigateur quand il l'a ; sinon (iPhone, Brave sur iPad…) l'écran d'accueil, qui ouvre le FM-1 sans barre

@@ -1,0 +1,95 @@
+{
+ "id": "ctl",
+ "resume": "CTL-1 fait du FM-1 un contrôleur MIDI : touches avec vélocité et aftertouch, gammes avec leurs accords sur les touches noires, quatre banques de potentiomètres, arpégiateur et séquenceur de batterie euclidien. Tout sort en USB et Bluetooth, et le FM-1 joue aussi des sons General MIDI.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave plus bas."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave plus haut."
+  },
+  {
+   "commande": "FX",
+   "role": "Banque suivante de contrôleurs ; maintenu, KNOB 1 à 4 règlent les numéros de contrôleur."
+  },
+  {
+   "commande": "SEL",
+   "role": "Page Keys."
+  },
+  {
+   "commande": "ENV",
+   "role": "Sustain ; deux appuis le verrouillent."
+  },
+  {
+   "commande": "LFO",
+   "role": "Molette de modulation."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Page Sound."
+  },
+  {
+   "commande": "GLO",
+   "role": "Page Setup."
+  },
+  {
+   "commande": "HOME",
+   "role": "Page Play."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Sauvegarde."
+  },
+  {
+   "commande": "ARP",
+   "role": "Page Arp."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Page Sequencer."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Démarre et arrête."
+  },
+  {
+   "commande": "REC",
+   "role": "Panic."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Sous-pages de la page : les banques sur Play, les pistes sur le séquenceur."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Change de programme (le son suit)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Canal MIDI."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent des notes ; avec une gamme, ses notes sont sur les touches blanches et ses accords sur les noires."
+  }
+ ],
+ "gestes": [
+  "FX maintenu + KNOB 1 à 4 : numéros de contrôleur.",
+  "ENV deux fois : sustain verrouillé."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Le fichier ctl-usb a le même contenu sans le Bluetooth."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-ctl/blob/c3c2a7e51f3d14dd7a94f8b3775e838f097ec367/README.md",
+  "commit": "c3c2a7e51f3d14dd7a94f8b3775e838f097ec367"
+ },
+ "d_apres_le_code": false
+}

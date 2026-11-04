@@ -1,0 +1,97 @@
+{
+ "id": "felucca",
+ "resume": "Firmware multi-moteurs : treize moteurs avec presets d'usine, quatre pistes (8 voix partagées), un séquenceur de 64 pas, des effets, une matrice de modulation, le MIDI USB et TRS et l'audio USB. Le manuel complet est dans le wiki du dépôt.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave vers le bas ; sur les pages d'action, les dialogues et le menu : retour. Avec OCT+ en même temps, octave remise à zéro."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave vers le haut ; sur les pages d'action, les dialogues et le menu : valider. Avec OCT- en même temps, octave remise à zéro."
+  },
+  {
+   "commande": "FX",
+   "role": "Effets et SLICER ; un second appui passe à la page suivante. Maintenu : effets de jeu, coupures sur les touches noires."
+  },
+  {
+   "commande": "SEL",
+   "role": "Gamme et touches d'accords. Maintenu, une touche règle la tonique."
+  },
+  {
+   "commande": "ENV",
+   "role": "Enveloppe."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO et matrice de modulation."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Paramètres du moteur. Maintenu, une touche blanche choisit le moteur."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mixeur, réglages globaux et système. Maintenu : mute, solo, tempo par tapotement, niveaux sur KNOB 1 à 4."
+  },
+  {
+   "commande": "HOME",
+   "role": "Écran d'accueil. Maintenu : le menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Presets, sons utilisateur, projets. Maintenu : annule le dernier chargement (encore : le rétablit)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpégiateur ; il clignote sur le temps."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Séquenceur : pas et pattern. Maintenu : Song, qui enchaîne les patterns."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête les quatre pistes."
+  },
+  {
+   "commande": "REC",
+   "role": "Arme la piste pour l'enregistrement, sur toutes les pages. À l'arrêt, lance aussi la lecture."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo (BPM) ; le réglage MENU > BPM LOCK le fige."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Son de la piste, sur HOME et sur SAVE > PRESETS."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit la piste T1 à T4, sur toutes les pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent la piste choisie, de Fa3 à Sol5. Sur la page STEP, elles saisissent les notes (pistes de batterie : grille de pas)."
+  }
+ ],
+ "gestes": [
+  "GLO maintenu + SELECT : tempo, même avec BPM LOCK.",
+  "GLO maintenu + PLAY : redémarre depuis le début.",
+  "OCT- et OCT+ ensemble : octave remise à zéro."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Ces commandes viennent de l'image des commandes du dépôt (docs/controls.jpg) ; le README renvoie au wiki pour le détail.",
+  "Une deuxième voie de calcul (2ND CORE) est en bêta et désactivée par défaut : MENU > SYSTEM > 2ND CORE."
+ ],
+ "source": {
+  "url": "https://github.com/hugelton/Felucca/blob/a53ecf428c29c780108fd70a31b71a32a6b5c313/README.md",
+  "commit": "a53ecf428c29c780108fd70a31b71a32a6b5c313"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,84 @@
+{
+ "id": "loom",
+ "resume": "LOOM-8 fait du FM-1 une groovebox de poche : huit pistes d'instruments sur dix moteurs, un séquenceur de 64 pas avec astuces et verrous de paramètres, des joueurs (arp, strum, hold), des scènes et une chanson.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Clavier une octave plus bas ; sur Steps, barre précédente ; en saisie pas à pas, déplace le curseur."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Clavier une octave plus haut ; sur Steps, barre suivante ; en saisie pas à pas, déplace le curseur."
+  },
+  {
+   "commande": "FX",
+   "role": "Character (l'effet de la piste), puis Sends, puis FX I et FX II."
+  },
+  {
+   "commande": "SEL",
+   "role": "Liste des réglages et actions de la page ; dans une question, oui."
+  },
+  {
+   "commande": "ENV",
+   "role": "Enveloppe, puis Filter, puis l'enveloppe du filtre."
+  },
+  {
+   "commande": "LFO",
+   "role": "Page LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Engine, puis Play et Play 2 selon la piste."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mix, puis Master EQ, Master color, Master out, LFO et Setup."
+  },
+  {
+   "commande": "HOME",
+   "role": "Ouvre Arrange, puis Song. Maintenu, sert de majuscule (annuler, rétablir, tempo fin, scènes). Dans une question, non."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Sauve. Maintenu avec une touche blanche, sauve dans un emplacement."
+  },
+  {
+   "commande": "ARP",
+   "role": "Players (arp, strum, hold). Sur Steps, avec une case tenue, ouvre ses astuces."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Ouvre Steps ; page 2 : Bar. Maintenu sur Steps, les touches jouent la piste."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête ; sur Song, joue depuis l'emplacement choisi."
+  },
+  {
+   "commande": "REC",
+   "role": "Arme la saisie pas à pas à l'arrêt ; tenu pendant la lecture, enregistre."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Page suivante du bouton ; dans une liste, déplace."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Passe à l'élément suivant de la page : preset, pattern, scène…"
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit la piste."
+  }
+ ],
+ "gestes": [
+  "SEQ maintenu sur Steps : les touches jouent la piste et fixent ce qu'une case écrit.",
+  "Un bouton maintenu une seconde : une carte explique son rôle."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-loom/blob/92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f/docs/MANUAL.md",
+  "commit": "92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f"
+ },
+ "d_apres_le_code": false
+}

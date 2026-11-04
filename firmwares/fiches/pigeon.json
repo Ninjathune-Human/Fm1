@@ -1,0 +1,34 @@
+{
+ "id": "pigeon",
+ "resume": "Sampler de performance : deux morceaux découpés en chops (32 au plus chacun), un kit de 16 pads de batterie, un séquenceur et l'échantillonnage par USB. Les trois pistes se partagent 500 Kio d'échantillons.",
+ "commandes": [
+  { "commande": "OCT-", "role": "Sur un morceau, hauteur en demi-tons." },
+  { "commande": "OCT+", "role": "Sur un morceau, hauteur en demi-tons." },
+  { "commande": "FX", "role": "Pages d'effets de PIGEON ; sur un morceau, après EDIT, ouvre l'échantillonneur USB." },
+  { "commande": "SEL", "role": "Patterns, puis Arrangement ; maintenu avec une touche de chop, fait écouter la fin du chop puis boucle tant qu'elle est tenue." },
+  { "commande": "ENV", "role": "Sur la grille, détails du pas ; en réglage de chop, enveloppes." },
+  { "commande": "LFO", "role": "Sur un morceau, change la fonction de K1 (début, point de lecture, direction, cents, gain, fondu) ; sur la grille, timing et préférences d'enregistrement." },
+  { "commande": "EDIT", "role": "Réglages du chop : boucle tenue, verrou, découpe et jonction, annuler et rétablir." },
+  { "commande": "HOME", "role": "Retour à la forme d'onde ; sur la forme d'onde, ouvre les réglages." },
+  { "commande": "SAVE", "role": "Sur Patterns, enregistre la phrase dans le pattern A à D choisi." },
+  { "commande": "ARP", "role": "Mixeur et envois d'effets." },
+  { "commande": "SEQ", "role": "Grille de pas ; une nouvelle pression ouvre le piano roll." },
+  { "commande": "REC", "role": "Arme l'enregistrement : à l'arrêt, les touches écrivent les pas ; en lecture, elles enregistrent en direct." },
+  { "commande": "Touches blanches", "role": "Sur un morceau, chops 1 à 16." },
+  { "commande": "Touches noires", "role": "Sur un morceau, chops 17 à 27 ; PRESETS atteint les suivants." }
+ ],
+ "gestes": [
+  "SEL maintenu + touche de chop : écoute la fin du chop, puis boucle tant que la touche est tenue.",
+  "EDIT puis FX sur un morceau : l'échantillonneur USB."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "K1 à K4 sont les quatre boutons de page ; sur la forme d'onde, K1 et K2 règlent début et fin du chop, K3 et K4 le défilement et le zoom.",
+  "Les moteurs de synthèse ne sont pas disponibles dans ce firmware."
+ ],
+ "source": {
+  "url": "https://github.com/TheShrimpBlimp/pigeon/blob/48f028f2ee7f6a0140dfef9d9426dc3237f2e466/docs/PIGEON_CONTROLS.md",
+  "commit": "48f028f2ee7f6a0140dfef9d9426dc3237f2e466"
+ },
+ "d_apres_le_code": false
+}
