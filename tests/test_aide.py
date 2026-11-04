@@ -206,3 +206,21 @@ def test_fiche_iphone_sans_debordement(browser, base_url):
     boite = pg.evaluate("(() => { const f = document.getElementById('fiche'); const d = f.closest('details'); return [f.scrollWidth, d.clientWidth]; })()")
     ctx.close()
     assert over[0] <= over[1] and boite[0] <= boite[1], (over, boite)
+
+
+def test_manuel_et_fiche_pleine_largeur(browser, base_url):
+    ctx = browser.new_context(viewport={"width": 1180, "height": 820})
+    pg = ctx.new_page()
+    stub_core(pg)
+    pg.goto(base_url + "index.html")
+    res = {}
+    for ident in ("aide-manuel", "aide-fiche"):
+        pg.click(f"#{ident} summary")
+        res[ident] = pg.evaluate(
+            "(i) => { const d = document.getElementById(i); const dt = d.querySelector('dt');"
+            " return [d.offsetWidth, document.querySelector('.notes').clientWidth, dt ? dt.offsetWidth : 0, d.querySelector('.note').offsetWidth]; }", ident)
+    ctx.close()
+    for ident, (w, total, dt, note) in res.items():
+        assert abs(w - total) <= 2, (ident, w, total)
+        assert note <= 840, (ident, note)
+    assert res["aide-manuel"][2] <= res["aide-manuel"][3] * 0.34 + 2, res

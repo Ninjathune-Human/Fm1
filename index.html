@@ -218,14 +218,15 @@ details[open] summary::after { transform: rotate(-135deg) translate(-2px, -1px);
 .note { padding: 0 0 18px; display: grid; gap: 10px; color: var(--muted); font-size: 0.9375rem; }
 .note p, .note ul, .note dl { margin: 0; }
 .note ul { padding-left: 1.1rem; display: grid; gap: 6px; }
-.note dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; }
-.note dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: nowrap; }
+.note dl { display: grid; grid-template-columns: fit-content(34%) minmax(0, 1fr); gap: 6px 18px; }
+.note dt { color: var(--ink); font: 600 0.9375rem var(--body); overflow-wrap: anywhere; }
 .note dd { margin: 0; min-width: 0; }
 .note b { color: var(--ink); font-weight: 600; }
 kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 5px; padding: 0 5px; }
 .range { font-variant-numeric: tabular-nums; }
 /* Raccourcis clavier : le clavier dessiné, sur toute la largeur quand le volet est ouvert */
-#aide-clavier[open] { grid-column: 1 / -1; }
+#aide-clavier[open], #aide-manuel[open], #aide-fiche[open] { grid-column: 1 / -1; }
+#aide-manuel .note, #aide-fiche .note { max-width: 52rem; }
 .clavier-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #clavier { display: block; width: 100%; min-width: 760px; height: auto; }
 #clavier rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
@@ -241,8 +242,8 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 #fiche h3 { margin: 6px 0 0; font: 600 0.9375rem var(--body); color: var(--ink); }
 #fiche p, #fiche ul, #fiche dl { margin: 0; }
 #fiche ul { padding-left: 1.1rem; display: grid; gap: 6px; }
-#fiche dl { display: grid; grid-template-columns: fit-content(45%) minmax(0, 1fr); gap: 6px 14px; }
-#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: normal; overflow-wrap: anywhere; }
+#fiche dl { grid-template-columns: fit-content(45%) minmax(0, 1fr); }
+#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); }
 #fiche dd { margin: 0; min-width: 0; }
 .fiche-meta { min-height: 0; }
 .legende { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
