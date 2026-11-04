@@ -69,7 +69,7 @@ from test_picker import click_row
 from conftest import power_on
 
 
-def fake(page, fid, delay=0, status=200):
+def fake(page, fid, delay=0, status=200, modes=()):
     """Sert une fiche factice pour firmwares/fiches/<fid>.json, après `delay` ms."""
     def handle(route):
         if delay:
@@ -77,7 +77,7 @@ def fake(page, fid, delay=0, status=200):
         if status != 200:
             return route.fulfill(status=status, body="")
         body = {"id": fid, "resume": f"Résumé de {fid}.", "commandes": [{"commande": "FX", "role": "Effets de test."}],
-                "gestes": [], "modes": [], "source": {"url": f"https://github.com/x/{fid}/blob/y/README.md", "commit": "y"},
+                "gestes": [], "modes": list(modes), "source": {"url": f"https://github.com/x/{fid}/blob/y/README.md", "commit": "y"},
                 "d_apres_le_code": False}
         route.fulfill(status=200, content_type="application/json", body=json.dumps(body))
     page.route(f"**/firmwares/fiches/{fid}.json", handle)
@@ -179,3 +179,30 @@ def test_fiche_echec_garde(page):
     click_row(page, "amb")
     page.wait_for_function("document.getElementById('status').textContent !== ''", timeout=30000)
     assert fiche_titre(page) == "Fonctions de FM-1+VA"
+
+
+def test_fiche_absente_garde_la_ligne_meta(page):
+    stub_core(page)
+    fake(page, "amb", status=404)
+    page.goto(page.base + "index.html")
+    open_fiche(page)
+    page.click("#fw-picker")
+    click_row(page, "amb")
+    page.wait_for_function("document.getElementById('fiche').textContent.includes('Pas de fiche pour ce firmware pour')")
+    page.wait_for_function("document.getElementById('fiche-meta').textContent.trim().length > 0")
+
+
+def test_fiche_iphone_sans_debordement(browser, base_url):
+    ctx = browser.new_context(viewport={"width": 375, "height": 812}, is_mobile=True, has_touch=True)
+    pg = ctx.new_page()
+    stub_core(pg)
+    fake(pg, "amb", modes=[{"nom": "Potentiomètres en DRUMS et TUNE avec accords", "texte": "Texte."}])
+    pg.goto(base_url + "index.html")
+    pg.click("#fw-picker")
+    click_row(pg, "amb")
+    pg.click("#aide-fiche summary")
+    pg.wait_for_function("document.getElementById('fiche').textContent.includes('Résumé de amb.')")
+    over = pg.evaluate("[document.documentElement.scrollWidth, innerWidth]")
+    boite = pg.evaluate("(() => { const f = document.getElementById('fiche'); const d = f.closest('details'); return [f.scrollWidth, d.clientWidth]; })()")
+    ctx.close()
+    assert over[0] <= over[1] and boite[0] <= boite[1], (over, boite)

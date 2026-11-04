@@ -237,12 +237,12 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
   background: color-mix(in srgb, var(--muted) 16%, var(--surface)); border-color: color-mix(in srgb, var(--muted) 60%, var(--surface)); }
 #clavier .lettre { font: 500 13px var(--mono); fill: var(--muted); }
 #clavier .fonction { font-family: "Barlow Semi Condensed", var(--body); font-weight: 600; fill: var(--ink); }
-#fiche { display: grid; gap: 10px; }
+#fiche { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 #fiche h3 { margin: 6px 0 0; font: 600 0.9375rem var(--body); color: var(--ink); }
 #fiche p, #fiche ul, #fiche dl { margin: 0; }
 #fiche ul { padding-left: 1.1rem; display: grid; gap: 6px; }
-#fiche dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; }
-#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: nowrap; }
+#fiche dl { display: grid; grid-template-columns: fit-content(45%) minmax(0, 1fr); gap: 6px 14px; }
+#fiche dt { color: var(--ink); font: 600 0.9375rem var(--body); white-space: normal; overflow-wrap: anywhere; }
 #fiche dd { margin: 0; min-width: 0; }
 .fiche-meta { min-height: 0; }
 .legende { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
@@ -6024,8 +6024,7 @@ function buildPanel(fw) {
     let x;
     try { x = await fiches.get(id); } catch { fiches.delete(id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
     if (my !== ficheSeq) return;
-    if (!x) { ficheMessage("Pas de fiche pour ce firmware pour l'instant."); return; }
-    renderFiche(x);
+    if (x) renderFiche(x); else ficheMessage("Pas de fiche pour ce firmware pour l'instant.");
     if (id === "fm1va") ficheMeta.textContent = "Réimplémentation d'après Baud Girl · 102 · GPL-3.0";
     else {
       await catalogueReady;
