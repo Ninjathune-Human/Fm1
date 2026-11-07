@@ -336,3 +336,24 @@ def test_gator_plays_and_saves(page):
     power_on(page)
     assert use(page, "gator") is True
     assert "store" in page.evaluate("Object.keys(window.__engine().lastLoadSectors || {})")
+
+
+def test_modelar_drone(page):
+    """MODELAR : les volumes partent de 0 ; K1 monté, l'oscillateur 1 sonne sans touche ; une touche blanche déplace le
+    curseur du pad (l'écran change)."""
+    _natif("modelar")
+    shot = "() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < d.length; i += 16) h = (h * 31 + d[i] + d[i + 1] + d[i + 2]) | 0; return h; }"
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "modelar") is True
+    page.wait_for_timeout(3000)
+    assert lit_pixels(page) >= 500
+    for _ in range(6):
+        page.evaluate("window.__host.turn('KNOB1', 5)"); page.wait_for_timeout(80)
+    page.wait_for_timeout(800)
+    assert rms(page) > 0.001
+    before = page.evaluate(shot)
+    page.evaluate("window.__host.keyDown(0, 't')")
+    page.wait_for_timeout(600)
+    page.evaluate("window.__host.keyUp('t')")
+    assert page.evaluate(shot) != before

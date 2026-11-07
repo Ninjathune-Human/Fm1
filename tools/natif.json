@@ -317,6 +317,14 @@
    "script": "web/emu/build.sh"
   },
   {
+   "id": "modelar",
+   "depot": "hirakos999/MODELAR",
+   "commit": "89475ca2586d6861cc35cd62ea2e1f23a574d9cc",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
+  },
+  {
    "id": "monk",
    "depot": "charlesvestal/fm1-monk",
    "commit": "b21a361ea43b04b38b7598d35eb1ca651baaa661",
