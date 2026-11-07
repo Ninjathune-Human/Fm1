@@ -4,6 +4,8 @@
 def open_with(page, fid):
     """Ouvre le sélecteur et déplie la catégorie de `fid`."""
     page.click("#fw-picker")
+    page.wait_for_selector(f'.fw-item[data-id="{fid}"]', state="attached")
+    page.wait_for_timeout(300)                                          # l'ouverture de la liste est animée
     page.evaluate("""(id) => {
       const ul = [...document.querySelectorAll('.fw-sec')].find((s) => s.dataset.cat !== 'Favoris' && s.querySelector(`.fw-item[data-id="${id}"]`));
       if (ul.querySelector('.fw-items').hidden) ul.querySelector('.fw-sec-head').click();

@@ -155,9 +155,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 #fw-picker:hover, #fw-picker[aria-expanded="true"] { border-color: var(--accent); }
 .picker-k { color: var(--muted); }
 #fw-name { font-weight: 600; max-width: 14em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* l'encoche : vers la droite repliée, vers le bas dépliée ; elle pivote sur place, autour du centre du chevron (ramené au centre de sa boîte) */
 .notch { flex: none; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
-  transform: rotate(45deg) translate(-1px, -1px); transition: transform 0.15s var(--ease); }
-[aria-expanded="true"] > .notch { transform: rotate(-135deg) translate(-1px, -1px); }
+  transform-origin: 70% 70%; transform: translate(-2px, -2px) rotate(-45deg); transition: transform 0.15s var(--ease); }
+[aria-expanded="true"] > .notch { transform: translate(-2px, -2px) rotate(45deg); }
 .sheet { position: absolute; z-index: 30; top: calc(100% + 8px); left: 0; width: min(440px, calc(100vw - 32px)); max-height: min(70vh, 640px);
   display: flex; flex-direction: column; overflow: hidden; border-radius: 20px;
   background: color-mix(in srgb, var(--surface) 84%, transparent); -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
@@ -217,13 +218,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 @media (prefers-reduced-transparency: reduce) { .sheet { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @media (prefers-reduced-motion: reduce) { .sheet, .scrim { animation: none; } .notch { transition: none; } }
 
-.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 0 32px; border-top: 1px solid var(--rule); }
+/* les volets d'aide l'un sous l'autre : un volet qui s'ouvre ne déplace ni son titre ni son encoche */
+.notes { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid var(--rule); }
 details { border-bottom: 1px solid var(--rule); min-width: 0; }
 summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 52px;
   font: 600 1.3125rem var(--display); letter-spacing: -0.01em; }
 summary::-webkit-details-marker { display: none; }
-summary::after { content: ""; width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translateY(-3px); transition: transform 0.15s var(--ease); flex: none; }
-details[open] summary::after { transform: rotate(-135deg) translate(-2px, -1px); }
+summary::after { content: ""; width: 9px; height: 9px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform-origin: 70% 70%; transform: translate(-2px, -2px) rotate(-45deg); transition: transform 0.15s var(--ease); flex: none; }
+details[open] summary::after { transform: translate(-2px, -2px) rotate(45deg); }
 .note { padding: 0 0 18px; display: grid; gap: 10px; color: var(--muted); font-size: 0.9375rem; }
 .note p, .note ul, .note dl { margin: 0; }
 .note ul { padding-left: 1.1rem; display: grid; gap: 6px; }
