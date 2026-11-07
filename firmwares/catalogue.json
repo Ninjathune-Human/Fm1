@@ -2478,6 +2478,47 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/zp12-2.5.fwsc",
    "provenance_paquet": "dans le dépôt docs/install/firmware/zp12-2.5.fwsc"
+  },
+  {
+   "id": "nachtfahrt",
+   "nom": "NACHTFAHRT",
+   "version": "1.0.0",
+   "auteur": "FartyPants (Cranky Man)",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/nachtfahrt.fwsc",
+   "sha256": "46693845a35291dae72f8d0e0819215887dd3b630d593485e77ac2a26a731518",
+   "taille": 609666,
+   "depot": "https://github.com/fartypants/fm1-nachtfahrt",
+   "commit_source": "ba0728378f9a9aa5ef1f69027c42d03319f7ef8e",
+   "description": "A generative Berlin School machine after Tangerine Dream, Klaus Schulze and Ashra: a drone, two drifting sequences, a gliding lead that answers your melody, an atmosphere, and ten pieces that build, open into a solo and return. It plays itself.",
+   "emulateur_fm1emu": "fonctionne selon fm1-emu",
+   "paquet_en_ligne": "https://fartypants.github.io/fm1-nachtfahrt/firmware/nachtfahrt-1.0.0.fwsc",
+   "provenance_paquet": "gh-pages firmware/nachtfahrt-1.0.0.fwsc",
+   "manuel": "https://fartypants.github.io/fm1-nachtfahrt/manual/",
+   "gestes": [
+    "<b>Touches blanches</b> : le Lead, dans la gamme du morceau (la touche qu'il joue s'allume). Trois notes ou plus puis une pause deviennent son thème : il répond, puis reprend vos notes.",
+    "<b>Touches noires</b> : onze effets, tant qu'on les tient (allumées, éteintes tenues) : Take-off, Supernova, Twitter, Repeat, Shimmer, Freeze, Octave, Return, Rise, Close, Transpose.",
+    "<b>PLAY</b> : joue ou se repose. <b>REC</b> : une pression, hold (l'écho répète ce qu'il tient) ; maintenu, la grille de 16 effets sur les blanches. <b>EDIT</b> : une pression, la page Chords ; maintenu, l'accord suivant ; 1,5 s, de nouveaux accords.",
+    "<b>SEL</b> : PERFORM (molettes Filter, Wet, Energy, Sweep ; blanches 1 à 5 coupent Drone, Sequence, Lead, Sequence 2, Atmosphere, noires 1 à 5 les isolent ; blanches 7 à 11 tenues : Sweep, Open, Shut, Drop, Echo ; la plus haute : le Lead oublie son thème). SEL maintenu : Lock.",
+    "<b>HOME</b> : la page Nachtfahrt (Filter, Evolve, Motion, Drift), puis Key (Tempo, Root, Mode, Transpose). Les couches, chaque pression passant à la page suivante (son, puis Move) : <b>ENV</b> le Drone, <b>ARP</b> la Sequence (et ses Repeats), <b>LFO</b> le Lead, <b>SEQ</b> la Sequence 2 (et la page Pattern), <b>SAVE</b> l'Atmosphere.",
+    "<b>FX</b> : Space (Echo, Echo time, Feedback, Reverb), puis Echo. <b>GLO</b> : Setup (Tune, MIDI out, Lights, Save), puis l'Arc (Lead in, Bridge, Arc, Memory) ; maintenu une demi-seconde : enregistre ; 1,5 s : le morceau revient à sa recette.",
+    "<b>PRESETS</b> : le morceau. <b>ALGORITHM</b> : sur la page d'une couche, sa voix. <b>SELECT</b> : le niveau de la couche (sur la page Nachtfahrt : Energy). <b>OCT− OCT+</b> : l'octave de la Sequence, du Lead ou de la Sequence 2, sur leurs pages.",
+    "<b>Pressions longues</b> : ENV, ARP, LFO ou SEQ tenu une demi-seconde déplace un peu le son de sa couche, 1,5 s le secoue (une autre voix) ; HOME tenu 1,5 s secoue toutes les couches."
+   ],
+   "prise_en_main": [
+    "<b>Écoutez.</b> NACHTFAHRT joue dès l'allumage : Timewind (ré mineur, 96) s'ouvre sur son bourdon, et le filtre de la séquence s'ouvre en 32 mesures. MASTER : le volume.",
+    "<b>Changez de morceau</b> avec PRESETS : dix pièces, chacune sa tonalité, son tempo, ses voix et son arc (Timewind, Wahnfried, Phaedra, Rubycon, Stratosfear, Sunrain, Mirage, Cyborg, Sakura Rain, Umeda).",
+    "<b>Jouez le Lead</b> sur les touches blanches, de la tonique vers le haut : trois notes ou plus et une pause, il les prend pour thème et vous répond. Les noires jouent les effets tant qu'on les tient.",
+    "<b>Façonnez la séquence</b> : ARP, puis KNOB 1 (Density) l'éclaircit ou la remplit, KNOB 3 (Length) la raccourcit ; ARP encore : son son (Cutoff ouvre le filtre), puis ses Repeats, puis sa page Move.",
+    "<b>Tenez l'écho</b> : REC, une pression ; la musique continue dessus. Encore REC pour le lâcher. REC maintenu : la grille d'effets.",
+    "<b>Jouez en direct</b> : SEL ouvre PERFORM (couper, isoler, balayer, ouvrir ou fermer le filtre).",
+    "<b>Reposez-vous</b> : PLAY arrête, l'écho et la réverbération s'éteignent ; PLAY encore et le morceau repart du début. Ce que vous changez est gardé avec le morceau : NACHTFAHRT enregistre seul au repos, ou GLO maintenu.",
+    "<b>MIDI</b> : il suit l'horloge MIDI (et Start, Stop), et une note sur n'importe quel canal joue le Lead, ramenée à la gamme."
+   ]
   }
  ]
 }
