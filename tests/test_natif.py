@@ -277,3 +277,34 @@ def test_zp12_samples(page, tmp_path):
     keys = page.evaluate("Object.keys(window.__engine().lastLoadSectors || {}).map(Number)")
     assert 0xD8000 in keys or 0xD9000 in keys                            # le répertoire
     assert any(k >= 0xDA000 for k in keys if k not in (0xD8000, 0xD9000))   # les sons, hors de sa réserve
+
+
+def test_melodee_plays(page):
+    """Melodee : une touche et une note MIDI jouent la piste 1, la touche tenue s'allume ; PLAY lance le transport
+    (sa lumière verte) et l'arrête ; SEQ change l'écran."""
+    _natif("melodee")
+    shot = "() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < d.length; i += 16) h = (h * 31 + d[i] + d[i + 1] + d[i + 2]) | 0; return h; }"
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "melodee") is True
+    page.wait_for_timeout(3000)
+    assert lit_pixels(page) >= 500
+    quiet = rms(page)
+    page.evaluate("window.__host.keyDown(12, 't')")
+    page.wait_for_timeout(400)
+    level = rms(page)
+    assert level > max(0.001, quiet * 2), (quiet, level)
+    assert page.evaluate("window.__engine().keyLit(12)")
+    page.evaluate("window.__host.keyUp('t')")
+    page.wait_for_timeout(1500)
+    level = _note(page, "[0x90, 60, 110]", 400)
+    assert level > 0.001, level
+    _note(page, "[0x80, 60, 0]", 100)
+    before = page.evaluate(shot)
+    page.evaluate("window.__host.press('SEQ')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('SEQ')")
+    page.wait_for_timeout(500)
+    assert page.evaluate(shot) != before
+    page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
+    page.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
+    page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
+    page.wait_for_function("window.__engine().playLight() === null", timeout=3000)
