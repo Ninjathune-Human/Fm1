@@ -285,6 +285,16 @@
    "script": "web/emu/build.sh"
   },
   {
+   "id": "melodee",
+   "depot": "keremimo/melodee",
+   "commit": "f40dd70fd8b497b5372ee5de886e4dfae1cd8062",
+   "script": "tools/build.py",
+   "construction": "bash \"$HERE/tools/worklets/melodee.sh\" build/natif/melodee.wasm",
+   "wasm": "build/natif/melodee.wasm",
+   "worklet": "tools/worklets/melodee.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "min1",
    "depot": "Reytian/fm1-min1",
    "commit": "8d6dd77d34cde4f980bd84e726d6a923f951a0dd",
