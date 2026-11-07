@@ -180,11 +180,20 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .fw-sec-head .count { color: var(--muted); font-weight: 400; margin-left: auto; font-variant-numeric: tabular-nums; }
 .fw-sec-head:hover, .fw-item:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
 .fw-items { list-style: none; margin: 0 0 6px; padding: 0; }
-.fw-item { width: 100%; min-height: 44px; display: grid; grid-template-columns: 1fr auto; gap: 1px 12px; padding: 9px 12px; border: 0; border-radius: 12px;
+.fw-items > li { position: relative; }
+.fw-item { width: 100%; min-height: 44px; display: grid; grid-template-columns: 1fr auto; gap: 1px 12px; padding: 9px 44px 9px 12px; border: 0; border-radius: 12px;
   background: none; cursor: pointer; text-align: left; font: 400 0.9375rem/1.3 var(--body); color: var(--ink); touch-action: manipulation; }
 .fw-n { font-weight: 600; }
 .fw-item[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .fw-n[aria-current="true"]::before, .fw-item[aria-current="true"] .fw-n::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 0; border-radius: 50%; background: var(--accent); }
+/* l'étoile des favoris : à droite de la ligne, une cible de 44 px */
+.fw-star { position: absolute; top: 0; right: 0; width: 44px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center; color: var(--muted); opacity: 0.5; touch-action: manipulation; transition: opacity 0.15s, color 0.15s; }
+.fw-star svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
+.fw-star:hover { opacity: 1; }
+.fw-star[aria-pressed="true"] { color: var(--accent); opacity: 1; }
+.fw-star[aria-pressed="true"] svg { fill: currentColor; }
+.fw-sec[data-cat="Favoris"] { margin-bottom: 4px; }
 .fw-a { color: var(--muted); font-size: 0.8125rem; justify-self: end; align-self: center; }
 .fw-d { grid-column: 1 / -1; color: var(--muted); font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fw-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
@@ -6054,8 +6063,37 @@ function buildPanel(fw) {
     for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
     b.append(span("fw-n", e.nom), span("fw-a", e.auteur || ""), span("fw-d", e.description || ""), tags);
     b.addEventListener("click", () => pick(e));
-    li.append(b);
+    const star = document.createElement("button");
+    star.type = "button"; star.className = "fw-star"; star.dataset.id = e.id;
+    star.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6l1.95 4 4.4.6-3.2 3.08.78 4.37L8 11.55l-3.93 2.1.78-4.37L1.65 6.2l4.4-.6z"/></svg>';
+    setStar(star, e);
+    star.addEventListener("click", () => toggleFav(e, star));
+    li.append(b, star);
     return li;
+  }
+  // les favoris : une liste à soi, dans l'ordre où on les a marqués, gardée pour FM1-A comme pour FM1-B
+  const FAV = "fm1.favoris";
+  let favs = [], favOpen = true;
+  // relue à chaque ouverture : l'autre FM-1 du Duo a pu la changer
+  function loadFavs() { try { const f = JSON.parse(localStorage.getItem(FAV) || "[]"); if (Array.isArray(f)) favs = f.filter((x) => typeof x === "string"); } catch { /* celle de cette page */ } }
+  function setStar(star, e) {
+    const on = favs.includes(e.id);
+    star.setAttribute("aria-pressed", on);
+    star.setAttribute("aria-label", `${on ? "Retirer" : "Ajouter"} ${e.nom} ${on ? "des" : "aux"} favoris`);
+    star.title = on ? "Retirer des favoris" : "Ajouter aux favoris";
+  }
+  function toggleFav(e, star) {
+    loadFavs();
+    favs = favs.includes(e.id) ? favs.filter((x) => x !== e.id) : [...favs, e.id];
+    try { localStorage.setItem(FAV, JSON.stringify(favs)); } catch { /* cette session */ }
+    if (sectionsEl.hidden) { for (const s of resultsEl.querySelectorAll(".fw-star")) if (s.dataset.id === e.id) setStar(s, e); renderSections(); return; }
+    // la liste se refait ; la ligne touchée reste sous le doigt (la section Favoris, au-dessus, grandit ou rétrécit)
+    const cat = star.closest(".fw-sec").dataset.cat, y0 = star.getBoundingClientRect().top, focused = document.activeElement === star;
+    renderSections();
+    const again = [...sectionsEl.querySelectorAll(`.fw-sec[data-cat="${CSS.escape(cat)}"] .fw-star`)].find((s) => s.dataset.id === e.id);
+    if (!again) return;
+    sheet.querySelector(".sheet-body").scrollTop += again.getBoundingClientRect().top - y0;
+    if (focused) again.focus({ preventScroll: true });
   }
   function renderSections() {
     const groups = groupCatalogue(entries());
@@ -6063,6 +6101,19 @@ function buildPanel(fw) {
     const notes = [];
     if (coreError) { const p = document.createElement("p"); p.className = "fw-note"; p.textContent = "Cœur d'émulation indisponible"; notes.push(p); }
     const tier = (text) => { const h = document.createElement("h3"); h.className = "fw-tier"; h.textContent = text; return h; };
+    const all = entries(), favItems = favs.map((id) => all.find((e) => e.id === id)).filter(Boolean);
+    if (favItems.length) {
+      const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
+      sec.className = "fw-sec"; sec.dataset.cat = "Favoris";
+      head.type = "button"; head.className = "fw-sec-head"; head.dataset.cat = "Favoris";
+      head.setAttribute("aria-expanded", favOpen);
+      head.innerHTML = `<span>Favoris</span><span class="count">${favItems.length}</span><span class="notch" aria-hidden="true"></span>`;
+      ul.className = "fw-items"; ul.hidden = !favOpen;
+      ul.append(...favItems.map(row));
+      head.addEventListener("click", () => { favOpen = !favOpen; head.setAttribute("aria-expanded", favOpen); ul.hidden = !favOpen; });
+      sec.append(head, ul);
+      notes.push(sec);
+    }
     sectionsEl.replaceChildren(...notes, ...groups.flatMap((g, i) => {
       const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
       sec.className = "fw-sec"; sec.dataset.cat = g.categorie; sec.dataset.tier = g.optimise ? "optimise" : "emule";
@@ -6095,7 +6146,7 @@ function buildPanel(fw) {
     resultsEl.replaceChildren(...(r.approchants || !r.items.length ? [note] : []), ul);
   }
   function openSheet() {
-    renderSections(); renderResults();
+    loadFavs(); renderSections(); renderResults();
     sheet.hidden = false; scrim.hidden = false; picker.setAttribute("aria-expanded", "true");
     const abs = getComputedStyle(sheet).position === "absolute", above = picker.getBoundingClientRect().top - 16;
     sheet.classList.toggle("up", abs && (FM1_ID || above >= 360));
