@@ -2,7 +2,7 @@
 
 # FM-1
 
-Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 114 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
+Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 115 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
 
 **Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**
 
