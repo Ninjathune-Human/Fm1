@@ -9,6 +9,7 @@ OUT=$1
 GEN=build/gen
 mkdir -p "$GEN" "$(dirname "$OUT")"
 [ -f "$GEN/melodee_tables.h" ] || { echo "melodee : en-têtes générés absents (tools/build.py)"; exit 1; }
+python3 tools/gen_909_tables.py "$GEN/x0x_drum_tables.h"      # (build.py ne le fait qu'en compilant l'appareil)
 awk '/static const int8_t FM1_KEYMAP/,/^};/' firmware/hal/fm1_input.h > "$GEN/sim_keymap.h"
 grep -q FM1_KEYMAP "$GEN/sim_keymap.h" || { echo "melodee : FM1_KEYMAP introuvable"; exit 1; }
 EXPORTS=_sim_init,_sim_frame,_sim_render,_sim_btn,_sim_key,_sim_enc,_sim_master,_sim_midi,_sim_leds,_sim_fb,_sim_audio
