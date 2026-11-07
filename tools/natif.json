@@ -86,6 +86,16 @@
    "wasm": "app/build/emu/app.wasm"
   },
   {
+   "id": "cutador",
+   "depot": "kidbee85-beep/cut-a-dor-release",
+   "commit": "d9799abb84fef0cc59deb05e2f6a4c41032c32f1",
+   "script": "build.sh",
+   "construction": "bash \"$HERE/tools/worklets/cutador.sh\" build/natif/cutador.wasm",
+   "wasm": "build/natif/cutador.wasm",
+   "worklet": "tools/worklets/cutador.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "delrio",
    "depot": "jsopdebeeck/fm1-delrio",
    "commit": "c604e5659b4505c98788b30982364289a8348178",
@@ -317,6 +327,16 @@
    "script": "web/emu/build.sh"
   },
   {
+   "id": "mnm1",
+   "depot": "galfaroth/mnm1",
+   "commit": "2c7aee4c277bb642404c4638dbc77a360d36cf55",
+   "script": "tools/build_sim.sh",
+   "construction": "SIM_PREFIX=MNM1 bash \"$HERE/tools/worklets/hortator.sh\" build/natif/mnm1.wasm",
+   "wasm": "build/natif/mnm1.wasm",
+   "worklet": "tools/worklets/hortator.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "modelar",
    "depot": "hirakos999/MODELAR",
    "commit": "89475ca2586d6861cc35cd62ea2e1f23a574d9cc",
@@ -341,6 +361,16 @@
    "depot": "slothpallas/mope-1",
    "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "mycelium",
+   "depot": "megagott/mycelium-fm1",
+   "commit": "750eb125e2850acc62a8391cb742246a7c437745",
+   "script": "Mycelium-FM1-1.0-Quellcode.zip",
+   "construction": "bash \"$HERE/tools/worklets/mycelium.sh\" build/natif/mycelium.wasm",
+   "wasm": "build/natif/mycelium.wasm",
+   "worklet": "tools/worklets/mycelium.js",
+   "dialecte": "felucca"
   },
   {
    "id": "nachtfahrt",

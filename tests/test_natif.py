@@ -357,3 +357,47 @@ def test_modelar_drone(page):
     page.wait_for_timeout(600)
     page.evaluate("window.__host.keyUp('t')")
     assert page.evaluate(shot) != before
+
+
+def test_beat_natives_play(page):
+    """MNM-1, Cut-A-Dor, MYCELIUM : PLAY (ou une touche) fait sonner la machine ; une touche tenue s'allume ou
+    l'écran change."""
+    import json, os, pytest
+    from conftest import ROOT
+    try:
+        have = json.load(open(os.path.join(ROOT, "natif/manifest.json")))
+    except FileNotFoundError:
+        pytest.skip("pas de natif/")
+    ids = [i for i in ("mnm1", "cutador", "mycelium") if i in have]
+    if not ids: pytest.skip("aucun des trois en natif ici")
+    power_on(page)
+    page.set_default_timeout(30000)
+    bad = []
+    for i in ids:
+        assert use(page, i) is True, i
+        page.wait_for_timeout(4500)                 # (MYCELIUM : son logo, environ quatre secondes)
+        if lit_pixels(page) < 500: bad.append((i, "écran")); continue
+        page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
+        page.wait_for_timeout(1500)
+        level = rms(page)
+        if level <= 0.001:
+            page.evaluate("window.__host.keyDown(0, 't')"); page.wait_for_timeout(600)
+            level = rms(page); page.evaluate("window.__host.keyUp('t')")
+        if level <= 0.001: bad.append((i, "silence"))
+        page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
+    assert not bad, bad
+
+
+def test_cutador_saves(page):
+    """Cut-A-Dor : SAVE, à l'arrêt, écrit le projet, que la page garde et rend à l'ouverture suivante."""
+    _natif("cutador")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "cutador") is True
+    page.wait_for_timeout(2500)
+    page.evaluate("window.__host.press('SAVE')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('SAVE')")
+    page.wait_for_timeout(600)
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=8000)
+    power_on(page)
+    assert use(page, "cutador") is True
+    assert "store" in page.evaluate("Object.keys(window.__engine().lastLoadSectors || {})")
