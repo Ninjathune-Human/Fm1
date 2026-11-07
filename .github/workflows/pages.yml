@@ -201,7 +201,9 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           python -m pytest -q tests/test_zz_shots.py || true
-          while read -r n d; do echo "::notice title=$n::$d"; done < shots.txt
+          cd shots && git init -q && git checkout -q -b "essai-captures-$GITHUB_RUN_ID" && git add . && \
+            git -c user.name=ci -c user.email=ci@example.invalid commit -q -m captures && \
+            git push -q "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY" "essai-captures-$GITHUB_RUN_ID"
       - name: Firmwares émulés, sur le cœur compilé
         if: ${{ !cancelled() }}                # (aussi quand un natif a échoué)
         run: |
