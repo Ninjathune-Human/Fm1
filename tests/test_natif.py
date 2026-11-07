@@ -308,3 +308,31 @@ def test_melodee_plays(page):
     page.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
     page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
     page.wait_for_function("window.__engine().playLight() === null", timeout=3000)
+
+
+def test_gator_plays_and_saves(page):
+    """GATOR : une touche (mode GATE) et une note MIDI sonnent, la touche tenue s'allume ; SAVE deux fois écrit le preset,
+    que la page garde et rend à l'ouverture suivante."""
+    _natif("gator")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "gator") is True
+    page.wait_for_timeout(2500)
+    assert lit_pixels(page) >= 500
+    quiet = rms(page)
+    page.evaluate("window.__host.keyDown(12, 't')")
+    page.wait_for_timeout(400)
+    level = rms(page)
+    assert level > max(0.001, quiet * 2), (quiet, level)
+    assert page.evaluate("window.__engine().keyLit(12)")
+    page.evaluate("window.__host.keyUp('t')")
+    page.wait_for_timeout(1500)
+    assert _note(page, "[0x90, 60, 110]", 400) > 0.001
+    _note(page, "[0x80, 60, 0]", 100)
+    for _ in range(2):
+        page.evaluate("window.__host.press('SAVE')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('SAVE')")
+        page.wait_for_timeout(400)
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=8000)
+    power_on(page)
+    assert use(page, "gator") is True
+    assert "store" in page.evaluate("Object.keys(window.__engine().lastLoadSectors || {})")

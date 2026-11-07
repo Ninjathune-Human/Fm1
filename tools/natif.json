@@ -201,6 +201,16 @@
    "script": "web/emu/build.sh"
   },
   {
+   "id": "gator",
+   "depot": "npi3pak/fm1-gator",
+   "commit": "92f923e0b9fe6101d5cd422cffa5946ce20d785a",
+   "script": "tools/sim.py",
+   "construction": "bash \"$HERE/tools/worklets/gator.sh\" build/natif/gator.wasm",
+   "wasm": "build/natif/gator.wasm",
+   "worklet": "tools/worklets/gator.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "ghoulbox",
    "depot": "jasonpersinger/ghoulbox-fm1-dungeon-synth",
    "commit": "9f2b9a22e456d7fe9552b40f7a1d0c13200913bb",

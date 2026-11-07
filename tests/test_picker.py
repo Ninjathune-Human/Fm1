@@ -81,22 +81,22 @@ def test_enter_picks_first(page):
 def test_last_wins(page):
     power_on(page)
     page.evaluate("""() => { document.querySelector('.fw-item[data-id="x0x"]').click();
-      setTimeout(() => document.querySelector('.fw-item[data-id="gator"]').click(), 30); }""")
-    ready(page, "GATOR", timeout=60000)
+      setTimeout(() => document.querySelector('.fw-item[data-id="monohull"]').click(), 30); }""")
+    ready(page, "Monohull", timeout=60000)
     page.wait_for_timeout(500)
-    assert page.evaluate("window.__engine().name") == "GATOR"
+    assert page.evaluate("window.__engine().name") == "Monohull"
     assert page.evaluate("window.__nodes().length") == 1
 
 
 def test_restore_last(page):
     power_on(page)
-    click_row(page, "gator")
-    ready(page, "GATOR")
+    click_row(page, "monohull")
+    ready(page, "Monohull")
     page.reload()
-    assert page.inner_text("#fw-name") == "GATOR"
+    assert page.inner_text("#fw-name") == "Monohull"
     page.click("#go")
-    page.wait_for_function("window.__engine && window.__engine().name === 'GATOR'", timeout=30000)
-    assert page.evaluate("window.__engine().name") == "GATOR"
+    page.wait_for_function("window.__engine && window.__engine().name === 'Monohull'", timeout=30000)
+    assert page.evaluate("window.__engine().name") == "Monohull"
 
 
 def test_sections_fold(page):
@@ -125,7 +125,7 @@ def test_optimised_first(page):
     assert set(order[1:k]) == {"optimise"} and set(order[k + 1:]) == {"emule"}
     tier = lambda i: page.evaluate("(id) => document.querySelector(`.fw-item[data-id=\"${id}\"]`).closest('.fw-sec').dataset.tier", i)
     assert tier("fm1va") == "optimise" and tier("x0x") == "optimise" and tier("felucca") == "optimise"
-    assert tier("sloop") == "emule" and tier("gator") == "emule" and tier("obervave") == "optimise"
+    assert tier("sloop") == "emule" and tier("monohull") == "emule" and tier("obervave") == "optimise"
 
 
 def test_layouts(browser, base_url):

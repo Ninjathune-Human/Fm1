@@ -134,7 +134,7 @@ def test_emulated_follows(page):
     power(a)
     power(b)
     a.wait_for_function("window.__catalogue && window.__catalogue.length")
-    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'gator'))")
+    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'monohull'))")
     a.evaluate("() => { const e = window.__engine(), s = e.send.bind(e); window.__got = []; e.send = (m) => { if (m.type === 'midi') window.__got.push(...m.bytes); return s(m); }; }")
     page.click(".duo-link")
     page.wait_for_timeout(600)
