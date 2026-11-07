@@ -197,6 +197,11 @@ jobs:
           r=$( { grep -E "^E |passed|failed|rror" verif.txt || tail -5 verif.txt; } | head -30 | sed 's/%/%25/g' | sed ':a;N;$!ba;s/\n/%0A/g')
           if [ "$rc" = 0 ]; then echo "::notice title=vérification natifs::$r"; else echo "::error title=vérification natifs::$r"; fi
           exit "$rc"
+      - name: Captures (essai)
+        if: ${{ !cancelled() }}
+        run: |
+          python -m pytest -q tests/test_zz_shots.py || true
+          while read -r n d; do echo "::notice title=$n::$d"; done < shots.txt
       - name: Firmwares émulés, sur le cœur compilé
         if: ${{ !cancelled() }}                # (aussi quand un natif a échoué)
         run: |
