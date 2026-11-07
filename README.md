@@ -83,7 +83,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | X0X | Charles Vestal | GPL-3.0 | [27f6fac](https://github.com/charlesvestal/fm1-x0x/tree/27f6fac7e07ce97b5de158b45aec99f59a9e23fd) | fonctionne, natif |
 | X0X-RMX | Mr-Roboto (Oliver) | GPL-3.0 | [a4e78f3](https://github.com/Mr-Roboto/fm1-x0x-rmx/tree/a4e78f3a6e16fa310b7614e5876d07e16a0020f9) | fonctionne, natif |
 
-### Synthé (40)
+### Synthé (41)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -114,6 +114,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | MONK-1 | Charles Vestal | GPL-3.0 | [b21a361](https://github.com/charlesvestal/fm1-monk/tree/b21a361ea43b04b38b7598d35eb1ca651baaa661) | fonctionne, bêta, natif |
 | Monohull | Mark White | GPL-3.0 | [8590e27](https://github.com/markterm/monohull/tree/8590e27dc9d4e080d1d4f585036c97df44940a71) | vérifié, bêta |
 | MOPE-1 | slothpallas | GPL-3.0-only | [59be1e7](https://github.com/slothpallas/mope-1/tree/59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1) | vérifié, bêta, natif |
+| NACHTFAHRT | FartyPants (Cranky Man) | GPL-3.0 | [ba07283](https://github.com/fartypants/fm1-nachtfahrt/tree/ba0728378f9a9aa5ef1f69027c42d03319f7ef8e) | fonctionne |
 | Niagara Drift | evanyerburgh | GPL-3.0 | [802daa8](https://github.com/evanyerburgh/niagara-drift/tree/802daa818af060293cae77afec013df3dec0a060) | fonctionne, bêta, natif |
 | NOIZ DEMONS | SPIKE the Percussionist | GPL-3.0 | [4fe0f1a](https://github.com/SPIKE-the-Percussionist/noiz_demons/tree/4fe0f1afb4d97f56dfb763c176679fe6e059ecec) | fonctionne, natif |
 | OberVave | zvenson | GPL-3.0 | [dc4e5d3](https://github.com/zvenson/obervave/tree/dc4e5d33b09f5e3f927801d78085f26171e9c7b8) | fonctionne, natif |
