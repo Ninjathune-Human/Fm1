@@ -369,13 +369,16 @@ def test_beat_natives_play(page):
         have = json.load(open(os.path.join(ROOT, "natif/manifest.json")))
     except FileNotFoundError:
         pytest.skip("pas de natif/")
-    ids = [i for i in ("mnm1", "cutador", "mycelium") if i in have]
-    if not ids: pytest.skip("aucun des trois en natif ici")
+    listed = {e["id"] for e in json.load(open(os.path.join(ROOT, "tools/natif.json")))["firmwares"]}
+    ids = [i for i in ("mnm1", "cutador", "mycelium") if i in listed]
+    if not ids: pytest.skip("aucun des trois à compiler ici")
+    assert all(i in have for i in ids), [i for i in ids if i not in have]   # (une compilation ratée : il serait émulé)
     power_on(page)
     page.set_default_timeout(30000)
     bad = []
     for i in ids:
         assert use(page, i) is True, i
+        assert page.evaluate("window.__engine().kind") == "natif", i
         page.wait_for_timeout(4500)                 # (MYCELIUM : son logo, environ quatre secondes)
         if lit_pixels(page) < 500: bad.append((i, "écran")); continue
         page.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(150); page.evaluate("window.__host.release('PLAY')")
