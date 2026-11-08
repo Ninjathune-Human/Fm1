@@ -169,6 +169,23 @@
    "script": "web/emu/build.sh"
   },
   {
+   "id": "fmdj",
+   "depot": "DeadActive/FMDj",
+   "commit": "10f98c0cc24677f3bdf0f89570bffdb033d3a68b",
+   "script": "web/sim/build.sh",
+   "construction": "sh web/sim/build.sh && sh web/lsdj_wasm.sh && cp build/web/lsdj_emu.wasm web/lsdj_emu.wasm && python3 -c \"import json, sys; sys.path.insert(0, 'tools'); import lsdj_demo; a, e = lsdj_demo.key_args(60); json.dump({'keys': [[int(x), int(y), k] for x, y, k in (s.split(':') for s in a[1::2])], 'frames': e + 60}, open('web/demo.json', 'w'))\"",
+   "wasm": "build/web/sim/lsdjsim.wasm",
+   "worklet": "tools/worklets/fmdj.js",
+   "dialecte": "felucca",
+   "outils": [
+    "web/lsdjinstall.js",
+    "web/fm1pkg.js",
+    "web/lsdj_emu.wasm",
+    "web/demo.json"
+   ],
+   "echantillons": "web/lsdjinstall.js"
+  },
+  {
    "id": "fmel",
    "depot": "AntonioAltea/fmel-1",
    "commit": "2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8",

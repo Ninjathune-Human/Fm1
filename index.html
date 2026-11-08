@@ -2218,6 +2218,7 @@ class NativeFirmware {
       try { sectors = await nativeFlash.get(this.entry.id); } catch (err) { this.storageError = err; }
       this.lastLoadSectors = sectors;
       if (this.entry.natif_echantillons) try { this.bank = await nativeFlash.get(this.entry.id + "/banque"); } catch { /* sans banque */ }
+      if (this.entry.id === "fmdj") try { this.cart = await nativeFlash.get("fmdj/cartouche"); } catch { /* sans ROM */ }
       this.ac = ac;
       const master = Math.round(this.pot / 1023 * this.potMax);
       this.node = new AudioWorkletNode(ac, this.entry.natif_processeur, this.nodeOptions(wasm, sectors, master));
@@ -2253,6 +2254,7 @@ class NativeFirmware {
       default: {                               // pigeon : sa banque d'échantillons revient avec le reste
         const m = { type: "load", wasm, sectors: saved || {}, master };
         if (this.bank && this.bank.image) Object.assign(m, { bank: this.bank.image.slice(), unlimited: this.bank.unlimited });
+        if (this.cart) m.cart = this.cart.slice();          // FMDj : la cartouche faite de la ROM de l'utilisateur
         return m;
       }
     }
@@ -2332,8 +2334,27 @@ class NativeFirmware {
     const pad = (i) => "CD"[i >> 3] + ((i & 7) + 1);
     return `zp12 : ${names.length} son${names.length > 1 ? "s" : ""} sur ${names.length > 1 ? `les pads ${pad(0)} à ${pad(names.length - 1)}` : "le pad C1"} (${names.join(", ")}).`;
   }
+  // FMDj : la ROM de l'utilisateur (LSDj ou DMGo!) devient sa cartouche par l'outil de sa propre page (lsdjinstall.js
+  // makeCart : le premier démarrage du programme, la chanson de démo tapée, un essai d'écoute), gardée dans ce
+  // navigateur ; le firmware repart avec elle. Rien de LSDj ni de DMGo! n'est dans ce dépôt ni dans le site.
+  async takeRom(files) {
+    const f = files[0], base = new URL(this.entry.natif + "outils/web/", location.href).href, st = document.getElementById("status");
+    const L = await import(base + "lsdjinstall.js");
+    const [w, demo] = await Promise.all([fetch(base + "lsdj_emu.wasm").then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }),
+      fetch(base + "demo.json").then((r) => (r.ok ? r.json() : null), () => null)]);
+    const steps = { "LSDj's first start": "premier démarrage de LSDj", "typing the demo song": "la chanson de démo",
+      "playing it": "écoute", "DMGo's first start": "premier démarrage de DMGo!", "playing a step": "écoute d'un pas" };
+    const cart = await L.makeCart(await L.loadEmu(w), new Uint8Array(await f.arrayBuffer()), demo, 1 << 20,
+      (what, done, total) => { st.textContent = `ROM : ${steps[what] || what}, ${Math.round((100 * done) / total)} %`; },
+      () => new Promise((r) => setTimeout(r)));
+    this.cart = cart;
+    this.save(cart, "fmdj/cartouche");
+    this.send({ type: "cart", cart: cart.slice() });
+    return `FMDj : ${L.cartProg(cart) === "dmgo" ? "DMGo!" : "LSDj"} est prêt, « ${f.name} » est gardé dans ce navigateur. PLAY le lance.`;
+  }
   async takeSamples(files, ac) {
     if (this.entry.id === "zp12") return this.takeZp12(files, ac);
+    if (this.entry.id === "fmdj") return this.takeRom(files);
     let image, what;
     if (files.length === 1 && /\.kob$/i.test(files[0].name)) {
       image = new Uint8Array(await files[0].arrayBuffer()); what = `banque « ${files[0].name} »`;
@@ -6207,9 +6228,14 @@ function buildPanel(fw) {
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
     // sur l'iPad, l'app Fichiers directement : les sons par leurs extensions et application/octet-stream, sans
     // audio/* (qui propose la photothèque et l'appareil photo) ; .kob pour Pigeon seulement
-    $("samples").accept = (current.entry?.id === "zp12" ? "" : ".kob,") + ".wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream";
-    $("samples-box").title = current.entry?.id === "zp12" ? "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad."
+    const fmdj = current.entry?.id === "fmdj";
+    $("samples").accept = fmdj ? ".gb,.gbc,application/octet-stream"
+      : (current.entry?.id === "zp12" ? "" : ".kob,") + ".wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream";
+    $("samples-box").lastChild.textContent = fmdj ? "ROM…" : "Échantillons…";
+    $("samples-box").title = fmdj ? "Votre ROM LSDj ou DMGo! (.gb) : aucune n'est fournie ici. Elle est vérifiée, puis gardée dans ce navigateur."
+      : current.entry?.id === "zp12" ? "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad."
       : "Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob.";
+    if (fmdj && current.kind === "natif" && !current.cart && !status.textContent) status.textContent = "FMDj : chargez votre ROM LSDj ou DMGo! (.gb) avec « ROM… ».";
   }
   let pickSeq = 0;
   const restartBtn = $("fw-restart");
@@ -6297,9 +6323,10 @@ function buildPanel(fw) {
   // des sons ou une banque .kob pour un firmware natif qui prend des échantillons (pigeon)
   async function takeSamples(files) {
     if (!files.length) return;
-    status.textContent = "Préparation des échantillons…";
+    const rom = current.entry?.id === "fmdj";
+    status.textContent = rom ? "ROM : vérification…" : "Préparation des échantillons…";
     try { status.textContent = await current.takeSamples(files, ac); }
-    catch (err) { status.textContent = "Échantillons : " + (err && err.message ? err.message : err); }
+    catch (err) { status.textContent = (rom ? "ROM : " : "Échantillons : ") + (err && err.message ? err.message : err); }
   }
   $("samples").addEventListener("change", (e) => { const f = [...e.target.files]; e.target.value = ""; takeSamples(f); });
   device.addEventListener("dragover", (e) => { e.preventDefault(); });

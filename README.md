@@ -2,7 +2,7 @@
 
 # FM-1
 
-Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 115 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
+Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 116 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
 
 **Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**
 
@@ -153,11 +153,12 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | PIGEON | The Shrimp Blimp | GPL-3.0 | [48f028f](https://github.com/TheShrimpBlimp/pigeon/tree/48f028f2ee7f6a0140dfef9d9426dc3237f2e466) | fonctionne, bêta, natif |
 | zp12 | zvenson | GPL-3.0 | [7b8b975](https://github.com/zvenson/zp12/tree/7b8b97586ef87854d1859aad907e5f10ca49898d) | fonctionne |
 
-### Tracker (4)
+### Tracker (5)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
 | BEETLE | Joppe Sikken (SikkenWorks) | GPL-3.0 | [c8b286a](https://github.com/SikkenWorks/BEETLE/tree/c8b286a9445cfc9798e117835ceac3bd5e92c49f) | fonctionne |
+| FMDj | DEADACTIVE | GPL-3.0 | [10f98c0](https://github.com/DeadActive/FMDj/tree/10f98c0cc24677f3bdf0f89570bffdb033d3a68b) | vérifié, bêta |
 | KAWA | Omnipotard (Guizmoh) | GPL-3.0 | [a101686](https://github.com/Guizmoh/Kawa-Tracker-Fm1/tree/a10168605cb86276f55d8164d1c89ded7e3852aa) | fonctionne, bêta, en ligne |
 | Ketch | risseraka | GPL-3.0 | [58146f3](https://github.com/risseraka/fm1-tracker-ketch/tree/58146f3509861506fa5cfdb5e1c01172aba4955e) | fonctionne, bêta |
 | SIDOU | Denis Sablić | GPL-3.0 | [f508588](https://github.com/dsablic/sidou/tree/f50858880db57d301eafefac4883045591497884) | fonctionne, bêta |

@@ -2498,6 +2498,26 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://fartypants.github.io/fm1-nachtfahrt/firmware/nachtfahrt-1.0.0.fwsc",
    "provenance_paquet": "gh-pages firmware/nachtfahrt-1.0.0.fwsc"
+  },
+  {
+   "id": "fmdj",
+   "nom": "FMDj",
+   "version": "2026.10.22",
+   "auteur": "DEADACTIVE",
+   "categories": [
+    "Tracker"
+   ],
+   "licence": "GPL-3.0",
+   "beta": true,
+   "fichier": "firmwares/fmdj.fwsc",
+   "sha256": "857bd4fafca1fb78ac47386b5c02ab58acd8c72ca69ce341461f188c49b68342",
+   "taille": 609849,
+   "depot": "https://github.com/DeadActive/FMDj",
+   "commit_source": "10f98c0cc24677f3bdf0f89570bffdb033d3a68b",
+   "description": "Game Boy music programs inside the FM-1: LSDj, the tracker, and DMGo!, the drum machine, in a Game Boy emulator on its screen, keys, knobs and sound. Bring your own ROM: nothing of LSDj or DMGo is in the firmware.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://deadactive.github.io/FMDj/firmware/lsdj-base-fmdj-2026.10.22.fwsc",
+   "provenance_paquet": "gh-pages firmware/lsdj-base-fmdj-2026.10.22.fwsc"
   }
  ]
 }

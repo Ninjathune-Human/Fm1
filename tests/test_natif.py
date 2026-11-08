@@ -401,3 +401,18 @@ def test_cutador_saves(page):
     power_on(page)
     assert use(page, "cutador") is True
     assert "store" in page.evaluate("Object.keys(window.__engine().lastLoadSectors || {})")
+
+
+def test_fmdj_rom(page, tmp_path):
+    """FMDj : sans ROM, la page la demande (« ROM… ») ; un fichier qui n'en est pas une est refusé par l'outil de sa
+    page (lsdjinstall.js, l'émulateur de son installateur), avec la raison."""
+    _natif("fmdj")
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "fmdj") is True
+    page.wait_for_timeout(2000)
+    assert lit_pixels(page) >= 300
+    assert page.is_visible("#samples-box") and page.inner_text("#samples-box").strip() == "ROM…"
+    (tmp_path / "pas-une-rom.gb").write_bytes(bytes(32768))
+    page.set_input_files("#samples", str(tmp_path / "pas-une-rom.gb"))
+    page.wait_for_function("document.getElementById('status').textContent.startsWith('ROM : This file is not')", timeout=30000)
