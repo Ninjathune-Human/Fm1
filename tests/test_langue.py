@@ -8,12 +8,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def test_bascule_en_fr(page):
     page.goto(page.base + "index.html")
     assert page.inner_text("#aide-manuel summary") == "Manuel d'utilisation"
-    page.click(".mast .lang")
+    page.click(".mast .lang [data-l=en]")
     page.wait_for_function("document.querySelector('#aide-manuel summary').textContent === 'User manual'")
     assert page.inner_text("#aide-clavier summary") == "Keyboard shortcuts"
     assert page.inner_text("#go") == "Power on"
     assert page.get_attribute("html", "lang") == "en"
-    assert page.inner_text(".mast .lang") == "FR"
+    assert page.get_attribute(".mast .lang [data-l=en]", "aria-checked") == "true"
+    assert page.get_attribute(".mast .lang [data-l=fr]", "aria-checked") == "false"
     # le choix est gardé
     page.reload()
     page.wait_for_function("document.querySelector('#aide-manuel summary').textContent === 'User manual'")
@@ -24,16 +25,16 @@ def test_bascule_en_fr(page):
     assert "Buttons" in page.text_content(".legende") and "Knobs" in page.text_content(".legende")
     assert "C 4" in page.text_content("#clavier")
     # retour au français
-    page.click(".mast .lang")
+    page.click(".mast .lang [data-l=fr]")
     page.wait_for_function("document.querySelector('#aide-manuel summary').textContent === \"Manuel d'utilisation\"")
     assert page.inner_text("#go") == "Allumer"
     assert "Do 4" in page.text_content("#clavier")
-    assert page.inner_text(".mast .lang") == "EN"
+    assert page.get_attribute(".mast .lang [data-l=fr]", "aria-checked") == "true"
 
 
 def test_fiche_anglaise(page):
     page.goto(page.base + "index.html")
-    page.click(".mast .lang")
+    page.click(".mast .lang [data-l=en]")
     page.wait_for_function("document.documentElement.lang === 'en'")
     page.click("#aide-fiche summary")
     page.wait_for_function("document.querySelector('#fiche h3')")
@@ -44,7 +45,7 @@ def test_fiche_anglaise(page):
 
 def test_status_dynamique(page):
     page.goto(page.base + "index.html")
-    page.click(".mast .lang")
+    page.click(".mast .lang [data-l=en]")
     page.wait_for_function("document.documentElement.lang === 'en'")
     page.evaluate("document.getElementById('status').textContent = 'Démarrage de Melodee…'")
     page.wait_for_function("document.getElementById('status').textContent === 'Starting Melodee…'")
