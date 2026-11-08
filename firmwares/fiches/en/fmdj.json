@@ -1,0 +1,94 @@
+{
+ "id": "fmdj",
+ "resume": "FMDj runs Game Boy music programs on the FM-1: LSDj, the tracker, and DMGo!, the drum machine, in a Game Boy emulator, using its screen, keys, knobs and sound. You need your own ROM (.gb): nothing of LSDj or DMGo! is included.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "LSDj's SELECT + DOWN: the screen below. OCT- and OCT+ held 5 s: update mode."
+  },
+  {
+   "commande": "OCT+",
+   "role": "LSDj's SELECT + UP: the screen above."
+  },
+  {
+   "commande": "SEL",
+   "role": "Called SCL: UP (can be held)."
+  },
+  {
+   "commande": "GLO",
+   "role": "The menu, on the lower half of the screen, music keeps playing: screen colors (DMG, POCKET, LIGHT, SGB, DARK), status bar, emulator options. GLO or B closes it. It is kept in flash."
+  },
+  {
+   "commande": "HOME",
+   "role": "LEFT (can be held)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "DOWN (can be held)."
+  },
+  {
+   "commande": "ARP",
+   "role": "RIGHT (can be held)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The Game Boy's SELECT."
+  },
+  {
+   "commande": "PLAY",
+   "role": "START. The first press after power-on starts the program. In LSDj, a second plays the demo song. After power-on, PLAY loads the save."
+  },
+  {
+   "commande": "REC",
+   "role": "Held one second: saves to the FM-1's flash (SAVING, then SAVED and the size)."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "LEFT and RIGHT (one click = one press, clockwise = RIGHT). With A held: changes a value by one."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "LSDj's SELECT + LEFT or RIGHT: changes screen."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "UP and DOWN (clockwise = DOWN). With A held: changes a value by one octave or 0x10."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "LSDj: the top F (F5) is A, the top G (G5) is B. DMGo!: the 16 white keys are steps 1 to 16."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "DMGo!: D#5 is A, F#5 is B."
+  }
+ ],
+ "gestes": [
+  "A held (the top F) + SELECT or ALGORITHM: edit as in LSDj, by one step or one octave.",
+  "REC held one second: save.",
+  "OCT- and OCT+ held 5 s: update mode."
+ ],
+ "modes": [
+  {
+   "nom": "The menu (GLO)",
+   "texte": "UP and DOWN (ALGORITHM, SCL, SAVE) choose a row, LEFT, RIGHT (SELECT, HOME, ARP) or A change it: SCREEN, STATUS BAR, DRAW, ROM READ, WAIT LOOP, SOUND."
+  },
+  {
+   "nom": "The status bar",
+   "texte": "FPS (59.7: real time), CPU (below 100 % it keeps up), GAPS (the seconds where audio was missing)."
+  }
+ ],
+ "a_savoir": [
+  "LSDj is by Johan Kotlinski (littlesounddj.com). DMGo! is by Audiowanderer, free at audiowanderer.com. Only one of the two at a time: to switch, load the other ROM.",
+  "The FX, LFO, EDIT and ENV buttons do nothing."
+ ],
+ "source": {
+  "url": "https://github.com/DeadActive/FMDj/blob/10f98c0cc24677f3bdf0f89570bffdb033d3a68b/README.md",
+  "commit": "10f98c0cc24677f3bdf0f89570bffdb033d3a68b"
+ },
+ "d_apres_le_code": false
+}

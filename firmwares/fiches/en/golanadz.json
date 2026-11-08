@@ -1,0 +1,106 @@
+{
+ "id": "golanadz",
+ "resume": "DZ edition of Golana, an analog-style synth (two oscillators, five filters, arpeggiator) with a 64-step sequencer, 32 programs, a song mode (SONGMODE) and USB MIDI out added.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the keyboard octave. Held alone at power-on, starts USB rescue mode."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the keyboard octave."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects pages: MOD FX, DELAY, REVERB. A new press moves to the next page."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens the filter pages: FILTER, KEY TRACK. A new press moves to the next. Printed SCL in the repository docs."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the envelopes: FILTER EG, AMP EG."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens LFO 1, LFO 2 and PATCH 1-4."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens OSC 1, OSC 2 and MIXER."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens AMP, VOICE, GLOBAL (tempo, tuning, clock, MIDI IN) and SETUP (effects order, palette, home screen drawing)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens PERFORM: cutoff, resonance, EG intensity, LFO 1 rate. On the write screen, cancels."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens program writing: PRESETS chooses the slot, KNOB 1 the letter, KNOB 2 changes it, SAVE writes, HOME cancels. Not possible during playback."
+  },
+  {
+   "commande": "ARP",
+   "role": "Turns the arpeggiator on or off."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the arpeggiator pages: ARP, TIMING, STEPS, then SONGMODE. A new press moves to the next."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Opens the sequencer pages: PATTERN (step, note, type, accent or slide) and SETUP (length, resolution, duration, swing)."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Moves through the pages one after another."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes program (32). It loads as you turn: unwritten changes are lost."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Sets the cutoff, from any page."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the synth. On the PATTERN page, a key writes its note into the step and moves to the next."
+  }
+ ],
+ "gestes": [
+  "OCT- held at power-on: USB rescue mode, with no sound or interface, to reinstall a firmware.",
+  "The four rotary knobs (KNOB 1 to 4) set the four cards shown on the screen."
+ ],
+ "modes": [
+  {
+   "nom": "64-step sequencer",
+   "texte": "REC, PATTERN page: STEP chooses the step (1 to 64), NOTE its note, TYPE REST, NOTE or TIE, ACC / SLIDE its accent or slide. SETUP page: LENGTH from 1 to 64. The screen shows the steps in groups of 16. PLAY starts. One note per step."
+  },
+  {
+   "nom": "SONGMODE",
+   "texte": "SEQ, SONGMODE page: SONGMODE (OFF or ON), FIRST PROG and LAST PROG (programs 1 to 32), PLAY MODE (ONCE plays once to the last, REPEAT loops back). The song chains consecutive programs, from FIRST to LAST."
+  },
+  {
+   "nom": "USB MIDI out",
+   "texte": "The firmware sends its notes as MIDI over USB to drive other synths. The settings detail is not described in the docs."
+  }
+ ],
+ "a_savoir": [
+  "Experimental edition, use at your own risk.",
+  "Steps 17 to 64 are kept apart from the program save. If all the device's project slots are taken, SONGMODE shows PROJECTS FULL and the write is refused.",
+  "It is not a full MIDI file player."
+ ],
+ "source": {
+  "url": "https://github.com/dzwerg/Golana-DZ/blob/858e3f2f9e018f01a1c87451c712193869f0324b/docs/DZ_EDITION.md",
+  "commit": "858e3f2f9e018f01a1c87451c712193869f0324b"
+ },
+ "d_apres_le_code": true
+}

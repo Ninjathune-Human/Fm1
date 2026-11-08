@@ -1,0 +1,88 @@
+{
+ "id": "fmel",
+ "resume": "Tape keyboard in the style of the Mellotron M400: each key has its own tape that runs while you press and that a spring returns on release. It plays real Mellotron tapes (flute, choir, cello, vibraphone) and a piano, with old-tape lo-fi effects. Two sounds can be blended.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects page: vibrato, echo, reverb (the last knob is always MIX). Held 0.6 s, switches the effects in or out of the circuit."
+  },
+  {
+   "commande": "SEL",
+   "role": "LAYER page: a second sound on the other track of the tape (SOUND, MIX, OCTAVE, DETUNE). On this page, SEL changes the sound. In step recording, SEL is a rest."
+  },
+  {
+   "commande": "ENV",
+   "role": "HOLD: notes stay after release until the next chord. Held 0.6 s, half speed: tapes one octave lower and twice as long."
+  },
+  {
+   "commande": "LFO",
+   "role": "LOFI page (TAPE and WEAR: tape wear). Held 0.6 s, switches lo-fi in or out of the circuit."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Speaker equalizer page. Held 0.6 s, sets it flat (FLAT), and again to restore it."
+  },
+  {
+   "commande": "GLO",
+   "role": "SETUP page: tempo, fine tuning, note length, screen appearance. A second press opens SOUNDS."
+  },
+  {
+   "commande": "HOME",
+   "role": "PLAY page (TONE, PITCH, ATTACK, RELEASE). A new press goes to the next sound."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves (the device also saves by itself)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page (MODE, RATE, OCTAVES, GATE). Turns the arpeggiator on or off."
+  },
+  {
+   "commande": "SEQ",
+   "role": "16-step sequencer of at most four notes per step (LENGTH, GATE, STEP, SWING)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Records into the sequencer. When stopped, step recording."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The hand on the tape reel."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the sound: A FLUTE, B CHOIR, C CELLO, D VIBES, E PIANO."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Sets the tempo, from any page."
+  }
+ ],
+ "gestes": [
+  "LFO, FX, EDIT or ENV held 0.6 s: the button's alternate action.",
+  "SEL held 1 s in step recording: clears the pattern."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The Mellotron tapes are those by Bernie Kornowicz (Taijiguy), free to use but not for commercial software.",
+  "The piano is not a Mellotron tape."
+ ],
+ "source": {
+  "url": "https://github.com/AntonioAltea/fmel-1/blob/2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8/firmware/src/mel.c",
+  "commit": "2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8"
+ },
+ "d_apres_le_code": true
+}

@@ -1,0 +1,42 @@
+{
+ "id": "bunker",
+ "resume": "Generative ambient firmware built on Felucca 1.6.1: four editable layers drawn from 64 sound recipes, 24 worlds, 24 motifs and 32 scales. GROW varies the phrases, and seven EVOLVE processes change them over time.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "In GROW, steps back one step unless a new phrase edit has invalidated it; in EVOLVE, locks the phrase."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Applies the current choice: WORLD, MOTIF, and GROW."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens the Bunker home page; with SELECT, picks the view WORLD, GROW, SOUND, MOTIF, EVOLVE or MIX."
+  },
+  {
+   "commande": "SELECT",
+   "role": "With HOME, picks the view among WORLD, GROW, SOUND, MOTIF, EVOLVE and MIX."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track on the home page."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "GROW",
+   "texte": "K1 sets the root, K2 the scale, K3 the mode TUNE, SOFT, FLOW or NEW, K4 the selected track or all tracks. OCT+ applies, OCT- undoes the last step. Drums and slices are ignored."
+  }
+ ],
+ "a_savoir": [
+  "Felucca's EDIT, ENV, LFO, FX, SCL, ARP, SEQ and SAVE pages remain available and act on the same tracks.",
+  "Bunker projects (114 parameters) are not read by Felucca 1.6.1, and those from AMB or Wolf are not carried over."
+ ],
+ "source": {
+  "url": "https://github.com/kidbee85-beep/bunker-evolved/blob/c9bb0b1ac4a7dbb420a3f452fc75b705981ab0f4/README.md",
+  "commit": "c9bb0b1ac4a7dbb420a3f452fc75b705981ab0f4"
+ },
+ "d_apres_le_code": false
+}

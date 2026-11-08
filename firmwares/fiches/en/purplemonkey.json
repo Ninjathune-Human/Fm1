@@ -1,0 +1,88 @@
+{
+ "id": "purplemonkey",
+ "resume": "A first instrument for a toddler: press any key and something pretty happens. FM notes on a pentatonic scale, synthetic drums, an accompaniment beat and four animals (Monkey, Cat, Dog, Llama) that dance on screen. No menu, nothing to save.",
+ "commandes": [
+  {
+   "commande": "FX",
+   "role": "DRUMS mode: the keys play drum sounds. Lit in DRUMS, dimly lit otherwise."
+  },
+  {
+   "commande": "SEL",
+   "role": "SYNTH mode: the keys play notes. Lit in SYNTH. This is the startup mode."
+  },
+  {
+   "commande": "ENV",
+   "role": "KEYS: the keys play the scale, with echo, bouquets and runs. Lit when active."
+  },
+  {
+   "commande": "LFO",
+   "role": "TUNE: each key plays the next note of a nursery rhyme, so tapping the same key always plays the whole melody. Pressing again moves to the next rhyme (three per animal and per world)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "TALK: each key says its letter (A to Z, the 27th says \"yay\") with a synthetic voice, and shows it large."
+  },
+  {
+   "commande": "HOME",
+   "role": "Resets the knobs to their starting setting, except WORLD; the animal, mode, beat and world stay."
+  },
+  {
+   "commande": "PLAY",
+   "role": "BEAT: starts or stops the accompaniment beat (an orange LED lit, the green one blinks on each beat)."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Output volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "PET: Monkey, Cat, Dog, Llama, looping. Its name shows for one second."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "SOUND: the synth sound, out of 16 (four per animal, the animal's own first), looping. HOME or an animal change returns to the animal's sound."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "WORLD: the environment (night, sea, balloons, space, meadow, snow), looping. Neither HOME nor an animal change affects it."
+  },
+  {
+   "commande": "Touches",
+   "role": "The 27 keys are the only ones that play. In SYNTH, the white keys climb the C major pentatonic scale from C3 to C6 and each black key plays the note of the white key to its left. In DRUMS, nine sounds repeated in three groups (kick, hi-hat, snare, low tom, rim, high tom, conga, shaker, bell)."
+  }
+ ],
+ "gestes": [
+  "Hold a drum key for more than 0.28 s: it repeats in rhythm, with the pattern specific to its sound. Several held keys make a groove.",
+  "Hold two or more keys for half a second in SYNTH: a bouquet (up to five held notes).",
+  "Three keys in under a quarter of a second: a run of six sixteenth notes, rising if the keys rose, falling otherwise.",
+  "Press a note in SYNTH: the animal sings it back one bar later, softly, once.",
+  "OCT- + OCT+ + HOME held 5 s: firmware update mode (release before the end to cancel)."
+ ],
+ "modes": [
+  {
+   "nom": "Knobs in SYNTH",
+   "texte": "1 TONE: the tone of the sound, from soft to bright. 2 WOBBLE: the vibrato. 3 SPACE: from dry to reverb and echo. 4 LENGTH: note length and release."
+  },
+  {
+   "nom": "Knobs in DRUMS and TUNE",
+   "texte": "1 SPEED: tempo from 72 to 136 BPM (104 at startup). In DRUMS: 2 BUSY, seven levels of rhythm; 3 BOUNCE, from straight to shuffle; 4 SQUISH, from dry and woody to round and rubbery."
+  },
+  {
+   "nom": "Beat and animals",
+   "texte": "Each animal has its own drums and two-bar pattern: Monkey Latin, Cat vintage drum machine, Dog 808, Llama jazz. With BEAT, a four-bar chord progression and a bass follow the animal. All the notes of the scale fit these chords."
+  },
+  {
+   "nom": "Startup",
+   "texte": "At startup: the Cat, in SYNTH, beat stopped. The GLO, SAVE, ARP, SEQ, REC, OCT- and OCT+ buttons do nothing."
+  }
+ ],
+ "a_savoir": [
+  "A USB MIDI keyboard or one on the TRS jack plays the animal's voice; channel 10 plays its drums.",
+  "Beta version: the docs recommend reading the install and rollback section before installing."
+ ],
+ "source": {
+  "url": "https://github.com/Quixotic7/PurpleMonkeyFM1/blob/7590d4a5205bd4932b206d676c09b9521843a023/docs/PURPLEMONKEY.md",
+  "commit": "7590d4a5205bd4932b206d676c09b9521843a023"
+ },
+ "d_apres_le_code": false
+}

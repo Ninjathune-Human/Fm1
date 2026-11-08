@@ -1,0 +1,96 @@
+{
+ "id": "ravel",
+ "resume": "Eight-track groovebox for sound design: thirteen synth engines, struck percussion and 33 drum machines after the Machinedrum, with an influence grid where each track can trigger, excite or modulate another.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Shifts the keyboard down one octave. On SEQ, changes step page; on pages with more settings than knobs, moves to the next row."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Shifts the keyboard up one octave. On SEQ, changes step page; on pages with more settings than knobs, moves to the next row."
+  },
+  {
+   "commande": "FX",
+   "role": "Buses: delay, space, BED, feedback, master. Held + white keys 1 to 8: punch-ins (loop, reverse, stutter, freeze, low-pass, high-pass, throw, fill)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Scale section (called SCL in the docs): root, scale, transposition. Held, a key sets the root."
+  },
+  {
+   "commande": "ENV",
+   "role": "Articulation: start, hold and end of the note, FILTER ENV, step envelopes."
+  },
+  {
+   "commande": "LFO",
+   "role": "Modulation: matrix, two LFOs, dust, macros. Held + KNOB 1 to 4: macros 1 to 4."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The track's sound: engine, pitch, filter, mix, sends."
+  },
+  {
+   "commande": "GLO",
+   "role": "Song: mixers, scenes, arrangement, clock. Held + white keys 1 to 8 / 9 to 16: mute / solo; + black key 1: tap tempo."
+  },
+  {
+   "commande": "HOME",
+   "role": "The eight tracks at a glance and the influence grid."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Projects and sounds. Held + a white key: stores the scene 1 to 16."
+  },
+  {
+   "commande": "ARP",
+   "role": "The track's arpeggiator: mode, speed, octaves, hold."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Steps, tempo, graph. Held: the white keys become the steps, from any page."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording on the current track; then PLAY. Notes played and knobs turned are written into the steps."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Output volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Next page (right) or previous page (left) in the section."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the page's list: sounds, patterns on SEQ, scenes on SONG, slots on SAVE."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses track T1 to T8; the keys play that track."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the current track, or serve as steps, scenes or switches depending on the page and what is held."
+  }
+ ],
+ "gestes": [
+  "A short press on a section button opens its page; holding it while using keys and knobs makes it a layer (SEQ held: steps; LFO held: macros; FX held: punch-ins), and releasing does not change the page.",
+  "Recording: touch REC, then PLAY; on the SEQ pages the keys then play notes, SEQ held turns them back into steps."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Every effect starts at zero: a new project sends nothing to the buses.",
+  "T8 can become the bus compressor (HOME, TRACKS, KIND = COMP)."
+ ],
+ "source": {
+  "url": "https://github.com/De-Pattern/Ravel_FM1/blob/6a7696d75ae4ffaeff21827f973abf2b93771326/README.md",
+  "commit": "6a7696d75ae4ffaeff21827f973abf2b93771326"
+ },
+ "d_apres_le_code": false
+}

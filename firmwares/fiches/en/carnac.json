@@ -1,0 +1,113 @@
+{
+ "id": "carnac",
+ "resume": "Eight-voice wavetable synth: 15 table banks, seven voice architectures, two layers with splits, a four-line sequencer, a chord arpeggiator, reverbs and delays. At startup, the HOME screen is in SINGL mode (one layer, eight voices) and the keyboard plays.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "With HOME held, focuses layer 1. With SAVE held, copies what SAVE would save. On SEQ, held + a white key, sets the line's loop start."
+  },
+  {
+   "commande": "OCT+",
+   "role": "With HOME held, focuses layer 2 (refused in SINGL). With SAVE held, pastes. On SEQ, held + a white key, sets the line's loop end."
+  },
+  {
+   "commande": "FX",
+   "role": "Oscillator pages: OSC1, OSC2, OSCMIX (and ATTACK with the STRIKE architecture). Another press goes to the next page."
+  },
+  {
+   "commande": "SEL",
+   "role": "Filter pages: FILTER1, FILTER2, FLTMIX."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope pages ENV1, ENV2, ENV3. ENV1 is tied to the amp."
+  },
+  {
+   "commande": "LFO",
+   "role": "Pages LFO1, LFO2, LFO3. LFO1 is common to all voices, LFO2 and LFO3 run per voice."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Three modulation slots, MOD1 to MOD3, each combining two sources."
+  },
+  {
+   "commande": "GLO",
+   "role": "Pages AMP (amplifier, drive, sends) and EFFECTS (reverb and delay)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Pages LAYER, ZONES, PERF and GLOBAL. Held with OCT- or OCT+, changes layer."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens saving for what the page contains (layer patch, performance, sequence or arp pattern). The button blinks. A second press confirms. Held with OCT-, copies. With OCT+, pastes."
+  },
+  {
+   "commande": "ARP",
+   "role": "Chord arpeggiator page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Four-line sequencer page, 16 steps per line. Another press goes to the next line."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer on the SEQ page and the arpeggiator on the ARP page. On other pages, starts both or stops whichever is playing."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording on the SEQ and ARP pages."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Steps through the page's rows: a full-screen list opens and closes 1.5 seconds after the last click."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads the next or previous preset, depending on the page: layer patch on the sound pages, performance on HOME, arp pattern on ARP, sequence slot on SEQ."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the value of the chosen row. On the save page, chooses the slot, then NO or YES to overwrite."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the focused layer. On ARP, the 13 lowest keys are the chord keys and the next 8 white keys are the steps. On SEQ, the 16 lowest white keys are the line's steps."
+  }
+ ],
+ "gestes": [
+  "HOME held + OCT- or OCT+: layer 1 or layer 2 (HOME acts on release).",
+  "SAVE held + OCT-: copy. SAVE held + OCT+: paste.",
+  "SEQ: OCT- held + a white key sets the loop start, OCT+ held + a white key sets the end.",
+  "ARP: hold a step key and press a chord key to store the chord in the step.",
+  "To save: SAVE, choose the slot with ALGORITHM or knob 2, name with knobs 3 and 4, SAVE again."
+ ],
+ "modes": [
+  {
+   "nom": "SINGL, DUAL, SPLIT",
+   "texte": "PERF MODE, on HOME, switches from SINGL (one layer) to DUAL (two layers, each on its own MIDI channel; the keys play the chosen layer) or SPLIT (the two layers share the keyboard; the ZONES page sets SPLIT NOTE, SPLIT FADE, VEL SPLIT and VEL FADE). Layer 2 does not exist in SINGL."
+  },
+  {
+   "nom": "Sequencer",
+   "texte": "Four lines of 16 steps, each with its own event type, speed, direction and loop. Knobs 1 to 4 set four steps. A white key brings that step and the next three onto the knobs. In step recording, press REC then play: the note is written into each NOTE line. Keys held together form a chord of at most four notes. SCALE locks a NOTE line to a scale."
+  },
+  {
+   "nom": "Arpeggiator",
+   "texte": "Patterns of at most 8 steps. Holding a chord key plays live. The knobs are RATE, OCTAVE, STYLE and RHYTHM. The black keys among the steps are LATCH, TIE, CLEAR, COPY and ACCENT. With REC armed, a chord key is written into the nearest step."
+  },
+  {
+   "nom": "Presets and saving",
+   "texte": "Four kinds: patch, sequence, arp pattern and performance (mode, global settings, two patches and the linked patterns). The SAMHAIN factory bank contains 9 performances and 32 patches. At power-on, performance 0, CAIRN SPIRIT, plays: PLAY starts its chords and bass. HOME's PERF page shows the links and changes patch, sequence or arp."
+  }
+ ],
+ "a_savoir": [
+  "The FX button opens the oscillators here, not the effects: the effects are under GLO.",
+  "The wavetables and PCM waves are written to flash by the firmware installer. Without them, some PCM waves stay silent and FOUNDATIONS plays a sine.",
+  "Carnac is in beta (0.9.x). To restore the original firmware, the repository cites OCT- and OCT+ held for 5 seconds."
+ ],
+ "source": {
+  "url": "https://github.com/OwenKirby/carnac-os/blob/be8cc104f3618ba9b12c834827abfdbb4e1686af/docs/manual.md",
+  "commit": "be8cc104f3618ba9b12c834827abfdbb4e1686af"
+ },
+ "d_apres_le_code": false
+}

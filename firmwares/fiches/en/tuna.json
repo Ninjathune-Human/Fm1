@@ -1,0 +1,85 @@
+{
+ "id": "tuna",
+ "resume": "A generative firmware that composes as it plays: the randomness of Marbles shaped by music theory into melody, bass, accompaniment and percussion. You choose a composer or a genre, or a character preset.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Next or previous seed: another piece in the same manner; on SAVE, LOAD and SEQ: back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Seed: another piece in the same manner; on SAVE, LOAD and SEQ: confirm."
+  },
+  {
+   "commande": "FX",
+   "role": "Library page."
+  },
+  {
+   "commande": "ENV",
+   "role": "MIDI out."
+  },
+  {
+   "commande": "LFO",
+   "role": "Resonator."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Timing, then the parts, then those that follow the chaos knobs."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mix, then reverb (BATHROOM, ROOM, HALL, CATHEDRAL, SPRING)."
+  },
+  {
+   "commande": "HOME",
+   "role": "The falling notes; held: the menu (color, style)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Save, then load, in 16 slots."
+  },
+  {
+   "commande": "ARP",
+   "role": "Evolution."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Freezes the period you hear into an editable pattern."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops, always from the beginning."
+  },
+  {
+   "commande": "REC",
+   "role": "Memory: locked phrase (deja vu) or the composer's own."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Library: piece by piece."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Library: one era or decade at a time."
+  },
+  {
+   "commande": "Touches",
+   "role": "One key: the root, from the next chord. Several keys held: that chord. On SAVE and LOAD, the 16 white keys are the slots."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/delirioux/tuna/blob/f06047dc7e4a4c061818b9a29f5412359a2fb607/README.md",
+  "commit": "f06047dc7e4a4c061818b9a29f5412359a2fb607"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,105 @@
+{
+ "id": "gator",
+ "resume": "GATOR turns the FM-1 into a monophonic macro-oscillator after the Mutable Instruments Plaits module: 24 synthesis models, an LPG, an ADSR envelope, two LFOs, an eight-route modulation matrix and 16 presets. On HOME, K1 to K4 are HARMONICS, TIMBRE, MORPH and transposition.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the keyboard octave (from minus 3 to plus 3)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the keyboard octave."
+  },
+  {
+   "commande": "FX",
+   "role": "LPG and output page: K1 DECAY (the decay of the LPG and the internal envelope), K2 COLOUR (from VCA to filter), K3 OUT>AUX (the mix of the two outputs), K4 STEREO (100: OUT left, AUX right)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Called SCL by GATOR: the attenuverters, K1 FM, K2 TIMBRE, K3 MORPH (from minus 100 to plus 100). In TRIG, they scale the internal envelope to pitch, TIMBRE and MORPH."
+  },
+  {
+   "commande": "ENV",
+   "role": "The modulation envelope, an ADSR started by each note: K1 ATTACK, K2 DECAY, K3 SUSTAIN, K4 RELEASE. On its own it does nothing: it is the ENV source of the matrix (and the volume in GATE)."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO 1 and 2: K1 and K3 their speed, K2 and K4 their shape (SINE, TRI, SAW, SQUARE, S&H, SMOOTH); SELECT and ALGORITHM: SYNC, the LFO restarts on each note."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The modulation matrix, eight routes: SELECT or ALGORITHM picks the route, K1 the source, K2 the destination, K3 the depth in steps of 5, K4 in steps of 1."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global settings: K1 GLIDE, K2 BEND RANGE, K3 FINE TUNE, K4 MIDI CH (OMNI or 1 to 16); SELECT LEGATO."
+  },
+  {
+   "commande": "HOME",
+   "role": "The main page: the model and its settings. Held + a key from 1 to 24: picks the model (the key's LED shows the current model)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the presets page; SELECT picks the slot, SAVE again writes it. Another page button cancels."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Changes the play mode: TRIG, then GATE, then DRONE (lit in GATE and DRONE)."
+  },
+  {
+   "commande": "REC",
+   "role": "HOLD: notes keep sounding after release (lit); turning it off releases all notes."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "On HOME, the model, one at a time (1 to 24). On other pages, whatever they indicate (route, SYNC, LEGATO, slot)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Steps through presets 1 to 16, which load immediately, on all pages except SAVE."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "On HOME, the model in steps of eight (the next bank)."
+  },
+  {
+   "commande": "Touches",
+   "role": "The notes, monophonic, last-note priority: releasing a note returns to the previous held one. No velocity (100 out of 127)."
+  }
+ ],
+ "gestes": [
+  "HOME held + a key from 1 to 24: the model.",
+  "Knobs accelerate with speed: one step, then two, four, eight; models, LFO shapes, switches and K4 FREQUENCY always advance one step."
+ ],
+ "modes": [
+  {
+   "nom": "GATE",
+   "texte": "The default mode: the volume follows the ADSR of the ENV page, the note sounds as long as the key is held and each knob is heard immediately."
+  },
+  {
+   "nom": "TRIG",
+   "texte": "Like the module with a cable in TRIG: a key strikes the LPG, and the sound decays at the DECAY rate (FX) even with the key held. A setting changed after the strike is heard on the next note."
+  },
+  {
+   "nom": "DRONE",
+   "texte": "Like the module with no cable: the LPG is bypassed, the sound is continuous, and the keys only change the pitch."
+  },
+  {
+   "nom": "HOME",
+   "texte": "At the top the bank (A, B, C), the model number and its name; the HARM, TIMBRE, MORPH lines show what the parameter does in that model. K4 transposes by plus or minus 24 semitones. At the bottom, an oscilloscope."
+  }
+ ],
+ "a_savoir": [
+  "An asterisk after the preset number (P3*) flags unsaved changes.",
+  "MIDI: notes (velocity to the VEL source), CC 1 wheel, CC 16, 17, 18 HARMONICS, TIMBRE, MORPH, CC 19 the model, pressure, pitch bend; the channel is set on GLO."
+ ],
+ "source": {
+  "url": "https://github.com/npi3pak/fm1-gator/blob/92f923e0b9fe6101d5cd422cffa5946ce20d785a/docs/MANUAL.md",
+  "commit": "92f923e0b9fe6101d5cd422cffa5946ce20d785a"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,76 @@
+{
+ "id": "tessera",
+ "resume": "Tessera is a generative firmware: each of the four tracks plays its steps, an arpeggio or one of the thirteen generators, and the surrounding pages evolve the phrases, build forms and modulate everything from everything.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. With EDIT held, undo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; on some pages, a displayed action. Held on GEN, the generator's second layer. With EDIT held, redo."
+  },
+  {
+   "commande": "FX",
+   "role": "Insert and send effects. Held with a turned knob, sets that knob's modulation."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENV and ENV DEST pages."
+  },
+  {
+   "commande": "LFO",
+   "role": "MODS, MATRIX, LFO, LFO 2, ORGANIC, LFO DEST pages."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound edit pages; on an edit page, the page map."
+  },
+  {
+   "commande": "GLO",
+   "role": "MIXER, GLOBAL, SYSTEM, MIDI OUT. Held, quick setting: black keys mute T1 to T4, white keys solo, F4 gives the tempo."
+  },
+  {
+   "commande": "HOME",
+   "role": "Home page of the four tracks; held, the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "USER, PROJECT, PRESETS pages; held, saves the project into its slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "MODE and the ARP page; a second time, ARP 2. Held with a turned knob, the knob's help card."
+  },
+  {
+   "commande": "SEQ",
+   "role": "GEN first (BOUTON 1 = MODE), then the pages of the track's mode. Held, PATTERNS."
+  },
+  {
+   "commande": "REC",
+   "role": "Records; held, prints a generator's last bars into STEP."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns through the pages of the displayed section."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track on all pages."
+  }
+ ],
+ "gestes": [
+  "EDIT held + OCT- or OCT+: undo or redo.",
+  "SAVE + REC: saves the project into its slot."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Experimental status.",
+  "A new project has no modulation: nothing moves until you patch some in."
+ ],
+ "source": {
+  "url": "https://github.com/Rastapopolix/tessera/blob/094f53582cc4bc04d62e95537eb2ff22264f4819/MANUAL.md",
+  "commit": "094f53582cc4bc04d62e95537eb2ff22264f4819"
+ },
+ "d_apres_le_code": false
+}

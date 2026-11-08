@@ -1,0 +1,97 @@
+{
+ "id": "felucca",
+ "resume": "Multi-engine firmware: thirteen engines with factory presets, four tracks (8 shared voices), a 64-step sequencer, effects, a modulation matrix, USB and TRS MIDI, and USB audio. The full manual is in the repository wiki.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down; on action pages, dialogs and the menu: back. With OCT+ at the same time, octave reset to zero."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; on action pages, dialogs and the menu: confirm. With OCT- at the same time, octave reset to zero."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects and SLICER; a second press goes to the next page. Held: performance effects, mutes on the black keys."
+  },
+  {
+   "commande": "SEL",
+   "role": "Scale and chord keys. Held, a key sets the root note."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO and modulation matrix."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Engine parameters. Held, a white key selects the engine."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mixer, global settings and system. Held: mute, solo, tap tempo, levels on KNOB 1 to 4."
+  },
+  {
+   "commande": "HOME",
+   "role": "Home screen. Held: the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Presets, user sounds, projects. Held: undoes the last load (again: redoes it)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator; it blinks on the beat."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer: steps and pattern. Held: Song, which chains patterns."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the four tracks."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms the track for recording, on all pages. When stopped, it also starts playback."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo (BPM); the MENU > BPM LOCK setting freezes it."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Track sound, on HOME and on SAVE > PRESETS."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects track T1 to T4, on all pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the selected track, from F3 to G5. On the STEP page, they enter notes (drum tracks: step grid)."
+  }
+ ],
+ "gestes": [
+  "GLO held + SELECT: tempo, even with BPM LOCK.",
+  "GLO held + PLAY: restarts from the beginning.",
+  "OCT- and OCT+ together: octave reset to zero."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "These controls come from the repository's controls image (docs/controls.jpg); the README points to the wiki for details.",
+  "A second calculation path (2ND CORE) is in beta and disabled by default: MENU > SYSTEM > 2ND CORE."
+ ],
+ "source": {
+  "url": "https://github.com/hugelton/Felucca/blob/a53ecf428c29c780108fd70a31b71a32a6b5c313/README.md",
+  "commit": "a53ecf428c29c780108fd70a31b71a32a6b5c313"
+ },
+ "d_apres_le_code": false
+}

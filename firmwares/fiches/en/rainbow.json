@@ -1,0 +1,100 @@
+{
+ "id": "rainbow",
+ "resume": "Music toy for very young children, a fork of Felucca: 94 friends, each with a picture, a sound, a sky and a favorite rhythm, one color per note, 21 rhythms with a bass that is always right. Always starts in Rainbow mode.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Same effect as KNOB 1: a bigger friend, lower notes."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Same effect as KNOB 1: a smaller friend, higher notes."
+  },
+  {
+   "commande": "FX",
+   "role": "HICCUP: the sound stutters."
+  },
+  {
+   "commande": "ENV",
+   "role": "SLEEPY: the sound slows down with each note; wakes up by itself after 3 seconds."
+  },
+  {
+   "commande": "LFO",
+   "role": "SQUEAKY: everything goes up an octave."
+  },
+  {
+   "commande": "EDIT",
+   "role": "GIANT: everything goes down an octave."
+  },
+  {
+   "commande": "GLO",
+   "role": "FREEZE: the sound freezes."
+  },
+  {
+   "commande": "HOME",
+   "role": "A surprise friend. Held for one second: the VOLUME for adults."
+  },
+  {
+   "commande": "SAVE",
+   "role": "WRITE: you write your own song; SAVE again returns to play."
+  },
+  {
+   "commande": "ARP",
+   "role": "Sparkle: a held key rises and falls by itself."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Next rhythm out of 21."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the rhythm: drums and bass always in key."
+  },
+  {
+   "commande": "REC",
+   "role": "Next sky, with confetti."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume, within the limit chosen by the adults."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Slower or faster rhythm (SLOW, WALK, FAST)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Next or previous friend."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Way of playing: 1 FRIEND, 3 FRIENDS, STRUM, ACCORDION, GUESS, FOLLOW, CHORDS, COPY ME."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the friend's sound; the note letter is shown large."
+  }
+ ],
+ "gestes": [
+  "HOME held 1 s: volume and settings for adults.",
+  "HOME and SAVE together 3 s: back to the full Felucca."
+ ],
+ "modes": [
+  {
+   "nom": "ALGORITHM",
+   "texte": "1 FRIEND: one note per key. 3 FRIENDS: one chord per key. STRUM and ACCORDION: the black keys choose a chord. GUESS, FOLLOW, CHORDS and COPY ME are ear and memory games."
+  },
+  {
+   "nom": "WRITE",
+   "texte": "SAVE opens a large 32-column staff to write a song for up to three friends; PLAY plays it in a loop."
+  }
+ ],
+ "a_savoir": [
+  "The top row effects switch on with one press and off with another, one at a time."
+ ],
+ "source": {
+  "url": "https://github.com/joshbartlettband-web/felucca-rainbow/blob/0baf362731c65398ad963229a3fe5500c75c6e3e/RAINBOW.md",
+  "commit": "0baf362731c65398ad963229a3fe5500c75c6e3e"
+ },
+ "d_apres_le_code": false
+}

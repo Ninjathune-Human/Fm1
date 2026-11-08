@@ -1,0 +1,97 @@
+{
+ "id": "jiant",
+ "resume": "Bio-synthetic groovebox for playing live and building songs without a computer: six tracks, several engines, a song generator and a section system, inherited from Felucca and SLOOP.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard octave down. In dialogs: back or NO."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard octave up. In dialogs: done or YES. Both together: octave 0."
+  },
+  {
+   "commande": "FX",
+   "role": "FX section, module by module (TRACK, BUSES, DELAY, REVERB...). Held: live effects (punch-in)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed SCL in the docs. SCL section: KEY and CHORD. Held: the keys set the root."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENV section: TRACKS, ENV, STAGE."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO section: MOD, LFO, MSEQ. Held: macros, KNOB 1 to 4 are M1 to M4."
+  },
+  {
+   "commande": "EDIT",
+   "role": "EDIT section (SOUND, TONE, FOCUS). Held: INIT, RECALL, DRUM-X mutes. Held + SELECT: sound dice."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLO section: LIVE, MIX, GLOBAL, SYSTEM. Held: mutes, solos, levels, tap tempo, UNDO; + SELECT: tempo."
+  },
+  {
+   "commande": "HOME",
+   "role": "HOME page; press again for the groups ECO, BEING, GEN. Held 0.7 s: MENU; held + SELECT: the GEN song generator."
+  },
+  {
+   "commande": "SAVE",
+   "role": "SAVE section: sounds, project (sections), library. Held: play or stow sections live."
+  },
+  {
+   "commande": "ARP",
+   "role": "ARP section (ARP and ARP 2)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer: STEP (piano roll), PATTERN, TRACK, BAR, AUTO. Held: SEQ tools."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms or disarms recording of the selected track. Held: CLEAR, CLICK."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Output volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Steps through the pages of the section, one page per detent."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the track's sound (factory then user); on the SEQ pages, the patterns; in GEN, the genre."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track, T1 to T6 (T1 to T4 with TRACKS 4)."
+  },
+  {
+   "commande": "Touches",
+   "role": "They play the selected track. Held buttons: shortcuts for the layer."
+  }
+ ],
+ "gestes": [
+  "HOME held + SELECT: the GEN generator.",
+  "GLO held + G4: UNDO of the last big change.",
+  "A held step (SEQ, STEP) + KNOB 1 to 4: parameter lock on that step."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Little tested on a real FM-1 (preview version).",
+  "Felucca's user samples (USR1 to USR3) are lost on installation."
+ ],
+ "source": {
+  "url": "https://github.com/juanjiant-bit/JIANT/blob/c6e7aa189525043806e6b3052dd1f8b3c39c3e33/docs/MANUAL.md",
+  "commit": "c6e7aa189525043806e6b3052dd1f8b3c39c3e33"
+ },
+ "d_apres_le_code": false
+}

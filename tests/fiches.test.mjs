@@ -48,3 +48,27 @@ test("chaque firmware optimisé (natif) a sa fiche, FM-1+VA aussi", () => {
   const manquantes = [...natifs, "fm1va"].filter((id) => !ids.has(id));
   assert.deepEqual(manquantes, []);
 });
+
+test("chaque firmware natif a sa fiche anglaise, de même forme que la française", () => {
+  const EN = join(DIR, "en");
+  const natifs = JSON.parse(readFileSync(join(ROOT, "tools/natif.json"), "utf8")).firmwares.map((f) => f.id);
+  for (const id of [...natifs, "fm1va"]) {
+    assert.ok(existsSync(join(EN, `${id}.json`)), `${id} : fiche anglaise absente`);
+    const fr = JSON.parse(readFileSync(join(DIR, `${id}.json`), "utf8")), en = JSON.parse(readFileSync(join(EN, `${id}.json`), "utf8"));
+    assert.equal(en.id, id);
+    assert.deepEqual(en.commandes.map((c) => c.commande), fr.commandes.map((c) => c.commande), `${id} : commandes`);
+    assert.equal(en.gestes.length, fr.gestes.length, `${id} : gestes`);
+    assert.equal(en.modes.length, fr.modes.length, `${id} : modes`);
+    assert.equal((en.a_savoir || []).length, (fr.a_savoir || []).length, `${id} : a_savoir`);
+    assert.deepEqual(en.source, fr.source, `${id} : source`);
+    assert.equal(en.d_apres_le_code, fr.d_apres_le_code, `${id} : d_apres_le_code`);
+    assert.ok(en.resume.trim() && en.commandes.every((c) => c.role.trim()), `${id} : textes vides`);
+    assert.ok(!JSON.stringify(en).includes("<"), `${id} : un < dans le texte`);
+  }
+});
+
+test("le dictionnaire de l'interface : aucune valeur n'est aussi une clé, les motifs compilent", () => {
+  const d = JSON.parse(readFileSync(join(ROOT, "assets/lang-en.json"), "utf8"));
+  for (const [k, v] of Object.entries(d.exact)) assert.ok(v && !(v in d.exact), `${k} : valeur vide ou rebouclée`);
+  for (const [re] of d.patterns) new RegExp(re, "u");
+});

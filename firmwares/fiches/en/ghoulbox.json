@@ -1,0 +1,66 @@
+{
+ "id": "ghoulbox",
+ "resume": "GHOULBOX is a dark, medieval, fantasy dungeon synth firmware, a fork of Felucca: the FM-1 boots into a ready-to-play scene (D minor, 72 BPM), with 59 sounds including a hurdy-gurdy.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Held at power-on, starts USB rescue mode."
+  },
+  {
+   "commande": "FX",
+   "role": "TAPE page: worn cassette, CRSH, cave ambience (AMB) and torch crackle (CRKL)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound settings; the RING page (drones that ring during silences) comes after DRONE and WHEEL."
+  },
+  {
+   "commande": "GLO",
+   "role": "Held, drone lock (see gestures); with SELECT, tempo."
+  },
+  {
+   "commande": "HOME",
+   "role": "Held, opens the menu (SYSTEM, MIDI, CONTROL). Pressed on HOME, moves to MIXER, CLOCK, KEYS then DREAM."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the phrases (PHRASES); held after FREEZE, cancels the freeze."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer; held then F4 (FREEZE), freezes the last DREAM pass into the chosen track."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts the power-on scene's music."
+  },
+  {
+   "commande": "SELECT",
+   "role": "With COUP on CRANK on a GURDY track, becomes the crank: the faster you turn, the louder and brighter."
+  }
+ ],
+ "gestes": [
+  "GLO held + F#4, G#4, A#4 or C#5: locks tracks 1 to 4, the chord played keeps sounding after release.",
+  "SEQ held + F4: FREEZE, the track's steps become what the last DREAM pass played.",
+  "OCT- held at power-on: USB rescue mode."
+ ],
+ "modes": [
+  {
+   "nom": "DREAM",
+   "texte": "Page after MIXER, CLOCK and KEYS (presses of HOME). Choose a MOOD and press a key: the FM-1 composes a slow piece in that key for the four tracks. EVOL makes it evolve on its own; DENS sets the density, DRFT the frequency of changes. It replaces the patterns of the four tracks (it asks first)."
+  },
+  {
+   "nom": "Scenes",
+   "texte": "MENU > SYSTEM > SCENE chooses what the FM-1 plays at power-on: DUNGEON (default), CRYPT, TAVERN, CHAPEL or BLANK."
+  }
+ ],
+ "a_savoir": [
+  "The README doesn't describe the basic controls inherited from Felucca (sequencer, menu, engines): it refers to the Felucca README.",
+  "USB audio is 44.1 kHz only."
+ ],
+ "source": {
+  "url": "https://github.com/jasonpersinger/ghoulbox-fm1-dungeon-synth/blob/9f2b9a22e456d7fe9552b40f7a1d0c13200913bb/README.md",
+  "commit": "9f2b9a22e456d7fe9552b40f7a1d0c13200913bb"
+ },
+ "d_apres_le_code": false
+}

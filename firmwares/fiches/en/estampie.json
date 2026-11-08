@@ -1,0 +1,91 @@
+{
+ "id": "estampie",
+ "resume": "Medieval groovebox for dance music: thirteen engines on four tracks, each with a 64-step sequencer, an arpeggiator, chord keys, scales and medieval temperaments. It reuses the Felucca controls, and its guide says the panel labels no longer always match.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. In a question, answers no."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. In a question, answers yes."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects page; held, performance effects on the keys."
+  },
+  {
+   "commande": "SEL",
+   "role": "Scale page (SCL on screen); held, a key becomes the root."
+  },
+  {
+   "commande": "ENV",
+   "role": "Track envelope page."
+  },
+  {
+   "commande": "LFO",
+   "role": "Track LFO page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The engine's eight settings, four per page; held, each white key picks an engine."
+  },
+  {
+   "commande": "GLO",
+   "role": "SONG page; held, track mutes and solos, tap tempo and MIDI learn on the keys."
+  },
+  {
+   "commande": "HOME",
+   "role": "Back to the home screen; held, opens the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Save pages; held, undoes the last sound or pattern load."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Track steps; held, step tools on the keys."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Recording; held, erase and click tools."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the track's sound from any page that is not a list."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track (T1 to T4); everything you do applies to it."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the selected track."
+  }
+ ],
+ "gestes": [
+  "FX, GLO, SEL, EDIT, SEQ or REC held: a quick layer on the keys. Double-tap: the layer stays open.",
+  "SAVE held: undoes the last load."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The four tracks share 12 voices."
+ ],
+ "source": {
+  "url": "https://github.com/ocean/estampie/blob/b6be8f78adcee97d4b217db7b81f6a4eb02445e8/docs/guide/guide.html",
+  "commit": "b6be8f78adcee97d4b217db7b81f6a4eb02445e8"
+ },
+ "d_apres_le_code": false
+}

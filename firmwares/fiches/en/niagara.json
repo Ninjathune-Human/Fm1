@@ -1,0 +1,69 @@
+{
+ "id": "niagara",
+ "resume": "Drone synth: two always-on drones that you tune, shape and set in motion rather than play note by note. The keys are not notes: the twelve lower white keys hold presets and scenes, the top four are gestures, the black keys are switches.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "LFO I waveform: press for the next; with SEL, the previous."
+  },
+  {
+   "commande": "OCT+",
+   "role": "LFO II waveform: press for the next; with SEL, the previous."
+  },
+  {
+   "commande": "SEL",
+   "role": "Held: fine adjustment. SEL + an upper white key selects the scene bank (D5 A, E5 B, F5 C, G5 Presets); SEL + PLAY brings drone II in or out."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the sound right away. SAVE held then a white key stores the sound in that slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "Press: turns Swell on or off (both drones chopped in time)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Fades the drones in or out."
+  },
+  {
+   "commande": "REC",
+   "role": "Records your knob movements, then loops them, then stops (up to 5 minutes)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Gesture duration, from ten times faster to ten times slower."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Movement: all LFO depths together, from still to double."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The lower twelve (F3 to C5) recall scenes; pressing harder crossfades to the scene. The top four (D5 to G5) are the gestures Weight, Shift, Clean, Wash."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Switches (lit = active): partner, sub, filter, pitch lock, links between drones. On the LFO pages, they set the LFO routing."
+  }
+ ],
+ "gestes": [
+  "Gesture (top key) held: it comes in, then goes back out as slowly as you held it; a short press sets it, a second one removes it.",
+  "SEL held when releasing a gesture: keeps it where it is."
+ ],
+ "modes": [
+  {
+   "nom": "Scene banks",
+   "texte": "Three banks A, B, C that are yours (twelve scenes each) and the fixed Presets bank, with twelve starter sounds. A new FM-1 starts on Presets."
+  }
+ ],
+ "a_savoir": [
+  "Pitch lock is on at first startup: turning a pitch knob shows PITCH LOCKED, black key 4 turns it off.",
+  "Nothing can be stored in the Presets bank: use A, B or C."
+ ],
+ "source": {
+  "url": "https://github.com/evanyerburgh/niagara-drift/blob/802daa818af060293cae77afec013df3dec0a060/README.md",
+  "commit": "802daa818af060293cae77afec013df3dec0a060"
+ },
+ "d_apres_le_code": false
+}

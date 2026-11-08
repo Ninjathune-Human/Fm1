@@ -1,0 +1,105 @@
+{
+ "id": "mnm1",
+ "resume": "MNM-1 is a six-track monophonic synth, each track with its own synthesis or effect machine, pages of eight knobs, a high-pass and low-pass filter, a tape delay and three LFOs, parameter locks and slides. Derived from Hortator, with sounds taken from MONO2K.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "With KEYS on (SEL), keyboard octave down. On STEP, the previous bank of 16 steps. Held in LOCK: turning a knob clears only its lock; tapped, clears the held step's locks on release."
+  },
+  {
+   "commande": "OCT+",
+   "role": "With KEYS on, octave up. On STEP, the next bank of 16 steps."
+  },
+  {
+   "commande": "FX",
+   "role": "EFFECTS, SLICER, REVERB, CHORUS, LOFI (calibrated tracks also have DESTROY and MOD FX). Held: PERFORM, the master effects live."
+  },
+  {
+   "commande": "SEL",
+   "role": "Called SCL: KEYS on or off, the keys play the selected track (on at startup)."
+  },
+  {
+   "commande": "ENV",
+   "role": "The FILTER page."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO 1, 2 and 3."
+  },
+  {
+   "commande": "EDIT",
+   "role": "SYNTH (the machine's eight knobs), then AMP, then TRACK (MODEL, NOTE, OUT, IN, GATE, sends). Again: the next row or page. Held: the preset list."
+  },
+  {
+   "commande": "GLO",
+   "role": "Tapped: global settings. Held: the white keys mute the tracks."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tapped: TRACKS (levels, lengths, pans) or HOME (the oscilloscope; SELECT leads to COMP). Held: the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Patterns (save, load, name), tools and KIT slots."
+  },
+  {
+   "commande": "ARP",
+   "role": "The ARP, then ARP MODE, ARP TRIG and ARP RHYTHM."
+  },
+  {
+   "commande": "SEQ",
+   "role": "STEP, PATTERN, MOTION, SONG, SWING MASK and TRANSPOSE. Leaves LOCK mode."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording; on STEP, when stopped, KEYS on: step recording. During playback, turning knobs records locks."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "On eight-knob pages, the track's machine; elsewhere, the pages; on TRACKS, the tempo. A held step: its trigger type."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the 330 factory sounds."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "With KEYS, play the selected track. On STEP: a step on or off; with a step held, KNOB 1 its probability, KNOB 2 its ratchets, KNOB 3 its accent, KNOB 4 SLIDE. GLO held: mute the tracks."
+  }
+ ],
+ "gestes": [
+  "A step held + EDIT, ENV, FX or LFO: LOCK mode, the page opens and the keys stay as steps; hold a step and turn a knob to lock the value on that step.",
+  "FX held: PERFORM.",
+  "HOME held: the menu."
+ ],
+ "modes": [
+  {
+   "nom": "Eight-knob pages",
+   "texte": "Two rows of four on the FM-1's four knobs: KNOB 1 to 4 set the lit row. SYNTH, AMP (ATK HOLD DEC REL, DIST LVL PAN PORT), FILTER (BASE WDTH HPQ LPQ, ATK DEC BOFS WOFS), EFFECTS, LFO 1 to 3."
+  },
+  {
+   "nom": "LOCK",
+   "texte": "A lock lasts until the next trigger; up to 240 per project, recorded live or set in LOCK mode. Slide glides the value to the next lock."
+  }
+ ],
+ "a_savoir": [
+  "MIDI: channels 1 to 6 play the matching calibrated track; clock and MIDI over USB and TRS, MIDI LEARN."
+ ],
+ "source": {
+  "url": "https://github.com/galfaroth/mnm1/blob/2c7aee4c277bb642404c4638dbc77a360d36cf55/README.md",
+  "commit": "2c7aee4c277bb642404c4638dbc77a360d36cf55"
+ },
+ "d_apres_le_code": false
+}

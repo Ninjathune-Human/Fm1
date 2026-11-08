@@ -1,0 +1,92 @@
+{
+ "id": "hortator",
+ "resume": "Eight-track drum machine with a step sequencer of up to 64 steps, Grids, compressor, two LFOs per track, resonators and live effects. The white keys are the steps; a beta version.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Previous bank of steps on SEQ; with SEL active, octave from -2 to +2."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Next bank of steps on SEQ; held with a step, its accent; with SEL active, octave from -2 to +2."
+  },
+  {
+   "commande": "FX",
+   "role": "FX, SLICER, RESON, delay, reverb, chorus. Held: PERFORM (performance effects on the black keys, mutes on the white keys)."
+  },
+  {
+   "commande": "SEL",
+   "role": "KEYS mode: the keys play the selected track (the button is labeled SCL on the device)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Toggles STEPS / TRACKS: in STEPS, the white keys are the track's steps, whatever the page."
+  },
+  {
+   "commande": "LFO",
+   "role": "The track's two LFOs (LFO 1 on KNOB 1-2, LFO 2 on KNOB 3-4), then DEST."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The sound of the selected track: model and its settings."
+  },
+  {
+   "commande": "GLO",
+   "role": "Short press: global settings. Held: the MUTE screen."
+  },
+  {
+   "commande": "HOME",
+   "role": "Toggles between TRACKS (levels, lengths, pans) and HOME; held: the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Short press: projects (save, load, name). Held: the cue map."
+  },
+  {
+   "commande": "ARP",
+   "role": "Grids, the pattern generator."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The steps on the white keys (short press: turns on or off), then PATTERN, MOTION and SONG."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops playback; armed recording only starts with PLAY."
+  },
+  {
+   "commande": "REC",
+   "role": "On TRACKS: arms the selected track. Elsewhere: REC ALL, all tracks armed to play drums live."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns the pages of a section; on TRACKS, sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads the next or previous preset on the selected track; EDIT held opens the list."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track, everywhere."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The track's steps (16 at a time per bank); on HOME or TRACKS, they play the eight tracks."
+  }
+ ],
+ "gestes": [
+  "FX held: PERFORM, with live filters and effects.",
+  "GLO held: MUTE screen, one white key per track."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Beta version, little tested on real hardware.",
+  "Four project slots, A to D; the last one saved loads at power-up."
+ ],
+ "source": {
+  "url": "https://github.com/deadactive/hortator/blob/4e40f27232518e34881d02727eb3df3ee9940f03/README.md",
+  "commit": "4e40f27232518e34881d02727eb3df3ee9940f03"
+ },
+ "d_apres_le_code": false
+}

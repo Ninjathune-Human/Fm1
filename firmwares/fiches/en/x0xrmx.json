@@ -1,0 +1,100 @@
+{
+ "id": "x0xrmx",
+ "resume": "Derived from X0X, a stereo groovebox with a 909, an 808, two 303s, a breakbeat player, a song mode and an Orb-style remix: independent bank and pattern for each part. It adds Grids rhythm generation, the extended TB-3PO and the Morph waveform for the 303s.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Steps by sixteen; on HOME and SONG, patterns 1 to 16 or 17 to 32; on the 303 keyboard, the octave; in a generator, mutes or writes a new pattern."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Steps by sixteen; on HOME and SONG, patterns 1 to 16 or 17 to 32; on the 303 keyboard, the octave; in a generator, mutes or writes a new pattern."
+  },
+  {
+   "commande": "FX",
+   "role": "Reverb and delay."
+  },
+  {
+   "commande": "SEL",
+   "role": "The whole screen as a list, including settings without a page; in a question, yes."
+  },
+  {
+   "commande": "ENV",
+   "role": "Held while pressing a key: an accent; held while turning KNOB 1 to 4: resets the parameter to its default value."
+  },
+  {
+   "commande": "LFO",
+   "role": "The mixer and the master; held while pressing a key: a glissando."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The sound of the chosen part; the keys always write its steps."
+  },
+  {
+   "commande": "GLO",
+   "role": "The settings; pressing again closes."
+  },
+  {
+   "commande": "HOME",
+   "role": "The pattern and its five parts, mutes; pressing again opens the song. Held: + REC undoes, + PLAY redoes, + SELECT sets the tempo, + white key picks a pattern."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves everything (during playback, when stopped); held, copies the pattern, then a white key pastes it."
+  },
+  {
+   "commande": "ARP",
+   "role": "GRIDS on 909 and 808, TB-3PO on 303A and 303B; pressing again moves to the next page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The steps of the chosen part, with LENGTH and RATE."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Records notes, hits, knob movements and, on SONG, the song; on a 303, the keys become a keyboard."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Previous or next page; in a list, moves up and down."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Next pattern: for the part alone on its screen, for all five on HOME."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the part: 909, 808, 303A, 303B or BREAK; in a list, changes the value."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The steps; on HOME, the patterns."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "The drum tracks or the break slices; on HOME, mute the parts."
+  }
+ ],
+ "gestes": [
+  "HOME held + REC: undo; + PLAY: redo (up to 32 changes).",
+  "A button held for one second: a card says what it does."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Only one of the two 303s can use the Morph waveform at a time, and it remains experimental.",
+  "BREAK has no recorded break: two loops produced by the engines, 909 GR and 808 GR."
+ ],
+ "source": {
+  "url": "https://github.com/Mr-Roboto/fm1-x0x-rmx/blob/a4e78f3a6e16fa310b7614e5876d07e16a0020f9/docs/MANUAL.md",
+  "commit": "a4e78f3a6e16fa310b7614e5876d07e16a0020f9"
+ },
+ "d_apres_le_code": false
+}

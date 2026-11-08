@@ -1,0 +1,84 @@
+{
+ "id": "loom",
+ "resume": "LOOM-8 turns the FM-1 into a pocket groovebox: eight instrument tracks on ten engines, a 64-step sequencer with step tricks and parameter locks, players (arp, strum, hold), scenes and a song.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard one octave down; on Steps, previous bar; in step entry, moves the cursor."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard one octave up; on Steps, next bar; in step entry, moves the cursor."
+  },
+  {
+   "commande": "FX",
+   "role": "Character (the track's effect), then Sends, then FX I and FX II."
+  },
+  {
+   "commande": "SEL",
+   "role": "List of the page's settings and actions; in a question, yes."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope, then Filter, then the filter envelope."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Engine, then Play and Play 2 depending on the track."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mix, then Master EQ, Master color, Master out, LFO and Setup."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens Arrange, then Song. Held, acts as a shift (undo, redo, fine tempo, scenes). In a question, no."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves. Held with a white key, saves into a slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "Players (arp, strum, hold). On Steps, with a cell held, opens its tricks."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens Steps; page 2: Bar. Held on Steps, the keys play the track."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops; on Song, plays from the chosen slot."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms step entry when stopped; held during playback, records."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Next page of the button; in a list, moves."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Moves to the page's next item: preset, pattern, scene..."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track."
+  }
+ ],
+ "gestes": [
+  "SEQ held on Steps: the keys play the track and set what a cell writes.",
+  "A button held for one second: a card explains its role."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-loom/blob/92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f/docs/MANUAL.md",
+  "commit": "92b4bf2c080b0a4172c07e4cf499dd6d557c3f5f"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,76 @@
+{
+ "id": "pigeon",
+ "resume": "Performance sampler: two songs sliced into chops (32 at most each), a 16-pad drum kit, a sequencer and sampling over USB. The three tracks share 500 KiB of samples.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On a song, pitch in semitones."
+  },
+  {
+   "commande": "OCT+",
+   "role": "On a song, pitch in semitones."
+  },
+  {
+   "commande": "FX",
+   "role": "PIGEON effects pages; on a song, after EDIT, opens the USB sampler."
+  },
+  {
+   "commande": "SEL",
+   "role": "Patterns, then Arrangement; held with a chop key, plays the end of the chop then loops while held."
+  },
+  {
+   "commande": "ENV",
+   "role": "On the grid, step details; in chop setup, envelopes."
+  },
+  {
+   "commande": "LFO",
+   "role": "On a song, changes the function of K1 (start, playhead, direction, cents, gain, fade); on the grid, timing and recording preferences."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Chop settings: held loop, lock, slicing and joining, undo and redo."
+  },
+  {
+   "commande": "HOME",
+   "role": "Back to the waveform; on the waveform, opens the settings."
+  },
+  {
+   "commande": "SAVE",
+   "role": "On Patterns, saves the phrase into the selected pattern A to D."
+  },
+  {
+   "commande": "ARP",
+   "role": "Mixer and effect sends."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Step grid; pressing again opens the piano roll."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording: when stopped, the keys write the steps; during playback, they record live."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "On a song, chops 1 to 16."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "On a song, chops 17 to 27; PRESETS reaches the following ones."
+  }
+ ],
+ "gestes": [
+  "SEL held + chop key: plays the end of the chop, then loops while the key is held.",
+  "EDIT then FX on a song: the USB sampler."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "K1 to K4 are the four page knobs; on the waveform, K1 and K2 set the chop start and end, K3 and K4 the scroll and zoom.",
+  "The synthesis engines are not available in this firmware."
+ ],
+ "source": {
+  "url": "https://github.com/TheShrimpBlimp/pigeon/blob/48f028f2ee7f6a0140dfef9d9426dc3237f2e466/docs/PIGEON_CONTROLS.md",
+  "commit": "48f028f2ee7f6a0140dfef9d9426dc3237f2e466"
+ },
+ "d_apres_le_code": false
+}

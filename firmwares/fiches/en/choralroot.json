@@ -1,0 +1,96 @@
+{
+ "id": "choralroot",
+ "resume": "Chord instrument in the spirit of the Telepathic Orchid: one hand plays the roots, the other shapes the chords. It offers a Key mode, play modes, a bass and a looper, on the FM-1's sound engines.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the roots by one octave. In layers, menus and dialogs, goes back or cancels."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the roots by one octave. In layers, menus and dialogs, confirms."
+  },
+  {
+   "commande": "FX",
+   "role": "Tapped, turns the effects on or off. Held, opens the FX layer (SELECT chooses the page, KNOB 1 to 4 its cells)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed KEY in this firmware. Tapped, turns Key Mode on or off. Held, opens the KEY layer (tonic, scale)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Printed BASS in this firmware. Tapped, turns the bass on or off. Held, opens the BASS layer (behavior, register, sound, level)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Printed LOCK. Tapped, turns LOCK on or off, which keeps the pressed chord type. Held, opens the LOCK layer."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the sound editor. Held, opens the engine selector."
+  },
+  {
+   "commande": "GLO",
+   "role": "Printed OPT. Opens the options (SELECT chooses the setting, KNOB 1 its value)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Goes back. On the view, goes to the next view. Held 0.6 s, opens the views menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the save menu. Held, does the global save (everything, loop included)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Printed PERF. Tapped, turns the performance mode (strum, arpeggio, harp...) on or off. Held, opens its layer."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the loop editor. Held, opens the metronome menu."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Printed LOOP. Starts and stops the loop. Held, opens the PLAY menu (slot, recording mode, length)."
+  },
+  {
+   "commande": "REC",
+   "role": "Records according to the chosen recording mode and ends the take. Held, undoes the last layer."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo. In a layer, the layer's selector."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the chord sound."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the bass sound."
+  },
+  {
+   "commande": "Touches",
+   "role": "Chord block: DIM, MIN, MAJ on the black keys F#3, G#3, A#3 (G#3 and A#3 together: SUS), and 6, m7, M7, 9 on the white keys F3, G3, A3, B3. The roots run from C4 to G5. KNOB 1 sets the voicing."
+  }
+ ],
+ "gestes": [
+  "OCT- and OCT+ together: PANIC, all notes off.",
+  "GLO held + LFO: LATCH.",
+  "GLO held + PRESETS or ALGORITHM: changes the engine of the chord or bass sound."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Public beta version."
+ ],
+ "source": {
+  "url": "https://github.com/Quixotic7/ChoralRootFM1/blob/070bd306ed63c7d08f09bb6ea937262b52b1a6c0/docs/MANUAL.md",
+  "commit": "070bd306ed63c7d08f09bb6ea937262b52b1a6c0"
+ },
+ "d_apres_le_code": false
+}

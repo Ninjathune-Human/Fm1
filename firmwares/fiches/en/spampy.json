@@ -1,0 +1,95 @@
+{
+ "id": "spampy",
+ "resume": "SPAMPY is a synthwave groovebox built on Felucca and SLOOP: synth tracks and a 16-sound drum machine on the white keys, scenes, effects, a NEON arpeggiator and built-in arcade games. Each button has two lives: tapped, it opens its pages; held, a layer where the white keys and knobs change role.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Synth octave; on the drums, held: ghost hits. With EDIT held: undo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; on the drums, held: strong hits. With EDIT held: redo."
+  },
+  {
+   "commande": "FX",
+   "role": "Tapped: the effect pages. Held: the punch-in layer, one effect per white key."
+  },
+  {
+   "commande": "SEL",
+   "role": "Tapped: the scale pages. Held: the key and chord layer."
+  },
+  {
+   "commande": "ENV",
+   "role": "The envelope pages."
+  },
+  {
+   "commande": "LFO",
+   "role": "The LFO pages."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Tapped: the engine pages. Held: the erase layer."
+  },
+  {
+   "commande": "GLO",
+   "role": "Tapped: the global pages. Held: the mix layer (mute, solo, tap tempo, levels)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tapped: the TRACKS screen, then the visualizer. Held: the menu (where the games are too). Tapped while a layer is held: locks it."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Tapped: the song screen or the save pages. Held: the song layer."
+  },
+  {
+   "commande": "ARP",
+   "role": "Tapped: the arpeggiator pages. Held: the note repeat layer."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tapped: the sequencer pages. Held: the step layer, the white keys are the steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops all tracks."
+  },
+  {
+   "commande": "REC",
+   "role": "Tapped: records. Held: erases the track."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The tempo, or the previous or next page."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The selected track's sound, or the drum kit."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Play the track: on the drums, 16 sounds. In a held layer, their role changes (effects, steps, key, mix)."
+  }
+ ],
+ "gestes": [
+  "A button held: its layer; released, you play again. Held + HOME tapped: the layer stays open.",
+  "EDIT + OCT- or OCT+: undo or redo."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Based on SLOOP 2.7: its full guide (GUIDE.md) details every page."
+ ],
+ "source": {
+  "url": "https://github.com/Spampy-Droid/SPAMPY-0.0-r949/blob/2890828d80fea234b28244ef482b9532f77ef8c7/GUIDE.md",
+  "commit": "2890828d80fea234b28244ef482b9532f77ef8c7"
+ },
+ "d_apres_le_code": false
+}

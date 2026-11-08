@@ -1,0 +1,84 @@
+{
+ "id": "minitone",
+ "resume": "Felucca 1.5 extended to six tracks, with new engines (SID, all 48 Braids models, TB-303, engines inspired by Analog Four, SY Chip and Digitone 2), a ping-pong delay and a new reverb. 64-step sequencer, stochastic and Euclidean modes.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. In actions and dialogs, goes back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. In actions and dialogs, confirms. On SEQ, STEP page, held 0.4 s: the step settings sheet."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects pages; held: FX layer (repeat, reverse, sweeps, tape stop, freeze, harmonizer, flanger, phaser)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed SCL in the docs. Scale and chord pages; held: SCL layer."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope page."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO, LFO 2, LFO DEST, MOD pages. Held with a knob: momentary change."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound edit pages (EDIT 1, EDIT 2, VOICE...). Held: EDIT layer (the engines)."
+  },
+  {
+   "commande": "GLO",
+   "role": "SONG page; held: GLO layer (mutes, solos, levels, tap tempo)."
+  },
+  {
+   "commande": "HOME",
+   "role": "HOME, MIXER, CLOCK; held: the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "USER, PRESETS, PHRASES, PROJECT, TOOLS pages; held: undo (UNDO)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "STEP (piano roll or drum grid) and AUTOMATION pages; held: SEQ tools (CLEAR, REVERSE, SHIFT, RANDOM, COOK)."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms the track; held: REC layer (CLEAR, CLICK, COUNT-IN)."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo (adjustable in MENU, CONTROL, SELECT)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the sound, on pages that are not lists."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track, on all pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "They play the track; on SEQ, they are the steps."
+  }
+ ],
+ "gestes": [
+  "A layer button tapped twice: keeps the layer open.",
+  "SEQ, STOCH page: the STOCH or EUCLID mode makes the track play by random draw or by Euclidean rhythm."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/eldontyrellcorp/Mini-Tone/blob/6803c6c29e3402fcc0c4af7c2050df987d9b66b5/README.md",
+  "commit": "6803c6c29e3402fcc0c4af7c2050df987d9b66b5"
+ },
+ "d_apres_le_code": false
+}

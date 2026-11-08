@@ -1,0 +1,78 @@
+{
+ "id": "scintilla",
+ "resume": "Scintilla is the 1981 Elka Synthex on the FM-1: its 80 factory sounds (Paul Wiffen's Laser Harp among them), compared sample by sample with the original. Two layers of 8 voices (single, split, double), poly, mono or unison, chorus and reverb; the four knobs set what the screen shows.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up."
+  },
+  {
+   "commande": "FX",
+   "role": "Chorus (off, 1, 2, 3), volume, unison detune, chord; again: reverb (off, plate, room, hall, galactic), size, damping, mix."
+  },
+  {
+   "commande": "SEL",
+   "role": "Called SCL: the joystick page, X, Y and the two BEND depths; again: recenters the joystick."
+  },
+  {
+   "commande": "ENV",
+   "role": "FILTER, FILTER ENV, AMP ENV."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO 1 (speed, shape, to pitch, to cutoff), LFO 2 (speed, shape, the two joystick depths)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "OSC 1, OSC 2, MIX (again: the next page)."
+  },
+  {
+   "commande": "GLO",
+   "role": "Glide mode, amount and speed; poly, mono or unison. Again: SETTINGS (TOUCH, DEPTH, FLOOR, VELO)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Cutoff, resonance, filter envelope amount, amplitude release."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The joystick up and down: pitch bend (and the filter, depending on the BEND depths)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The 80 factory sounds: PRE 10 to 49 and MEM 10 to 49, the Synthex addresses."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "The joystick left and right: LFO 2 to pitch (left) or to filter (right)."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the two layers of 8 voices, as the patch says. The bottom two rows sense force (velocity and aftertouch, to enable in SETTINGS); the top row plays at 100."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "The pages",
+   "texte": "KNOB 1 to 4 set the four parameters on the screen; a change applies to both layers, each from its own value. An asterisk after the address: the sound differs from the preset."
+  }
+ ],
+ "a_savoir": [
+  "Sound edits are not kept (not yet); the preset, octave and page are.",
+  "USB and DIN MIDI, any channel: notes and velocity, pitch bend, CC1 the joystick to the left (vibrato), CC7 volume, CC74 cutoff, CC91 reverb, CC93 chorus, program change, pressure."
+ ],
+ "source": {
+  "url": "https://github.com/joakimeriksson/scintilla-fm1/blob/83b375200caa281c22be840970c921efdce0a7fc/firmware/README.md",
+  "commit": "83b375200caa281c22be840970c921efdce0a7fc"
+ },
+ "d_apres_le_code": false
+}

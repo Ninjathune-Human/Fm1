@@ -1,0 +1,39 @@
+{
+ "id": "noizdemons",
+ "resume": "Felucca where randomization becomes an invocation: each new sound calls one of the 30 demons of the Ars Goetia, whose sigil takes the screen and whose rank decides how violent the change is. A Knight barely touches the sound, a King remakes it entirely.",
+ "commandes": [
+  {
+   "commande": "EDIT",
+   "role": "Held, its black keys drive the ritual: black key 1 (RIT) turns it on or off on the track, black key 3 (SUM) summons a demon."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Held, undoes and returns to the sound from before the invocations."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "With EDIT held: black key 1 (RIT) turns the ritual on or off, black key 3 (SUM) summons."
+  }
+ ],
+ "gestes": [
+  "EDIT held + black key 3 (SUM): summons a demon; on HOME, everything is drawn (FM6 patch, ENV, LFO, FX), on an ENV, LFO or FX page only its family is.",
+  "EDIT held + black key 1 (RIT): turns the track's ritual on or off.",
+  "SAVE held: undoes back to the sound from before.",
+  "Turning a knob on an ENV, LFO, FX or FM6 operator page, ritual on: each notch is a new invocation."
+ ],
+ "modes": [
+  {
+   "nom": "Ritual",
+   "texte": "Set per track, on at every power-up. The demon's sigil replaces the graphs. With the ritual off, the FM-1 is normal again for the track."
+  }
+ ],
+ "a_savoir": [
+  "The shared effects pages (DLY, REVERB, CHORUS) serve all tracks: SAVE undoes nothing there.",
+  "On FM6, the ENV area changes nothing in what you hear: summon the operators instead."
+ ],
+ "source": {
+  "url": "https://github.com/SPIKE-the-Percussionist/noiz_demons/blob/4fe0f1afb4d97f56dfb763c176679fe6e059ecec/README.md",
+  "commit": "4fe0f1afb4d97f56dfb763c176679fe6e059ecec"
+ },
+ "d_apres_le_code": false
+}

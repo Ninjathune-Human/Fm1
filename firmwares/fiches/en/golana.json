@@ -1,0 +1,84 @@
+{
+ "id": "golana",
+ "resume": "Single analog synth laid out like the microKORG: two oscillators, five filters, two envelopes, two LFOs, a patch bay, an arpeggiator and a 16-step sequencer. Each page draws what it adjusts.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard octave down; both OCT buttons held 5 s: update mode."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard octave up; both OCT buttons held 5 s: update mode."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects: MOD FX, DELAY, REVERB."
+  },
+  {
+   "commande": "SEL",
+   "role": "FILTER, KEY TRACK, SCALE, CHORD pages (SCL in the docs); pressing again moves to the next."
+  },
+  {
+   "commande": "ENV",
+   "role": "FILTER EG and AMP EG envelopes."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO 1, LFO 2 and patch bay (PATCH 1 to 4)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "OSC 1, OSC 2, MIXER and SUB/DRIFT oscillators; pressing again moves to the next page."
+  },
+  {
+   "commande": "GLO",
+   "role": "AMP, VOICE, GLOBAL, SETUP pages."
+  },
+  {
+   "commande": "HOME",
+   "role": "PERFORM: cutoff, resonance, EG int, LFO 1 speed."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Writes the program: PRESETS picks the slot, KNOB 1 the letter, KNOB 2 changes it, SAVE writes, HOME cancels."
+  },
+  {
+   "commande": "ARP",
+   "role": "Turns the arpeggiator on or off."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Arpeggiator pages: ARP, TIMING, STEPS."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Sequencer pages: PATTERN, SETUP."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Steps through all the pages, one by one."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Picks the program (it loads as you turn; unwritten changes are lost)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Sets the cutoff, from any page."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "To recover the device after a bad boot: power on while holding OCT-, which starts USB rescue."
+ ],
+ "source": {
+  "url": "https://github.com/Gadlele/Golana/blob/472914d794fb879eb502f62d3380a3b674ab2547/docs/MANUAL.md",
+  "commit": "472914d794fb879eb502f62d3380a3b674ab2547"
+ },
+ "d_apres_le_code": false
+}

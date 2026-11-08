@@ -1,0 +1,84 @@
+{
+ "id": "shineon",
+ "resume": "Seventies string ensemble, grown out of OberVave: one key, one keyer, registers (double bass, cello, viola, violin, trumpet, horn), a delay-line ensemble and a phaser per sound. Four tracks, a mixer, a MASTER and a sequencer.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down; with OCT+, back to 0. With EDIT, undo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; with OCT-, back to 0. With EDIT, redo."
+  },
+  {
+   "commande": "FX",
+   "role": "Tapped: ENSEMBLE, PHASER, DELAY, REVERB, DRIVE. Held: effects layer, the keys play notes."
+  },
+  {
+   "commande": "ENV",
+   "role": "KEYER page: ATTACK, RELEASE, VELOCITY, GLIDE."
+  },
+  {
+   "commande": "LFO",
+   "role": "VIBRATO page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Tapped: STRINGS (the string registers), BRASS + SPLIT, TONE; in STEPS, clears the step. Held: erases the note played."
+  },
+  {
+   "commande": "GLO",
+   "role": "Tapped: GLOBAL, OUTPUT. Held: the white keys start, mute or solo tracks A to D."
+  },
+  {
+   "commande": "HOME",
+   "role": "PERFORM page (TONE, ATTACK, RELEASE, DEPTH of the ensemble); again, the MIXER."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Twice: saves the track's program. Held: goes to a pattern (white keys 1 to 8) or copies it (black)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page; on this page, ARP becomes HOLD."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tapped: full-screen sequencer, then its views (TRACKS, STEPS, TRACK, PATTERNS). Held: the keys are the steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts the active tracks from step 1, or stops them."
+  },
+  {
+   "commande": "REC",
+   "role": "While playing, records the selected track; when stopped, arms (the first note starts). Held 1.2 s: erases the track."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo; in the sequencer and the mixer, the next pattern (on the bar)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the track's program."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track, A to D."
+  },
+  {
+   "commande": "Touches",
+   "role": "They play the sound of the selected track."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "Four full string sounds cost about twice the processor of a single one: watch the CPU time on the GLOBAL page."
+ ],
+ "source": {
+  "url": "https://github.com/zvenson/shineon/blob/2f37738d690a628e0ae1d23d07ea5ee3eeda2de7/README.md",
+  "commit": "2f37738d690a628e0ae1d23d07ea5ee3eeda2de7"
+ },
+ "d_apres_le_code": false
+}

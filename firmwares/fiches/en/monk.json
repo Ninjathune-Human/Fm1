@@ -1,0 +1,70 @@
+{
+ "id": "monk",
+ "resume": "MONK-1 turns the FM-1 into the MonkSynth formant vocal synth: twelve singers, each with its own voice, whose mouth follows the vowel. Velocity sets the level, aftertouch moves the vowel.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave lower."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave higher."
+  },
+  {
+   "commande": "FX",
+   "role": "Echo page: Amount, Time."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope page: Attack, Decay, Sustain, Release."
+  },
+  {
+   "commande": "LFO",
+   "role": "Vibrato page: Depth, Rate, Tune."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Choir page: Voices, Detune, Spread, Level."
+  },
+  {
+   "commande": "GLO",
+   "role": "Touch page: Pressure, Depth, Sensitive, Velocity."
+  },
+  {
+   "commande": "HOME",
+   "role": "Sing page: Vowel, Head, Breath, Glide."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves immediately (otherwise, it autosaves a few seconds later). Held 1.5 s, restores that singer's original voice."
+  },
+  {
+   "commande": "PLAY",
+   "role": "HOLD: the note stays after release, another key takes over."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Selects the singer: Jerry the monk, Guppo, Philip, Suze, Gerald, Bess, EeOo, Snider, Fipsy, Peppo, Marley, Razor."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the vowel, on any page."
+  },
+  {
+   "commande": "Touches",
+   "role": "Sing."
+  }
+ ],
+ "gestes": [
+  "SAVE held 1.5 s: the displayed singer gets its original voice back."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Single voice: the most recently held key sounds; when released, the previous one resumes, and moving from one to another glides (GLIDE)."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-monk/blob/b21a361ea43b04b38b7598d35eb1ca651baaa661/docs/MANUAL.md",
+  "commit": "b21a361ea43b04b38b7598d35eb1ca651baaa661"
+ },
+ "d_apres_le_code": false
+}

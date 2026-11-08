@@ -1,0 +1,129 @@
+{
+ "id": "grimm",
+ "resume": "GR!MM, for dark ambient and dungeon synth: four tracks sharing six voices, seven sound sources (VA, 6-operator FM, SAMPLE, VOICE, WHEEL, PHYS, PHASE), long effects (TAPE, GRAIN, DELAY, SPACE), a 64-step sequencer per track and a song mode.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Down one octave. In the save menus, back. Held with EDIT, undoes the last change."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Up one octave. In the save menus, confirms. Held with EDIT, redoes."
+  },
+  {
+   "commande": "FX",
+   "role": "Cycles through TAPE, GRAIN, DELAY, SPACE. Held, opens the PERFORM screen."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens SCALE then CHORD. Held then released alone, turns the track's chord mode on or off. On the sequencer pages, held, the four knobs set the step's sound."
+  },
+  {
+   "commande": "ENV",
+   "role": "Track envelope: ATTACK, DECAY, SUSTAIN, RELEASE."
+  },
+  {
+   "commande": "LFO",
+   "role": "Track LFO: RATE, DEPTH, DESTINATION, SHAPE. It runs continuously and doesn't restart on each note."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the track's sound: SOUND then SOURCE (on an FM track, also FM ALGO and FM OP)."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens the SONG page (song mode). Held with a white key, mutes or solos a track."
+  },
+  {
+   "commande": "HOME",
+   "role": "Main screen; a new press opens the mixing pages. Held, opens SYSTEM, then SYSTEM 2."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens PROJECTS then SOUNDS. Held with a key, saves or recalls a slot A to D."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator (MODE, RATE, OCTAVES, GATE). Held, turns it on or off for the track."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens GRID then PATTERN SETTINGS. Held with a white key, sequencer tools; held while turning SELECT, pattern length."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer. In song mode, plays the chain."
+  },
+  {
+   "commande": "REC",
+   "role": "Stopped, each key writes its note into the chosen step and moves to the next. During playback, what you play lands on the nearest step. On the SONG page, records the order of the slots."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "On HOME, the tempo. On the sequencer, moves the cursor."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads the next or previous sound into the chosen track. On the sequencer pages, sets the tempo."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses track T1 to T4; each page shows that track."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the chosen track. For white key gestures, see below."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "With FX held: FREEZE (F3), REV THROW (G3), ECHO THROW (A3), TAPE STOP (B3), REVERSE (C4), FILTER DOWN (D4), FILTER UP (E4), STUTTER (F4). With SEQ held: CLEAR, RANDOM, SHIFT left, SHIFT right, COPY, PASTE, DOUBLE, MUTATE (same order, F3 to F4). With SAVE held: F3 to B3 recall A to D, C4 to F4 save A to D. With GLO held: F3 to B3 mute T1 to T4, C4 to F4 solo T1 to T4."
+  }
+ ],
+ "gestes": [
+  "One button: one press opens its first page, a new press the next.",
+  "EDIT held + OCT- or OCT+: undo or redo.",
+  "SEL held then released: chord mode, one key plays the whole chord.",
+  "SEL held on the sequencer + a button: locks that value on the step. SEL held + OCT-: clears the step's locks.",
+  "SEQ held + SELECT: pattern length.",
+  "FX held + white key: performance moves, valid as long as the key is held. FREEZE toggles with one press.",
+  "HOME held: SYSTEM settings.",
+  "OCT- and OCT+ together: resets the CPU peak shown on SYSTEM 2."
+ ],
+ "modes": [
+  {
+   "nom": "Sources",
+   "texte": "EDIT, SOURCE page: SOURCE chooses VA, FM, SAMPLE, VOICE, WHEEL, PHYS or PHASE, LATCH holds the note until the second press (useful for drones). The SOUND page gives the source's four knobs."
+  },
+  {
+   "nom": "HOME",
+   "texte": "The knobs set the chosen track: VOLUME, CUTOFF, RESONANCE, FX (effect sends together). A second press of HOME opens MIXER 1 (LEVEL and the DLY, REV, GRAIN sends) and MIXER 2 (PAN)."
+  },
+  {
+   "nom": "Sequencer",
+   "texte": "64 steps per track. GRID sets the step: NOTE, CHANCE, RATCHET, LENGTH. PATTERN SETTINGS: STEPS (1 to 64), DIVISION, SWING, PLAY MODE (FORWARD, BACKWARD, PINGPONG, RANDOM)."
+  },
+  {
+   "nom": "Song",
+   "texte": "GLO, SONG page: a chain of 16 stages, each a slot A to D played a number of times (REPEATS 1 to 16). MODE OFF loops the current slot, SONG plays the chain once, SONG LOOP repeats it. To record it: REC then PLAY on the SONG page, and change slot with SAVE + key."
+  },
+  {
+   "nom": "Personal sounds",
+   "texte": "SAVE, SOUNDS page: SLOT (64 slots), CATEGORY, TYPE, ACTION (LOAD, SAVE, CLEAR). OCT+ confirms, OCT- cancels."
+  }
+ ],
+ "a_savoir": [
+  "Saving is automatic: sequencer stopped and no gesture for 2.5 seconds. Nothing to do before powering off.",
+  "Six voices for the four tracks: one more note takes the oldest.",
+  "Writing to memory (sounds, samples) only happens with the sequencer stopped and the sound off.",
+  "SYSTEM: COLOUR, MIDI CHANNEL, TUNE, SCREEN OFF. SYSTEM 2: MIDI LEARN, SEQ MIDI OUT, SAMPLES."
+ ],
+ "source": {
+  "url": "https://github.com/GRiMMBIENT/grimm/blob/815ca6be81d973445851238dbaf12b4536d1e6d8/MANUAL.md",
+  "commit": "815ca6be81d973445851238dbaf12b4536d1e6d8"
+ },
+ "d_apres_le_code": false
+}

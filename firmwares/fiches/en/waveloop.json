@@ -1,0 +1,74 @@
+{
+ "id": "waveloop",
+ "resume": "Felucca played from an Arturia MiniLab 3: track faders, master DJ filter, momentary effect pads, 32 sounds per bank and 12 evolving songs. The FM-1 panel remains Felucca's: four tracks, 64-step sequencer, thirteen engines.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. In actions and dialogs, goes back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. In actions and dialogs, confirms."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects page; held: FX layer (repeat, reverse, sweeps, tape stop, freeze, harmonizer)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed SCL in the docs. Scale page, then chord page; held: SCL layer."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound editing pages; held: EDIT layer."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global page; held: GLO layer."
+  },
+  {
+   "commande": "HOME",
+   "role": "Back to the home screen; held: the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "To keep a sound: stop, tap SAVE, pick the slot with KNOB 1, then OCT+ twice. Held: undo (UNDO)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer pages; held: the songs."
+  },
+  {
+   "commande": "REC",
+   "role": "Records, on all pages; held on STEP, PATTERN or CHANCE, clears the track's sequence (OCT+ confirms)."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the sound, on all pages that are not lists; on SEQ pages, moves the step cursor."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track, on all pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "They play the chosen track."
+  }
+ ],
+ "gestes": [
+  "A layer button tapped twice: keeps the layer open."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The MIDI additions come from the MiniLab 3: its setup is described separately (controllers/MiniLab-3.md), which this sheet has not read."
+ ],
+ "source": {
+  "url": "https://github.com/ELI7VH/Felucca/blob/7bce76090a076cf488ac03b53c83960b7c14e81e/README.md",
+  "commit": "7bce76090a076cf488ac03b53c83960b7c14e81e"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,308 @@
+{
+ "exact": {
+  "Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.": "Power on, on the FM-1, starts the sound and the chosen firmware; the switch under the FM-1 does too. Powering off with the switch resets the active firmware to factory settings (its presets, patterns and settings are erased), then reloads the page.",
+  "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own. A firmware that stops is restarted with Restart.",
+  "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12. Their functions panel explains it.",
+  "Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.": "The six FM-1 colourways, as swatches under the FM-1. With FM-1+VA, the screen takes the matching theme.",
+  "Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.": "Solo and Duo, at the top of the page. Two FM-1s at once, FM1-A and FM1-B, each with its own firmware, memory and power: one above the other in portrait, one or the other in landscape, side by side if you like on a large screen. Linked tempo: an FM-1+VA leads (FM1-A if there is one), the other follows its clock and starts with it; a native or emulated firmware receives it too, and follows it if it can follow a MIDI clock (emulated Felucca family: CLK on TRS). FM1-B takes FM-1+VA or a native firmware.",
+  "Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.": "When the browser handles MIDI, the MIDI button picks the input and the channel, for all firmwares and for this FM-1 only; its light blinks when messages arrive. A connected MIDI keyboard plays the loaded firmware.",
+  "Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.": "The button at the top right. Where the browser does not allow it (iPhone), adding the page to the Home Screen, with Share then Add to Home Screen, opens it without a toolbar.",
+  "Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe.": "The presets, patterns and settings of each firmware, the last firmware chosen, the colourway and the MIDI choice, in this browser only. Powering off erases those of the active firmware; with FM-1+VA, the colourway also returns to Mint.",
+  "FM-1+VA n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href=\"https://baudgirl.com/work/FM-1+VA/manual\" target=\"_blank\" rel=\"noopener\">manuel FM-1+VA</a>. Le panneau vient de l'<a href=\"https://sbegueria.github.io/fm1-dub/emu/\" target=\"_blank\" rel=\"noopener\">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page. Les firmwares émulés tournent sur le cœur <a href=\"https://github.com/joakimeriksson/fm1-emu\" target=\"_blank\" rel=\"noopener\">fm1-emu</a> de Joakim Eriksson, sous licence MIT. Chaque firmware garde sa licence, rappelée dans le volet de ses fonctions ; leurs textes sont dans le dossier <a href=\"https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences\" target=\"_blank\" rel=\"noopener\">firmwares/licences</a> du dépôt.": "FM-1+VA is not Baud Girl's code: its compiled firmware only runs on the FM-1's JieLi chip. Everything is rewritten from the <a href=\"https://baudgirl.com/work/FM-1+VA/manual\" target=\"_blank\" rel=\"noopener\">FM-1+VA manual</a>. The panel comes from the <a href=\"https://sbegueria.github.io/fm1-dub/emu/\" target=\"_blank\" rel=\"noopener\">DUB-1 emulator</a>, under the GPL-3.0 licence, like this page. The emulated firmwares run on Joakim Eriksson's <a href=\"https://github.com/joakimeriksson/fm1-emu\" target=\"_blank\" rel=\"noopener\">fm1-emu</a> core, under the MIT licence. Each firmware keeps its own licence, recalled in its functions panel; the texts are in the repository's <a href=\"https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences\" target=\"_blank\" rel=\"noopener\">firmwares/licences</a> folder.",
+  "Il joue dès que la page a le focus, FM-1 allumé ; un champ ou un bouton de la page garde ses propres touches. C'est la place des touches qui compte : le piano reste un piano en AZERTY.": "It plays as soon as the page has focus, with the FM-1 powered on; a field or a button on the page keeps its own keys. What counts is the position of the keys: the piano stays a piano on an AZERTY keyboard.",
+  "Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité, à la souris comme au clavier.": "Drag up or to the right, or use the mouse wheel. Slowly, one notch changes the value by one unit; faster, the step accelerates. <kbd>Shift</kbd> keeps a step of one unit, with the mouse as with the keyboard.",
+  "Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.": "Shift+click or right-click holds a button down. On a finger, hold with one hand and turn with the other.",
+  "Clic ou doigt, plusieurs à la fois.": "Click or finger, several at once.",
+  "Tournez le téléphone pour des commandes plus grandes.": "Turn the phone for larger controls.",
+  "M-VAVE FM-1 · Émulateur · Version 102": "M-VAVE FM-1 · Emulator · Version 102",
+  "Plein écran": "Full screen",
+  "Quitter le plein écran": "Exit full screen",
+  "Un ou deux FM-1": "One or two FM-1s",
+  "Le FM-1": "The FM-1",
+  "L'écran du FM-1": "The FM-1 screen",
+  "Allumer": "Power on",
+  "Démarrage…": "Starting…",
+  "Choisir un firmware": "Choose a firmware",
+  "Rechercher un firmware": "Search for a firmware",
+  "Effacer la recherche": "Clear search",
+  "Ouvrir un .fwsc…": "Open a .fwsc…",
+  "Coloris": "Colourway",
+  "Gris": "Grey",
+  "Marine": "Navy",
+  "Menthe": "Mint",
+  "Noir": "Black",
+  "Violet": "Purple",
+  "Redémarrer": "Restart",
+  "L'entrée MIDI et son canal, pour tous les firmwares": "The MIDI input and its channel, for all firmwares",
+  "Entrée": "Input",
+  "Canal": "Channel",
+  "Toutes": "All",
+  "Aucune": "None",
+  "Tel quel": "As is",
+  "Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.": "Emulated firmwares receive everything, clock included: Felucca and its relatives follow it with CLK on TRS. This choice applies to this FM-1 only.",
+  "Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive": "A Yamaha DX7 .syx file (one sound or a bank of 32), taken from Files: on the iPad or in iCloud Drive",
+  "Importer un son DX7…": "Import a DX7 sound…",
+  "Importer un son DX7": "Import a DX7 sound",
+  "Importer…": "Import…",
+  "Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob.": "A long sound becomes the song, short sounds the pads (16 at most); or a .kob bank.",
+  "Échantillons…": "Samples…",
+  "Votre ROM LSDj ou DMGo! (.gb) : aucune n'est fournie ici. Elle est vérifiée, puis gardée dans ce navigateur.": "Your LSDj or DMGo! ROM (.gb): none is supplied here. It is checked, then kept in this browser.",
+  "Des sons sur les pads C1 à D8 (16 au plus) ; zp12 les garde, EDIT > WAVE les change de pad.": "Sounds on pads C1 to D8 (16 at most); zp12 keeps them, EDIT > WAVE moves them to another pad.",
+  "Marche / arrêt": "Power",
+  "Marche / arrêt. Éteindre efface les réglages du firmware actif.": "Power. Turning off erases the settings of the active firmware.",
+  "Mode d'emploi": "How to use",
+  "Manuel d'utilisation": "User manual",
+  "Boutons propres à un firmware": "Firmware-specific buttons",
+  "Ce que le navigateur garde": "What the browser keeps",
+  "Crédits et licences": "Credits and licences",
+  "Raccourcis clavier": "Keyboard shortcuts",
+  "Clavier": "Keyboard",
+  "Touches": "Keys",
+  "Molettes": "Knobs",
+  "Maintenir": "Hold",
+  "Boutons": "Buttons",
+  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.": "The tempo links when both FM-1s are on and one plays FM-1+VA: it gives the clock. Native firmwares do not send one.",
+  "Solo et Duo": "Solo and Duo",
+  "clavier:Entrée": "Enter",
+  "Maj": "Shift",
+  "Échap": "Esc",
+  "Espace": "Space",
+  "Fonctions de": "Functions of",
+  "Disposition": "Layout",
+  "Côte à côte": "Side by side",
+  "Un à la fois": "One at a time",
+  "Tempo lié": "Linked tempo",
+  "Le FM-1 affiché": "The FM-1 shown",
+  "Optimisés": "Optimised",
+  "Non optimisés": "Not optimised",
+  "Officiel": "Official",
+  "Synthé": "Synth",
+  "Accords": "Chords",
+  "Boîte à rythmes": "Drum machine",
+  "Autre": "Other",
+  "bêta": "beta",
+  "en ligne": "online",
+  "non évalué": "not evaluated",
+  "ne démarre pas": "does not start",
+  "Aucun firmware ne correspond.": "No firmware matches.",
+  "Résultats approchants": "Approximate results",
+  "Retirer des favoris": "Remove from favourites",
+  "Ajouter aux favoris": "Add to favourites",
+  "Favoris": "Favourites",
+  "Réimplémentation d'après Baud Girl": "Reimplementation after Baud Girl",
+  "Réimplémentation d'après Baud Girl · 102 · GPL-3.0": "Reimplementation after Baud Girl · 102 · GPL-3.0",
+  "Le firmware de Baud Girl réécrit d'après son manuel : FM six opérateurs, Virtual Analog et 8-Bit.": "Baud Girl's firmware rewritten from its manual: six-operator FM, Virtual Analog and 8-Bit.",
+  "Commandes": "Controls",
+  "Gestes": "Gestures",
+  "Modes et écrans": "Modes and screens",
+  "À savoir": "Good to know",
+  "Manuel complet": "Full manual",
+  "· Rédigée d'après le code du firmware, faute de doc.": "· Written from the firmware's code, for lack of documentation.",
+  "Pas de fiche pour ce firmware.": "No sheet for this firmware.",
+  "Pas de fiche pour ce firmware pour l'instant.": "No sheet for this firmware yet.",
+  "Fiche indisponible pour le moment.": "Sheet unavailable for now.",
+  "Cœur d'émulation indisponible": "Emulation core unavailable",
+  "Cœur d'émulation indisponible.": "Emulation core unavailable.",
+  "Extinction…": "Powering off…",
+  "Allumez le FM-1 avant de charger un fichier DX7.": "Power on the FM-1 before loading a DX7 file.",
+  "Banque DX7 de 32 patches : répondez à la question sur l'écran (ALGORITHM choisit la banque).": "DX7 bank of 32 patches: answer the question on the screen (ALGORITHM picks the bank).",
+  "En Duo, FM1-B prend FM-1+VA ou un firmware natif.": "In Duo, FM1-B takes FM-1+VA or a native firmware.",
+  "ROM : vérification…": "ROM: checking…",
+  "Préparation des échantillons…": "Preparing the samples…",
+  "FMDj : chargez votre ROM LSDj ou DMGo! (.gb) avec « ROM… ».": "FMDj: load your LSDj or DMGo! ROM (.gb) with \"ROM…\".",
+  "délai dépassé": "timed out",
+  "sauvegarde : délai dépassé": "save: timed out",
+  "Réservé à FM-1+VA": "Reserved for FM-1+VA",
+  "Ce navigateur n'ouvre pas le plein écran. Touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b> : ouvert depuis l'écran d'accueil, le FM-1 occupe tout l'écran.": "This browser cannot open full screen. Tap <b>Share</b>, then <b>Add to Home Screen</b>: opened from the Home Screen, the FM-1 fills the whole screen.",
+  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue <b>FM-1+VA</b> : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.": "The tempo links when both FM-1s are on and one plays <b>FM-1+VA</b>: it gives the clock. Native firmwares do not send one.",
+  "Do 2": "C 2",
+  "Do♯ 2": "C♯ 2",
+  "Ré 2": "D 2",
+  "Ré♯ 2": "D♯ 2",
+  "Mi 2": "E 2",
+  "Mi♯ 2": "E♯ 2",
+  "Fa 2": "F 2",
+  "Fa♯ 2": "F♯ 2",
+  "Sol 2": "G 2",
+  "Sol♯ 2": "G♯ 2",
+  "La 2": "A 2",
+  "La♯ 2": "A♯ 2",
+  "Si 2": "B 2",
+  "Si♯ 2": "B♯ 2",
+  "Do 3": "C 3",
+  "Do♯ 3": "C♯ 3",
+  "Ré 3": "D 3",
+  "Ré♯ 3": "D♯ 3",
+  "Mi 3": "E 3",
+  "Mi♯ 3": "E♯ 3",
+  "Fa 3": "F 3",
+  "Fa♯ 3": "F♯ 3",
+  "Sol 3": "G 3",
+  "Sol♯ 3": "G♯ 3",
+  "La 3": "A 3",
+  "La♯ 3": "A♯ 3",
+  "Si 3": "B 3",
+  "Si♯ 3": "B♯ 3",
+  "Do 4": "C 4",
+  "Do♯ 4": "C♯ 4",
+  "Ré 4": "D 4",
+  "Ré♯ 4": "D♯ 4",
+  "Mi 4": "E 4",
+  "Mi♯ 4": "E♯ 4",
+  "Fa 4": "F 4",
+  "Fa♯ 4": "F♯ 4",
+  "Sol 4": "G 4",
+  "Sol♯ 4": "G♯ 4",
+  "La 4": "A 4",
+  "La♯ 4": "A♯ 4",
+  "Si 4": "B 4",
+  "Si♯ 4": "B♯ 4",
+  "Do 5": "C 5",
+  "Do♯ 5": "C♯ 5",
+  "Ré 5": "D 5",
+  "Ré♯ 5": "D♯ 5",
+  "Mi 5": "E 5",
+  "Mi♯ 5": "E♯ 5",
+  "Fa 5": "F 5",
+  "Fa♯ 5": "F♯ 5",
+  "Sol 5": "G 5",
+  "Sol♯ 5": "G♯ 5",
+  "La 5": "A 5",
+  "La♯ 5": "A♯ 5",
+  "Si 5": "B 5",
+  "Si♯ 5": "B♯ 5",
+  "Do 6": "C 6",
+  "Do♯ 6": "C♯ 6",
+  "Ré 6": "D 6",
+  "Ré♯ 6": "D♯ 6",
+  "Mi 6": "E 6",
+  "Mi♯ 6": "E♯ 6",
+  "Fa 6": "F 6",
+  "Fa♯ 6": "F♯ 6",
+  "Sol 6": "G 6",
+  "Sol♯ 6": "G♯ 6",
+  "La 6": "A 6",
+  "La♯ 6": "A♯ 6",
+  "Si 6": "B 6",
+  "Si♯ 6": "B♯ 6",
+  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA": "The tempo links when both FM-1s are on and one plays FM-1+VA"
+ },
+ "patterns": [
+  [
+   "^FM1-([AB]) mène, FM1-([AB]) suit son horloge$",
+   "FM1-$1 leads, FM1-$2 follows its clock"
+  ],
+  [
+   "^Raccourcis clavier : (.*)$",
+   "Keyboard shortcuts: $1"
+  ],
+  [
+   "^Ajouter (.+) aux favoris$",
+   "Add $1 to favourites"
+  ],
+  [
+   "^Retirer (.+) des favoris$",
+   "Remove $1 from favourites"
+  ],
+  [
+   "^Démarrage de (.+)…$",
+   "Starting $1…"
+  ],
+  [
+   "^Allumez le FM-1 pour démarrer (.+)\\.$",
+   "Power on the FM-1 to start $1."
+  ],
+  [
+   "^(.+) s'est arrêté\\.$",
+   "$1 has stopped."
+  ],
+  [
+   "^(.+) n'a pas démarré\\.$",
+   "$1 did not start."
+  ],
+  [
+   "^(.+) n'a pas redémarré\\.$",
+   "$1 did not restart."
+  ],
+  [
+   "^Réglages d'usine de (.+)…$",
+   "Factory settings of $1…"
+  ],
+  [
+   "^(.+) · Sauvegardes indisponibles dans ce navigateur\\.$",
+   "$1 · Saving is unavailable in this browser."
+  ],
+  [
+   "^Patch « (.+) » chargé dans le preset (\\d+)\\. SAVE pour le garder\\.$",
+   "Patch \"$1\" loaded into preset $2. SAVE to keep it."
+  ],
+  [
+   "^« (.+) » n'a pas pu être lu : (.+)\\.$",
+   "\"$1\" could not be read: $2."
+  ],
+  [
+   "^MIDI : (.+) branché\\.$",
+   "MIDI: $1 connected."
+  ],
+  [
+   "^MIDI : (.+) débranché\\.$",
+   "MIDI: $1 disconnected."
+  ],
+  [
+   "^Le son n'a pas pu démarrer : (.+)\\. Chrome, Edge, Firefox et Safari récents conviennent\\.$",
+   "The sound could not start: $1. Recent Chrome, Edge, Firefox and Safari work."
+  ],
+  [
+   "^ROM : premier démarrage de (.+), (\\d+) %$",
+   "ROM: first start of $1, $2 %"
+  ],
+  [
+   "^ROM : la chanson de démo, (\\d+) %$",
+   "ROM: the demo song, $1 %"
+  ],
+  [
+   "^ROM : écoute d'un pas, (\\d+) %$",
+   "ROM: listening to a step, $1 %"
+  ],
+  [
+   "^ROM : écoute, (\\d+) %$",
+   "ROM: listening, $1 %"
+  ],
+  [
+   "^FMDj : (.+) est prêt, « (.+) » est gardé dans ce navigateur\\. PLAY le lance\\.$",
+   "FMDj: $1 is ready, \"$2\" is kept in this browser. PLAY starts it."
+  ],
+  [
+   "^Échantillons chargés : banque « (.+) »(, au-delà des 500 Kio du FM-1)?\\.$",
+   "Samples loaded: bank \"$1\"$2."
+  ],
+  [
+   "^Échantillons chargés : chansons? (.+?)(, au-delà des 500 Kio du FM-1)?\\.$",
+   "Samples loaded: song $1$2."
+  ],
+  [
+   "^Échantillons chargés : (.+)$",
+   "Samples loaded: $1"
+  ],
+  [
+   "^zp12 : (\\d+) sons? sur (?:les pads (.+) à (.+)|le pad C1) \\((.+)\\)\\.$",
+   "zp12: $1 sound(s) loaded ($4)."
+  ],
+  [
+   "^« (.+) » n'est pas un son que ce navigateur sait lire$",
+   "\"$1\" is not a sound this browser can read"
+  ],
+  [
+   "^plus de place dans sa mémoire$",
+   "no room left in its memory"
+  ],
+  [
+   "^ROM : (.+)$",
+   "ROM: $1"
+  ],
+  [
+   "^Échantillons : (.+)$",
+   "Samples: $1"
+  ]
+ ]
+}

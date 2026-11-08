@@ -1,0 +1,70 @@
+{
+ "id": "vector37",
+ "resume": "Orbiting overtone synth: four corners of two generators each, a sun on a path and a moon around it decide how much of each corner you hear. The knobs shape the selected planet. Made for the SMK-37; here its FM-1 build.",
+ "commandes": [
+  {
+   "commande": "FX",
+   "role": "Opens the FX knob set; a new press closes it."
+  },
+  {
+   "commande": "SEL",
+   "role": "Next knob page (K1 to K4, then K5 to K8)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the matching knob set (CHORD); a new press closes it."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the matching knob set (FADER BANK); a new press closes it."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Held, the 16 lowest keys replace the pads (four groups of four); EDIT + PLAY restarts, EDIT + SEQ cuts all notes."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to page 1."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the ARP knob set; a new press closes it."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts; its BPM is also set on the ARP set, or with PLAY."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns the knob pages."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the bank's sounds."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the planet: none, 1, 2, 3 or 4."
+  },
+  {
+   "commande": "Touches",
+   "role": "27 keys (F3 to G5), fixed velocity at 100; their LEDs show the held notes."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "The FM-1 version is experimental: built and checked on a computer, never played on a real FM-1.",
+  "The FM-1 has no pads, faders or wheels: the path (FAMILY, SIZE, SPEED, MORPH) is on page 3, KNOB 1 to 4.",
+  "Vector37 keeps no data of its own on the FM-1: no saving of sounds or settings."
+ ],
+ "source": {
+  "url": "https://github.com/genkigenki/Vector37/blob/08742a4198f99e2db2846b00b70ed6808239c447/README.md",
+  "commit": "08742a4198f99e2db2846b00b70ed6808239c447"
+ },
+ "d_apres_le_code": false
+}

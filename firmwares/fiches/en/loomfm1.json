@@ -1,0 +1,79 @@
+{
+ "id": "loomfm1",
+ "resume": "Five-track synth, sampler and groovebox (four synth or sampler tracks plus one drum track), with 14 engines, a 64-step sequencer, a chord progression generator and an arpeggiator. It is built on Felucca, whose documentation makes up most of the README.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On action pages and in prompts, goes back; in the menu, changes the value."
+  },
+  {
+   "commande": "OCT+",
+   "role": "On action pages and in prompts, executes; in the menu, changes the value."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects page; held, a layer of performance effects on the keys."
+  },
+  {
+   "commande": "SEL",
+   "role": "Scale page (SCL in the docs); held, shortcuts on the keys."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope page."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO pages; held with a knob turned, a momentary change that reverts on release."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound editing pages; held, EDIT layer on the keys."
+  },
+  {
+   "commande": "GLO",
+   "role": "SONG page; held, GLO layer (mutes, solos, levels, tap tempo)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Cycles through HOME, MIXER and CLOCK; held, opens the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "USER, PRESETS, PHRASES, PROJECT, TOOLS pages; held, undoes."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "STEP, DETAIL, AUTOMATION pages; held, sequence tools on the keys."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms the track; held, REC layer (erase, click, count-in)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the sound, from any page that is not a list."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track on each page."
+  }
+ ],
+ "gestes": [
+  "FX, GLO, SEL, EDIT, REC or SEQ held: quick layer; double-tap: it stays open.",
+  "SAVE held: undoes the last change."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The README mixes the presentation of Loom (five tracks) with the documentation of Felucca (four tracks): the controls section comes from the latter."
+ ],
+ "source": {
+  "url": "https://github.com/Co-oscillator/Loom-FM-1/blob/ed6f036f9e3187ba22f915c3941d23f477159683/README.md",
+  "commit": "ed6f036f9e3187ba22f915c3941d23f477159683"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,70 @@
+{
+ "id": "duell",
+ "resume": "DUELL turns the FM-1 into a bitimbral synth: two complete parts, three ways to play them together (DUEL, STEREO, LAYER) and a MORPH that glides between two versions of each sound.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down on release; held with a rotary knob, resets its card to default."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up on release; in a dialog, confirms."
+  },
+  {
+   "commande": "FX",
+   "role": "The part's effect pages. Held, opens PERFORM: the 16 white keys are held effects."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens MIXER (levels and pans of the two parts). Held, the knobs set these levels from any page."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens the MORPH page. Held, opens the menu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens PATCHES, PATTERNS or MULTIS depending on where you are. Held, offers to overwrite the slot."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording on the sequencer pages; elsewhere, switches HOLD on or off."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Changes subpage; in a list, moves."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads sounds for the selected part."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses part 1 or 2; on MORPH, PART 1, BOTH or PART 2."
+  }
+ ],
+ "gestes": [
+  "HOME held: menu.",
+  "FX held: PERFORM page.",
+  "GLO held: levels and pans of the two parts."
+ ],
+ "modes": [
+  {
+   "nom": "DUEL",
+   "texte": "Dual mono: part 1 on the left, part 2 on the right, isolated, effects included."
+  },
+  {
+   "nom": "STEREO",
+   "texte": "Both parts in a single stereo field, for headphones."
+  },
+  {
+   "nom": "LAYER",
+   "texte": "Default mode: both parts on the keys together, with balance, velocity crossfade and keyboard split."
+  }
+ ],
+ "source": {
+  "url": "https://github.com/oscillr/DUELL/blob/33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0/docs/QUICKSTART.md",
+  "commit": "33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0"
+ },
+ "d_apres_le_code": false
+}

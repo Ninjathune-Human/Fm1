@@ -1,0 +1,97 @@
+{
+ "id": "makohai",
+ "resume": "A generative groovebox in the spirit of early-90s tracker music: six lanes (lead, arp, pad, bass, drums, sfx) composed live in ten styles. You mix styles instead of programming steps.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keys one octave down."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keys one octave up."
+  },
+  {
+   "commande": "FX",
+   "role": "SOUND group (reverb, filter, resonance, wobble, brightness, drive...); again: next setting."
+  },
+  {
+   "commande": "ENV",
+   "role": "Fades the selected track out then back in."
+  },
+  {
+   "commande": "LFO",
+   "role": "A new idea for the track."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The track's steps, bar by bar."
+  },
+  {
+   "commande": "GLO",
+   "role": "SONG group (key, scale, chords); again: next setting."
+  },
+  {
+   "commande": "HOME",
+   "role": "PLAY group (volume, style, melody, rhythm...); again: next setting. Held: SETUP."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves."
+  },
+  {
+   "commande": "ARP",
+   "role": "TRACKER group (slide, retrigger, echo, vibrato...); again: next setting."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Launches the queued style (on EDIT: copies a track)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "INTRO then END: starts the song, and a second press ends it with a fade."
+  },
+  {
+   "commande": "REC",
+   "role": "One press: INTER. Held: DROP."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the setting within the group."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Track that the buttons and keys act on; the window slides across the six tracks."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the track live; on EDIT, they enter steps."
+  }
+ ],
+ "gestes": [
+  "HOME held: SETUP.",
+  "REC one press: INTER; REC held: DROP.",
+  "SEL + ENV: locks the track."
+ ],
+ "modes": [
+  {
+   "nom": "Styles",
+   "texte": "Ten styles: EPIC, HYPERSPACE, FUSION, OLDSKOOL, SYMPHONY, TROPIC, STEEL, DRIFT, FUNK and RAVE. You queue them, blend them track by track, or launch them all at once with their tempo."
+  },
+  {
+   "nom": "Arc",
+   "texte": "Off at startup: builds the song from the drums up to a drop, then lets it fall back."
+  }
+ ],
+ "a_savoir": [
+  "KNOB 1 to 4 set the displayed setting for the four tracks of the window."
+ ],
+ "source": {
+  "url": "https://github.com/delirioux/makohai/blob/800edc8a88d2a883fbeb2cf198a976d7769f3707/README.md",
+  "commit": "800edc8a88d2a883fbeb2cf198a976d7769f3707"
+ },
+ "d_apres_le_code": false
+}

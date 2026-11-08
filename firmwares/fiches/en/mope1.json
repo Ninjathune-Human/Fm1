@@ -1,0 +1,97 @@
+{
+ "id": "mope1",
+ "resume": "A sad wavetable synth and drum machine: no menus or numbers, a blob that is the sound and changes as you turn the knobs. 8 wavetables, 6 voices, 21 presets and 13 drum styles.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down; in SEQ, goes to another bar."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; in SEQ, goes to another bar."
+  },
+  {
+   "commande": "FX",
+   "role": "Tears page: chorus, delay, time, feedback."
+  },
+  {
+   "commande": "SEL",
+   "role": "Walls page: reverb, size, fry, tape."
+  },
+  {
+   "commande": "ENV",
+   "role": "Mouth page: attack, decay, sustain, release."
+  },
+  {
+   "commande": "LFO",
+   "role": "Vibe page: speed, depth, shape, destination."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Eyes page: cutoff, resonance, envelope amount, modulation decay."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mixer page (voice, drums, bass, gunk); a second time, Setup."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to the Body page (table, position, detune, sub)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves; held 1.5 s then SAVE again: reset."
+  },
+  {
+   "commande": "ARP",
+   "role": "One press: arpeggiator on or off. Held: its page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Piano roll loop; a second time, the Tape deck. The 16 white keys are then the steps of one bar."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops the group: drums, bass and loop."
+  },
+  {
+   "commande": "REC",
+   "role": "When stopped: a one-bar count-in then recording. During playback: immediate overdub; REC again stops it."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Changes the drum cassette."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads a complete sound from eight; its card opens in the drawer."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the instrument's wavetable."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play from F3 to G5."
+  }
+ ],
+ "gestes": [
+  "HOME + REC: undoes the last take.",
+  "SAVE + REC: erases the loop.",
+  "Press a page button twice quickly: its drawer stays open until HOME."
+ ],
+ "modes": [
+  {
+   "nom": "Pages",
+   "texte": "Pressing a part's button opens its diagram in a drawer, and KNOB 1 to 4 set that part. The drawer retracts 3 seconds after the last gesture, but the page stays active."
+  }
+ ],
+ "a_savoir": [
+  "MOPE-1 stores its sound and loop in the same flash slot as FiMba-1 and FoMni: it does not read their projects and overwrites them when saving."
+ ],
+ "source": {
+  "url": "https://github.com/slothpallas/mope-1/blob/59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1/README.md",
+  "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1"
+ },
+ "d_apres_le_code": false
+}

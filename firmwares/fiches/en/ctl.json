@@ -1,0 +1,95 @@
+{
+ "id": "ctl",
+ "resume": "CTL-1 turns the FM-1 into a MIDI controller: keys with velocity and aftertouch, scales with their chords on the black keys, four banks of knobs, an arpeggiator and a Euclidean drum sequencer. Everything goes out over USB and Bluetooth, and the FM-1 also plays General MIDI sounds.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up."
+  },
+  {
+   "commande": "FX",
+   "role": "Next controller bank; held, KNOB 1 to 4 set the controller numbers."
+  },
+  {
+   "commande": "SEL",
+   "role": "Keys page."
+  },
+  {
+   "commande": "ENV",
+   "role": "Sustain; two presses lock it."
+  },
+  {
+   "commande": "LFO",
+   "role": "Modulation wheel."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound page."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page."
+  },
+  {
+   "commande": "HOME",
+   "role": "Play page."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arp page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer page."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Panic."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Subpages of the page: the banks on Play, the tracks on the sequencer."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes program (the sound follows)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "MIDI channel."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play notes; with a scale, its notes are on the white keys and its chords on the black ones."
+  }
+ ],
+ "gestes": [
+  "FX held + KNOB 1 to 4: controller numbers.",
+  "ENV twice: sustain locked."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The ctl-usb file has the same content without Bluetooth."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-ctl/blob/c3c2a7e51f3d14dd7a94f8b3775e838f097ec367/README.md",
+  "commit": "c3c2a7e51f3d14dd7a94f8b3775e838f097ec367"
+ },
+ "d_apres_le_code": false
+}

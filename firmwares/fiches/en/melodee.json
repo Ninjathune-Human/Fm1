@@ -1,0 +1,119 @@
+{
+ "id": "melodee",
+ "resume": "Melodee is a multi-engine synth with sequencer: four synth tracks (PROPHET, FM6, CZ-1, SID, DRUM or a MIDI track) and up to four more MIDI tracks, 64-step patterns, songs, 70 scales and automatic chords. Each button opens its family of pages; held, it opens a layer or an action.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On Stage, lowers the octave (OCT- and OCT+ together: back to zero). Everywhere else, goes back or cancels. With EDIT held: undoes further. In step editing, moves the cursor."
+  },
+  {
+   "commande": "OCT+",
+   "role": "On Stage, raises the octave. Everywhere else, enters, confirms or opens. Held on a page that has one, opens its action sheet (Init sound, Copy to..., Add track, Remove track...). With EDIT held: redoes."
+  },
+  {
+   "commande": "FX",
+   "role": "The track's effects rack (NOTE TAIL, NOTE ECHO, then the Shared row with its three shared slots). Held: the 27 SLOOP effects on the master, one per key, as long as it is held; double press: the layer stays open."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed SEL, called SCL by Melodee: SCALES (family, scale, ROOT, QNT), then the SCL settings (ROOT, favorite, QNT, TRN), then CHORD. Held: quick layer, ROOT on the keys, scale and chord on the knobs; double press to lock it."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENV pages (ATK, DEC, SUS, REL) then ENV DEST (filter, pitch, shape). In note editing, held: fine lengths and SLIDE."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO pages (RATE, WAVE, PHS, FADE), LFO 2, LFO DEST then MOD (four routes). Held while turning a knob: temporary setting, restored on release (OCT+ keeps it)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The track's engine pages. Held: undo (the last sound or pattern load, a take, a capture; up to eight levels). On NOTES, one press deletes the highlighted note; while recording, held erases as the playhead passes."
+  },
+  {
+   "commande": "GLO",
+   "role": "MIXER (LEVEL, PAN, MUTE), then GLOBAL (A4, BUDGET, CLK, TUNE), then SYSTEM (MIDI input, DRUM channel, ROUT). Held: mute and solo layer on the keys, TAP tempo, track levels on the knobs; GLO + PLAY restarts from the beginning without stopping."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to Stage, the play screen; on Stage, another press opens the chord view (circle of fifths). Held: the settings menu (colors, HOLD, LIGHTS, AUTOSAVE, HOME SELECT...)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "PRESETS, USER or PROJECT. Held (or SAVE + REC): rewrites the project in its slot, playback stops first."
+  },
+  {
+   "commande": "ARP",
+   "role": "ARP pages (MODE, Rate, Octave, Gate) then ARP 2 (SWG, PROB, HOLD, ORD)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The sequencer family: NOTES (piano roll, grid on a DRUM track), PATTERN, TEMPO, PATTERNS, SONG, MOTION. Held: the PATTERNS grid; the first eight white keys pick the pattern, the first eight black keys the track."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops all tracks. REC + PLAY arms and starts in one gesture."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms or disarms the selected track without starting playback; during playback, recording begins at the next pattern start and continues until the next REC. Held: Capture, the last bars played written into the pattern; on SONG, the jam becomes the arrangement."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Master volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns through the pages of the open section, in both directions. On Stage, sets what HOME SELECT points to (BPM by default). GLO + SELECT: GLO SELECT setting on all pages."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the track's sounds (KNOB 1 the list: category, FAV, RECENT; KNOB 2 the sound). On engine pages, jumps between sections; on NOTES, zooms."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the track, from 1 up to the last one used, on all pages; the screen takes its color."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the selected track, in the scale according to QNT (OFF chromatic, SNAP, WHITE, ALL, MPC). In layers and grids, they also select patterns, effects, roots and drum lanes."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "QNT WHITE: the scale on the white keys only, C4 plays ROOT. On the DRUM grid: the steps. SEQ held: patterns 1 to 8."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "QNT WHITE: muted. On the DRUM grid: the lanes. SEQ held: tracks 1 to 8."
+  }
+ ],
+ "gestes": [
+  "GLO or SEL held: its quick layer; double press within 300 ms to lock it, one press to close it.",
+  "EDIT held then OCT- or OCT+: undo further or redo.",
+  "SEQ held, a pattern key held for one second: OCT- to exit, the same key to clear the pattern, another to copy it; C# halves its length, D# doubles it.",
+  "OCT+ held while turning SELECT, KNOB 1 or KNOB 2: select a range (notes, sounds of the USER bank)."
+ ],
+ "modes": [
+  {
+   "nom": "Stage",
+   "texte": "The HOME screen: one line per track (sound, pattern, steps played), the notes played in front of the waveform. The four knobs set the track's sound according to the engine: PROPHET CUTOFF, RES, filter envelope, release; FM6 MLVL, MRAT, MEG, DTUN; CZ-1 WAVE, DCW, DETUNE, VIBRATO; SID WAVE, PW, CUT, RES; DRUM TUNE, TONE, DECY, SNAP."
+  },
+  {
+   "nom": "NOTES",
+   "texte": "SEQ. KNOB 1 STEP moves through the steps, KNOB 2 PITCH changes or inserts a note, KNOB 3 LENGTH the length, KNOB 4 VEL the velocity. EDIT deletes the highlighted note, OCT+ opens its sheet (Move, Copy, Delete...)."
+  },
+  {
+   "nom": "Recording",
+   "texte": "REC arms the track. When stopped and armed, the first note starts playback and records from step zero. The playing is kept as is (timing, velocity, duration); SEQ > TEMPO > QNT quantizes the take afterwards if you wish. EDIT held undoes the take."
+  }
+ ],
+ "a_savoir": [
+  "AUTOSAVE: when stopped and with no action for five seconds, a project that has a slot saves itself to it. HOME held > AUTOSAVE to turn it off.",
+  "MIDI: USB and TRS inputs; GLO > SYSTEM > ROUT picks the four channels that play tracks 1 to 4, or SEL to send everything to the selected track. The keys send on the track's channel."
+ ],
+ "source": {
+  "url": "https://github.com/keremimo/melodee/blob/f40dd70fd8b497b5372ee5de886e4dfae1cd8062/README.md",
+  "commit": "f40dd70fd8b497b5372ee5de886e4dfae1cd8062"
+ },
+ "d_apres_le_code": false
+}

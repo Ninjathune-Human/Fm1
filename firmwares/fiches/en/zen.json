@@ -1,0 +1,72 @@
+{
+ "id": "zen",
+ "resume": "Ambient firmware: a living window (cherry tree, koi pond, fireflies) where every visible movement is a note. It plays by itself, and you can touch it with the keys and knobs.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. With OCT+ held 5 s: update mode."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. With OCT- held 5 s: update mode."
+  },
+  {
+   "commande": "FX",
+   "role": "Next page of knobs."
+  },
+  {
+   "commande": "SEL",
+   "role": "Previous page of knobs."
+  },
+  {
+   "commande": "GLO",
+   "role": "Switches between the painted rendering and pixel art."
+  },
+  {
+   "commande": "HOME",
+   "role": "One press: shows the stack, the scene and the mood. Held: koto instrument. Again to return."
+  },
+  {
+   "commande": "SAVE",
+   "role": "One press: save. Held 3 s: reset."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sleep timer: Off, 15 m, 30 m, 1 h, 2 h, 4 h, 8 h."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Draws a new picture: new tree, pond, or field and moon."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Activity: number of petals, food or fireflies, hence of notes."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the scene: Sakura, Koi or Hotaru."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the mood: time of day and climate."
+  },
+  {
+   "commande": "Touches",
+   "role": "The white keys play notes that fit the music. The black keys do something special in each scene."
+  }
+ ],
+ "gestes": [
+  "HOME held: koto mode.",
+  "OCT- and OCT+ held 5 s: update mode."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/aceyprime/zen-1/blob/ec9295233ea64ddac224b58b4d07216706c1b8ee/README.md",
+  "commit": "ec9295233ea64ddac224b58b4d07216706c1b8ee"
+ },
+ "d_apres_le_code": false
+}

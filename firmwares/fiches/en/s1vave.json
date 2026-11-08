@@ -1,0 +1,70 @@
+{
+ "id": "s1vave",
+ "resume": "8-voice synth after the Roland S-1 and the SH-101: sub-oscillator, resonant 4-pole filter, bass and lead sounds, with OSC DRAW and OSC CHOP. 64 factory presets (1 to 64), slots 65 to 99 are for your own.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the keyboard by at most three octaves. With OCT+ at the same time, returns to octave 0."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the keyboard by at most three octaves. With OCT- at the same time, returns to octave 0."
+  },
+  {
+   "commande": "FX",
+   "role": "Pages MIX, DELAY and REV / CHO (chorus, delay, reverb). Held, sets the chorus, delay and reverb levels directly on the knobs."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pages ENVELOPE (attack, decay, sustain, release) then ENV / PWM (trigger and amplitude mode)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Pages LFO (speed, shape, sync, Fast mode), LFO MOD (depths) and RISER."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Pages OSC CORE, OSC PWM, SUB / NOISE, OSC DRAW, OSC CHOP and FILTER."
+  },
+  {
+   "commande": "GLO",
+   "role": "VOICE page: MONO, UNISON, POLY or CHORD mode, portamento, transpose, volume. Held: keys 1 and 2 mute tracks A and B, 5 and 6 solo them."
+  },
+  {
+   "commande": "HOME",
+   "role": "PERFORM page: K1 cutoff, K2 resonance, K3 envelope depth, K4 portamento time."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Two presses save the sound to the active slot. Held, keys 1 to 8 choose the pattern slot."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Held, keys 1 to 16 toggle the steps. The sequencer has two tracks, A and B, of 64 steps."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Sets the tempo to the exact BPM."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Steps through programs 01 to 99. In the sequencer, chooses patterns 1 to 8."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Switches between sequencer track A and track B."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "Voices",
+   "texte": "MONO, UNISON (8 stacked voices), POLY (8 voices) and CHORD (stored chord), chosen on GLO's VOICE page."
+  }
+ ],
+ "source": {
+  "url": "https://github.com/AndrewGG88/S1Vave/blob/97303378678c247ca1d005ae641114f4544acf65/docs/PANEL_GUIDE.md",
+  "commit": "97303378678c247ca1d005ae641114f4544acf65"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,97 @@
+{
+ "id": "hera",
+ "resume": "Chord groovebox modeled on the Roland J-6: 100 chord sets, 9 phrase styles in 12 variations, a 64-pattern sequencer and a 4-voice Juno-style synth with delay and reverb.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. With GLO, transpose. On the sequencer, previous step page."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. With GLO, transpose. On the sequencer, next step page."
+  },
+  {
+   "commande": "FX",
+   "role": "Effects page: delay and reverb."
+  },
+  {
+   "commande": "SEL",
+   "role": "One press: chord mode. Held (or with GLO): chord map."
+  },
+  {
+   "commande": "ENV",
+   "role": "HOLD. In step editing, ties the step to the next."
+  },
+  {
+   "commande": "LFO",
+   "role": "Page of the 64 sounds, in 8 banks."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Settings page."
+  },
+  {
+   "commande": "GLO",
+   "role": "Shift key: held, gives the second function of the buttons and knobs. Held with PRESETS, jumps a bank."
+  },
+  {
+   "commande": "HOME",
+   "role": "Play page."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the pattern. With GLO, saves all patterns."
+  },
+  {
+   "commande": "ARP",
+   "role": "One press: phrase on or off. Held: phrase page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer page. A second time, grid of the 64 patterns."
+  },
+  {
+   "commande": "PLAY",
+   "role": "One press: play or stop. Held: full stop, all sound cut."
+  },
+  {
+   "commande": "REC",
+   "role": "Real-time recording: REC, then PLAY, then play."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Phrase style."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Tempo, or whatever the page steps through (chord sets, sounds, patterns, settings, steps)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Phrase variation."
+  },
+  {
+   "commande": "Touches",
+   "role": "Notes, or chords in chord mode. On the sequencer, they enter the step's notes."
+  }
+ ],
+ "gestes": [
+  "GLO + PLAY: play from the chosen step.",
+  "GLO + SAVE: save all patterns.",
+  "SEL held: chord map."
+ ],
+ "modes": [
+  {
+   "nom": "Sequencer",
+   "texte": "64 steps in 4 pages of 16. PRESETS chooses the step, the keys enter notes or chords, SEQ finishes. GLO held and a white key give the step tools."
+  }
+ ],
+ "a_savoir": [
+  "HERA keeps its 64 patterns in its own area of the flash. Installing another firmware may overwrite them, and they cannot yet be copied out of the FM-1."
+ ],
+ "source": {
+  "url": "https://github.com/benbadio/hera-fm1/blob/2c99af2141217e1e0083da39049ace432efa1cd1/README.md",
+  "commit": "2c99af2141217e1e0083da39049ace432efa1cd1"
+ },
+ "d_apres_le_code": false
+}

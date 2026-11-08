@@ -1,0 +1,82 @@
+{
+ "id": "berlinan",
+ "resume": "Generative Berlin School MIDI sequencer: voices that repeat, drift out of phase on loops of unequal length and develop their mutations over time. The FM-1 makes no sound itself: each voice goes out over USB on its own MIDI channel to your synths.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Undo: back up to the last 20 states."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Dice: new seed, applied at the next measure during playback."
+  },
+  {
+   "commande": "SEL",
+   "role": "Locks or unlocks the voice (voice key held, or the Voice page)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Rerolls all unlocked voices; with a voice key held, regenerates that voice."
+  },
+  {
+   "commande": "HOME",
+   "role": "Perform page. Held + SELECT: tempo, from any page."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the project and the six slots; held + a slot key, stores the state in that slot."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops. With internal sync, also sends MIDI Start, Stop and clock."
+  },
+  {
+   "commande": "REC",
+   "role": "Part B; with a voice key held, an empty cycle for that voice."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Density from 0 to 100%: at the bottom, the whole ensemble thins out."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Picks the next voice of the model."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the model (Demo trio, Full ensemble, Ambient drift); during playback, at the next measure."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the mode: natural minor, Dorian, Phrygian, Mixolydian, Lydian, etc. The root is set on the Setup page."
+  },
+  {
+   "commande": "Touches",
+   "role": "F3 to B3: the seven voices (Pluck 1, Pluck 2, Bass, Pad, Lead, Drone, Heartbeat). A short press selects and mutes or unmutes the voice; a one-second press selects without muting."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "C4 to B4: degrees 1 to 7, the harmony moves at the next measure."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "C#4 to A#4: CC scenes 1 to 5, only those the model has."
+  }
+ ],
+ "gestes": [
+  "Hold a button for one second (except PLAY): a card says what it does; releasing does nothing.",
+  "Hold a voice key, then EDIT, REC or SEL: the action applies to that voice.",
+  "SAVE held + C5 to F5: stores the state in slot 1 to 6; a simple press recalls it at the next measure.",
+  "OCT- and OCT+ held together for five seconds: update mode."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The FM-1 produces no sound: connect it over USB to a MIDI router and synths.",
+  "Projects are not exchanged between the Mac and the FM-1; the FM-1 starts built-in models from a seed."
+ ],
+ "source": {
+  "url": "https://github.com/jiripisa/fm1-berlinan/blob/afe2d937442fd248d145a34e8907d1c67ee4c3d6/docs/MANUAL.md",
+  "commit": "afe2d937442fd248d145a34e8907d1c67ee4c3d6"
+ },
+ "d_apres_le_code": false
+}

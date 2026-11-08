@@ -1,0 +1,39 @@
+{
+ "id": "fart",
+ "resume": "A prank instrument: ten real recorded noises (CC0), reverb, delay and a 16-step loop. The 27 keys play the samples, and you record a one-bar loop.",
+ "commandes": [
+  {
+   "commande": "PLAY",
+   "role": "Starts the loop from step 1, or stops playback and recording while keeping the loop."
+  },
+  {
+   "commande": "REC",
+   "role": "One press: starts recording from step 1 when stopped, or turns overdub on and off during playback. Held one second: erases the whole loop."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo, from 40 to 240 BPM, one BPM per notch; starts at 120."
+  },
+  {
+   "commande": "Touches",
+   "role": "The 27 keys each play a full sample, ten sounds repeated across the keyboard."
+  }
+ ],
+ "gestes": [
+  "REC held one second: erases the loop."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The loop lives in memory only: turning the FM-1 off erases it.",
+  "KNOB 1 to 4 set reverb, delay, delay time and delay repeats; no synth, no song mode."
+ ],
+ "source": {
+  "url": "https://github.com/adamcharleswilsonmusic-code/Fart-Machine-One/blob/5e49a216c18c6e0a7e5e42bef43843b40ad9ea5f/README.md",
+  "commit": "5e49a216c18c6e0a7e5e42bef43843b40ad9ea5f"
+ },
+ "d_apres_le_code": false
+}

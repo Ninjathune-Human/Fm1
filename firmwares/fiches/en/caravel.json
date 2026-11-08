@@ -1,0 +1,100 @@
+{
+ "id": "caravel",
+ "resume": "Multi-engine synth, successor to Felucca: sixteen engines with factory presets (ANALOG, SEM, HADES, PHASE, LOFI, TRIO, WHEEL, FM6, PHYS, VOICE, SAMPLE, GRAIN, DRUM, NOISE, experimental DRONE), four tracks sharing eight voices, a 64-step sequencer, effects, a modulation matrix and MIDI. Version 0.6.0 adds STASIS, which freezes a reverb texture.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Down one octave. With OCT+ at the same time, returns to octave 0 and releases the notes held by LATCH on the track. On confirmation screens (project compatibility), CANCEL."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Up one octave. Also acts as confirm: starts a STASIS ADD or BLEND, opens a macro's map, loads a project live from SAVE > PROJECT, TEST on the compatibility screen."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects family: FX (sends), DLY, REVERB, CHORUS, INSERT, INSERT 2, SLICER. Each screen shows two groups of four settings."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens ENV and ENV DEST. Pressed repeatedly, it also goes to the PAIR (Pair Morph) and MACRO pages."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the LFO pages. Pressed repeatedly, it reaches LFO2."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the EDIT pages, from any page. On the STEP screen, with a note key held, clears the step's locks."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global shortcuts: GLO held + SELECT sets the tempo. GLO held + HOME adds the touched setting to the HOME screen."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to the HOME screen. Held, opens the settings menu (MENU), where SELECT steps through the rows."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens saving (SAVE > PROJECT, slots A to D). Held after a load, undoes it."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the sequencer (STEP page with piano roll). SEQ held + F5 clears the step at the cursor. SEQ held + REC arms step recording."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording (live, or step by step depending on the mode). A normal press disarms it."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Chooses the active row or group. Its role depends on MENU > CONTROL > SELECT (BPM, PAGE, MODW or VEL, PAGE by default). In PAGE, it visits the top group, the bottom group, then the next page."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Opens the preset list for the track's engine. During step recording, chooses the step."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track. Held in the menu (with HOME held), leads to VOICES."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the track's notes. With LATCH on the CHORD page, the notes keep sounding after release."
+  }
+ ],
+ "gestes": [
+  "HOME held: settings menu.",
+  "GLO held + HOME: adds the setting you just turned to the HOME screen.",
+  "GLO held + SELECT: sets the tempo.",
+  "SEQ held + F5: clears the step at the cursor (CLEAR STEP).",
+  "SEQ held + REC: arms step recording (STEP REC). Repeating the gesture switches to LIVE REC.",
+  "OCT- and OCT+ together: octave 0 and end of the track's LATCH notes.",
+  "SAVE held after a load: undoes it."
+ ],
+ "modes": [
+  {
+   "nom": "STASIS (0.6.0)",
+   "texte": "Set the track's REV send to 85 to 90 percent, open FX > REVERB and choose the STASIS type. Play for about 0.6 seconds with CAPT on LIVE, then choose HOLD: the captured sound keeps going after release. STR sets the amount of texture, MOTN animates it. STOP releases. In FX > LAYER, ADD mode mixes in a new sound (AMT sets its share) and BLEND mode crossfades to a new texture over 1 to 30 seconds. Both are triggered with OCT+."
+  },
+  {
+   "nom": "Personal HOME and macros",
+   "texte": "HOME shows four knobs, with one active row enlarged. GLO + HOME adds a setting to it. HOME held then EDIT CELLS reorders or removes. With ENV on MACRO, turning a macro then pressing OCT+ opens its map: up to four parameters per macro, four macros per track. With ENV on PAIR, two melodic tracks blend together (Pair Morph)."
+  },
+  {
+   "nom": "Sequencer",
+   "texte": "64-step sequencer with chords, ties, probabilities, conditions, ratchets and automation. During playback, SAVE > PROJECT lets you keep parts A to D and launch them live (LOAD then OCT+). Loading happens at the end of track 1's loop."
+  }
+ ],
+ "a_savoir": [
+  "The 0.6.0 profile contains HALL and STASIS. ROOM, SPRING and the SLICE engine are removed (the SLICER track effect remains). An old project that uses them offers CANCEL / TEST with the substitutions.",
+  "The tempo delay is suspended while STASIS is active. The captured audio is in volatile RAM and is not stored in projects.",
+  "The DRONE engine is experimental. The SCL and CHORD pages show their keys under the settings group.",
+  "The documentation says tests on a real FM-1 are pending, and refers to the Felucca manual for inherited controls."
+ ],
+ "source": {
+  "url": "https://github.com/bonszaimusic/caravel/blob/b50bad57dcf32862f36661a5fc2996e13392b93e/docs/menus-and-pages.md",
+  "commit": "b50bad57dcf32862f36661a5fc2996e13392b93e"
+ },
+ "d_apres_le_code": false
+}

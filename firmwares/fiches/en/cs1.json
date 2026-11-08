@@ -1,0 +1,33 @@
+{
+ "id": "cs1",
+ "resume": "Synth firmware in the spirit of the Yamaha CS-80: eight voices of two channels, high-pass and low-pass filters, ring modulator, chorus, effects and reverb. It is designed as a sound module played over MIDI from a sequencer, with 52 sounds and 32 user presets.",
+ "commandes": [
+  {
+   "commande": "HOME",
+   "role": "Home screen; held with a key, picks the sound of a channel."
+  },
+  {
+   "commande": "REC",
+   "role": "MIDI learn: maps a controller's knobs to the settings."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Serves as the CS-80 ribbon."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Steps through the sounds, then the 32 user slots."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "On HOME, picks a sound category (PAD, STRINGS, BRASS, KEYS, BELLS, BASS, LEAD, FX, USER) that PRESETS steps through; elsewhere, turns the pages of a knob."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/twochannels/CS-1/blob/5dce8fadd3aa86cf47a3290289ee1c10b7c102e4/README.md",
+  "commit": "5dce8fadd3aa86cf47a3290289ee1c10b7c102e4"
+ },
+ "d_apres_le_code": false
+}

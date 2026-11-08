@@ -1,0 +1,45 @@
+{
+ "id": "unholy",
+ "resume": "Generative ambient and drone firmware: Immaculate Permutation draws an arrangement in one key, with a pad, a sequence and a chord arpeggio under a fourth voice for your hands. Press PLAY to begin.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On ordinary play pages, transposes the keyboard, arpeggio and sequence of the chosen track. Held: undoes the last rite."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Transposes like OCT-. In Immaculate Permutation, used for Reveal, to reveal another arrangement."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENV + OCT+: gentle evolution of the harmony."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO + OCT+: gentle modulation of the four tracks."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Held 1.2 seconds: checkpoint (\"sermon\"). Wait for SESSION SAVED, then load the project named A to D."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts the starting project, Evening Vow."
+  }
+ ],
+ "gestes": [
+  "SAVE held 1.2 s: saves a sermon (checkpoint).",
+  "OCT- held: undoes the last rite.",
+  "ENV + OCT+: evolves the harmony. LFO + OCT+: modulates the four tracks."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Experimental version 0.2.3: save your work before installing.",
+  "Saves from this firmware cannot be read by older Felucca or Jangada."
+ ],
+ "source": {
+  "url": "https://github.com/actuallysparky/FM-1-Unholy-Union-generative-drone-firmware/blob/3c0dfd93571774a0a2386bd1d2bc2b80de48fdfb/README.md",
+  "commit": "3c0dfd93571774a0a2386bd1d2bc2b80de48fdfb"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,141 @@
+{
+ "id": "skiff",
+ "resume": "Six-track groovebox: fourteen synth and drum engines, 64-step sequencer, patterns and song, PERFORM layer for live playing. Holding HOME shows on screen the role of each control on the page.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "In action boxes, goes back; while the undo box is shown, steps back through undos. On the keyboard, octave down."
+  },
+  {
+   "commande": "OCT+",
+   "role": "In action boxes, confirms; while the undo box is shown, steps forward through undos. On the keyboard, octave up. On SEQ then SONG, plays the entry."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects pages (DRIVE, INSERT, DUCK, SLICER). Held, opens the FX layer: fourteen effects on the white keys, track mutes on the black ones."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens the SCALE page (scale, QNT); a second press opens the CHORD page (chords). Held, opens its quick layer."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the track's envelope pages, including ENV 2 for the modulation matrix."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the LFO pages. Held, then a knob turned on HOME, a sound page, an FX page or the MIXER: the values revert on release (OCT+ keeps them)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the engine editing pages (OPERATOR and ALL OPS for FM6, LANES for drums, SOUND for DRUM-X). On STEP and ROLL with REC armed, clears the cursor's step. Held, opens its quick layer."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens the global settings (tempo, swing, chorus, delay, reverb). Held, opens the GLO layer: levels, solos, mutes, FILL, tap tempo."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to the home screen. Held, it is SHIFT: a card shows the role of each control on the page; released alone, it opens the MENU."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the PRESETS, USER, PATTERNS and PROJECT pages. Held, undoes (8 levels). With SHIFT, TAKE keeps the last loop played."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator (14 modes). Held, opens the PERFORM layer: launch entries, queue mutes, recall scenes."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the sequencer (STEP, ROLL, AUTOMATION, SONG). Held, opens SEQ TOOLS: clear, reverse, shift, random, cook."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops playback. With GLO, restarts each track from its first entry."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms or disarms the selected track on press. With SHIFT, opens the REC layer: clear, CLICK, COUNT-IN, CLICK LEVEL, FEEL."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Sets the overall volume. Depending on USB LEVEL, also sets the USB level; also sets CLICK LEVEL."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns the pages of a family. With GLO, sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the track's sound. On step pages, moves the cursor; in lists, selects. With LIST on a type, browses only that type."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track, on all pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the track's engine, scale chords possible. On DRUM and DRUM-X, drum grid: white keys are the steps, black keys the tracks."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "FX layer: REPEAT, REVERSE, LPF, HPF, TAPE STOP, FREEZE, OCT UP, OCT DN, GATE, DUB, FLANGE, VINYL. PERFORM layer: launch a track's entries. With QNT on WHITE, play the scale's notes (C is the ROOT)."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "FX layer: mute tracks 1 to 6 while held. PERFORM layer: queue mutes. EDIT layer on a drum: keys 1 to 8 mute the lanes."
+  }
+ ],
+ "gestes": [
+  "HOME held: a card shows the role of each control on the page.",
+  "HOME released alone: opens the MENU.",
+  "SHIFT + FX, GLO, SEL, EDIT, ARP or SEQ: keeps the layer open (the header says LOCKED); the button closes it.",
+  "SAVE held: undoes; SHIFT + SAVE: TAKE, keeps the last loop played.",
+  "A step held on SEQ then STEP + a KNOB 1 to 4 button: locks that parameter on that step.",
+  "SAVE held + a key, in PERFORM: stores a scene.",
+  "GLO + SELECT: sets the tempo.",
+  "GLO + PLAY: restarts all tracks from their first entry."
+ ],
+ "modes": [
+  {
+   "nom": "Tracks and engines",
+   "texte": "Six tracks, each with its engine among fourteen: ANALOG, FM6, PHASE, LOFI, SAMPLE, VOICE, TRIO, WHEEL, GRAIN, PHYS, NOISE, SLICE, DRUM, DRUM-X. Tracks 5 and 6 play all engines except PHYS and GRAIN."
+  },
+  {
+   "nom": "Choosing a sound by type",
+   "texte": "On SAVE then PRESETS, KNOB 4 (LIST) selects BASS, LEAD, PAD, KEYS, PLUCK, DRUM or FX. PRESETS then browses only that type, across all engines, on all pages. KNOB 3 (FAV) marks favorites; KNOB 2 (ENG) jumps to the next engine."
+  },
+  {
+   "nom": "Sequencer",
+   "texte": "64 steps per track, 4-note chords, accent, slide, tie, chance, ratchet or FLAM, trigger conditions, NUDGE. Live recording with overdub, FEEL, count-in and metronome, or step by step. A step held with a knob turned locks the parameter; knob movements are recorded as automation."
+  },
+  {
+   "nom": "Patterns and song",
+   "texte": "64 patterns shared by all projects. Each track has a list of 16 entries (A to P), each a pattern played 1 to 16 times. With SONG on ON, each track advances through its list; on OFF, it loops its entry. An empty entry between two patterns is a rest."
+  },
+  {
+   "nom": "PERFORM",
+   "texte": "ARP held. The white keys launch the track's entries, the black keys queue mutes, at the next LOOP, BAR, BEAT or NOW. Sixteen scenes keep each track's entry and the mutes. KNOB 1 to 4 trigger effects that revert on their own: CUTOFF, REVERB, DELAY, DIST."
+  },
+  {
+   "nom": "FM6 from scratch",
+   "texte": "EDIT then OPERATOR and ALL OPS give every value of an FM6 patch (6 operators, 32 algorithms). INIT starts from a bare sine; SAVE then USER keeps the sound."
+  },
+  {
+   "nom": "Scale and chords",
+   "texte": "SEL opens SCALE: with QNT on WHITE, the white keys play the chosen scale, the black keys stay silent. SNAP rounds to the scale; QNT SEQ also runs sequenced notes through the scale (never drums). A second press on SEL opens CHORD: CHRD selects the chords, VOIC the inversion."
+  }
+ ],
+ "a_savoir": [
+  "Skiff is a fork of Felucca 1.1.5: Felucca's sounds and projects load in it.",
+  "Eight voices shared between the tracks, twelve with the FM-1's second core (MENU, SYSTEM, CPU 2 CORES, in BETA).",
+  "Each setting's page draws what it does; HOME held gives the card.",
+  "The same firmware also runs on the SMK-37 Pro keyboard."
+ ],
+ "source": {
+  "url": "https://github.com/illuminus5/skiff/blob/c01fa1ed619266d770ea6552b153612e1b77d0a9/README.md",
+  "commit": "c01fa1ed619266d770ea6552b153612e1b77d0a9"
+ },
+ "d_apres_le_code": false
+}

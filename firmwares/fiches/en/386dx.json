@@ -1,0 +1,86 @@
+{
+ "id": "386dx",
+ "resume": "386DX turns the FM-1 into a karaoke singing robot with a band: it sings imported songs or lines typed on the FM-1, on the notes you play on the keyboard. Keys, Bass and Drums play along, with sixteen punch-in effects.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard one octave lower; when writing notes, steps back; in the grid, previous bar."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard one octave higher; when writing notes, leaves a rest; in the grid, next bar."
+  },
+  {
+   "commande": "FX",
+   "role": "Effets page: reverb, tape echo, drive, compression, pump, filter. The white keys trigger the effects."
+  },
+  {
+   "commande": "SEL",
+   "role": "List of everything else on the page; in a question, yes."
+  },
+  {
+   "commande": "ENV",
+   "role": "Enveloppe page for the track's sound."
+  },
+  {
+   "commande": "LFO",
+   "role": "Mixer page: level, reverb and echo of each track."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound page: the sound of the selected track."
+  },
+  {
+   "commande": "GLO",
+   "role": "Settings (tempo, length, time signature); its list loads, saves and starts songs."
+  },
+  {
+   "commande": "HOME",
+   "role": "Sing page (the singing robot); a second press opens Song (the song rows). Held, it acts as shift."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the song; held with a white key 1 to 8, saves it to that slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "Change page: the bar's pattern shifted, transposed or blended with another."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Steps page: the pattern of the backing track, the 16 white keys are its steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops; on Song, from the row under the cursor."
+  },
+  {
+   "commande": "REC",
+   "role": "Writes what you play: notes into a line (Song), steps into a pattern (Steps), or over the song."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Next page of the button; in a list or grid, moves."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the page's item: a sound, a row's line, a bar's pattern."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track on all pages: Voice, Keys, Bass or Drums."
+  }
+ ],
+ "gestes": [
+  "HOME held + REC: undo; + PLAY: redo.",
+  "HOME held + white key: an effect while the key is held.",
+  "HOME held + black key 1 to 4: mutes or restores Voice, Keys, Bass, Drums.",
+  "HOME held + SELECT: tempo."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/seajaysec/386-DX-FM1-KaraokeBot/blob/2caa8fbb990a108d1856496b54d83519bb0f2ba8/docs/MANUAL.md",
+  "commit": "2caa8fbb990a108d1856496b54d83519bb0f2ba8"
+ },
+ "d_apres_le_code": false
+}

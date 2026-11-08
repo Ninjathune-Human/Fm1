@@ -1,0 +1,84 @@
+{
+ "id": "obervave",
+ "resume": "Eight-voice analog-style polysynth, in the spirit of the American polys of 1979 to 1984. Four tracks, each with its own sound, arpeggiator and sequence, go through a mixer (chorus, delay, plate reverb, drive) and a MASTER (DJ filter, drive, compressor).",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down; with OCT+, back to 0. With EDIT, undo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up; with OCT-, back to 0. With EDIT, redo."
+  },
+  {
+   "commande": "FX",
+   "role": "Tapped: CHORUS, DELAY, REVERB, DRIVE. Held: effects layer, the keys play notes (KNOB 1 to 4: chorus, delay, reverb, delay time)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Envelope pages."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO pages."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Tapped: OSC and FILTER pages; in STEPS, clears the step. Held: erases the played note."
+  },
+  {
+   "commande": "GLO",
+   "role": "Tapped: GLOBAL, VOICE, OUTPUT. Held: the white keys start, mute or solo tracks A to D."
+  },
+  {
+   "commande": "HOME",
+   "role": "PERFORM page (CUTOFF, RESO, ENV AMT, RELEASE); again, the MIXER."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Twice: saves the track's program. Held: goes to a pattern (white keys 1 to 8) or copies it (black keys)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator page; on this page, ARP becomes HOLD."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tapped: full-screen sequencer, then its views (TRACKS, STEPS, TRACK, PATTERNS). Held: the keys are the steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts the active tracks from step 1, or stops them."
+  },
+  {
+   "commande": "REC",
+   "role": "During playback, records the selected track; when stopped, arms (the first note starts). Held 1.2 s: clears the track."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo; in the sequencer and mixer, the next pattern (on the bar)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Selects the track's program."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the track, A to D."
+  },
+  {
+   "commande": "Touches",
+   "role": "They play the selected track's sound."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "The eight voices are shared among the four tracks."
+ ],
+ "source": {
+  "url": "https://github.com/zvenson/obervave/blob/dc4e5d33b09f5e3f927801d78085f26171e9c7b8/README.md",
+  "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8"
+ },
+ "d_apres_le_code": false
+}

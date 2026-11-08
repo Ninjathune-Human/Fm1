@@ -1,0 +1,49 @@
+{
+ "id": "felucca8",
+ "resume": "Felucca 1.6.1 with eight sequences per track, which you can switch between or chain. User samples are removed to make room. The arpeggiator's GEN mode plays generative music, and the SCL > CHORD page adds chords to strum or to shape with the black keys.",
+ "commandes": [
+  {
+   "commande": "OCT+",
+   "role": "On SAVE > CHORDS, saves to the chosen user pack what the black keys do."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps all the project's sequences. Its fifth page, CHORDS, sets the black keys of the chords' PLAY mode."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator. Its MODE has a last value, GEN, which plays the track by itself during playback."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Its fourth page, SEQUENCE: KNOB 1 to 4 choose sequence 1 to 8 of tracks 1 to 4."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "On the SEQUENCE page, right adds the track's sequence to the chain, left removes it."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "Sequences and CHAIN",
+   "texte": "Each track plays one of its eight sequences, which has its own steps, LEN and automations. MENU > SYSTEM > SEQ SWITCH: NOW switches immediately, END waits for the last step. Only chained sequences play one after another. An unchained sequence loops alone."
+  },
+  {
+   "nom": "ARP > GEN",
+   "texte": "DENS (KNOB 1) sets the number of steps played, CHORD (KNOB 2) the share of chords, EVOLVE (KNOB 3) how the loop evolves each pass, SCL (KNOB 4) the scale. LEN goes up to 32 steps."
+  },
+  {
+   "nom": "SCL > CHORD: STR3, STR7, PLAY",
+   "texte": "With STR3 or STR7, the black keys choose the chord without sounding and the white keys are its strings to strum. With PLAY, each white key plays a chord that the held black keys shape."
+  }
+ ],
+ "a_savoir": [
+  "The sequences occupy the flash of the user sample slots: this branch has no user samples."
+ ],
+ "source": {
+  "url": "https://github.com/echoe/Felucca_8_patterns/blob/21fc592dab76907b6bea34d97950dfe129ad9fd8/README.md",
+  "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8"
+ },
+ "d_apres_le_code": false
+}

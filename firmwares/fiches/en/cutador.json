@@ -1,0 +1,103 @@
+{
+ "id": "cutador",
+ "resume": "Cut-A-Dor is a beat dojo for scratch DJs and beatmakers: boom bap, lo-fi and breaks across sixteen rhythm families, an eight-lane 32-step sequencer, punch-in effects you record bar by bar onto a tape, a bass voice. The keys have three modes: DJ, DRUM and BREAK.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Previous keyboard mode (on release)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Next keyboard mode (on release). OCT- and OCT+ together are reserved for rescue."
+  },
+  {
+   "commande": "FX",
+   "role": "Punch FX, then Tape Color."
+  },
+  {
+   "commande": "SEL",
+   "role": "Next keyboard mode: DJ, DRUM, BREAK."
+  },
+  {
+   "commande": "ENV",
+   "role": "FX Tape, the tape of recorded effects."
+  },
+  {
+   "commande": "LFO",
+   "role": "Sound Crate, the sounds."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The MIX, then Beat DNA."
+  },
+  {
+   "commande": "GLO",
+   "role": "SETUP (key lights, glow, motion, home screen), then MIDI Sync."
+  },
+  {
+   "commande": "HOME",
+   "role": "Live, the DJ mode."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the project, when stopped."
+  },
+  {
+   "commande": "ARP",
+   "role": "Tap tempo."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Step Dojo, then Parts."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Opens FX Tape and records the punches onto the tape."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Steps through the pages. During a help screen, its cards."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The kit; on Step Dojo, the step; on Parts, the part; on the MIX, the track."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "A new groove (one direction) or a mutation (the other), at the next bar; on Step Dojo, redoes the track or undoes; on the MIX, undoes."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "In DJ: Roll, Stutter, Reverse, Brake, Filter, Echo, Crush, Gate, Lock, New, Fill, A, B, Drop, Undo, Clean. On Step Dojo: the sixteen steps."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "The first eight mute the eight tracks; the last three: Tap, Tape and Undo. On Step Dojo, 1 to 8 choose the track."
+  }
+ ],
+ "gestes": [
+  "A page button held 0.7 s: its help card on screen (SELECT or PRESETS to flip through them)."
+ ],
+ "modes": [
+  {
+   "nom": "Pages",
+   "texte": "Live Dojo, Beat DNA, Punch FX, FX Tape, Parts, Sound Crate, Tape Color, MIDI Sync, Step Dojo, Drum Mix, Setup. The four knobs follow the labels shown."
+  }
+ ],
+ "a_savoir": [
+  "MIDI: USB clock out with Start, Stop, Continue; MIDI in over USB or the jack."
+ ],
+ "source": {
+  "url": "https://github.com/kidbee85-beep/cut-a-dor-release/blob/d9799abb84fef0cc59deb05e2f6a4c41032c32f1/README.md",
+  "commit": "d9799abb84fef0cc59deb05e2f6a4c41032c32f1"
+ },
+ "d_apres_le_code": true
+}

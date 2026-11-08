@@ -1,0 +1,122 @@
+{
+ "id": "polly",
+ "resume": "Polly is a pocket arranger in the spirit of the QY70: pick a style, play a three-key chord and an eight-instrument band follows. The sounds are General MIDI (Sonivox EAS), and Polly also serves as a General MIDI module over MIDI in.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Shifts the keys down an octave (from -3 to +3). On the Progression page, moves the cursor back one beat."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Shifts the keys up an octave. On the Progression page, moves the cursor forward one beat."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects: reverb and chorus, with each instrument's sends."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens the list of values and actions of the page (CLEAR PROGRESSION, BACK TO STYLE, PLAY FROM SECTION...). When Polly asks a question, SEL means yes."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the Style page: which style each groove plays. Knob 4 sets the song's style."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the mixer: volume, pan and sends. Page 2 sets the tone (Bright and Reso)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the Sound page: the instrument's sound, type and range. Page 2 gives the top key and the channel. On the Notes page, deletes the chosen note."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens Setup: clock, MIDI out, lights, click, QY70 styles. Page 2 gives the CPU load, voices and version."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens the home screen; on the home screen, opens the Song page, and pressing again goes back. When Polly asks a question, HOME means no. Held, the screen shows the shortcuts."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves; lit when something is not kept (Polly also saves by itself, about four seconds after the last action when stopped). Held with a white key, copies the progression or groove to that slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the Progression page, where you write chords by measure, beat, root and type. Page 2 gives the length, beats, bass and name."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the Band page, which shows the groove's eight instruments: knob 1 the grid, 2 and 3 the cursor by measure and beat, 4 the mutes. Pressing again opens Notes to fix notes one by one; once more returns to Band."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops. On the Song page, plays the song from section 1. With HOME held, redoes."
+  },
+  {
+   "commande": "REC",
+   "role": "Records what the keys play on the page: chords on the home screen, instrument or melody on Band and Sound, sections on Song. With HOME held, undoes."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Output volume, also for USB audio unless Setup fixes it at maximum (USB AUDIO: full)."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns the pages of the knob, or moves up and down in a list. With HOME held, sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Moves to the next item on the page. On the home screen and the Progression page, changes progression. With HOME held, changes song (four in all)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the instrument on all pages: D1, D2, PC, BA, C1 to C4, then the melodies M1 and M2."
+  },
+  {
+   "commande": "Touches",
+   "role": "27 keys from F3 to G5. On the home screen and Progression, they play chords. On Band, Sound and Notes, they play the chosen instrument. On Song, they add sections and set mutes. On the mixer, they pick a band."
+  }
+ ],
+ "gestes": [
+  "Play three or more notes on the home screen: Polly names the chord and the band follows, even after you release.",
+  "HOME held + white key n: plays progression n in a loop (at the next measure if already playing); the same key stops it and the band follows your chords again.",
+  "HOME held + black key 1 to 5: Intro, Groove A, Groove B, Fill, Ending.",
+  "HOME held + SELECT: tempo.",
+  "HOME held + PRESETS: changes song.",
+  "HOME held + REC: undo; HOME held + PLAY: redo.",
+  "SAVE held + white key n: copies the progression (home or Progression) or the groove (Band) to n.",
+  "A button held for one second: a card explains what it does on that page.",
+  "OCT- and OCT+: change octave, except on the Progression page."
+ ],
+ "modes": [
+  {
+   "nom": "Home",
+   "texte": "Knob 1: style. 2: tempo. 3: transposition. 4: progression; fully left, on follow, the band follows the chords you play. To write a progression: set follow, press REC then PLAY, play one chord per measure after a measure of clicks, then REC again."
+  },
+  {
+   "nom": "Song",
+   "texte": "A list of sections, each playing a progression a chosen number of times. On the Song page, a white key n adds a section with progression n, and a black key 1 to 8 mutes an instrument (D1 to C4) in the section. SEL offers PLAY FROM SECTION and NEW SONG, among others."
+  },
+  {
+   "nom": "Recording an instrument",
+   "texte": "On Band, pick the instrument with ALGORITHM, press REC then PLAY, play, then REC. Polly then makes an edited copy of the groove, marked (edited), without touching the style. SEL offers BACK TO STYLE to return to the style."
+  },
+  {
+   "nom": "General MIDI module",
+   "texte": "MIDI received over USB or the TRS jack plays Polly's sounds on all 16 channels, drums on channel 10, without transposition. In Setup, MIDI clock can drive the arranger."
+  }
+ ],
+ "a_savoir": [
+  "The keys do not sense velocity: all notes have the same force.",
+  "The 128 QY70 styles are not included: they are built from the QY70 ROM that you own.",
+  "The FM-1 has no MIDI out jack: MIDI only goes out over USB (Polly FM-1 device).",
+  "Version 0.5, still in beta."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-polly/blob/62cd07ea7c95c30021c31e957cea8be448415fa7/MANUAL.md",
+  "commit": "62cd07ea7c95c30021c31e957cea8be448415fa7"
+ },
+ "d_apres_le_code": false
+}

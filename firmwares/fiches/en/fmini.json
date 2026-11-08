@@ -1,0 +1,44 @@
+{
+ "id": "fmini",
+ "resume": "Minimoog Model D emulation: three oscillators, ladder filter, contours, effects, arpeggiator and a 16-note sequencer, with 100 presets and 32 user slots.",
+ "commandes": [
+  {
+   "commande": "FX",
+   "role": "Effects page (reverb, delay, chorus, drive); EDIT opens the effect's four parameters, FX again goes to the next effect."
+  },
+  {
+   "commande": "EDIT",
+   "role": "In the FX page, opens the effect's four parameters."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global settings: MIDI input, channel, pitch bend range, list of MIDI controls."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the preset to a slot U01 to U32, after entering the name with the encoders."
+  },
+  {
+   "commande": "ARP",
+   "role": "One press turns the arpeggiator on or off; held, turns HOLD on."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms sequencer recording, up to 16 notes."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "The panel has several pages (CTRL, OSC, MIX, FILT, F.ENV, A.ENV, FX); the documentation read does not say which button opens each one."
+ ],
+ "source": {
+  "url": "https://github.com/ruppert/fmini-1/blob/ab0f5c83d9c3b8cf10fd2f9ef3dc760a06c3abb3/docs/index.html",
+  "commit": "ab0f5c83d9c3b8cf10fd2f9ef3dc760a06c3abb3"
+ },
+ "d_apres_le_code": false
+}

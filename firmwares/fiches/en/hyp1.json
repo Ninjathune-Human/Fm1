@@ -1,0 +1,92 @@
+{
+ "id": "hyp1",
+ "resume": "Hypnotic techno and acid: a breathing pad, a deep drone, a generative 303 line and grain, over drums you sequence. It plays as soon as it is switched on; you change pattern on the bar, do a breakdown, then build back up.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Down by up to three octaves: the page's voice (pad, drone, acid), or the whole track on the other pages; in the sequencer, selects the drum."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Up by up to three octaves: the page's voice (pad, drone, acid), or the whole track on the other pages; in the sequencer, selects the drum."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the menu of instant effects on the keys (beat repeat, reverse, tape stop, mutes and solos, filters, trance gate, echo throw, crush, fill)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Acts as a shift key for two-key gestures."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pad page; another press opens the voice's envelope."
+  },
+  {
+   "commande": "LFO",
+   "role": "Drone page; another press opens the voice's LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Goes to the next chord."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global page."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tempo page; held with SELECT, sets the tempo."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Breakdown on the next bar; a second press starts a four-bar build-up and then the drop. On Global, saves the track."
+  },
+  {
+   "commande": "ARP",
+   "role": "Acid line page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Drums page; again, Links then Kit; held, the sequencer whose 16 white keys are the steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Freezes."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Steps through the pages in order; with HOME held, sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the track (01 to 10); with SEL, changes it on the next bar."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the mode; with SEL, changes the sound of the displayed voice, or the kit on the drum pages."
+  },
+  {
+   "commande": "Touches",
+   "role": "Set the scale; in the sequencer, they are the steps; in FX, the effects; on a voice played by hand, they play that voice."
+  }
+ ],
+ "gestes": [
+  "SEL + ENV, on a voice page: takes the pad, drone or acid by hand, and repeating it gives it back.",
+  "SEL + SEQ: turns the drum links to the voices on or off.",
+  "SEL + GLO: Remote mode, the FM-1 panel plays HYP-1 in the site's emulator over USB MIDI."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The repository's other three firmwares (LOF-1, ECO-1, GRAV-1) are experimental and are not described here."
+ ],
+ "source": {
+  "url": "https://github.com/RustyPawz/fm1-HYP1/blob/57c456db61826331d356458c9c1a136517da7cbf/README.md",
+  "commit": "57c456db61826331d356458c9c1a136517da7cbf"
+ },
+ "d_apres_le_code": false
+}

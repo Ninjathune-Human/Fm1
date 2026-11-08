@@ -1,0 +1,62 @@
+{
+ "id": "fm106",
+ "resume": "FM-106 brings the Roland Juno-106 analog synth to the FM-1: six voices, 128 factory presets and the MN3009 BBD chorus.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down (from minus 2 to plus 2)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up (from minus 2 to plus 2)."
+  },
+  {
+   "commande": "FX",
+   "role": "Changes the chorus mode: OFF, I, II, I+II."
+  },
+  {
+   "commande": "SEL",
+   "role": "Toggles the VCA between ENV and GATE."
+  },
+  {
+   "commande": "ENV",
+   "role": "Jumps to the Envelope edit page."
+  },
+  {
+   "commande": "LFO",
+   "role": "Jumps to the LFO / ARP edit page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Cycles through the edit pages."
+  },
+  {
+   "commande": "HOME",
+   "role": "Cycles through the edit pages."
+  },
+  {
+   "commande": "ARP",
+   "role": "Turns the arpeggiator on or off."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses and loads the 128 Juno-106 presets."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the six polyphonic voices."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "Edit pages",
+   "texte": "VCF / DCO (cutoff, resonance, env mod, sub), ENVELOPE (ADSR), DCO / PWM (LFO depth, PWM, noise, HPF), LFO / ARP (LFO rate and delay, arp rate and range). The four rotary knobs set the page's four values."
+  }
+ ],
+ "source": {
+  "url": "https://github.com/PatttF/fm-106/blob/3833499bfd0f2f4df522793526690f743b7164c9/README.md",
+  "commit": "3833499bfd0f2f4df522793526690f743b7164c9"
+ },
+ "d_apres_le_code": false
+}

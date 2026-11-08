@@ -1,0 +1,69 @@
+{
+ "id": "frodhes",
+ "resume": "Physically modelled electric piano, vibraphone and marimba, no samples: six instrument types, a stage-keyboard effects chain, an arpeggiator, a sequencer, scales and 10 voices. The screen shows one page at a time, with four cards for the four knobs.",
+ "commandes": [
+  {
+   "commande": "FX",
+   "role": "Turns all effects off or on."
+  },
+  {
+   "commande": "SEL",
+   "role": "Acts as HOLD for the arpeggiator, on all pages, while it is lit."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Chord mode."
+  },
+  {
+   "commande": "HOME",
+   "role": "Opens the PERFORM page (drive, filter, delay, reverb, or whatever is assigned); two presses open the main FRODHES page."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves a preset."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Sequencer; on its page, records, and held erases."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Sets the tempo by tapping, everywhere except the SEQUENCER page where it starts and stops; during the arpeggiator, it also taps the tempo."
+  },
+  {
+   "commande": "REC",
+   "role": "Sustain pedal."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Turns the pages."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the sounds."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the instrument type."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "Instrument types",
+   "texte": "Stage 77, Suitcase, Early Felt, Bell Dyno (electric pianos), Vibes and Marimba. Knobs K1 to K4 set the four cards of the displayed page."
+  }
+ ],
+ "a_savoir": [
+  "The FM-1 key velocity is set in SETUP, TOUCH: LIGHT, MEDIUM, HEAVY or FIXED."
+ ],
+ "source": {
+  "url": "https://github.com/leonardoMirabal/frodhes/blob/33c9730c04f1c72b1319aec68124b8759419fd68/README.md",
+  "commit": "33c9730c04f1c72b1319aec68124b8759419fd68"
+ },
+ "d_apres_le_code": false
+}

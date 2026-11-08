@@ -1,0 +1,86 @@
+{
+ "id": "delrio",
+ "resume": "Ceremonial percussion drum machine: djembe, cajón, udu, claves, maracas and triangle, with their real strokes on the black keys and a step sequencer on the white keys. 39 rhythms, and in solo a berimbau, a tanpura and a shruti box.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the tempo by 5 BPM per press, 10 when held."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the tempo by 5 BPM per press, 10 when held."
+  },
+  {
+   "commande": "FX",
+   "role": "Picks the kit, the berimbau, the tanpura or the shruti box."
+  },
+  {
+   "commande": "SEL",
+   "role": "Mutes or unmutes the instrument."
+  },
+  {
+   "commande": "LFO",
+   "role": "List of rhythms with their beats; KNOB 3 scrolls it without changing anything; held, picks the one shown; a second press closes the list."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Two presses: clears."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves everything."
+  },
+  {
+   "commande": "ARP",
+   "role": "Held, djembe strokes become flams."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tap tempo."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Plays the rhythm in a loop."
+  },
+  {
+   "commande": "REC",
+   "role": "Records what you play on the black keys, each stroke on the nearest step. When stopped, one measure is counted in first."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Picks the instrument (on the berimbau: the berimbau or its caxixi)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Steps through the rhythms with the same beats; for the tanpura, its character; for the shruti box, the chord."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Picks the number of beats (2 to 8); on the tanpura, tunes the first string."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Step sequencer for the displayed instrument: each press sets the step's next stroke, and after the last one, none."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Play the instruments with their strokes (djembe bass, tone, slap; cajón bass, slap; udu; claves, maracas; triangle). Harder, louder."
+  }
+ ],
+ "gestes": [],
+ "modes": [
+  {
+   "nom": "Berimbau, tanpura, shruti box",
+   "texte": "These three instruments are played alone, from FX. On the berimbau, the black keys give DOM, DIM, TSCH and then the caxixi, and ten toques are offered. On the tanpura, a key sets Sa. On the shruti box, PRESETS picks the chord or the NOTES mode."
+  }
+ ],
+ "a_savoir": [
+  "Each beat count has a FREE rhythm for you.",
+  "Does not read projects or samples from other firmwares."
+ ],
+ "source": {
+  "url": "https://github.com/jsopdebeeck/fm1-delrio/blob/c604e5659b4505c98788b30982364289a8348178/README.md",
+  "commit": "c604e5659b4505c98788b30982364289a8348178"
+ },
+ "d_apres_le_code": false
+}

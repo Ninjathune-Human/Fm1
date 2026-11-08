@@ -16,7 +16,7 @@ Chrome, Edge, Firefox et Safari récents, sur ordinateur, iPad et iPhone : souri
 4. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur. Il n'est envoyé nulle part.
 5. L'interrupteur **marche / arrêt**, sous le panneau, allume le FM-1. L'éteindre efface les sauvegardes du seul firmware actif.
 
-Sous le FM-1, trois menus d'aide : le manuel d'utilisation, les raccourcis clavier (dessinés) et les fonctions du firmware chargé. Les fiches existent pour les firmwares optimisés et FM-1+VA ; les autres affichent « Pas de fiche pour ce firmware pour l'instant ».
+Sous le FM-1, trois menus d'aide : le manuel d'utilisation, les raccourcis clavier (dessinés) et les fonctions du firmware chargé. Les fiches existent pour les firmwares optimisés et FM-1+VA ; les autres affichent « Pas de fiche pour ce firmware pour l'instant ». Le bouton FR / EN, en haut à droite, passe l'interface, le manuel, les raccourcis et ces fiches en anglais (firmwares/fiches/en/, assets/lang-en.json) ; le choix est gardé dans le navigateur et suit d'un cadre du Duo à l'autre.
 
 Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne » (paquet chargé depuis le FM-1 Firmware Hub), « non évalué » (pas encore essayé dans l'émulateur).
 

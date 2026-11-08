@@ -1,0 +1,110 @@
+{
+ "id": "modelar",
+ "resume": "MODELAR is a semi-modular drone synth played like a Kaoss Pad: four oscillators sound continuously and modulate each other. The keyboard does not play notes, it moves a cursor on an XY pad that opens the filter, pushes cross-modulation and brings in the effects. K1 to K4 are always the four volumes.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "The active oscillator's pitch, minus a semitone (held: repeats). With SEL: minus an octave. OCT- and OCT+ together: the pitch returns to 0 (with SEL: all four)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "The active oscillator's pitch, plus a semitone (held: repeats). With SEL: plus an octave."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens or closes the FX page (held: open while held): VCF, VCA, drive, fold, ring, chorus, delay, reverb, crush, level. With SEL: bypasses the effects."
+  },
+  {
+   "commande": "SEL",
+   "role": "SHIFT: held, or press twice to lock it (its LED blinks), one more press to release it."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENV page: the generative environment (CALMA, NEBBIA, MAREA, FORESTA, VETRO, RUGGINE, COSMO, TEMPESTA), drift, its speed, mutation, density. With SEL: Mutate."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO page: two LFOs (shape, free or synced speed, destination, amount; they can also move the cursor) and the clock (speed, source, swing, jitter). With SEL: LFO sync."
+  },
+  {
+   "commande": "EDIT",
+   "role": "EDIT page: two destinations each for X and Y, with their amounts; slew, attack, release, release mode (fade, stay, return), range, curve, gesture size and speed. With SEL: default settings."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLO page: press a key to set it (white: point, intensity, oscillators, X and Y destinations, snapshot; black: gesture, speed, size, center, intensity, oscillators, X and Y). With SEL: key copy."
+  },
+  {
+   "commande": "HOME",
+   "role": "Switches from the KAOS PAD to the four bars (volume, wave and pitch of each oscillator); goes back one page. With SEL: the SYSTEM page (MIDI channel, MIDI notes, CC out, colors, lights, version, audio load)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the patch in its slot. With SEL: the slots (load, save, rename); held 2 s, quick save."
+  },
+  {
+   "commande": "ARP",
+   "role": "ARP page: mode, speed, gate, glide, swing, latch, spread. With SEL: ARP on or off."
+  },
+  {
+   "commande": "SEQ",
+   "role": "SEQ page: pattern, track length and mutation, speed, swing, direction. With SEL: choose the pattern."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops. With SEL: tap tempo."
+  },
+  {
+   "commande": "REC",
+   "role": "Records: live during playback, step by step when stopped. With SEL: clears the active track (+ PLAY: the whole pattern)."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Master volume. At startup, the volumes are at 0: raise it, then K1 to K4."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The active oscillator (1 to 4). With SEL: the clock speed, in Hz. In a page: the row."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The active oscillator's wave. With SEL: loads the next or previous patch. In a page: the row's parameter."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "The routing (1 to 8). With SEL: effects dry/wet. In a page: the value."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The 16 points of the pad, a 4 by 4 grid: the group of four gives Y, the position in the group gives X. Several keys held: the cursor sits between them. With SEL: HOLD, the cursor stays. On SEQ: steps 1 to 16 of the page."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Eleven gestures, from F#3 to F#5: circle, figure eight, horizontal sweep, vertical, diagonal, spiral, tremolo, walk, bounce, jump, return; the cursor draws them while the key is held. With SEL: LATCH (F#5: stop everything, release HOLD). On SEQ: step pages, KAOS and OSC1 to 4 tracks, copy, clear."
+  }
+ ],
+ "gestes": [
+  "SEL held or locked (press twice): the \"with SEL\" column of each control.",
+  "FX, ENV, LFO, EDIT, GLO, ARP, SEQ held: the page stays open while held.",
+  "OCT- and OCT+ together: the pitch returns to 0."
+ ],
+ "modes": [
+  {
+   "nom": "First sound",
+   "texte": "Raise MASTER, then K1 to K4: each brings in an oscillator. Touch a white key: the cursor glides there and the effect comes in. Hold a black key: the cursor draws a gesture. HOME: the four bars."
+  },
+  {
+   "nom": "Pages",
+   "texte": "In a page, SELECT chooses the row, PRESETS the parameter and ALGORITHM the value."
+  }
+ ],
+ "a_savoir": [
+  "The clock is set in Hz, not BPM: internal, MIDI or OSC4, with swing, jitter and tap tempo.",
+  "MIDI: incoming clock with start and stop; CC 12 X, 13 Y, 14 to 17 the volumes, 21 to 24 the waves, 70 algo, 71 resonance, 74 cutoff, 91 reverb, 93 chorus, 94 delay."
+ ],
+ "source": {
+  "url": "https://github.com/hirakos999/MODELAR/blob/89475ca2586d6861cc35cd62ea2e1f23a574d9cc/README.md",
+  "commit": "89475ca2586d6861cc35cd62ea2e1f23a574d9cc"
+ },
+ "d_apres_le_code": false
+}

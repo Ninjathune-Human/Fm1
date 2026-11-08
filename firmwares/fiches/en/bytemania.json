@@ -1,0 +1,98 @@
+{
+ "id": "bytemania",
+ "resume": "Bytemania is a bytebeat synth: a one-line formula in t yields an 8-bit sample at each step, and the note played sets the speed of t (middle C at 8 kHz). The knobs change the numbers in the formula while it plays; you write your own formulas on the device.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave, from minus 2 to plus 2. In the editor: deletes before the cursor."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. In the editor: deletes after the cursor."
+  },
+  {
+   "commande": "FX",
+   "role": "Changes the view: the grid (default) or the oscilloscope. In the editor, held: the second key layer."
+  },
+  {
+   "commande": "SEL",
+   "role": "Keys play or select a patch; when selecting, keys 1 to 27 take patches 01 to 27."
+  },
+  {
+   "commande": "LFO",
+   "role": "Tapped: next voice mode (MONO, DUAL, POLY, MULTI). Held: the knobs set detune, offset and width."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The formula editor, on the formula that is playing; press again to return to the main screen."
+  },
+  {
+   "commande": "GLO",
+   "role": "The CC screen: 12 bindings from a MIDI CC to a parameter, between a minimum and a maximum."
+  },
+  {
+   "commande": "HOME",
+   "role": "Held: KNOB 1 to 4 set the variables e to h instead of a to d."
+  },
+  {
+   "commande": "SAVE",
+   "role": "The save screen, on the playing patch or the first free slot (64 in all); press SAVE again to name it."
+  },
+  {
+   "commande": "ARP",
+   "role": "In the editor: a random formula, auditioned before it is offered (nothing silent or pure noise)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tapped: the loop runs or stops. Held: the knobs set the loop (START, FINE, LEN, MODE OFF, LOOP or PING)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "In MULTI: shows the left or right side. In the editor: a held C4 to listen."
+  },
+  {
+   "commande": "REC",
+   "role": "On the CC screen: learn, the next CC received goes to the selected binding."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The glide, from 0 to 10. In the editor: moves the cursor."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The patch: the 30 built-in ones, then your slots."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play in mono: the last note held sounds, and releasing it brings back the previous one. In the editor they type the formula: white keys t a b c d e f g h ( ) + - * & |, black keys 0 to 9 and ^."
+  }
+ ],
+ "gestes": [
+  "HOME held + KNOB 1 to 4: variables e to h.",
+  "SEQ held + KNOB 1 to 4: the loop.",
+  "LFO held + KNOB 1 to 3: detune, offset, width (DUAL, MULTI).",
+  "In the editor, FX held: the second layer, with the operators for division, modulo, comparison, shift and logic, and on the black keys 0x, A to F, space (the README table lists them)."
+ ],
+ "modes": [
+  {
+   "nom": "Variables",
+   "texte": "KNOB 1 to 4 set a to d (0 to 255), each in its own color on its knob and in the formula; turned fast, they advance by 8."
+  },
+  {
+   "nom": "The editor",
+   "texte": "Every change compiles immediately; if it does not compile, the line under the formula says what and where, and the last valid version keeps playing. ENV: an empty patch."
+  }
+ ],
+ "a_savoir": [
+  "USB MIDI: notes on any channel with velocity, pitch bend of plus or minus 2 semitones, and 12 learned CC bindings."
+ ],
+ "source": {
+  "url": "https://github.com/llozd/bytemania/blob/e670b35369f8556ee82683f35c6b8bfbcb366155/README.md",
+  "commit": "e670b35369f8556ee82683f35c6b8bfbcb366155"
+ },
+ "d_apres_le_code": false
+}

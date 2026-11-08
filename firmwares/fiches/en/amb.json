@@ -1,0 +1,91 @@
+{
+ "id": "amb",
+ "resume": "AMB-1 is a generative ambient machine inspired by Brian Eno: it plays by itself from power-on (voices, bells on loops of unequal length, bass, pulse) through tape echo and reverb. You do not play it, you tend it: choose a room and a scale, remove or put back notes.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Bell octave, from two below to two above, from any page."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Bell octave, from two below to two above, from any page."
+  },
+  {
+   "commande": "FX",
+   "role": "Space page: echo and reverb."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pad page: the four breathing voices."
+  },
+  {
+   "commande": "LFO",
+   "role": "Bass page: the bass."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Moves to the next chord, at the start of the next bar."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page."
+  },
+  {
+   "commande": "HOME",
+   "role": "Garden page, the whole garden. Held with SELECT, sets the tempo from any page."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves the eight rooms; held 1.5 s, resets the room to its recipe."
+  },
+  {
+   "commande": "ARP",
+   "role": "Bells page: the bells."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Pulse page: the pulse."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Pushes or lays down: the garden stops growing and the sounds fade slowly; press again to restart it."
+  },
+  {
+   "commande": "REC",
+   "role": "Freezes the chord: it holds and the reverb rings endlessly; press again to release."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Previous or next page."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the room, out of eight."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the mode (Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian, major and minor pentatonic) and loads its scale."
+  },
+  {
+   "commande": "Touches",
+   "role": "The scale: each key adds its note or removes it (the root stays, three notes minimum). Lit keys are the notes of the scale."
+  }
+ ],
+ "gestes": [
+  "HOME held + SELECT: sets the tempo.",
+  "A button held for one second: a card says what it does."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "KNOB 1 to 4 set the four values of the page; a layer's level is always on KNOB 1."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-amb/blob/188b0a42f20a547864e732ae5ea1339d0fbcf395/docs/MANUAL.md",
+  "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,95 @@
+{
+ "id": "fomni",
+ "resume": "Chord harp inspired by the Omnichord: the 16 white keys are the strum plate, the 11 black keys the chord buttons. Behind them, an organ chord with its bass and ten rhythms from the OM-84.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the strum plate by one octave."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the strum plate by one octave."
+  },
+  {
+   "commande": "FX",
+   "role": "Sound page: Reverb, Space, Width, Chord rev."
+  },
+  {
+   "commande": "SEL",
+   "role": "Chords page: press a black key, then KNOB 1 (Root) and KNOB 2 (Type) change its chord."
+  },
+  {
+   "commande": "ENV",
+   "role": "Held with a black key: the minor chord. With LFO at the same time: m7."
+  },
+  {
+   "commande": "LFO",
+   "role": "Held with a black key: the seventh."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Switches from one page to the next."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page: Tune, MIDI out, Lights."
+  },
+  {
+   "commande": "HOME",
+   "role": "Play page: Voice 1, Voice 2, Sustain, Chord level."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves; FoMni also saves by itself a few seconds after a change."
+  },
+  {
+   "commande": "ARP",
+   "role": "CHORD HOLD: the chord keeps sounding after release (pressing the same key again stops it)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Rhythm page: Rhythm, Tempo, Drums level, Auto bass."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the rhythm."
+  },
+  {
+   "commande": "REC",
+   "role": "SYNC START: the rhythm waits for your first chord."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Transposition from -6 to +6."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Rhythm choice."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Strum plate: each key plucks a string of the chord, in groups of three (root, third, fifth) within an F# to F window."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Chord buttons (default F, C, G, D minor, A minor, E minor, G7, E7, D7, B flat, A7)."
+  }
+ ],
+ "gestes": [
+  "ENV held + black key: minor chord; LFO held: seventh; both: m7."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Each page puts four values on KNOB 1 to 4.",
+  "MIDI comes in over USB and the TRS jack, and goes out over USB."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-fomni/blob/6ecd227013cc18def0e89d035b3760eb268b342b/README.md",
+  "commit": "6ecd227013cc18def0e89d035b3760eb268b342b"
+ },
+ "d_apres_le_code": false
+}

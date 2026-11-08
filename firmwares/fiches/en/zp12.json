@@ -1,0 +1,97 @@
+{
+ "id": "zp12",
+ "resume": "12-bit drum sampler after the SP-1200: 32 sounds, eight channels with their filters, pitch without interpolation for grit. You sample on the FM-1 over USB or in the browser editor.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Back to the previous pad bank (A and B). With FX held: REV THROW, reverb send full on while held."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Pad banks C and D. With FX held: ECHO THROW, echo send full on while held."
+  },
+  {
+   "commande": "FX",
+   "role": "FILTER (DJ filter on the mix), CHORUS, DELAY, REVERB."
+  },
+  {
+   "commande": "SEL",
+   "role": "The knobs switch to the faders of channels 5 to 8, until pressed again."
+  },
+  {
+   "commande": "ENV",
+   "role": "Tap tempo."
+  },
+  {
+   "commande": "LFO",
+   "role": "Sampling on the machine (RATE, TIME, THRESH, MON); REC starts the take. Held + a pad: erases that pad's hits as the playhead passes."
+  },
+  {
+   "commande": "EDIT",
+   "role": "WAVE, SOUND (TUNE, FINE, DECAY, LEVEL), TRUNC, OUT (channel, PAN, CUT, RESO), SENDS."
+  },
+  {
+   "commande": "GLO",
+   "role": "SETUP, CLICK (count-in), OUTPUT. Held + white keys 1 to 8: mute channels 1 to 8; 9 to 16: solo."
+  },
+  {
+   "commande": "HOME",
+   "role": "Gives the faders back to the knobs when a page had taken them."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves right away (otherwise it saves by itself when stopped). Held + a black key: stores the loop in that loop slot."
+  },
+  {
+   "commande": "ARP",
+   "role": "MULTI PITCH: the last sound across the 27 keys."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Short press: LOOP (length 1 to 32 bars or AUTO, QUANT, SWING), loop tools, SONG. Held: the 16 steps of the last pad on the white keys."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Records: when stopped, arms (PLAY counts in); during playback, overdub. A press under 2 s is a simple tap; held 2 s, erases the loop."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The last pad's sample."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "The sound to edit."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Pads 1 to 8 (bank A) and 9 to 16 (bank B), banks C and D with OCT+."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Loops 1 to 11: when stopped, immediately; during playback, at the end of the loop."
+  }
+ ],
+ "gestes": [
+  "GLO held + white keys: mute (1 to 8) and solo (9 to 16).",
+  "SEQ held: the last pad's steps on the white keys.",
+  "EDIT + OCT-: undoes the last erase or copy (again: redoes)."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "Samples are kept in flash at the place sloopDX leaves free; the original SLOOP keeps its own there: back them up first.",
+  "MIDI notes 36 to 67 play the pads, Program Change 0 to 15 select the loop."
+ ],
+ "source": {
+  "url": "https://github.com/zvenson/zp12/blob/7b8b97586ef87854d1859aad907e5f10ca49898d/README.md",
+  "commit": "7b8b97586ef87854d1859aad907e5f10ca49898d"
+ },
+ "d_apres_le_code": false
+}

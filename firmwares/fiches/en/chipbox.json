@@ -1,0 +1,119 @@
+{
+ "id": "chipbox",
+ "resume": "Chiptune groovebox that reproduces more than 35 sound chips (NES, Game Boy, Master System, Mega Drive, SID and others). Up to 16 channels, 16-step pages, drums specific to each chip, a song mode, live effects and 12 project slots.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Shifts the keys down one octave (two octaves at most). In the console picker, steps back one; in SONG, deletes the slot; in projects, goes back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Shifts the keys up one octave (two at most). On the + row, adds a channel; in SONG, adds a slot; in the projects view, opens a project."
+  },
+  {
+   "commande": "FX",
+   "role": "Turns the 16 white keys into effect pads (TAPE, RPT, LPF, HPF, ECHO, VERB, CRSH, DECI, GATE, DIVE, WOB, SOLO, KILL, HOLD)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens a console's card when picking a channel. Held on a channel, copies it (the patch alone, or the patch and the notes); held on a project, copies it into the first empty slot."
+  },
+  {
+   "commande": "ENV",
+   "role": "On the drum rows, held while pressing a white key, places an accent (a louder hit); on a hit already placed, switches the accent on or off."
+  },
+  {
+   "commande": "LFO",
+   "role": "Undoes the last change (six undos at most, no redo)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Clears the block under the cursor in step entry, or the drum selected on the page. Held on a channel, deletes it; held during recording, erases the notes the playhead crosses; in SONG, a press opens the slot's page, held copies it; held on a project, deletes it."
+  },
+  {
+   "commande": "GLO",
+   "role": "Shows help for the current view. GLO + HOME opens the menu (which contains Factory Reset)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Switches between views: RACK, CHIP, SONG. Goes back in a submenu. Held, opens the projects view."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Forces a save. Projects save themselves when nothing is playing; the SAVE light stays on as long as changes are not kept."
+  },
+  {
+   "commande": "ARP",
+   "role": "In the RACK, shows or hides the note tails (the line under a long note)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens a channel's step entry: the page as 16 blocks, or the drum rows for a drum channel."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Plays the song from the current page; held, loops only the page. In SONG, plays from the slot. In step entry, loops the page."
+  },
+  {
+   "commande": "REC",
+   "role": "Loops the page and starts recording: a key lands on the step nearest the playhead, and holding it sets the note length. Drums cannot be recorded live."
+  },
+  {
+   "commande": "SELECT",
+   "role": "In the RACK, this is the tape dial: to the right plays (half speed, normal speed, double), to the left plays in reverse, in the middle is pause. With the tape stopped, it moves the cursor. In SONG and step entry, it moves the cursor; on the TAPE pad, it drives the tape."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Chooses the channel in RACK, CHIP and STEP. On the + row of the RACK, prepares adding a channel. In SONG, changes the slot's page. In projects, moves between slots."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "In the RACK, turns the pages; in CHIP, turns the pages of cards."
+  },
+  {
+   "commande": "Touches",
+   "role": "Write the note under the cursor when the tape is stopped (the same key removes it). On the drum rows, the 16 white keys are the 16 steps and the black keys change the kit's drum. Knobs 1 to 4 set the four CHIP cards; in the RACK, knob 1 sets the tempo (40 to 240) and knob 2 the note length."
+  }
+ ],
+ "gestes": [
+  "HOME held: projects view.",
+  "GLO + HOME: menu.",
+  "PLAY held: loops the current page.",
+  "SEQ then a key: places the block and advances one step.",
+  "ENV held + a white key (drum rows): accent.",
+  "SEL held on a channel: copy. EDIT held on a channel: delete.",
+  "LFO: undo."
+ ],
+ "modes": [
+  {
+   "nom": "RACK, CHIP, SONG",
+   "texte": "Three views, which HOME cycles through. RACK shows the page's channels (one page = 16 steps = one bar). CHIP sets the selected channel's patch, in pages of four cards: the sound, the ATK DEC SUS REL envelope, the arpeggio, and for wave channels SHAPE FOLD STEP TWIST. SONG is the sequence of pages, up to 128 slots."
+  },
+  {
+   "nom": "Add a channel",
+   "texte": "In the RACK, pick the + row with PRESETS, press OCT+, choose a console then a channel. Playing the keys lets you hear the console before adding it. Knob 1 groups the consoles by type, year, maker or country."
+  },
+  {
+   "nom": "Step entry",
+   "texte": "SEQ opens the page as 16 blocks. A key places the block under the cursor and moves to the next; SELECT moves the cursor to leave rests; knob 2 sets the note length."
+  },
+  {
+   "nom": "Effects (FX)",
+   "texte": "The pads act as long as they are held; HOLD keeps them lit after release. SOLO plays only the selected channel, KILL cuts everything."
+  },
+  {
+   "nom": "Projects",
+   "texte": "HOME held opens twelve slots: the first two are demos that do not save, so copy them before editing. An empty slot opens a new project."
+  }
+ ],
+ "a_savoir": [
+  "Stated limits: 16 channels, 64 pages, 128 song slots, 10 projects in addition to the 2 demos, about 2000 notes per project.",
+  "The LFO button serves here as undo and the FX button as live effects, not for the functions printed on the panel.",
+  "To repair a stuck FM-1, the docs say to hold OCT- when plugging in and to use the install page."
+ ],
+ "source": {
+  "url": "https://github.com/pbarilla/chipbox/blob/48510318cffe4db2a5ceccfc153a65dcd6c8d6ff/site/guide/index.html",
+  "commit": "48510318cffe4db2a5ceccfc153a65dcd6c8d6ff"
+ },
+ "d_apres_le_code": false
+}

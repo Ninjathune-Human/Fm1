@@ -1,0 +1,95 @@
+{
+ "id": "fumi",
+ "resume": "A shigin conductor inspired by the Suiko ST-50: sixteen white keys (E F A B C, three times and a high E), a key set in honsū, equal or just tuning, a koto and twenty other instruments on a 6-operator FM engine.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "With no note held, goes down an octave. With a note held, makes a bend that falls back, downward (40 cents)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "With no note held, goes up an octave. With a note held, makes a bend that falls back, upward (a semitone, a whole tone or the next note of the scale)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Tapped, switches between equal (平均律) and just (純正律) tuning. Held, opens the tuning page."
+  },
+  {
+   "commande": "ENV",
+   "role": "Loop page: BPM, length in beats, click."
+  },
+  {
+   "commande": "LFO",
+   "role": "Vibrato on or off."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Bend setup page: target, drop, duration, glide."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mono or poly (単音 / 和音). Held, opens the trill pages."
+  },
+  {
+   "commande": "HOME",
+   "role": "Home page: KNOB 1 to 4 set 余韻 (ring time), trill speed, vibrato depth, reverb."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps the setting (it also keeps itself a few seconds after a change)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Trill on or off: the held note is replayed in pairs, ka-ta."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Switches the black keys to ornaments (vibrato, trill, damper, hard attack, left-hand koto gestures)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Stops or restarts the loop from the beginning; held one second, undoes the last layer."
+  },
+  {
+   "commande": "REC",
+   "role": "Looper: tapped, arms; the first key starts the loop; tapped again, closes it; afterwards, overdub on or off. Held one second, erases."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume. This firmware is quieter than the original firmware: turn MASTER up."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The key set in 本数 (水4 to 12本)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The instrument (21 in all, the koto at startup)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "The scale: IN, YŌ or MIN'YŌ."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The scale, sixteen keys: E F A B C three times and a high E. The tonics are lit."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "The upper row (F#, G, Bb, C#, D). After SEQ, ornaments, held while they act."
+  }
+ ],
+ "gestes": [
+  "Note held + OCT+ or OCT-: bend that falls back.",
+  "REC held one second: erases the loop. PLAY held one second: undoes the last layer."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The loop keeps neither knob movements nor MASTER: only the keys, ornaments and bends."
+ ],
+ "source": {
+  "url": "https://github.com/cartesive/fumi-1/blob/6a20fa387cf6bc28a33309a09aaa94a108325e2e/README.md",
+  "commit": "6a20fa387cf6bc28a33309a09aaa94a108325e2e"
+ },
+ "d_apres_le_code": false
+}

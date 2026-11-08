@@ -1,0 +1,78 @@
+{
+ "id": "arctic",
+ "resume": "Dark drone firmware based on GR!MM: four tracks, a 64-step sequencer, chords and an arpeggiator, with the Holvut source (a screaming feedback loop) and a DRONE page that evolves on its own.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down. In the save menus, steps back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up. In the save menus, confirms."
+  },
+  {
+   "commande": "SEL",
+   "role": "Opens SCALE then CHORD; held then released, turns the track's chord mode on or off."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the LFO pages; pressed twice, opens DRONE (BORGA, STOARBMA, GOHCCAT)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator; held, turns it on or off for the track."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the 64-step grid then the pattern settings; SELECT moves the cursor."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer."
+  },
+  {
+   "commande": "REC",
+   "role": "When stopped, each key writes its note into the selected step; during playback, what you play lands on the nearest step."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "On HOME, the tempo; on the sequencer, moves the cursor."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Loads the next or previous sound in the selected track; on the sequencer, sets the tempo."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the working track, T1 to T4."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the selected track; the keyboard is shifted down one octave, starting at F 2."
+  }
+ ],
+ "gestes": [
+  "Press LFO twice: DRONE page.",
+  "SEL held: chord mode.",
+  "ARP held: arpeggiator."
+ ],
+ "modes": [
+  {
+   "nom": "Six screaming scenes",
+   "texte": "Six presets (POLAR HOWL, WENDIGO, FROZEN SCREAM, WHITEOUT, DEAD SIGNAL, ICE WRAITH) hold their notes in LATCH; ICE WRAITH is the startup sound."
+  }
+ ],
+ "a_savoir": [
+  "No samples are supplied: the four slots are to be filled from the editor.",
+  "Saves are separate from those of GR!MM: you start again with empty projects."
+ ],
+ "source": {
+  "url": "https://github.com/PolarPatch/Arctic-scream-FM-1/blob/7b5b8b261bf8ea4d5d64485c082636c5b1579854/MANUAL.md",
+  "commit": "7b5b8b261bf8ea4d5d64485c082636c5b1579854"
+ },
+ "d_apres_le_code": false
+}

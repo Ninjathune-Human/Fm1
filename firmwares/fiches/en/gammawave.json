@@ -1,0 +1,122 @@
+{
+ "id": "gammawave",
+ "resume": "Pocket GammaWave (GW-1): a six-track machine with eight synthesis engines, a song generator with 49 genres (trap, drill, house, techno...), VOWEL and SCREAM filters and shortcuts while holding OCT-.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Goes down an octave. Held alone, then a second button: ARP steps through the six Hearth macros, PLAY or REC opens the generator, ENV or SEL goes to SEQ then MUTATE, HOME or SAVE opens the visualizer, SEQ, EDIT, FX and LFO roll the dice on the sequence, the sound, the effects or the LFO, GLO undoes. In a dialog box: NO. In the generator: back."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Goes up an octave; with OCT- at the same time, returns to octave 0. In a dialog box: YES. In the generator: makes a new song; held, the screen shows what each key does."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects pages (two quick presses move to the next section). Held: play effects, triggered by the keys (REPEAT, LPF, HPF, STUTTER, ARP, RANDOM...)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Printed SEL on the FM-1, named SCL in the docs. Opens the scale pages (ROOT, SCALE). Held: a key sets the root."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the envelope pages (ATK, DEC, SUS, REL)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the LFO and modulation pages. Held: the four knobs are the macros M1 to M4."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the track sound pages; pressing again moves to the next engine page (EDIT 1, EDIT 2, then FILTER, VOICE). Held: INIT (F3) and RECALL (G3). In the generator, deletes the selected take."
+  },
+  {
+   "commande": "GLO",
+   "role": "Switches between the MIXER, GLOBAL and SYSTEM pages. Held: mutes, solos, levels, tap tempo, and undo with G4."
+  },
+  {
+   "commande": "HOME",
+   "role": "Returns to the home screen; held about 0.7 s, opens the MENU. Held with SELECT, opens the generator."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the save pages (USER, PROJECT, ARRANGE, TOOLS). Held: play or store sections A to D. In the generator, keeps the current song as a take."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator pages (MODE, RATE, OCT, GATE)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the sequencer pages. Held: tools (CLEAR, REVERSE, SHIFT, RANDOM...) on the STEP, PATTERN, AUTOMATION and SHIFT pages."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops playback. In the generator, auditions the song."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording on the selected track. Held: CLEAR (F3) and CLICK (G3). In the generator, records a SET from the takes you play."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Output volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Alone, steps through the pages of the current section; on home, opens the generator (or sets the tempo, depending on MENU > GEN). In the generator, changes the settings page. Held with GLO: tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Browses the track's sounds. On step pages, moves the cursor. In the generator, opens the take roll (NOW then take 1, 2...); the take under the cursor plays at the next bar."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track T1 to T4 (T1 to T6 with TRACKS 6). In the generator, gives the song new instruments while keeping the notes."
+  },
+  {
+   "commande": "Touches",
+   "role": "27 keys from F3 to G5: play the selected track. With a button held, they become that button's shortcuts; on the drum grid, they are the steps and tracks."
+  }
+ ],
+ "gestes": [
+  "OCT- held + PLAY: opens the song generator.",
+  "OCT- held + ARP: next Hearth macro (six in all, from HEARTH GRAVITY to SOLAR ECLIPSE).",
+  "OCT- held + ENV: jumps to SEQ > MUTATE and turns it on if needed.",
+  "OCT- held + HOME: four-scene visualizer; OCT+ changes scene, OCT- exits.",
+  "OCT- held + GLO: undoes, a second time redoes.",
+  "GLO held + G4: undoes; GLO held + A4 in the generator: advances.",
+  "OCT+ held in the generator: the screen shows the keys; C#5 returns to the original take, D#5 starts JAM, F#5 shows the share code.",
+  "OCT- held in the generator: the white keys play takes 1 to 16 at the next bar.",
+  "EDIT held + SELECT: rolls the dice on the sound; OCT+ keeps, OCT- undoes.",
+  "OCT- + OCT+ together: octave 0."
+ ],
+ "modes": [
+  {
+   "nom": "Generator",
+   "texte": "Five settings pages that SELECT cycles through: genre, seed, energy and form; drums, bass, chords, arp; lead, complexity, swing, humanization; tempo, key, scale, length; space, fills, wet, grit. OCT+ makes a song, PLAY auditions it, HOME closes. The song that is playing is NOW: any change modifies it at the next bar. SAVE keeps it as a take (32 at most, kept through power-off)."
+  },
+  {
+   "nom": "Takes and SET",
+   "texte": "PRESETS opens the roll of the takes you have kept. On the roll, knobs 1 to 3 are tempo, key and energy, knob 4 chooses a section. REC records the takes you play into a SET; during its playback, knob 1 jumps from one entry to another."
+  },
+  {
+   "nom": "Hearth macros",
+   "texte": "Each press of OCT- held + ARP sets the distortion type, filter, cutoff and resonance of the selected track. Macros 4 to 6 switch the filter to SCREAM or VOWEL; the sixth also raises the master DUCK and PUNCH. Undo reverses them."
+  },
+  {
+   "nom": "Engines",
+   "texte": "Eight engines, all synthesized, on any track: ANALOG, FM6 (6-operator FM), PHASE, LOFI (1-, 4- and 8-bit chips, Bytebeat, Floatbeat), VOICE (formant voice), WHEEL (drawbar organ), NOISE and DRUM (eight pads with A/B crossfade)."
+  }
+ ],
+ "a_savoir": [
+  "The firmware comes from JIANT and Felucca: most pages are those of the two projects, described in chapter 17 of the manual for what GW-1 adds.",
+  "With TRACKS 4 (the default setting), only tracks T1 to T4 exist; T5 and T6 require TRACKS 6 in GLO > SYSTEM.",
+  "The repository's Web Studio (Web MIDI editor) is not needed to play; it is used to send FM6 banks and to export WAV."
+ ],
+ "source": {
+  "url": "https://github.com/fvalente/GammaWave-FM1/blob/8bf1a12cdb7c70e86eba81e63cb374d14f9d43e2/docs/MANUAL.md",
+  "commit": "8bf1a12cdb7c70e86eba81e63cb374d14f9d43e2"
+ },
+ "d_apres_le_code": false
+}

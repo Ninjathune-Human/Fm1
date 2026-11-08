@@ -1,0 +1,96 @@
+{
+ "id": "x0x",
+ "resume": "X0X turns the FM-1 into a groovebox: a 909, an 808, two 303s with an acid line generator and a breakbeat player, all together, each with its own pattern. Patterns can be chained into a song and knob movements recorded.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "The steps by 16; on HOME and SONG, patterns 1 to 16; on the 303 keyboard, the octave; on TB-3PO, mutes the line."
+  },
+  {
+   "commande": "OCT+",
+   "role": "The steps by 16; on HOME and SONG, patterns 17 to 32; on the 303 keyboard, the octave; on TB-3PO, writes a new line."
+  },
+  {
+   "commande": "FX",
+   "role": "The reverb and delay."
+  },
+  {
+   "commande": "SEL",
+   "role": "The whole screen as a list; in a question, yes."
+  },
+  {
+   "commande": "ENV",
+   "role": "Held while pressing keys: an accent."
+  },
+  {
+   "commande": "LFO",
+   "role": "The mixer and master. Held while pressing keys: a slide."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The sound of the chosen part."
+  },
+  {
+   "commande": "GLO",
+   "role": "The settings."
+  },
+  {
+   "commande": "HOME",
+   "role": "The pattern: the five parts, which pattern, the mutes; again, the song. In a list, back."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves everything. Held, copies the pattern; a white key pastes it."
+  },
+  {
+   "commande": "ARP",
+   "role": "TB-3PO, the 303 line generator (on a 303)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The steps of the chosen part, with LENGTH and RATE."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Records: drum hits, 303 notes, knob movements, song. On a 303, the keys become a keyboard."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Previous or next page; in a list, moves."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Next pattern: of the part on its screen, of all parts on HOME."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the part: 909, 808, 303A, 303B or BREAK."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The steps; on HOME, the patterns."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "The drum tracks or the break slices; on HOME, they mute the parts."
+  }
+ ],
+ "gestes": [
+  "HOME held + REC: undo; + PLAY: redo; + SELECT: tempo.",
+  "SAVE held: copies the pattern, then a white key pastes it."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "X0X is in beta: a very busy pattern can push the FM-1 to its limit; X0X then sacrifices some sound quality to keep playing.",
+  "No recorded break is supplied, only two loops played by its 909."
+ ],
+ "source": {
+  "url": "https://github.com/charlesvestal/fm1-x0x/blob/27f6fac7e07ce97b5de158b45aec99f59a9e23fd/docs/MANUAL.md",
+  "commit": "27f6fac7e07ce97b5de158b45aec99f59a9e23fd"
+ },
+ "d_apres_le_code": false
+}

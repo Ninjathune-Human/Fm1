@@ -1,0 +1,106 @@
+{
+ "id": "mycelium",
+ "resume": "MYCELIUM is a Forest, Psytrance, Goa and Hitech groovebox built on SLOOP and Felucca: three synths and a drum machine, six factory grooves and four songs. Each button has two lives: tapped, it opens its pages; held, a layer where the white keys and knobs change role.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Synths: octave down (both: back to 0). Drums, held: ghost hits. With EDIT held: undo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Synths: octave up. Drums, held: strong hits. With EDIT held: redo. In menus: confirm."
+  },
+  {
+   "commande": "FX",
+   "role": "Tapped: PSY FX (1 KB LP the low-pass of the bass and kick, 2 SPACE echo and reverb, 3 FB+DRV, 4 ALIEN+ ring and stutter on the lead and FX). Held: the punch layer, one effect per white key."
+  },
+  {
+   "commande": "SEL",
+   "role": "Called SCL. Held: the key layer, a key gives the song's key; KNOB 1 the chord, 2 the scale, 3 the keys, 4 the transposition."
+  },
+  {
+   "commande": "ENV",
+   "role": "Tapped: the envelope (on track 1 the bass, on track 4 the kick's). Held 0.7 s, beat running: a temporary psy fill of hi-hats and claps."
+  },
+  {
+   "commande": "LFO",
+   "role": "Tapped: the modulation. Held 0.7 s: the FOREST, GOA, HITECH patterns of the lead and FX, in turn."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Held: the erase layer, a key erases that sound or note from the pattern; KNOB 1 shifts, 2 doubles or cuts, 3 transposes."
+  },
+  {
+   "commande": "GLO",
+   "role": "Held: the mix layer, keys 1 to 4 mute, 5 to 8 solo, the last one tap tempo; KNOB 1 to 4 the track volume. GLO > SYSTEM > SYNC: USB, TRS or INT."
+  },
+  {
+   "commande": "HOME",
+   "role": "The tracks screen. Held: the menu (GROOVES, SONGS, color, lights, logo). Tapped while a layer is held: locks it."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Tapped: the four factory songs, or USER SONG. Held: the song layer, keys 1 to 4 play sections A to D, 5 to 8 save the loop there."
+  },
+  {
+   "commande": "ARP",
+   "role": "Tapped: the next bass pattern, GALLOP, OFFBEAT, FULL-ON. Held: roll, the held note repeats on the grid; held 0.7 s, the roll stays."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Held: the step layer, the white keys are the steps of the page; KNOB 1 sound or note, 2 DIV, 3 swing, 4 length."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the four tracks, also inside a layer."
+  },
+  {
+   "commande": "REC",
+   "role": "While playing: records right away, or stops. When stopped: arms, the first note starts. Held: erases the selected track (a ring fills)."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The tempo, always, even in a layer."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The track's sound, or the drum kit."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the track, on every page."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Play the track: on the drums, 16 sounds. In a held layer, their role changes (effects, steps, key, mute and solo, sections)."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "On the drums, the sound of the white key to their left."
+  }
+ ],
+ "gestes": [
+  "A button held + HOME tapped: its layer stays open (LOCK), both hands free; another button closes it.",
+  "HOME held > GROOVES, a groove, OCT+ then OCT+: loads one of the six 32-step grooves (FOREST JAM, PSY ROLL, PSY GALLOP, GOA ACID, HITECH, TEKK); a key played starts the beat.",
+  "HOME held > SONGS: Forest Odyssey, Psy Ascension, Tekk Reactor, Hitech Portal, four songs of 240 bars."
+ ],
+ "modes": [
+  {
+   "nom": "Tracks",
+   "texte": "Tracks 1 to 3: the synths (1 the bass), track 4: the drums. On the tracks screen, KNOB 1 sets the probability of tracks 2 and 3; KNOB 4 the distortion of the bass and drums, the pan of the synths."
+  }
+ ],
+ "a_savoir": [
+  "Loading a groove replaces the current loop and its sounds: save first.",
+  "USB and TRS MIDI: channels 1 to 3 the synths, 10 the drums, 4 the selected track; notes, velocity, clock, start and stop."
+ ],
+ "source": {
+  "url": "https://github.com/megagott/mycelium-fm1/blob/750eb125e2850acc62a8391cb742246a7c437745/Mycelium-FM1-1.0-Quellcode.zip",
+  "commit": "750eb125e2850acc62a8391cb742246a7c437745"
+ },
+ "d_apres_le_code": false
+}

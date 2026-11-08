@@ -1,0 +1,94 @@
+{
+ "id": "min1",
+ "resume": "Small minimalist ensemble in the spirit of Philip Glass: it plays by itself from power-up, then you take over. In EASY mode, each white key is a chord that fits. Four models and twenty pieces.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Lowers the octave of the upper part."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Raises the octave of the upper part."
+  },
+  {
+   "commande": "FX",
+   "role": "Chords page. With SEL held, brings the part in or out."
+  },
+  {
+   "commande": "SEL",
+   "role": "Held, switches to hand playing: ENV, ARP, LFO, SEQ and FX bring a part in or out, EDIT goes back to the previous idea, REC learns a cycle, PLAY alternates songs and live."
+  },
+  {
+   "commande": "ENV",
+   "role": "Upper page."
+  },
+  {
+   "commande": "LFO",
+   "role": "Bass page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Draws an idea for the displayed page; with SEL, goes back to the previous idea."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page; a second press opens System."
+  },
+  {
+   "commande": "HOME",
+   "role": "Form page; held with SELECT, sets the tempo."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves pieces and songs; held, resets the piece to its recipe (in SONGS, deletes the song)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Lower page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Lead page."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Records a song from the start; a second press keeps it."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Previous or next page; with HOME held, sets the tempo."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Selects the piece (twenty), or the song (eight) in SONGS."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the chord cycle (eighteen, Mine, Rolled)."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the chord. In EASY, each white key is a chord of the key (tonic on the left), the black keys the same with a seventh; in NOTES, they are the notes."
+  }
+ ],
+ "gestes": [
+  "SEL + EDIT: goes back to the previous idea.",
+  "SEL + REC: learns a chord cycle (two to eight chords, then REC) which becomes Mine.",
+  "SEL + white keys 1 to 8: grow, shrink, shift, flip, freeze, slow down, speed up, new section."
+ ],
+ "modes": [
+  {
+   "nom": "Models",
+   "texte": "ARPEGGIO, PHASE, PATTERNS and BELLS, chosen on the System page (Model). Each has its own pieces."
+  }
+ ],
+ "source": {
+  "url": "https://github.com/Reytian/fm1-min1/blob/8d6dd77d34cde4f980bd84e726d6a923f951a0dd/README.md",
+  "commit": "8d6dd77d34cde4f980bd84e726d6a923f951a0dd"
+ },
+ "d_apres_le_code": false
+}

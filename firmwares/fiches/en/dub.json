@@ -1,0 +1,93 @@
+{
+ "id": "dub",
+ "resume": "DUB-1 is a generative dub techno machine: it plays by itself from power-on (chords into a tape echo, bass, kick, noise). You don't play it, you steer it: scale, filter, echo, mutes.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On a layer's page, lowers its level by 5; with OCT+ together, mutes the layer or restores it."
+  },
+  {
+   "commande": "OCT+",
+   "role": "On a layer's page, raises its level by 5; with OCT- together, mutes the layer or restores it."
+  },
+  {
+   "commande": "FX",
+   "role": "Space page (echo, time, feedback, reverb); again, Echo page."
+  },
+  {
+   "commande": "SEL",
+   "role": "Tapped, opens PERFORM: the knobs become Filter, Wet, Energy, Duck, and the keys mute or solo layers. Held: turns Lock on or off."
+  },
+  {
+   "commande": "ENV",
+   "role": "Chord layer page; again, its sound page."
+  },
+  {
+   "commande": "LFO",
+   "role": "Bass layer page; again, its sound page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the Chords page (eight upcoming chords); held, launches the next chord."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page; held, saves the eight pieces."
+  },
+  {
+   "commande": "HOME",
+   "role": "Dub page (filter, movement); again, Key page (tempo, root, mode, swing). Held + SELECT: tempo."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Noise page (the crackle); again, Noise space."
+  },
+  {
+   "commande": "ARP",
+   "role": "Pings layer page; again, its sound page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Drums layer page; again, its sound page, then the Pattern page (five tracks of sixteen steps)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Plays or rests."
+  },
+  {
+   "commande": "REC",
+   "role": "Tapped, dub hold: the echo repeats what it holds forever; again to release. Held, opens the effects grid."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Previous or next page, in the order of the panel buttons."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes piece (eight in all)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "On a layer's page, changes its voice; on Noise, its character; elsewhere, the center screen (ripples, scope, spectrum)."
+  },
+  {
+   "commande": "Touches",
+   "role": "The scale: each key adds its note or removes it. The root stays, and at least three notes."
+  }
+ ],
+ "gestes": [
+  "REC held: effects grid (sixteen effects on the white keys).",
+  "SEL held: Lock, each phrase keeps the kick, percussion and bass plan.",
+  "A layer button held: small variation of the layer's sound; held 1.5 s: new draw."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/sbegueria/fm1-dub/blob/e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d/docs/MANUAL.md",
+  "commit": "e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d"
+ },
+ "d_apres_le_code": false
+}

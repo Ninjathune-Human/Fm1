@@ -1,0 +1,76 @@
+{
+ "id": "flyfish",
+ "resume": "Flyfish plays a single piece: Chopin's Étude in C major, Op. 10 No. 1, on a sampled Steinway D. It can be played, shaped (rubato, touch, accents), practised (speed, loop, hand to play yourself) and transposed.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Goes back one bar."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Goes forward one bar."
+  },
+  {
+   "commande": "FX",
+   "role": "Piano page: STYLE, LEGATO, SOFT, TUNING."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Sound page: SOUND, BRIGHT, DECAY, WIDTH."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mix page: RIGHT, LEFT, REVERB, SPACE."
+  },
+  {
+   "commande": "HOME",
+   "role": "RUBATO, TOUCH, ACCENT, PEDAL and the cascade (or the score). Held: MENU (COLOR, LOOK, VIEW, PITCH)."
+  },
+  {
+   "commande": "ARP",
+   "role": "Variations: KEY, MODE, BASS, ROUNDS (how many rounds, INF by default)."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Practice page: SPEED, FROM, TO, YOU; again: MODE, RAMP, CLICK, COUNT; again: RHYTHM, CHORDS, SHOW, ERASE."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops the étude."
+  },
+  {
+   "commande": "REC",
+   "role": "Turns the loop between bars FROM and TO on or off."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tempo (the score marks quarter note = 176)."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes the sound, on all pages."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Chooses the bar to jump to (during play, at the next bar line)."
+  },
+  {
+   "commande": "Touches",
+   "role": "To play along with the music, tap the notes or find the note; they play nothing but the piece."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "The piece is unique: the firmware is not a free synth."
+ ],
+ "source": {
+  "url": "https://github.com/delirioux/flyfish/blob/4e5efb8a7623cfb19a55fdc08cb12e8cfdfce578/README.md",
+  "commit": "4e5efb8a7623cfb19a55fdc08cb12e8cfdfce578"
+ },
+ "d_apres_le_code": false
+}

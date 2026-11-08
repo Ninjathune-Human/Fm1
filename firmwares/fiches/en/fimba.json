@@ -1,0 +1,120 @@
+{
+ "id": "fimba",
+ "resume": "A physically modelled kalimba: the 16 white keys are the tines, the 11 black keys play rolled chords. Sound hole to cover, grains, tape, delay and plate reverb.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down (from -2 to +2)."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up (from -2 to +2). OCT- and OCT+ held together for five seconds open firmware update mode."
+  },
+  {
+   "commande": "FX",
+   "role": "Space page (Reverb, Size, Delay, Time); a second press, Color page (Tape, Lo-fi, Chorus, Filter)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Keys page (Layout, Scale, Key, Black; in Keyboard: Layout, Transpose, Octave); a second press, Play page (Strum ms, Octave)."
+  },
+  {
+   "commande": "ENV",
+   "role": "Body page: Body (None, Board, Box, Gourd), Buzz, Wah, Wah rate."
+  },
+  {
+   "commande": "LFO",
+   "role": "Grain page (Grains, Grain ms, Density, Pitch); a second press, Spread page (Spray, Feedback, Width)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Cycles through all the pages in turn."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page: Tune, MIDI ch, MIDI out, Theme. The header shows the version and CPU load."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tine page (Material, Hardness, Decay, Tone); a second press, Character page (Worn, Glide, Tuning, Release)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Saves right away. Held 1.5 seconds, offers a return to factory settings: SAVE confirms, any other button or five seconds of waiting cancels."
+  },
+  {
+   "commande": "ARP",
+   "role": "Short press: starts or stops the mbira pattern (lit while it runs). Held half a second: opens the Pattern page without starting or stopping it."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Pattern page: Pattern (Thumbs, Cascade, 3 over 2, Interlock) and Tempo (40 to 200 BPM)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Freezes the grain cloud, which keeps playing what it has in memory; a second press returns it to live. Lit while frozen."
+  },
+  {
+   "commande": "REC",
+   "role": "Palm mute: silences all the tines at once."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Tine material: Steel, Brass, Bronze, Aluminium, Bamboo, Glass."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Key in Tine layout, transposition in Keyboard layout."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Scale (Major, Minor, Penta, Dorian, Mbira, Chromatic, etc.)."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The 16 tines. In Tine layout, the lowest (C4 in C) is just right of center and the scale spreads out alternating left, right."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Depending on Black (Keys page): Chords, rolled chords on the scale degrees (the first seven keys play triads, the last four sevenths); Sharps, chromatic row; Perform, playing gestures."
+  }
+ ],
+ "gestes": [
+  "ARP held half a second: opens the Pattern page.",
+  "SAVE held 1.5 seconds then SAVE: resets the sound settings to default.",
+  "OCT- and OCT+ held five seconds: update mode.",
+  "A page button pressed twice: moves to the next page of the same button."
+ ],
+ "modes": [
+  {
+   "nom": "Tine layout",
+   "texte": "17-tine kalimba in C (D6 to C6, without the E6). The lowest tine is just right of center, the scale alternates to the left then the right. Mirror is the same layout reversed."
+  },
+  {
+   "nom": "Keyboard layout",
+   "texte": "All 27 keys, white and black, play the printed note, from F3 to G5. Transpose shifts by plus or minus 12 semitones."
+  },
+  {
+   "nom": "Black keys in Perform",
+   "texte": "Key 1: mutes all the tines. Key 2: covers the hole while held. Key 3: freezes the grains. Key 4: octave down while held. Key 5: octave up while held. Keys 6 to 11: Steel, Brass, Bronze, Aluminium, Bamboo, Glass."
+  },
+  {
+   "nom": "ARP patterns",
+   "texte": "Cycle of 12 pulses, three per beat, in four patterns: Thumbs, Cascade, 3 over 2, Interlock. The chord comes from a black key in Chords mode, from held keys in Keyboard layout, or from held MIDI notes. It keeps going after release until another chord or a new press of ARP."
+  }
+ ],
+ "a_savoir": [
+  "The FM-1 keys don't sense strike force: each key plucks with the same force, set by Hardness. Over MIDI, velocity sets it.",
+  "Settings save themselves about four seconds after a change, once everything is quiet.",
+  "Sixteen tines sound at once; the seventeenth replaces the weakest."
+ ],
+ "source": {
+  "url": "https://github.com/jadamsowers/fm1-fimba/blob/0485ed0d387ce78216428c7b19f97d77bbe10b4d/README.md",
+  "commit": "0485ed0d387ce78216428c7b19f97d77bbe10b4d"
+ },
+ "d_apres_le_code": false
+}

@@ -1,0 +1,88 @@
+{
+ "id": "maku",
+ "resume": "Ambience machine for DJ interludes: when switched on, a random world in key is already playing. Four parts (pulse, floor, haze, voice), buttons that are verbs, and the worlds you like breed new ones.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Rotates the key around the circle of fifths."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Rotates the key around the circle of fifths."
+  },
+  {
+   "commande": "FX",
+   "role": "Verb SINK: sinks (depth)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Verb SCL, cascade: more notes, higher, a third above."
+  },
+  {
+   "commande": "ENV",
+   "role": "Verb SWELL: swells (longer, chords stay)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Verb WOBBLE: undulates (filter and pitch)."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Verb LIFT: brighter, harder, thinner."
+  },
+  {
+   "commande": "GLO",
+   "role": "Verb SCRAMBLE: the rhythm and the phrase break apart."
+  },
+  {
+   "commande": "HOME",
+   "role": "Held: a new world, random or derived from one of your favorites."
+  },
+  {
+   "commande": "ARP",
+   "role": "Root, scale and register; a press advances the scale."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Tempo, swing and duck."
+  },
+  {
+   "commande": "PLAY",
+   "role": "DRIFT switch: values drift on their own; held, sets RATE, RANGE and REACH."
+  },
+  {
+   "commande": "REC",
+   "role": "Short press: keeps the current world as a favorite (up to 16). Held about 2 s: forgets them all."
+  },
+  {
+   "commande": "SELECT",
+   "role": "One of the three macros of the focused part."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "One of the three macros of the focused part."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "One of the three macros of the focused part; turning right always makes it more alive."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the focused part's sound. When the pulse has focus, they become a 16-step sequencer."
+  }
+ ],
+ "gestes": [
+  "HOME + OCT-: settings menu (color, screen off, calibration).",
+  "Each verb: a press that rises, holds while pressed, then fades slowly; three knobs set these durations during the press."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "KNOB 1 to 4 set the volume of parts 1 to 4 and give them focus.",
+  "Nothing is saved except favorites: every start is a new world."
+ ],
+ "source": {
+  "url": "https://github.com/okumurari2/maku/blob/5671198f1989cbd4a0e674b2059e7f8316faf37d/README.md",
+  "commit": "5671198f1989cbd4a0e674b2059e7f8316faf37d"
+ },
+ "d_apres_le_code": false
+}

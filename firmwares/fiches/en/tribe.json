@@ -1,0 +1,96 @@
+{
+ "id": "tribe",
+ "resume": "Ten-track groovebox where any engine plays on any track: kicks, 909 and 808 voices, ACID. It offers sixty-four clips per track, scatter effects on the keys, two master effects and four assignable master knobs.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Page by page the steps (SEQ) or the sound pages (FX, ENV, LFO, EDIT); on the keyboard (ARP, REC), the octave."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Page by page the steps (SEQ) or the sound pages (FX, ENV, LFO, EDIT); on the keyboard (ARP, REC), the octave."
+  },
+  {
+   "commande": "FX",
+   "role": "One of the four parameter groups of the track's sound; another press goes to the next page."
+  },
+  {
+   "commande": "SEL",
+   "role": "The mix: volume, sends and engine of each track."
+  },
+  {
+   "commande": "ENV",
+   "role": "One of the four parameter groups of the track's sound."
+  },
+  {
+   "commande": "LFO",
+   "role": "One of the four parameter groups of the track's sound."
+  },
+  {
+   "commande": "EDIT",
+   "role": "One of the four parameter groups of the track's sound."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global settings: master effects, master knobs, compressor."
+  },
+  {
+   "commande": "HOME",
+   "role": "The clips; another press goes to the next bank of sixteen."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Opens the save choice."
+  },
+  {
+   "commande": "ARP",
+   "role": "The keyboard plays the track; arpeggiator and transposition."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The steps; held, sequencer settings (length, speed, direction, swing)."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Records the notes during playback."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Master volume, as long as GLO assigns nothing else to it."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Assignable encoder in GLO; by default, DJ filter."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Assignable encoder in GLO; by default, FX 1 amount."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Assignable encoder in GLO; by default, FX 2 amount."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The steps; on HOME, the clips (launched at the end of the pattern, or right away by pressing again); during playback on a sound page, the scatter effects; on ARP and REC, the notes."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Tracks 1 to 10; the eleventh is MUTE (held, a track key mutes or unmutes it)."
+  }
+ ],
+ "gestes": [
+  "On SEQ, a lit step held: the knobs become its note, velocity and probability.",
+  "Eleventh black key (MUTE) held + track key: mutes or unmutes the track."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/apiel/fm1-tribe/blob/29664b28c9d8b8eb043de0739bf9dd64869958c4/docs/MANUAL.md",
+  "commit": "29664b28c9d8b8eb043de0739bf9dd64869958c4"
+ },
+ "d_apres_le_code": false
+}

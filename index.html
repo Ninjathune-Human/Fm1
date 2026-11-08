@@ -290,6 +290,9 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 .fs { width: 40px; height: 40px; display: inline-grid; place-items: center; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
 .fs svg { width: 20px; height: 20px; }
 .fs:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.lang { min-width: 40px; height: 40px; padding: 0 8px; border: 0; border-radius: 999px; background: none; color: var(--ink); cursor: pointer;
+  font: 600 0.8125rem/1 var(--body); letter-spacing: 0.08em; }
+.lang:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .fs-tip { position: fixed; z-index: 60; box-sizing: border-box; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 14px; background: var(--surface);
   box-shadow: 0 8px 28px rgb(0 0 0 / 0.16); font: 400 0.9375rem/1.4 var(--body); color: var(--ink); }
 .fs-tip::before { content: ""; position: absolute; top: -7px; left: calc(var(--x) - 6px); width: 12px; height: 12px; background: var(--surface);
@@ -330,7 +333,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
   <header class="mast">
     <h1 class="mark">FM-1<span>+VA</span></h1>
     <p class="eyebrow">M-VAVE FM-1 · Émulateur · Version 102</p>
-    <div class="mode"><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><nav class="seg" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav></div>
+    <div class="mode"><button type="button" class="lang" lang="en" aria-label="English" title="English">EN</button><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><nav class="seg" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav></div>
   </header>
 
   <section class="stage" aria-label="Le FM-1">
@@ -427,6 +430,115 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
   </section>
 </main>
 
+<script>
+// la langue : le français est celui de la page ; l'anglais est un dictionnaire (assets/lang-en.json) appliqué au texte déjà
+// là et à tout ce que la page écrit ensuite. Le choix est gardé (fm1.lang) et suit d'un cadre du Duo à l'autre.
+"use strict";
+(function () {
+  const KEY = "fm1.lang", root = document.documentElement, SKIP = new Set(["SCRIPT", "STYLE", "CANVAS", "TEXTAREA", "INPUT", "NOSCRIPT"]);
+  const INLINE = new Set(["A", "B", "I", "EM", "STRONG", "KBD", "CODE", "SPAN", "BR", "TSPAN", "SMALL"]);
+  const ATTRS = ["title", "aria-label", "placeholder"], listeners = [], texts = new WeakMap();
+  let lang = "fr", dict = null, subs = [], loading = null, watching = false;
+  try { if (localStorage.getItem(KEY) === "en") lang = "en"; } catch { /* le français */ }
+  const norm = (s) => s.replace(/\s+/g, " ").trim();
+  function tr(s) {
+    const k = norm(s);
+    if (!k || !dict) return null;
+    if (Object.prototype.hasOwnProperty.call(dict.exact, k)) return dict.exact[k];
+    for (const [re, to] of subs) if (re.test(k)) return k.replace(re, to);
+    return null;
+  }
+  function attrs(el) {
+    for (const a of ATTRS) {
+      const v = el.getAttribute(a), en = v && tr(v);
+      if (en) { el.setAttribute("data-fr-" + a, v); el.setAttribute(a, en); }
+    }
+  }
+  function visit(n) {
+    if (n.nodeType === 3) {
+      const en = (n.parentNode.closest && n.parentNode.closest("#clavier") && tr("clavier:" + n.nodeValue)) || tr(n.nodeValue);   // (une même étiquette peut se dire autrement sur le clavier dessiné)
+      if (en) { texts.set(n, n.nodeValue); n.nodeValue = n.nodeValue.match(/^\s*/)[0] + en + n.nodeValue.match(/\s*$/)[0]; }
+      return;
+    }
+    if (n.nodeType !== 1 || (SKIP.has(n.tagName) && n.tagName !== "INPUT")) return;
+    attrs(n);
+    if (n.tagName === "INPUT") return;
+    if (n.children.length && n.innerHTML.length < 3000 && [...n.children].every((c) => INLINE.has(c.tagName))) {
+      const en = tr(n.innerHTML);
+      if (en) { n.setAttribute("data-fr", n.innerHTML); n.innerHTML = en; return; }
+    }
+    for (const c of [...n.childNodes]) visit(c);
+  }
+  function revert() {
+    for (const n of document.querySelectorAll("[data-fr]")) { n.innerHTML = n.getAttribute("data-fr"); n.removeAttribute("data-fr"); }
+    for (const a of ATTRS) for (const n of document.querySelectorAll(`[data-fr-${a}]`)) { n.setAttribute(a, n.getAttribute("data-fr-" + a)); n.removeAttribute("data-fr-" + a); }
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let t = w.nextNode(); t; t = w.nextNode()) if (texts.has(t)) { t.nodeValue = texts.get(t); texts.delete(t); }
+  }
+  const observer = new MutationObserver((list) => {
+    if (lang !== "en" || !dict) return;
+    for (const m of list) {
+      if (m.type === "attributes") { if (m.target.isConnected) attrs(m.target); }
+      else if (m.type === "characterData") visit(m.target);
+      else { for (const n of m.addedNodes) visit(n); if (m.target.nodeType === 1 && m.target.isConnected) visit(m.target); }
+    }
+  });
+  function load() {
+    loading ??= fetch("assets/lang-en.json").then((r) => r.json()).then((d) => { dict = d; subs = (d.patterns || []).map(([re, to]) => [new RegExp(re, "u"), to]); }).catch(() => { loading = null; });
+    return loading;
+  }
+  function paint() {
+    root.lang = lang;
+    const other = lang === "en" ? "fr" : "en";
+    for (const b of document.querySelectorAll(".lang")) {
+      b.textContent = other.toUpperCase(); b.lang = other;
+      b.setAttribute("aria-label", other === "en" ? "English" : "Français"); b.title = b.getAttribute("aria-label");
+    }
+  }
+  async function apply() {
+    if (lang === "en") {
+      await load();
+      if (lang !== "en" || !dict) return;
+      observer.disconnect();
+      visit(document.body);
+      observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta && tr(meta.content)) { meta.setAttribute("data-fr", meta.content); meta.content = tr(meta.content); }
+    } else {
+      observer.disconnect();
+      revert();
+      const meta = document.querySelector('meta[name="description"][data-fr]');
+      if (meta) { meta.content = meta.getAttribute("data-fr"); meta.removeAttribute("data-fr"); }
+    }
+    paint();
+    for (const f of listeners) f(lang);
+  }
+  async function set(l, save = true) {
+    if (l !== "en" && l !== "fr") return;
+    lang = l;
+    if (save) try { localStorage.setItem(KEY, l); } catch { /* cette session */ }
+    await apply();
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest(".lang"); if (b) set(lang === "en" ? "fr" : "en"); });
+  addEventListener("storage", (e) => { if (e.key === KEY && (e.newValue === "en" ? "en" : "fr") !== lang) set(e.newValue === "en" ? "en" : "fr", false); });
+  window.FM1LANG = { get: () => lang, set, on: (f) => listeners.push(f), text: (fr) => (lang === "en" && tr(fr)) || fr,
+    // pour dresser le dictionnaire : les textes que la page montre en ce moment, tels que le traducteur les lit
+    keys() {
+      const out = new Set();
+      const walk = (n) => {
+        if (n.nodeType === 3) { const k = norm(n.nodeValue); if (k) out.add(k); return; }
+        if (n.nodeType !== 1 || SKIP.has(n.tagName)) return;
+        for (const a of ATTRS) { const v = n.getAttribute(a); if (v && norm(v)) out.add(norm(v)); }
+        if (n.children.length && n.innerHTML.length < 3000 && [...n.children].every((c) => INLINE.has(c.tagName))) out.add(norm(n.innerHTML));
+        for (const c of n.childNodes) walk(c);
+      };
+      walk(document.body);
+      return [...out];
+    } };
+  paint();
+  if (lang === "en") apply();
+})();
+</script>
 <script type="text/worklet" id="engine-src">
 "use strict";
 // the 32 algorithms: for each operator (0 = OP1), the operators that modulate it; the carriers; feedback [dst, src]
@@ -6053,9 +6165,10 @@ function buildPanel(fw) {
     ficheMeta.textContent = "";
     if (id === "local") { ficheMessage("Pas de fiche pour ce firmware."); return; }
     if (!ficheDetails.open) return;
-    if (!fiches.has(id)) fiches.set(id, fetch(`firmwares/fiches/${id}.json`).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); }));
+    const loadFiche = (key) => { if (!fiches.has(key)) fiches.set(key, fetch(`firmwares/fiches/${key}.json`).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); })); return fiches.get(key); };
     let x;
-    try { x = await fiches.get(id); } catch { fiches.delete(id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
+    try { x = (FM1LANG.get() === "en" && await loadFiche("en/" + id)) || await loadFiche(id); }   // l'anglais des firmwares natifs, sinon la fiche française
+    catch { fiches.delete(id); fiches.delete("en/" + id); if (my === ficheSeq) ficheMessage("Fiche indisponible pour le moment."); return; }
     if (my !== ficheSeq) return;
     if (x) renderFiche(x); else ficheMessage("Pas de fiche pour ce firmware pour l'instant.");
     if (id === "fm1va") ficheMeta.textContent = "Réimplémentation d'après Baud Girl · 102 · GPL-3.0";
@@ -6066,6 +6179,7 @@ function buildPanel(fw) {
     }
   }
   ficheDetails.addEventListener("toggle", () => { if (ficheDetails.open) showFiche(); });
+  FM1LANG.on(() => showFiche());
   showFiche();
 
   function tagsOf(e) {
@@ -6375,14 +6489,16 @@ function buildPanel(fw) {
         t.append(el("tspan", {}, name));
         if (sign) t.append(el("tspan", { x: x + w - 9, y: y + 20, "text-anchor": "end", "font-size": 16 }, " " + sign));
         g.append(t);
-        said.push(`${k.letter} ${k.label}`);
+        said.push(`${FM1LANG.text(k.letter)} ${FM1LANG.text(k.label)}`);
       }
       svg.append(g);
     }
     svg.setAttribute("aria-label", "Raccourcis clavier : " + said.join(", "));
   }
+  let layoutMap = null;
   drawKeyboard(keyLetters(navigator.language, null));
-  navigator.keyboard?.getLayoutMap?.().then((map) => drawKeyboard(keyLetters(navigator.language, map))).catch(() => {});
+  navigator.keyboard?.getLayoutMap?.().then((map) => { layoutMap = map; drawKeyboard(keyLetters(navigator.language, map)); }).catch(() => {});
+  FM1LANG.on(() => drawKeyboard(keyLetters(navigator.language, layoutMap)));   // le dessin se refait : l'observateur traduit ses étiquettes
 })();
 </script>
 <script>
@@ -6439,7 +6555,7 @@ function buildPanel(fw) {
   root.className = "duo";
   root.innerHTML = `
     <div class="duo-bar">
-      <div class="duo-brand"><span class="mark">FM-1<span>+VA</span></span><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="duo-brand"><span class="mark">FM-1<span>+VA</span></span><button type="button" class="lang" lang="en" aria-label="English" title="English">EN</button><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
         <button type="button" role="radio" data-v="side">Côte à côte</button>
         <button type="button" role="radio" data-v="one">Un à la fois</button>

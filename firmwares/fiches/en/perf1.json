@@ -1,0 +1,85 @@
+{
+ "id": "perf1",
+ "resume": "PERF-1 is a performance firmware: ten genres of self-playing music that you steer as it goes, with auto-DJ, drum sequencer, an acid line that answers itself and DX7-style FM voices.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down: the page's voice, or the whole song elsewhere; in the sequencer, previous drum kit; in the FX menu, turn everything off."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up, in the same way; in the sequencer, next drum kit."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens or closes the effects menu; twice quickly, the settings of the last effect."
+  },
+  {
+   "commande": "SEL",
+   "role": "Held, acts as shift."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pad page; then Pad env, Pad LFO, Chords."
+  },
+  {
+   "commande": "LFO",
+   "role": "Drone page; then Drone env, Drone LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Next chord, at the next bar."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global page (root, theme, tuning, MIDI out). Held, the map of mutes, solos and scenes."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tempo page; then the Perform screen; twice quickly, the visualizers."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Breakdown at the next bar; once more, a four-bar build and drop. On Global, stores the song."
+  },
+  {
+   "commande": "ARP",
+   "role": "Acid page; then Acid env, Acid line, Pluck."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Drums page; held, the sequencer whose white keys are the 16 steps."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Freeze: the chord holds and the reverb rings, until the next press."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Goes through the pages in order."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Selects the song, from 1 to 10."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Selects the scale mode."
+  }
+ ],
+ "gestes": [
+  "GLO held + PRESETS: changes genre.",
+  "SEL held + PRESETS: the song changes at the next bar.",
+  "HOME held + SELECT: tempo."
+ ],
+ "modes": [],
+ "source": {
+  "url": "https://github.com/deamonSLINKY/PERF-1/blob/d2ed6aa95867dd5b395eee36fb447bcb99b9949b/docs/MANUAL.md",
+  "commit": "d2ed6aa95867dd5b395eee36fb447bcb99b9949b"
+ },
+ "d_apres_le_code": false
+}

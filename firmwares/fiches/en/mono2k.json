@@ -1,0 +1,93 @@
+{
+ "id": "mono2k",
+ "resume": "A little Monomachine: six mono machines, a 64-step sequencer with parameter locks, trig conditions and ratchets, and a lo-fi bus that wrecks the sound. The screen is 1-bit.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave of the displayed track; in GRID, the step page. In a question, answers no."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave of the displayed track; in GRID, the step page. In a question, answers yes."
+  },
+  {
+   "commande": "FX",
+   "role": "FX page; held, PERFORM: the bus effects on the black keys."
+  },
+  {
+   "commande": "SEL",
+   "role": "FILT page: the filters."
+  },
+  {
+   "commande": "ENV",
+   "role": "AMP page: amplitude envelope, distortion, volume, pan, portamento."
+  },
+  {
+   "commande": "LFO",
+   "role": "Three LFOs; held, the knobs return to their value on release."
+  },
+  {
+   "commande": "EDIT",
+   "role": "SYN page: the track's machine; held, the track's sound."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLO page; held, edit functions (copy, paste, clear, reload, mutes)."
+  },
+  {
+   "commande": "HOME",
+   "role": "The pattern in six rows; held, picks patterns and banks."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps the pattern; held, keeps the project."
+  },
+  {
+   "commande": "ARP",
+   "role": "The track's arpeggiator."
+  },
+  {
+   "commande": "SEQ",
+   "role": "GRID: the keys become the steps; held, step tools."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops."
+  },
+  {
+   "commande": "REC",
+   "role": "Arms recording (live during playback, step by step when stopped); held, FILL."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume; with a step held in GRID, its trigger type."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Picks the track (1 to 6); with a step held, its note."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Picks the pattern (queued until the end of the bar during playback); with a step held, its condition."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "On EDIT, changes the track's machine; elsewhere, changes page; with a step held, accent and glissando."
+  }
+ ],
+ "gestes": [
+  "REC copies, PLAY pastes, SEQ clears; the held button says what (GLO the pattern, HOME the selected patterns, EDIT the track's sound).",
+  "GLO + OCT- undoes, GLO + OCT+ redoes.",
+  "SEQ held for one second: the pattern is reset to INIT."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "On the FM-1, a single project of 64 patterns is kept, with bank A as demos.",
+  "It does not read projects, presets or samples from other firmwares, and its first save overwrites whatever another firmware kept in that area."
+ ],
+ "source": {
+  "url": "https://github.com/InigoHernandez/mono2k/blob/b52d67703d4728c176c685c27d213f0c4da52232/web/manual.html",
+  "commit": "b52d67703d4728c176c685c27d213f0c4da52232"
+ },
+ "d_apres_le_code": false
+}

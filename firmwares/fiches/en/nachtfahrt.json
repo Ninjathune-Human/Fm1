@@ -1,0 +1,107 @@
+{
+ "id": "nachtfahrt",
+ "resume": "NACHTFAHRT is a generative Berlin School machine, after Tangerine Dream, Klaus Schulze and Ashra: it plays by itself from power-up (a drone, two drifting sequences, a gliding Lead, an atmosphere). You play the Lead on the white keys, the effects on the black ones, and shape each layer.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "On the Sequence, Lead and Sequence 2 pages, lowers the layer's octave one step; lit while it is lower than when the piece was loaded. Elsewhere, nothing."
+  },
+  {
+   "commande": "OCT+",
+   "role": "On the Sequence, Lead and Sequence 2 pages, raises the layer's octave one step; lit while it is higher than when the piece was loaded. Elsewhere, nothing."
+  },
+  {
+   "commande": "FX",
+   "role": "Space page (Echo, Echo time, Feedback, Reverb); again, Echo page (Blur, Tone, Width, Size)."
+  },
+  {
+   "commande": "SEL",
+   "role": "Tapped, opens PERFORM. Held, Lock: the sequences stop varying, each pass like the previous one, until the next held SEL (not saved)."
+  },
+  {
+   "commande": "ENV",
+   "role": "The Drone layer (Pedal, Reso, Phaser, Attack); again, its sound page (Colour, Release, Reverb, Echo); again, its Move page."
+  },
+  {
+   "commande": "LFO",
+   "role": "The Lead layer (Phrases, Octave, Glide, Vibrato); again, its sound page (Tone, Attack, Reverb, Echo); again, its Move page."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Tapped, the Chords page. Held, the next chord, at the next bar; held 1.5 s, new chords."
+  },
+  {
+   "commande": "GLO",
+   "role": "Setup page (Tune, MIDI out, Lights, Save); again, Arc page (Lead in, Bridge, Arc, Memory). Held half a second: save; held 1.5 s: the piece returns to its recipe."
+  },
+  {
+   "commande": "HOME",
+   "role": "Nachtfahrt page (Filter, Evolve, Motion, Drift); again, Key page (Tempo, Root, Mode, Transpose)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "The Atmosphere layer (Density, Width, Drift, Air); again, its sound page (Colour, Ring, Reverb, Echo); again, its Move page."
+  },
+  {
+   "commande": "ARP",
+   "role": "The Sequence layer (Density, Octave, Length, Grid); again, its sound page (Cutoff, Decay, Reverb, Echo); again, its Repeats (Repeat A, A time, Repeat B, B time); again, its Move page."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The Sequence 2 layer (Chance, Octave, Length, Level); again, its sound page; again, the Pattern page (steps are written on the keys); again, its Move page."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Plays or rests: echo and reverb fade out; on return, the piece restarts from the beginning."
+  },
+  {
+   "commande": "REC",
+   "role": "Tapped, hold: the echo and the cloud repeat what they are holding, the music carries on over it; again to release. Held, the effects grid."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "On a layer's pages, its level; on the Nachtfahrt page, Energy (the one from PERFORM). Elsewhere, nothing."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes piece: each has its own key, tempo, voices and arc."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "On a layer's page, its voice; on the Atmosphere pages, its character; on the Chords page, the character of the chord walk (Home, Wander, Free)."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The Lead, in the piece's scale: the first is the tonic, then the following degrees; the key lights up while the Lead plays its note. Three or more notes then a pause become its theme: it answers, then picks up your notes. On the Pattern page, the steps; in PERFORM, the mutes; with REC held, the effects."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Eleven effects, each while its key is held (lit, off when held): Take-off, Supernova, Twitter, Repeat, Shimmer, Freeze, Octave, Return, Rise, Close, Transpose. In PERFORM, the solos; on the Pattern page, the accents."
+  }
+ ],
+ "gestes": [
+  "ENV, ARP, LFO or SEQ held half a second: the layer's sound takes a small step (filter, envelope, timbre or vibrato); held 1.5 s, a shake: another voice, bigger steps.",
+  "HOME held 1.5 s: shakes all layers at once.",
+  "REC held: the effects grid, sixteen effects on the white keys, each while its key is held.",
+  "SEL held: Lock."
+ ],
+ "modes": [
+  {
+   "nom": "PERFORM",
+   "texte": "SEL tapped. The knobs become Filter, Wet, Energy and Sweep. White 1 to 5: mute the Drone, Sequence, Lead, Sequence 2, Atmosphere; black 1 to 5: solo them. White 6 held: the knobs set the levels. White 7 to 11 held: Sweep, Open, Shut, Drop (both sequences exit), Echo. The top key (G): the Lead forgets its ideas and its theme. SEL again, or a page button, exits."
+  }
+ ],
+ "a_savoir": [
+  "What you change is kept with the piece: NACHTFAHRT saves by itself at rest, a few seconds after the change, or with GLO held.",
+  "MIDI: it follows MIDI clock (and Start, Continue, Stop); a note, on any channel, plays the Lead, brought back to the scale. It sends its layers over USB: the Drone on channel 1, the Sequence on 2, the Lead on 3, Sequence 2 on 4."
+ ],
+ "source": {
+  "url": "https://github.com/fartypants/fm1-nachtfahrt/blob/ba0728378f9a9aa5ef1f69027c42d03319f7ef8e/docs/MANUAL.md",
+  "commit": "ba0728378f9a9aa5ef1f69027c42d03319f7ef8e"
+ },
+ "d_apres_le_code": false
+}

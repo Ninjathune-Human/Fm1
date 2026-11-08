@@ -1,0 +1,104 @@
+{
+ "id": "fm1va",
+ "resume": "Reimplementation of Baud Girl's FM-1+VA, written from its manual: three engines (six-operator FM with 32 algorithms, Virtual Analog, 8-Bit), seven effects, a 16-pattern sequencer and 128 original presets.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Down one octave; with OCT+ at the same time, back to octave 0."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Up one octave; with OCT- at the same time, back to octave 0."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens the effects list; SEL enters, HOME goes back."
+  },
+  {
+   "commande": "SEL",
+   "role": "Enters the selected item of a list. Held with ALGORITHM, advances by ten; held with SELECT in the Effects list, moves an effect; held while the sequencer plays, keeps the note on its step; held with PRESETS, picks the pattern."
+  },
+  {
+   "commande": "ENV",
+   "role": "Opens the envelope list; held for one second, turns the envelope on or off."
+  },
+  {
+   "commande": "LFO",
+   "role": "Opens the LFO list."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Opens the sound edit list."
+  },
+  {
+   "commande": "GLO",
+   "role": "Opens the global settings (MIDI, count-in, local control, keyboard bend, theme)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Goes back. On the home screen, opens the wheel banks; held with SELECT, changes bank; held with a wheel, changes what it plays."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps the preset, the settings and the 16 patterns in this browser."
+  },
+  {
+   "commande": "ARP",
+   "role": "Opens the arpeggiator list."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Opens the pattern settings."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops the sequencer; held, turns it on or off."
+  },
+  {
+   "commande": "REC",
+   "role": "Records step by step, or in real time during playback."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Moves the selection; in the sequencer, moves the diamond."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Changes preset. Without SAVE, returns to the saved version."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the FM algorithm, or the selected value."
+  }
+ ],
+ "gestes": [
+  "HOME held + SELECT: changes wheel bank.",
+  "SEL held + ALGORITHM: advances by ten.",
+  "SEL held + SELECT: moves an effect in the Effects list.",
+  "ENV held for one second: turns the envelope on or off.",
+  "OCT- and OCT+ together: octave 0."
+ ],
+ "modes": [
+  {
+   "nom": "Presets",
+   "texte": "Presets 001-064 are FM, 065-080 and 113-128 Virtual Analog, 081-112 8-Bit. On an 8-Bit preset, the drums are three octaves lower (OCT- three times)."
+  },
+  {
+   "nom": "Sequencer",
+   "texte": "PLAY starts and stops; held, it turns the sequencer on or off. REC records step by step, or in real time during playback. SELECT moves the diamond; SEL held while playing keeps the note on its step. SEQ opens the pattern settings, SEL held + PRESETS picks the pattern."
+  },
+  {
+   "nom": "DX7 import",
+   "texte": "The Import a DX7 sound button, below the FM-1, loads a Yamaha DX7 .syx file. A single patch replaces the displayed preset without saving it (SAVE keeps it). A bank of 32 patches first asks a question on screen: ALGORITHM picks which of the four preset banks to replace. You can also drop the file on the FM-1 or send it as SysEx from MIDI software (section 11.5 of the manual)."
+  }
+ ],
+ "a_savoir": [
+  "Bluetooth (BT Mode, BT Peripherals) is missing: the browser goes through the system MIDI ports, Bluetooth included if it has paired it.",
+  "The M-VAVE factory presets and Baud Girl's packs are not public: the 128 presets here are original."
+ ],
+ "source": {
+  "url": "https://baudgirl.com/work/FM-1+VA/manual",
+  "commit": null
+ },
+ "d_apres_le_code": false
+}
