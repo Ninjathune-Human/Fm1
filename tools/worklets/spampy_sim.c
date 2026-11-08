@@ -17,6 +17,10 @@ static const signed char MY_KEYMAP[5][16] = {
 #define UI_PAGES_HARNESS_ONLY 1
 #include "ui_pages_test.c"
 
+/* upreset.c (les presets de l'utilisateur, que le test remplace par des doubles) : la banque d'où vient un
+ * emplacement ; la 1.0 la demande, les doubles du test (r949) ne l'ont pas encore */
+static uint32_t up_source_bank(uint32_t slot) { (void)slot; return 0xFFFFFFFFu; }
+
 static float sim_out[2 * 4096];
 static uint32_t sim_lights[8];
 
