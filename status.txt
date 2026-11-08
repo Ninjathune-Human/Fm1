@@ -1,0 +1,1 @@
+ROM : This file is not an LSDj or DMGo ROM: it is neither LSDj's kind of cartridge (MBC5, a 128 KiB save) nor DMGo's (its title, MBC5, a 32 KiB save).
