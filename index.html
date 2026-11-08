@@ -23,11 +23,16 @@ main { max-width: 1120px; margin: 0 auto; display: grid; gap: 20px; }
 a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
 
-.mast { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 16px; }
-.eyebrow { margin: 0; font: 600 0.8125rem/1.2 var(--body); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+/* l'en-tête, le même en Solo et en Duo : le titre et ce qui lui est propre à gauche ; plein écran, FR | EN, Solo | Duo
+   toujours à la même place à droite (sur un téléphone en portrait, en haut à droite, au-dessus du titre) */
+.mast, .duo-bar { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "mark extra mode"; align-items: center; gap: 8px 16px; }
+.mast > .mark, .duo-bar > .mark { grid-area: mark; align-self: baseline; }
+.eyebrow, .duo-extra { grid-area: extra; }
+.mode { grid-area: mode; display: flex; align-items: center; gap: 8px; }
+@media (max-width: 740px) { .mast, .duo-bar { display: flex; flex-wrap: wrap; } .mode { order: -1; flex-basis: 100%; justify-content: flex-end; } .eyebrow { flex: 1 1 0; } }   /* Tempo lié passe sous le titre s'il ne tient pas à côté */
+.eyebrow { margin: 0; font: 600 0.8125rem/1.2 var(--body); letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; align-self: baseline; }
 .mark { font: 600 clamp(2rem, 5vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; margin: 0; }
 .mark span { color: var(--accent); }
-.mast .mode { margin-left: auto; align-self: center; display: flex; align-items: center; gap: 8px; }
 
 .stage { display: grid; gap: 22px; }
 .turn { display: none; margin: 0; color: var(--muted); font-size: 0.9375rem; }
@@ -295,11 +300,9 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
   box-shadow: 0 8px 28px rgb(0 0 0 / 0.16); font: 400 0.9375rem/1.4 var(--body); color: var(--ink); }
 .fs-tip::before { content: ""; position: absolute; top: -7px; left: calc(var(--x) - 6px); width: 12px; height: 12px; background: var(--surface);
   border: 1px solid var(--rule); border-width: 1px 0 0 1px; transform: rotate(45deg); }   /* l'encoche vers le bouton */
-.duo-brand { display: flex; align-items: center; gap: 6px; margin-right: auto; }
-.duo-brand .mark { font-size: 1.5rem; }
+.duo-extra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }   /* Tempo lié contre le titre, puis la disposition */
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
-.duo-bar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 10px 16px; flex-wrap: wrap; padding: 20px 16px 8px;
-  min-height: calc(clamp(2rem, 5vw, 2.75rem) * 1.05); }   /* Solo | Duo à la même place que sur la page Solo */
+.duo-bar { flex: none; padding: 20px max(16px, env(safe-area-inset-right, 0px), (100% - 1120px) / 2) 8px max(16px, env(safe-area-inset-left, 0px), (100% - 1120px) / 2); }   /* les marges de la page Solo */
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .seg a, .seg button { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none;
   font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; touch-action: manipulation; }
@@ -308,11 +311,12 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 .seg .fwn { max-width: 10em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .seg .beat { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); }
 .seg .beat.on { background: var(--accent); }
-.duo-link { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 14px; border: 1px solid var(--rule); border-radius: 999px;
+.duo-link { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; white-space: nowrap; padding: 0 14px; border: 1px solid var(--rule); border-radius: 999px;
   background: var(--surface); font: 500 0.9375rem var(--body); color: var(--ink); cursor: pointer; }
 .duo-link .track { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--rule); transition: background 0.2s var(--ease); }
 .duo-link .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); transition: transform 0.2s var(--ease); }
+.duo-link .dir { min-width: 3.6em; }   /* « · A → B » a sa place réservée : lier le tempo ne pousse rien */
 .duo-link[aria-checked="true"] .track { background: var(--accent); }
 .duo-link[aria-checked="true"] .track::after { transform: translateX(14px); }
 .duo-link[aria-disabled="true"] { opacity: 0.5; }
@@ -330,8 +334,8 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 <main>
   <header class="mast">
     <h1 class="mark">FM-1<span>+VA</span></h1>
-    <p class="eyebrow">M-VAVE FM-1 · Émulateur · Version 102</p>
-    <div class="mode"><div class="seg lang" role="radiogroup" aria-label="Langue / Language"><button type="button" role="radio" data-l="fr" lang="fr" aria-checked="true">FR</button><button type="button" role="radio" data-l="en" lang="en" aria-checked="false">EN</button></div><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><nav class="seg" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav></div>
+    <p class="eyebrow">M-VAVE FM-1 · Émulateur</p>
+    <div class="mode"><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="seg lang" role="radiogroup" aria-label="Langue / Language"><button type="button" role="radio" data-l="fr" lang="fr" aria-checked="true">FR</button><button type="button" role="radio" data-l="en" lang="en" aria-checked="false">EN</button></div><nav class="seg" aria-label="Un ou deux FM-1"><a href="./" aria-current="page">Solo</a><a href="?duo">Duo</a></nav></div>
   </header>
 
   <section class="stage" aria-label="Le FM-1">
@@ -6549,13 +6553,15 @@ function buildPanel(fw) {
   root.className = "duo";
   root.innerHTML = `
     <div class="duo-bar">
-      <div class="duo-brand"><span class="mark">FM-1<span>+VA</span></span><div class="seg lang" role="radiogroup" aria-label="Langue / Language"><button type="button" role="radio" data-l="fr" lang="fr" aria-checked="true">FR</button><button type="button" role="radio" data-l="en" lang="en" aria-checked="false">EN</button></div><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-      <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
-        <button type="button" role="radio" data-v="side">Côte à côte</button>
-        <button type="button" role="radio" data-v="one">Un à la fois</button>
+      <span class="mark">FM-1<span>+VA</span></span>
+      <div class="duo-extra">
+        <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
+        <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
+          <button type="button" role="radio" data-v="side">Côte à côte</button>
+          <button type="button" role="radio" data-v="one">Un à la fois</button>
+        </div>
       </div>
-      <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
-      <nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav>
+      <div class="mode"><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="seg lang" role="radiogroup" aria-label="Langue / Language"><button type="button" role="radio" data-l="fr" lang="fr" aria-checked="true">FR</button><button type="button" role="radio" data-l="en" lang="en" aria-checked="false">EN</button></div><nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav></div>
     </div>
     <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
   document.body.append(root);
