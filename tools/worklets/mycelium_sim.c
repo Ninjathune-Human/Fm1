@@ -2,7 +2,9 @@
  * MYCELIUM (megagott/mycelium-fm1, GPL-3.0, sources de Mycelium-FM1-1.0-Quellcode.zip) pour le panneau. Son test
  * d'interface (tests/ui_pages_test.c, inchangé) assemble l'interface de l'appareil sur un écran, des boutons et une
  * flash factices, le son de hostsim.c entre les images, comme le fait sa boucle. On le mène comme main.c :
- * felucca_init, puis une image toutes les 16 ms (ui_input, ui_leds, ui_draw), le son par blocs de CTL (mix_block).
+ * felucca_init, le logo de Mandalars quatre secondes (sloop_splash, splash.c, que le test inclut déjà ; son en-tête
+ * est rendu du SVG par rsvg-convert, que mycelium.sh installe), puis une image toutes les 16 ms (ui_input, ui_leds,
+ * ui_draw), le son par blocs de CTL (mix_block).
  * Les projets, les presets et les sections du test sont factices : rien n'est gardé. */
 /* la matrice de l'appareil (hal/fm1_input.h, lignes 1 à 4, celles que led_pos_init lit), dans la forme 5 x 16 que le
  * test déclare vide : les LED retrouvent leur place */
@@ -18,6 +20,7 @@ static const signed char MY_KEYMAP[5][16] = {
 #include "ui_pages_test.c"
 
 static float sim_out[2 * 4096];
+static uint32_t splash_frames;                    /* main.c : le logo reste environ quatre secondes */
 static uint32_t sim_lights[8];
 
 void sim_init(void)                               /* main.c : settings_init, panel_init, felucca_init */
@@ -45,7 +48,8 @@ void sim_init(void)                               /* main.c : settings_init, pan
     song.g[G_SYNC] = (int16_t)lights_sync;
     layers_init();
     go_home();
-    ui.force = 1;
+    sloop_splash();
+    splash_frames = 4000u / 16u;
 }
 void sim_btn(uint32_t label, uint32_t down)
 {
@@ -73,6 +77,12 @@ void sim_midi(uint32_t st, uint32_t d1, uint32_t d2)    /* comme usb.c range un 
 void sim_frame(void)
 {
     fm1_ms += 16;
+    if (splash_frames) {                          /* comme l'appareil : le logo, l'interface ne tourne pas encore */
+        if (--splash_frames) return;
+        lcd_fill(0, 0, 240, 240, C_BLACK);
+        edges_btn = 0;
+        ui.force = 1;
+    }
     ui_input();
     ui_leds();
     ui_draw();
