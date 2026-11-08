@@ -2518,6 +2518,46 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://deadactive.github.io/FMDj/firmware/lsdj-base-fmdj-2026.10.22.fwsc",
    "provenance_paquet": "gh-pages firmware/lsdj-base-fmdj-2026.10.22.fwsc"
+  },
+  {
+   "id": "spampy",
+   "nom": "SPAMPY",
+   "version": "1.0",
+   "auteur": "Spampy-Droid",
+   "categories": [
+    "Groovebox"
+   ],
+   "licence": "GPL-3.0",
+   "beta": true,
+   "fichier": "firmwares/spampy.fwsc",
+   "sha256": "9bc240d1455e31a61d13d4b4a179d1bfdca24c3947144468e50b5b25d32e5a89",
+   "taille": 610035,
+   "depot": "https://github.com/Spampy-Droid/SPAMPY-0.0-r949",
+   "commit_source": "2890828d80fea234b28244ef482b9532f77ef8c7",
+   "description": "A five-track synthwave groovebox built on Felucca and SLOOP: 170 synth presets, 44 drum kits including KAVINSKY, scenes, effects, a NEON arpeggiator and Slicer modes, extended envelopes, and five built-in arcade games.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://github.com/Spampy-Droid/SPAMPY-0.0-r949/releases/download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036.fwsc",
+   "provenance_paquet": "release download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036.fwsc"
+  },
+  {
+   "id": "scintilla",
+   "nom": "Scintilla",
+   "version": "0.2.0",
+   "auteur": "Joakim Eriksson",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": true,
+   "fichier": "firmwares/scintilla.fwsc",
+   "sha256": "cc80acf331161b69a705a65c9602f064c80cdb72fe37ff2399019773be42ecce",
+   "taille": 610110,
+   "depot": "https://github.com/joakimeriksson/scintilla-fm1",
+   "commit_source": "83b375200caa281c22be840970c921efdce0a7fc",
+   "description": "The 1981 Elka Synthex on the FM-1: all 80 factory sounds, Paul Wiffen's laser harp among them, checked sample by sample against the original. Two layers of 8 voices (single, split, double), poly, mono or unison, chorus and reverb.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://github.com/joakimeriksson/scintilla-fm1/releases/download/v0.2.0/scintilla-0.2.0.fwsc",
+   "provenance_paquet": "release download/v0.2.0/scintilla-0.2.0.fwsc"
   }
  ]
 }

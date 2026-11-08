@@ -79,6 +79,7 @@ export class Coroutine extends AudioWorkletProcessor {
     } else if (m.type === "keys") this.keys(ex, m.mask >>> 0);
     else if (m.type === "enc") { if (ENC[m.role] !== undefined) this.enc(ex, ENC[m.role], m.n | 0); }
     else if (m.type === "master") this.master(ex, m.value);
+    else if (m.type === "midi" && this.midi) this.midi(ex, m.data);       // (un profil qui lit le MIDI)
   }
   publish() {
     const ex = this.ex, msg = { type: "frame" }, tr = [];

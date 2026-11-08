@@ -8,9 +8,9 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8"));
 
-test("le catalogue compte 117 entrées aux ids uniques, Bubba Machine, NACHTFAHRT et FMDj compris", () => {
-  assert.equal(cat.firmwares.length, 117);
-  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 117);
+test("le catalogue compte 119 entrées aux ids uniques, Bubba Machine, NACHTFAHRT, FMDj, SPAMPY et Scintilla compris", () => {
+  assert.equal(cat.firmwares.length, 119);
+  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 119);
   assert.ok(cat.firmwares.some((e) => e.id === "bubba"));
 });
 

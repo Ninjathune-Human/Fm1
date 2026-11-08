@@ -36,6 +36,18 @@
    "script": "firmware/web/emu/build.sh"
   },
   {
+   "id": "bytemania",
+   "depot": "llozd/bytemania",
+   "commit": "e670b35369f8556ee82683f35c6b8bfbcb366155",
+   "script": "build.sh",
+   "zig": "0.17.0",
+   "avant": "cp \"$HERE/tools/worklets/dinghy_host.c\" tests/host.c",
+   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/bytemania.wasm -DDINGHY_HOST '-DAPP_VER=\"1.2.0\"' -Ifirmware/src -Ifirmware/gen firmware/src/bytemania.c",
+   "wasm": "build/natif/bytemania.wasm",
+   "worklet": "tools/worklets/dinghy.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "caravel",
    "depot": "bonszaimusic/caravel",
    "commit": "b50bad57dcf32862f36661a5fc2996e13392b93e",
@@ -476,6 +488,18 @@
    "zig": "0.17.0"
   },
   {
+   "id": "scintilla",
+   "depot": "joakimeriksson/scintilla-fm1",
+   "commit": "83b375200caa281c22be840970c921efdce0a7fc",
+   "script": "firmware/build.sh",
+   "zig": "0.17.0",
+   "avant": "cp \"$HERE/tools/worklets/dinghy_host.c\" firmware/tests/host.c",
+   "construction": "cd firmware && \"$HERE/tools/worklets/asyncify.sh\" ../build/natif/scintilla.wasm -DDINGHY_HOST -DDH_LIBC=1 -DDH_CV_ROWS=64u '-DAPP_VER=\"0.2.0\"' -Ifirmware/src -Ifirmware/gen -I../engine firmware/src/scintilla.c ../engine/sc_voice.c ../engine/sc_synth.c",
+   "wasm": "build/natif/scintilla.wasm",
+   "worklet": "tools/worklets/dinghy.js",
+   "dialecte": "felucca"
+  },
+  {
    "id": "shineon",
    "depot": "zvenson/shineon",
    "commit": "2f37738d690a628e0ae1d23d07ea5ee3eeda2de7",
@@ -487,6 +511,16 @@
    "depot": "illuminus5/skiff",
    "commit": "c01fa1ed619266d770ea6552b153612e1b77d0a9",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "spampy",
+   "depot": "Spampy-Droid/SPAMPY-0.0-r949",
+   "commit": "2890828d80fea234b28244ef482b9532f77ef8c7",
+   "script": "build.sh",
+   "construction": "bash \"$HERE/tools/worklets/spampy.sh\" build/natif/spampy.wasm https://github.com/Spampy-Droid/SPAMPY-0.0-r949/releases/download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036-SOURCE.zip",
+   "wasm": "build/natif/spampy.wasm",
+   "worklet": "tools/worklets/spampy.js",
+   "dialecte": "felucca"
   },
   {
    "id": "tessera",

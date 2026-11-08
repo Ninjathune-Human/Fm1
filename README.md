@@ -2,7 +2,7 @@
 
 # FM-1
 
-Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 116 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
+Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 118 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
 
 **Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**
 
@@ -39,7 +39,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 |---|---|---|---|---|
 | M-VAVE officiel V15 | M-VAVE | Apache-2.0 | [4c7496d](https://github.com/m-vave/fm1_open/tree/4c7496daac04a95ff10d1afdcc8f9ead2dbabc41) | fonctionne |
 
-### Groovebox (41)
+### Groovebox (42)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -78,6 +78,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | SLOOP | isod89 | GPL-3.0 | [d893642](https://github.com/isod89/sloop-fm1/tree/d89364253b79a5c6002c0d90c5f16b3c3c16ea9d) | fonctionne |
 | SLOOP DX7 Banks | majnikool | GPL-3.0 | [c741193](https://github.com/majnikool/sloop-fm1/tree/c741193ba46b20994d70526f92cf160006be513b) | fonctionne, bêta |
 | sloopDX | zvenson | GPL-3.0 | [9870b84](https://github.com/zvenson/dxsloop/tree/9870b846e77a123aafc84786b4bedfd1d53ac0f7) | fonctionne |
+| SPAMPY | Spampy-Droid | GPL-3.0 | [2890828](https://github.com/Spampy-Droid/SPAMPY-0.0-r949/tree/2890828d80fea234b28244ef482b9532f77ef8c7) | vérifié, bêta |
 | Tessera | Theo Dainis (Rastapopolix) | GPL-3.0 | [094f535](https://github.com/Rastapopolix/tessera/tree/094f53582cc4bc04d62e95537eb2ff22264f4819) | fonctionne, natif |
 | TRIBE | apiel | GPL-3.0 | [29664b2](https://github.com/apiel/fm1-tribe/tree/29664b28c9d8b8eb043de0739bf9dd64869958c4) | fonctionne, bêta, natif |
 | WaveLoop FM-1 | ELI7VH | GPL-3.0 | [7bce760](https://github.com/ELI7VH/Felucca/tree/7bce76090a076cf488ac03b53c83960b7c14e81e) | fonctionne, natif |
@@ -85,7 +86,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | X0X | Charles Vestal | GPL-3.0 | [27f6fac](https://github.com/charlesvestal/fm1-x0x/tree/27f6fac7e07ce97b5de158b45aec99f59a9e23fd) | fonctionne, natif |
 | X0X-RMX | Mr-Roboto (Oliver) | GPL-3.0 | [a4e78f3](https://github.com/Mr-Roboto/fm1-x0x-rmx/tree/a4e78f3a6e16fa310b7614e5876d07e16a0020f9) | fonctionne, natif |
 
-### Synthé (41)
+### Synthé (42)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -122,6 +123,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | OberVave | zvenson | GPL-3.0 | [dc4e5d3](https://github.com/zvenson/obervave/tree/dc4e5d33b09f5e3f927801d78085f26171e9c7b8) | fonctionne, natif |
 | OPN-1 | putchdev | GPL-3.0 | [960c103](https://github.com/putchdev/opn-1/tree/960c1038cb660788026c8136467e99597019a333) | fonctionne |
 | S1Vave | Andrew GG | GPL-3.0 | [9730337](https://github.com/AndrewGG88/S1Vave/tree/97303378678c247ca1d005ae641114f4544acf65) | non évalué, natif |
+| Scintilla | Joakim Eriksson | GPL-3.0 | [83b3752](https://github.com/joakimeriksson/scintilla-fm1/tree/83b375200caa281c22be840970c921efdce0a7fc) | vérifié, bêta |
 | Shine On | zvenson | GPL-3.0 | [2f37738](https://github.com/zvenson/shineon/tree/2f37738d690a628e0ae1d23d07ea5ee3eeda2de7) | fonctionne, natif |
 | SID-1 | putchdev | GPL-3.0 | [1d0555b](https://github.com/putchdev/sid-1/tree/1d0555b784173bb61e3e371ccedfbe8ff2559d18) | fonctionne |
 | SLOOP Floyd FM | René Bohne | GPL-3.0 | [f8f9f9d](https://github.com/renebohne/sloop-fm1/tree/f8f9f9d021bb5c9d60b01aa9d43e0d1e6d118a85) | fonctionne |

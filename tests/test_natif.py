@@ -420,3 +420,30 @@ def test_fmdj_rom(page, tmp_path):
     (tmp_path / "pas-une-rom.gb").write_bytes(bytes(32768))
     page.set_input_files("#samples", str(tmp_path / "pas-une-rom.gb"))
     page.wait_for_function("document.getElementById('status').textContent.startsWith('ROM : This file is not')", timeout=30000)
+
+
+def test_keys_natives_play(page):
+    """SPAMPY, Scintilla, Bytemania : chacun, listé dans tools/natif.json, tourne en natif ; une touche tenue sonne."""
+    import json, os, pytest
+    from conftest import ROOT
+    try:
+        have = json.load(open(os.path.join(ROOT, "natif/manifest.json")))
+    except FileNotFoundError:
+        pytest.skip("pas de natif/")
+    listed = {e["id"] for e in json.load(open(os.path.join(ROOT, "tools/natif.json")))["firmwares"]}
+    ids = [i for i in ("spampy", "scintilla", "bytemania") if i in listed]
+    if not ids: pytest.skip("aucun des trois à compiler ici")
+    assert all(i in have for i in ids), [i for i in ids if i not in have]
+    power_on(page)
+    page.set_default_timeout(30000)
+    bad = []
+    for i in ids:
+        assert use(page, i) is True, i
+        assert page.evaluate("window.__engine().kind") == "natif", i
+        page.wait_for_timeout(4000)
+        if lit_pixels(page) < 500: bad.append((i, "écran")); continue
+        page.evaluate("window.__host.keyDown(12, 't')"); page.wait_for_timeout(700)
+        level = rms(page); page.evaluate("window.__host.keyUp('t')")
+        if level <= 0.001: bad.append((i, "silence"))
+        page.wait_for_timeout(500)
+    assert not bad, bad
