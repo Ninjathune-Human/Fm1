@@ -141,7 +141,8 @@ def test_every_native_reacts(page):
     """Chaque firmware natif répond au panneau : la molette SELECT ou une touche change l'écran ou le son."""
     import json, os
     from conftest import ROOT
-    ids = sorted(json.load(open(os.path.join(ROOT, "natif/manifest.json"))))
+    # (FMDj sans ROM n'a rien à jouer : son écran le dit, test_fmdj_rom le vérifie ; aucune ROM n'est fournie ici)
+    ids = sorted(i for i in json.load(open(os.path.join(ROOT, "natif/manifest.json"))) if i != "fmdj")
     shot = "() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < d.length; i += 16) h = (h * 31 + d[i] + d[i + 1] + d[i + 2]) | 0; return h; }"
     power_on(page)
     page.set_default_timeout(30000)
