@@ -4,7 +4,7 @@ Date : 27 octobre 2026. Statut : en relecture.
 
 ## 1. Objet
 
-Le panneau FM-1 existant (artefact Claude « FM-1+VA », réimplémentation du firmware de Baud Girl d'après son manuel) doit pouvoir faire tourner, en plus de cette réimplémentation, les firmwares open source du M-VAVE FM-1. Un sélecteur permet de passer de l'un à l'autre.
+Le panneau FM-1 existant (artefact Claude « FM-1+VA », réimplémentation du firmware de Baud Girl d'après son manuel) doit pouvoir faire tourner, en plus de cette réimplémentation, les firmwares open source du FM-1. Un sélecteur permet de passer de l'un à l'autre.
 
 Décisions validées :
 

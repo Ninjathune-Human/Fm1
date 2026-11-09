@@ -2,7 +2,7 @@
 
 # FM-1
 
-Le M-VAVE FM-1 dans le navigateur. Un même panneau fait tourner la réimplémentation FM-1+VA ou l'un des 118 firmwares open source du FM-1, que l'on choisit dans un sélecteur.
+Émulateur FM-1 avec firmwares open source optimisés, dans le navigateur.
 
 **Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**
 
@@ -37,7 +37,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
-| M-VAVE officiel V15 | M-VAVE | Apache-2.0 | [4c7496d](https://github.com/m-vave/fm1_open/tree/4c7496daac04a95ff10d1afdcc8f9ead2dbabc41) | fonctionne |
+| Firmware officiel V15 | Fabricant du FM-1 | Apache-2.0 | [4c7496d](https://github.com/m-vave/fm1_open/tree/4c7496daac04a95ff10d1afdcc8f9ead2dbabc41) | fonctionne |
 
 ### Groovebox (42)
 
@@ -197,4 +197,4 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 - **Firmwares** : chacun reste sous la licence de son auteur (GPL-3.0 pour la plupart, MPL-2.0 pour neuf d'entre eux, Apache-2.0 pour le firmware officiel V15). Les textes sont dans `firmwares/licences/`, et la colonne « Source » renvoie au code source exact de chaque paquet.
 - **Catalogue** : établi d'après le [FM-1 Firmware Hub](https://thefirmwarehub.com/) de zvenson.
 - **FM-1+VA** est une création de Baud Girl ([baudgirl.com](https://baudgirl.com/work/FM-1+VA)) ; son firmware n'est pas redistribué ici.
-- M-VAVE et FM-1 sont des marques de leurs propriétaires. Projet indépendant, sans lien avec M-VAVE.
+- FM-1 est une marque de son propriétaire. Projet indépendant.
