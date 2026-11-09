@@ -94,7 +94,7 @@
  ],
  "a_savoir": [
   "Bluetooth (BT Mode, BT Peripherals) is missing: the browser goes through the system MIDI ports, Bluetooth included if it has paired it.",
-  "The M-VAVE factory presets and Baud Girl's packs are not public: the 128 presets here are original."
+  "The factory presets and Baud Girl's packs are not public: the 128 presets here are original."
  ],
  "source": {
   "url": "https://baudgirl.com/work/FM-1+VA/manual",

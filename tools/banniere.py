@@ -19,8 +19,8 @@ h1 span { color: #2b7865; }
 p { font: 400 21px/1.4 Inter; color: #6e6e73; margin: 22px 0 0; max-width: 330px; }
 img { width: 800px; margin-left: -10px; filter: drop-shadow(0 30px 40px rgb(0 0 0 / .18)); }
 </style>
-<div class="text"><p class="eyebrow">Émulateur dans le navigateur</p><h1>FM-1</h1>
-<p>Le M-VAVE FM-1 et ses firmwares open source, un sélecteur pour passer de l'un à l'autre.</p></div>
+<div class="text"><p class="eyebrow">Dans le navigateur</p><h1>FM-1</h1>
+<p>Émulateur FM-1 avec firmwares open source optimisés.</p></div>
 <img src="data:image/png;base64,{img}">"""
 
 
@@ -32,7 +32,7 @@ def main():
         pg = b.new_page(viewport={"width": 1440, "height": 1000}, device_scale_factor=2)
         pg.goto(url + "index.html")
         pg.click("#go")
-        pg.wait_for_function("document.getElementById('status').textContent.startsWith('Allumé') && window.__catalogue.length > 0")
+        pg.wait_for_function("document.getElementById('power').getAttribute('aria-checked') === 'true' && window.__catalogue.length > 0")
         pg.evaluate("async () => window.__useEngine(window.__catalogue.find((e) => e.id === 'felucca'))")
         pg.wait_for_timeout(3000)
         shot = pg.locator("#device").screenshot()

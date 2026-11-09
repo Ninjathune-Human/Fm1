@@ -94,7 +94,7 @@
  ],
  "a_savoir": [
   "Le Bluetooth (BT Mode, BT Peripherals) manque : le navigateur passe par les ports MIDI du système, Bluetooth compris s'il l'a appairé.",
-  "Les presets d'usine M-VAVE et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux."
+  "Les presets d'usine et les packs de Baud Girl ne sont pas publics : les 128 presets d'ici sont originaux."
  ],
  "source": {
   "url": "https://baudgirl.com/work/FM-1+VA/manual",

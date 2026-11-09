@@ -5,9 +5,9 @@
  "firmwares": [
   {
    "id": "mvave15",
-   "nom": "M-VAVE officiel V15",
+   "nom": "Firmware officiel V15",
    "version": "V15",
-   "auteur": "M-VAVE",
+   "auteur": "Fabricant du FM-1",
    "categories": [
     "Officiel"
    ],
@@ -19,7 +19,7 @@
    "depot": "https://github.com/m-vave/fm1_open",
    "commit_source": "4c7496daac04a95ff10d1afdcc8f9ead2dbabc41",
    "source_c": 124,
-   "description": "M-VAVE's own stock firmware V15 (DX7-style FM synth), published under Apache-2.0 in m-vave/fm1_open: the way back to stock.",
+   "description": "The device's own stock firmware V15 (DX7-style FM synth), published under Apache-2.0: the way back to stock.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": null,
    "provenance_paquet": "dans le dépôt sdk/firmware/FM-1_015.fwsc"

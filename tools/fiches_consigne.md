@@ -1,6 +1,6 @@
 # Consigne : fiches de firmware
 
-Tu rédiges, ou tu relis, des fiches d'aide pour un émulateur de M-VAVE FM-1. Une fiche dit à quelqu'un qui vient de charger un firmware comment s'en servir sur le panneau du FM-1.
+Tu rédiges, ou tu relis, des fiches d'aide pour un émulateur de FM-1. Une fiche dit à quelqu'un qui vient de charger un firmware comment s'en servir sur le panneau du FM-1.
 
 ## Ce que tu as
 

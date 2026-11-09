@@ -61,7 +61,7 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | Ketch | fonctionne selon fm1-emu | silencieux | 6215 | 0 | 0.1 |
 | Loom FM-1 | pas encore évalué | vérifié | 57600 | 0.05301 | 0.1 |
 | LOOM-8 | fonctionne selon fm1-emu | silencieux | 57600 | 0 | 0.1 |
-| M-VAVE officiel V15 | fonctionne selon fm1-emu | vérifié | 55782 | 0.04619 | 0.1 |
+| Firmware officiel V15 | fonctionne selon fm1-emu | vérifié | 55782 | 0.04619 | 0.1 |
 | Makohai | pas encore évalué | vérifié | 14290 | 0.055 | 0.3 |
 | MAKU | fonctionne selon fm1-emu | vérifié | 10865 | 0.04182 | 0.1 |
 | Matryoshka | pas encore évalué | vérifié | 57600 | 0.0223 | 0.2 |
