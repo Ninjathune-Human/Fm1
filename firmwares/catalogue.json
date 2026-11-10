@@ -22,7 +22,8 @@
    "description": "The device's own stock firmware V15 (DX7-style FM synth), published under Apache-2.0: the way back to stock.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": null,
-   "provenance_paquet": "dans le dépôt sdk/firmware/FM-1_015.fwsc"
+   "provenance_paquet": "dans le dépôt sdk/firmware/FM-1_015.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "felucca",
@@ -45,7 +46,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/felucca-1.6.1.fwsc",
    "provenance_paquet": "secours émulé, version 1.6.1 : release download/v1.6.1/felucca-1.6.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "386dx",
@@ -66,7 +68,8 @@
    "description": "A karaoke robot with a band: it sings songs from karaoke and MIDI files, or lines you type, to the notes you play. Its face is the voice. Keys, bass and drums play along, with a step sequencer and sixteen punch-in effects.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/386dx-1.0.2.fwsc",
-   "provenance_paquet": "release download/v1.0.2/386dx-1.0.2.fwsc"
+   "provenance_paquet": "release download/v1.0.2/386dx-1.0.2.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "amb",
@@ -87,7 +90,8 @@
    "description": "A generative ambient machine after Music for Airports: it plays itself from the start, breathing voices, bells on tape loops of unequal length, a gliding bass. You do not perform it, you tend it.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/amb-1.3.fwsc",
-   "provenance_paquet": "release download/v1.3/amb-1.3.fwsc"
+   "provenance_paquet": "release download/v1.3/amb-1.3.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "arctic",
@@ -109,7 +113,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/arctic-1.1.fwsc",
    "provenance_paquet": "release download/v1.1/arctic-scream-1.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "beetle",
@@ -130,7 +135,8 @@
    "description": "A tracker for the FM-1: patterns written top to bottom, step by step, with note, instrument, chord and effect columns, the way trackers have always worked.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/beetle-1.7.14.fwsc",
-   "provenance_paquet": "release download/V1.7.14/BEETLE-V1.7.14.fwsc"
+   "provenance_paquet": "release download/V1.7.14/BEETLE-V1.7.14.fwsc",
+   "horloge_midi": "usb"
   },
   {
    "id": "berlinan",
@@ -151,7 +157,8 @@
    "description": "A generative Berlin School MIDI sequencer: voices that repeat, phase on loops of unequal length and earn their mutations over time. The FM-1 makes no sound itself: each voice goes out over USB on its own MIDI channel to your synths.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/berlinan-0.5.1.fwsc",
-   "provenance_paquet": "release download/v0.5.1/berlinan-0.5.1.fwsc"
+   "provenance_paquet": "release download/v0.5.1/berlinan-0.5.1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "bubba",
@@ -172,7 +179,8 @@
    "description": "A six-track groovebox written from scratch: TR drums from Plaits' 808 and 909 models, a sampler with a 16-slice slicer, a bass and three free tracks (analog, 6-op FM, 303 acid), scenes and fills, all at 44.1 kHz.",
    "emulateur_fm1emu": "ne démarre pas",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bubba-0.10.0-beta.fwsc",
-   "provenance_paquet": "dans le dépôt web/fm1/bubba-machine-0.10.0-beta.fwsc"
+   "provenance_paquet": "dans le dépôt web/fm1/bubba-machine-0.10.0-beta.fwsc",
+   "horloge_midi": "usb"
   },
   {
    "id": "bunker",
@@ -194,7 +202,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bunker-1.0.0.fwsc",
    "provenance_paquet": "release download/v1.0.0/bunker-evolved-rc2.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "bytemania",
@@ -215,7 +224,8 @@
    "description": "A bytebeat synth: play one-line formulas, tweak them with the knobs, and write your own, with a random button in the formula creator that is really fun. A beta, built on Dinghy.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bytemania-1.2.0.fwsc",
-   "provenance_paquet": "release download/v1.2.0/bytemania-1.2.0.fwsc"
+   "provenance_paquet": "release download/v1.2.0/bytemania-1.2.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "caravel",
@@ -237,7 +247,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/caravel-0.6.0.fwsc",
    "provenance_paquet": "release download/v0.6.0/caravel-0.6.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "carnac",
@@ -259,7 +270,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/carnac-0.9.4.fwsc",
    "provenance_paquet": "gh-pages firmware/carnac-0.9.4.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "chipbox",
@@ -281,7 +293,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/chipbox-1.3.3.fwsc",
    "provenance_paquet": "secours émulé, version 1.3.3 : release download/v1.3.3/chipbox-1.3.3.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "choralroot",
@@ -303,7 +316,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/choralroot-0.27.fwsc",
    "provenance_paquet": "release download/v0.27/choralroot-0.27.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "clipper",
@@ -324,7 +338,8 @@
    "description": "A deep synth grown out of SLOOP: 23 engines and 407 sounds, from HYBRID (three oscillators, two filters, a mod matrix) to six-operator FM, wavetables, wave sequencing, a Juno and physical models; arp, step sequencer, MPE and a web editor for every parameter.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/clipper-1.1-experimental.fwsc",
-   "provenance_paquet": "release download/v1.1-experimental/clipper-1.1-experimental.fwsc"
+   "provenance_paquet": "release download/v1.1-experimental/clipper-1.1-experimental.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "coralflower",
@@ -346,7 +361,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/coralflower-0.5.fwsc",
    "provenance_paquet": "release download/v0.5/coralflower-0.5.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "cs1",
@@ -368,7 +384,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/cs1-2026.10.22.fwsc",
    "provenance_paquet": "dans le dépôt web/site/firmware/cs1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "ctl",
@@ -389,7 +406,8 @@
    "description": "A MIDI controller: notes in any scale with its chords on the black keys, four banks of knobs, an arpeggiator and Euclidean drums, with General MIDI sounds of its own when nothing is connected.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://github.com/charlesvestal/fm1-ctl/releases/download/v1.0.3/ctl-1.0.3.fwsc",
-   "provenance_paquet": "release download/v1.0.3/ctl-1.0.3.fwsc"
+   "provenance_paquet": "release download/v1.0.3/ctl-1.0.3.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "cutador",
@@ -410,7 +428,8 @@
    "description": "A beat dojo for scratch DJs and beatmakers: boom bap, lo-fi and breaks from 16 rhythm families with swing and fills, an eight-lane 32-step sequencer, punch-in effects you record bar by bar, a bass voice. Sound banks and editor in the browser.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/cutador-1.2.1.fwsc",
-   "provenance_paquet": "dans le dépôt dist/install/Cut-A-Dor-1.2.1-Sensei-FM1.fwsc"
+   "provenance_paquet": "dans le dépôt dist/install/Cut-A-Dor-1.2.1-Sensei-FM1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "delrio",
@@ -431,7 +450,8 @@
    "description": "A rhythm box of ceremony percussion: djembe, cajon, udu, clapsticks, maracas and triangle, their real strokes on the black keys, a step sequencer on the white keys and 31 rhythms from the literature. Played alone: a berimbau with its caxixi, a buzzing tanpura and a breathing shruti box. Built on fm1-base.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/delrio-0.9.fwsc",
-   "provenance_paquet": "release download/v0.9/delrio-0.9.fwsc"
+   "provenance_paquet": "release download/v0.9/delrio-0.9.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "dinghy",
@@ -452,7 +472,8 @@
    "description": "Your base for your own FM-1 or SMK-37 firmware: everything under it done and documented (updates, USB rescue, MIDI over USB and the TRS jack with clock, USB audio, keys, screen, flash storage, an update screen), a 4-voice sine on top, tests and a CI that releases with attestation. Fork it, replace the sine.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/zvenson/dinghy/releases/download/v0.5/dinghy-0.5.fwsc",
-   "provenance_paquet": "release download/v0.5/dinghy-0.5.fwsc"
+   "provenance_paquet": "release download/v0.5/dinghy-0.5.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "drift",
@@ -474,7 +495,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/drift-0.9.1.fwsc",
    "provenance_paquet": "release download/v0.9.1/drift-fm1-0.9.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "dub",
@@ -496,7 +518,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/dub-1.3.0.fwsc",
    "provenance_paquet": "release download/v1.3.0/dub-1.3.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "duell",
@@ -518,7 +541,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/duell-1.0.fwsc",
    "provenance_paquet": "release download/v1.0/duell-1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "estampie",
@@ -540,7 +564,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/estampie-0.3.7.fwsc",
    "provenance_paquet": "release download/v0.3.7/estampie-0.3.7.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "etch",
@@ -561,7 +586,8 @@
    "description": "Draw the sound: a waveform drawn and changed with the knobs, saved, morphed into another one, and a third waveform modulating the result.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/etch-1.61.fwsc",
-   "provenance_paquet": "release download/V1.61/ETCH-V1.61.fwsc"
+   "provenance_paquet": "release download/V1.61/ETCH-V1.61.fwsc",
+   "horloge_midi": "usb"
   },
   {
    "id": "emb",
@@ -582,7 +608,8 @@
    "description": "A bard's instrument for LARP, medieval and high fantasy: recorder, hurdy-gurdy, harp and a tavern kit on four tracks, encounters and songs for the table. \"Mother Melody hears thy song.\"",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/emb-1.5.2.fwsc",
-   "provenance_paquet": "release download/v1.5.2/emb.fwsc"
+   "provenance_paquet": "release download/v1.5.2/emb.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fart",
@@ -604,7 +631,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fart-1.1.0.fwsc",
    "provenance_paquet": "release download/V1.1.0/fart-machine-one.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "felucca8",
@@ -626,7 +654,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/felucca8-1.6.1_and_sequences.fwsc",
    "provenance_paquet": "release download/1.6.1_and_sequences/felucca-1.6.1_sequences.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "salt",
@@ -647,7 +676,8 @@
    "description": "Felucca with a hardware-inspired Studio in the browser (play it there without an FM-1): many engines, presets, skins. A beta.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/salt-0.9-salt14.fwsc",
-   "provenance_paquet": "release download/v0.9-salt14/felucca-0.9-salt14.fwsc"
+   "provenance_paquet": "release download/v0.9-salt14/felucca-0.9-salt14.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fimba",
@@ -669,7 +699,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fimba-0.6.1.fwsc",
    "provenance_paquet": "release download/v0.6.1/fimba-0.6.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "fizz",
@@ -690,7 +721,8 @@
    "description": "A groovebox around one engine, ChoralRoot's FM TONE: eight tracks, p-locks and preset sound locks, conditions, ratchets, chords, and MIDI FX for generative patterns and for reworking the ones you have.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/Quixotic7/FIZZ/releases/download/v0.12.0-beta.14/fizz-0.12.0-beta.14.fwsc",
-   "provenance_paquet": "release download/v0.12.0-beta.14/fizz-0.12.0-beta.14.fwsc"
+   "provenance_paquet": "release download/v0.12.0-beta.14/fizz-0.12.0-beta.14.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "flyfish",
@@ -712,7 +744,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/flyfish-1.0.1-4e5efb8.fwsc",
    "provenance_paquet": "introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "fm1doom",
@@ -733,7 +766,8 @@
    "description": "Doom on the FM-1: one FreeDM arena on the keys and a knob, synthesised sound effects.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": null,
-   "provenance_paquet": "dans le dépôt docs/doom/firmware/fm1doom-0.5.fwsc"
+   "provenance_paquet": "dans le dépôt docs/doom/firmware/fm1doom-0.5.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "fm1sid",
@@ -754,7 +788,8 @@
    "description": "A C64 SID chip on the FM-1: tune player (reSID), GoatTracker editor and a 12-instrument synth.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": null,
-   "provenance_paquet": "dans le dépôt web/sidplayer.fwsc"
+   "provenance_paquet": "dans le dépôt web/sidplayer.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "fm106",
@@ -776,7 +811,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm106-Beta6+a2bc1029.fwsc",
    "provenance_paquet": "dans le dépôt web/fm106.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "fm1quest",
@@ -797,7 +833,8 @@
    "description": "A pixel-art RPG while you make music, built on SLOOP: four heroes, one a track, walk through a village and fight monsters and bosses as your loop plays, every SLOOP screen redrawn in the game's style.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1quest-38.fwsc",
-   "provenance_paquet": "release download/quest-38/fm1-quest-38.fwsc"
+   "provenance_paquet": "release download/quest-38/fm1-quest-38.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "chord",
@@ -818,7 +855,8 @@
    "description": "A chord machine after the HiChord, with extras: chords in a key under the white keys, slash chords and inversions, sounds, envelopes, effects and a looper.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/chord-0.3.fwsc",
-   "provenance_paquet": "release download/v0.3/fm1-chord-0.3.fwsc"
+   "provenance_paquet": "release download/v0.3/fm1-chord-0.3.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fm1dock",
@@ -839,7 +877,8 @@
    "description": "One firmware, many synths: CS-1, Scintilla and OberVave as modules in flash; HOME opens the picker.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/joakimeriksson/fm1-dock/releases/download/v0.8/fm1-dock-0.8.fwsc",
-   "provenance_paquet": "release download/v0.8/fm1-dock-0.8.fwsc"
+   "provenance_paquet": "release download/v0.8/fm1-dock-0.8.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fm1gm",
@@ -860,7 +899,8 @@
    "description": "A General MIDI sequencer with 16 tracks, 128 General MIDI instruments to choose from and a drum kit (on track 10). It can store up to 64 songs, each containing up to 128 measures.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1gm-1.1.0.fwsc",
-   "provenance_paquet": "dans le dépôt web/fm1gm.fwsc"
+   "provenance_paquet": "dans le dépôt web/fm1gm.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "fmel",
@@ -882,7 +922,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fmel-1.0.fwsc",
    "provenance_paquet": "release download/v1.0/mel-1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "fmini",
@@ -904,7 +945,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fmini-1.8.0.fwsc",
    "provenance_paquet": "release download/v1.8.0/FMini-1-v1.8.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "fomajam",
@@ -925,7 +967,8 @@
    "description": "A drum machine in the classic step-grid style: voices after the 909, 808, 707, 606, DMX and more, a machine per voice, accents and patterns. Play it in the browser first.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/konsumer/fomajam/releases/download/v0.1.10/fomajam-0.1.10.fwsc",
-   "provenance_paquet": "release download/v0.1.10/fomajam-0.1.10.fwsc"
+   "provenance_paquet": "release download/v0.1.10/fomajam-0.1.10.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fomni",
@@ -947,7 +990,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fomni-0.4.fwsc",
    "provenance_paquet": "gh-pages firmware/omni-0.4.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "frasil",
@@ -968,7 +1012,8 @@
    "description": "An ambient drone and texture instrument: tap a key to latch a drone, a note or a chord in your key, press to swell it. Three layers a voice into a big reverb with shimmer and freeze; GLINT plays icy FM bells on top, by hand, by arpeggiator or a 32-step sequencer, and BASS holds a deep note below.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/frasil-2.0.1.fwsc",
-   "provenance_paquet": "release download/v2.0.1/frasil-2.0.1.fwsc"
+   "provenance_paquet": "release download/v2.0.1/frasil-2.0.1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "frodhes",
@@ -990,7 +1035,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/frodhes-0.9.6.fwsc",
    "provenance_paquet": "release download/v0.9.6/frodhes-0.9.6.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "fumi",
@@ -1012,7 +1058,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/fumi-1.1.0.fwsc",
    "provenance_paquet": "release download/fumi-1.1.0/fumi-1.1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "gator",
@@ -1033,7 +1080,8 @@
    "description": "A monophonic macro-oscillator on the open Plaits DSP: all 24 models with harmonics, timbre and morph, an 8-slot mod matrix fed by an envelope, two LFOs, velocity, aftertouch and random, a low-pass gate, and a DRONE mode.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/gator-0.6.fwsc",
-   "provenance_paquet": "release download/v0.6/gator-0.6.fwsc"
+   "provenance_paquet": "release download/v0.6/gator-0.6.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "ghoulbox",
@@ -1055,7 +1103,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ghoulbox-2.4.fwsc",
    "provenance_paquet": "release download/ghoulbox-v2.4/ghoulbox-2.4.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "golana",
@@ -1077,7 +1126,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/golana-1.3.fwsc",
    "provenance_paquet": "release download/golana-v1.3/golana-1.3.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "golanadz",
@@ -1099,7 +1149,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/golanadz-0.1.0-beta.fwsc",
    "provenance_paquet": "release download/v0.1.0-beta/Golana-DZ-v0.1.0-beta.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "grimm",
@@ -1121,7 +1172,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/grimm-1.0.fwsc",
    "provenance_paquet": "release download/v1.0/grimm.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "guitchordi",
@@ -1142,7 +1194,8 @@
    "description": "A chord and string instrument: 16 synthesized sounds, 50 chord styles, editable voicings, guitar tunings, and Freeplay, Strum and Arp modes with partial-chord pulses.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/guitchordi-0.1.0-beta.1.fwsc",
-   "provenance_paquet": "release download/v0.1.0-beta.1/guitchordi-v0.1.0-beta.1.fwsc"
+   "provenance_paquet": "release download/v0.1.0-beta.1/guitchordi-v0.1.0-beta.1.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "hera",
@@ -1164,7 +1217,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/hera-1.1.fwsc",
    "provenance_paquet": "release download/v1.1/hera-1.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "hortator",
@@ -1185,7 +1239,8 @@
    "description": "A drum machine: eight tracks of drums, a step sequencer, Grids, a pumping compressor, LFOs, resonators and live effects. Play it in the browser first.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/DeadActive/hortator/releases/download/drum-v1.0.1/hortator-1.0.1.fwsc",
-   "provenance_paquet": "release download/drum-v1.0.1/hortator-1.0.1.fwsc"
+   "provenance_paquet": "release download/drum-v1.0.1/hortator-1.0.1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "hyp1",
@@ -1207,7 +1262,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/hyp1-1.5.54.fwsc",
    "provenance_paquet": "introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "j6",
@@ -1228,7 +1284,8 @@
    "description": "A six-voice JUNO-60 style polysynth with chorus, arpeggiator and a 16-step recorder.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/j6-1.3.1.fwsc",
-   "provenance_paquet": "release download/v1.3.1/j6-1.3.1.fwsc"
+   "provenance_paquet": "release download/v1.3.1/j6-1.3.1.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "jangada",
@@ -1249,7 +1306,8 @@
    "description": "Dark, industrial, Brazilian: drones that breathe, ten engines (6-op FM, a superwave analog with a ladder filter), four tracks, a mod matrix, live effects.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/jangada-1.0.1.fwsc",
-   "provenance_paquet": "release download/v1.0.1/jangada-1.0.1.fwsc"
+   "provenance_paquet": "release download/v1.0.1/jangada-1.0.1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "jiant",
@@ -1271,7 +1329,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/jiant-0.9.9-par13b-3641c02-preview.fwsc",
    "provenance_paquet": "secours émulé, version 0.9.9-par13b-3641c02-preview : introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "kawa",
@@ -1292,7 +1351,8 @@
    "description": "A pocket tracker for any style: six tracks with an engine each (pulse, 4-bit wave, noise, 6-operator FM, drum kit or sample), patterns chained into a song, 32 live effects and tools that write beats for you. A beta, not yet tried on a real FM-1 by its maker.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/kawa-0.5.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "horloge_midi": "usb"
   },
   {
    "id": "ketch",
@@ -1313,7 +1373,8 @@
    "description": "A tracker in the LSDJ / picoTracker / M8 line: song, chain and phrase screens, instruments, effects and a mixer, on the FM-1's own keys and screen.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ketch-0.1-beta.fwsc",
-   "provenance_paquet": "dans le dépôt site/firmware/ketch-0.1-beta.fwsc"
+   "provenance_paquet": "dans le dépôt site/firmware/ketch-0.1-beta.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "loomfm1",
@@ -1335,7 +1396,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/loomfm1-0.1.0.fwsc",
    "provenance_paquet": "release download/v0.1.0/loom-groovebox.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "loom",
@@ -1356,7 +1418,8 @@
    "description": "A groovebox inspired by the OP-XY: eight tracks on nine engines, step tricks and locks, weave, a conductor and throws.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://github.com/charlesvestal/fm1-loom/releases/download/v0.14/loom-0.14.fwsc",
-   "provenance_paquet": "release download/v0.14/loom-0.14.fwsc"
+   "provenance_paquet": "release download/v0.14/loom-0.14.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "makohai",
@@ -1378,7 +1441,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/makohai-1.0.fwsc",
    "provenance_paquet": "release download/v1.0/makohai-1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "maku",
@@ -1400,7 +1464,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/maku-1.0.fwsc",
    "provenance_paquet": "release download/maku-v1.0/maku-1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "matryoshka",
@@ -1421,7 +1486,8 @@
    "description": "A modular synth you patch in the browser: modules (oscillators, filters, envelopes, delays) nest into assemblies you save and reuse, and the patch plays on the FM-1, polyphonic with a Voicing module.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/matryoshka-1.4.2.fwsc",
-   "provenance_paquet": "dans le dépôt web/public/firmware/matryoshka.fwsc"
+   "provenance_paquet": "dans le dépôt web/public/firmware/matryoshka.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "mc1",
@@ -1442,7 +1508,8 @@
    "description": "An original four-part groovebox with a 1990s workflow: three melodic parts and a 16-lane drum part, 128 melodic presets, eight drum kits, song arrangement, an arpeggiator and recorded knob moves.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mc1-1.2.0.fwsc",
-   "provenance_paquet": "release download/v1.2.0/mc-1-1.2.0.fwsc"
+   "provenance_paquet": "release download/v1.2.0/mc-1-1.2.0.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "melodee",
@@ -1463,7 +1530,8 @@
    "description": "Total playing pleasure, far beyond Felucca: recording without quantize, microtonal scales, a Casio CZ-1, a bit-by-bit Dexed, scale modes made for an MPC Sample as its companion.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/melodee-1.6.0-rc.4.fwsc",
-   "provenance_paquet": "release download/v1.6.0-rc.4/melodee-1.6.0-rc.4.fwsc"
+   "provenance_paquet": "release download/v1.6.0-rc.4/melodee-1.6.0-rc.4.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "midimon",
@@ -1484,7 +1552,8 @@
    "description": "A MIDI monitor for USB, the TRS jack and Bluetooth (as device and host at once): hex or words, filters, stats. Its THRU routes, each filtered, make the FM-1 a Bluetooth MIDI dongle.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/midimon-0.4.fwsc",
-   "provenance_paquet": "release download/v0.4/midimon-0.4.fwsc"
+   "provenance_paquet": "release download/v0.4/midimon-0.4.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "min1",
@@ -1506,7 +1575,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/min1-0.2.1.fwsc",
    "provenance_paquet": "release download/v0.2.1/min-0.2.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "minitone",
@@ -1528,7 +1598,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/minitone-1.0.5.fwsc",
    "provenance_paquet": "release download/minitone-1.0.5/minitone-1.0.5.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "mnm1",
@@ -1549,7 +1620,8 @@
    "description": "Six monophonic tracks of synth and FX machines, pages of eight knobs, a filter and a tape delay on every track, three LFOs a track, parameter locks and slides. Forked from Hortator, with sounds ported from MONO2K.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mnm1-1.0.1.fwsc",
-   "provenance_paquet": "release download/v1.0.1/mnm1-1.0.1.fwsc"
+   "provenance_paquet": "release download/v1.0.1/mnm1-1.0.1.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "modelar",
@@ -1570,7 +1642,8 @@
    "description": "A semi-modular drone synth played like a Kaoss Pad: four oscillators modulating each other through eight routings, and keys that move a cursor on an XY pad instead of playing notes: white keys are points, black keys gestures. ARP, a polymetric sequencer, a clock in Hz and eight generative environments.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/modelar-0.3.fwsc",
-   "provenance_paquet": "release download/v0.3/modelar-0.3.fwsc"
+   "provenance_paquet": "release download/v0.3/modelar-0.3.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "monk",
@@ -1592,7 +1665,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/monk-0.9.1.fwsc",
    "provenance_paquet": "release download/v0.9.1/monk-0.9.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "mono2k",
@@ -1614,7 +1688,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mono2k-1.1.fwsc",
    "provenance_paquet": "secours émulé, version 1.1 : dans le dépôt web/firmware/mono2k.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "monohull",
@@ -1635,7 +1710,8 @@
    "description": "A monosynth: one voice with analogue-modelled oscillators and five filters (ladder, diode ladder, OTA, Sallen-Key, state-variable), unison, chorus, delay and reverb, and 14 presets.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/monohull-0.2.0.fwsc",
-   "provenance_paquet": "release download/v0.2.0/monohull.fwsc"
+   "provenance_paquet": "release download/v0.2.0/monohull.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "mope1",
@@ -1657,7 +1733,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mope1-0.1.0.fwsc",
    "provenance_paquet": "release download/v0.1.0/mope-0.1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "morpheus",
@@ -1678,7 +1755,8 @@
    "description": "A pattern sequencer after Reason's Matrix: up to four channels of MIDI sequence data out, and a few voices built in to build the patterns with.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/morpheus-1.0.0.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "horloge_midi": false
   },
   {
    "id": "mutable",
@@ -1700,7 +1778,8 @@
    "description": "A generative instrument after a small modular setup: six freely assignable tracks, 12 engines (selected Plaits, Rings and Elements algorithms and voices of its own), 224 tones and 76 Biomes, a mixer with shared effects, 16-step phrases and named User Banks. Plays and edits live in the browser.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mutable-1.1.fwsc",
-   "provenance_paquet": "dans le dépôt Mutable-Dreams-1.1.0.fwsc"
+   "provenance_paquet": "dans le dépôt Mutable-Dreams-1.1.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "mycelium",
@@ -1721,7 +1800,8 @@
    "description": "Forest, Psytrance, Goa and Hitech grooves, built on Felucca and SLOOP: original drums and icons and four factory songs. A test release: not yet fully tested on the device.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mycelium-1.0-test.fwsc",
-   "provenance_paquet": "release download/v1.0-test/Mycelium-FM1-1.0.fwsc"
+   "provenance_paquet": "release download/v1.0-test/Mycelium-FM1-1.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "niagara",
@@ -1743,7 +1823,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/niagara-0.2.fwsc",
    "provenance_paquet": "release download/v0.2/niagara-drift-0.2.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "nmsfm",
@@ -1764,7 +1845,8 @@
    "description": "A space adventure while you make music, built on SLOOP 2.7.1: fly between planets with two knobs, land, mine, fight sentinels and warp between stars, every SLOOP screen floating over the game.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/nmsfm-0.5.fwsc",
-   "provenance_paquet": "dans le dépôt release/nmsfm-0.5.fwsc"
+   "provenance_paquet": "dans le dépôt release/nmsfm-0.5.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "noizdemons",
@@ -1786,7 +1868,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/noizdemons-666.fwsc",
    "provenance_paquet": "dans le dépôt build/felucca.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "obervave",
@@ -1808,7 +1891,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/obervave-3.0.1.fwsc",
    "provenance_paquet": "release download/v3.0.1/obervave-3.0.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "opn1",
@@ -1829,7 +1913,8 @@
    "description": "The Sega Genesis / Mega Drive's Yamaha YM2612: six channels of 4-operator FM. Its web app takes patches from game music (VGM) and OPM files and streams VGM tunes to the FM-1 to play.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/opn1-2.0.0.fwsc",
-   "provenance_paquet": "release download/v2.0.0/opn1-2.0.0.fwsc"
+   "provenance_paquet": "release download/v2.0.0/opn1-2.0.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "orbit",
@@ -1850,7 +1935,8 @@
    "description": "A four-track groovebox: three synths and a drum machine in a colour-coded Synth, Drum, Event Tape and Mixer workflow, loops turned into songs, user macros, screens after the OP-1. Based on SLOOP.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/dspaudio/orbit/releases/download/v1.0.0/orbit.fwsc",
-   "provenance_paquet": "release download/v1.0.0/orbit.fwsc"
+   "provenance_paquet": "release download/v1.0.0/orbit.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "perf1",
@@ -1872,7 +1958,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/perf1-0.13.0.fwsc",
    "provenance_paquet": "release download/v0.13.0/perf1-0.13.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "pigeon",
@@ -1894,7 +1981,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/pigeon-0.5.0-beta.1.fwsc",
    "provenance_paquet": "release download/v0.5.0-beta.1/pigeon-0.5.0-beta.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "gammawave",
@@ -1916,7 +2004,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/gammawave-1.2.1-GW.fwsc",
    "provenance_paquet": "release download/v1.2.1-GW/felucca-1.2.1-GW.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "polly",
@@ -1938,7 +2027,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/polly-0.5.fwsc",
    "provenance_paquet": "release download/v0.5/polly-0.5.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "purplemonkey",
@@ -1960,7 +2050,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/purplemonkey-0.11.fwsc",
    "provenance_paquet": "release download/v0.11/purplemonkey-0.11.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "rainbow",
@@ -1982,7 +2073,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/rainbow-1.1.5-rb+4b37e9c2.fwsc",
    "provenance_paquet": "introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "ravel",
@@ -2004,7 +2096,8 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ravel-0.9.0.fwsc",
    "provenance_paquet": "secours émulé, version 0.9.0 : release download/v0.9.0/Ravel-FM1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "s1vave",
@@ -2026,7 +2119,8 @@
    "emulateur_fm1emu": "pas encore évalué",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/s1vave-1.0.fwsc",
    "provenance_paquet": "introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "shineon",
@@ -2048,7 +2142,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/shineon-3.0.1.fwsc",
    "provenance_paquet": "release download/v3.0.1/shineon-3.0.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "sid1",
@@ -2069,7 +2164,8 @@
    "description": "The Commodore 64's SID chip, twice for six voices. Its web app edits patches and takes them straight from .sid game music files.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/sid1-1.0.0.fwsc",
-   "provenance_paquet": "release download/v1.0.0/sid1-1.0.0.fwsc"
+   "provenance_paquet": "release download/v1.0.0/sid1-1.0.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "sidou",
@@ -2090,7 +2186,8 @@
    "description": "Turns the FM-1 into a C64 SID machine: two SIDs (6581 and 8580) with the chip's character dialled in, a GoatTracker 2 compatible tracker and step sequencer, and a live instrument to play over a song.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/sidou-0.5.0.fwsc",
-   "provenance_paquet": "release download/v0.5.0/sidou-0.5.0.fwsc"
+   "provenance_paquet": "release download/v0.5.0/sidou-0.5.0.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "skiff",
@@ -2112,7 +2209,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/skiff-1.4.fwsc",
    "provenance_paquet": "secours émulé, version 1.4 : release download/v1.4/skiff-1.4.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "sloop",
@@ -2133,7 +2231,8 @@
    "description": "A live groovebox: tracks, layers, a step sequencer, song mode, punch-in effects and samples, played on the FM-1 in real time.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/isod89/sloop-fm1/releases/download/v2.8.5/sloop-2.8.5.fwsc",
-   "provenance_paquet": "release download/v2.8.5/sloop-2.8.5.fwsc"
+   "provenance_paquet": "release download/v2.8.5/sloop-2.8.5.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "sloopbanks",
@@ -2154,7 +2253,8 @@
    "description": "SLOOP 2.4 with up to twelve DX7 voice banks, kept and named in the editor, presets by kind. Test builds: back up first.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/sloopbanks-2.5-b28-test.fwsc",
-   "provenance_paquet": "gh-pages firmware/sloop-2.5-b28.fwsc"
+   "provenance_paquet": "gh-pages firmware/sloop-2.5-b28.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "floyd",
@@ -2175,7 +2275,8 @@
    "description": "SLOOP with a visual four-operator FM engine after Floyd Steinberg's 4-OP idea: an ADSR per operator, seven pages, a live oscilloscope that draws the envelopes as you play.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/floyd-2.4.fwsc",
-   "provenance_paquet": "release download/v2.4/sloop-2.4.fwsc"
+   "provenance_paquet": "release download/v2.4/sloop-2.4.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "sloopdx",
@@ -2196,7 +2297,8 @@
    "description": "SLOOP's live workflow with Dexed's DX7 engine and 128 steps a track: six operators, 32 algorithms, your own .syx banks, every voice edited on the FM-1, FM drums you program.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/sloopdx-4.0+133aa533.fwsc",
-   "provenance_paquet": "release download/v4.0/felucca-4.0.fwsc"
+   "provenance_paquet": "release download/v4.0/felucca-4.0.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "tastywaves",
@@ -2217,7 +2319,8 @@
    "description": "A 12-voice wavetable synth: two oscillators a voice, a resonant filter, two envelopes, an LFO, four effects, an arpeggiator and two step sequencers for chords and counterpoint; load your own Serum, WaveEdit, Ableton or Surge tables.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tastywaves-1.0.1.fwsc",
-   "provenance_paquet": "dans le dépôt tools/web/firmware/tastywaves.fwsc"
+   "provenance_paquet": "dans le dépôt tools/web/firmware/tastywaves.fwsc",
+   "horloge_midi": "usb"
   },
   {
    "id": "tessera",
@@ -2239,7 +2342,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tessera-2.1.1.fwsc",
    "provenance_paquet": "release download/v2.1.1/tessera-2.1.1.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "tonitor",
@@ -2260,7 +2364,8 @@
    "description": "Six tracks for live ambient and experimental music: three synth engines, patches generated by algorithm, free-length loops with up to ten overdubs each, a granulator, filters and a lush reverb.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tonitor-2026.10.27+d44a8968.fwsc",
-   "provenance_paquet": "dans le dépôt docs/firmware/tonitor.fwsc"
+   "provenance_paquet": "dans le dépôt docs/firmware/tonitor.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "tribe",
@@ -2282,7 +2387,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tribe-0.3-beta.fwsc",
    "provenance_paquet": "gh-pages firmware/tribe-0.3-beta.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "tuna",
@@ -2304,7 +2410,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/tuna-1.0-b77b159.fwsc",
    "provenance_paquet": "introuvable",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "unholy",
@@ -2326,7 +2433,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/unholy-0.2.3.fwsc",
    "provenance_paquet": "release download/v0.2.3/unholyunion-permutation-0.2.3.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "vector37",
@@ -2347,7 +2455,8 @@
    "description": "An orbiting overtone synth: four corners of two overtone generators each, a sun on a path and a moon around it decide how much of each you hear; the knobs shape the selected planet. Made for the SMK-37, here its FM-1 build. After the Beetlecrab Vector.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/vector37-0.3.2.fwsc",
-   "provenance_paquet": "introuvable"
+   "provenance_paquet": "introuvable",
+   "horloge_midi": false
   },
   {
    "id": "waveloop",
@@ -2369,7 +2478,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/waveloop-1.0.5.2-midi23.fwsc",
    "provenance_paquet": "release download/1.0.5.2-midi23/felucca-1.0.5.2-midi23.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "winampfm",
@@ -2390,7 +2500,8 @@
    "description": "Winamp 2.x on the FM-1, built on SLOOP: your sounds as a playlist, four tracks you record as loops, effects on sliders and a visualizer made of lines. The real firmware plays in a 3D simulator first.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/winampfm-0.12.fwsc",
-   "provenance_paquet": "dans le dépôt release/winampfm-0.12.fwsc"
+   "provenance_paquet": "dans le dépôt release/winampfm-0.12.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "x0x",
@@ -2412,7 +2523,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/x0x-1.1.0.fwsc",
    "provenance_paquet": "secours émulé, version 1.1.0 : release download/v1.1.0/x0x-1.1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "x0xrmx",
@@ -2434,7 +2546,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/x0xrmx-1.1.0.fwsc",
    "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "zen",
@@ -2456,7 +2569,8 @@
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/zen-1.2.fwsc",
    "provenance_paquet": "release download/v1.2/zen-1-1.2.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": false
   },
   {
    "id": "zp12",
@@ -2477,7 +2591,8 @@
    "description": "A 12-bit sampler after the E-mu SP-1200: sample on the FM-1 itself (a computer or phone plays into it over USB) or in the browser (mic, line-in or a file), and it plays on its own. Gritty and unsmoothed, with loops and songs.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/zp12-2.5.fwsc",
-   "provenance_paquet": "dans le dépôt docs/install/firmware/zp12-2.5.fwsc"
+   "provenance_paquet": "dans le dépôt docs/install/firmware/zp12-2.5.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "nachtfahrt",
@@ -2497,7 +2612,8 @@
    "description": "A generative Berlin School machine after Tangerine Dream, Klaus Schulze and Ashra: a drone, two drifting sequences, a gliding lead that answers your melody, an atmosphere, and ten pieces that build, open into a solo and return. It plays itself.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
    "paquet_en_ligne": "https://fartypants.github.io/fm1-nachtfahrt/firmware/nachtfahrt-1.0.0.fwsc",
-   "provenance_paquet": "gh-pages firmware/nachtfahrt-1.0.0.fwsc"
+   "provenance_paquet": "gh-pages firmware/nachtfahrt-1.0.0.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "fmdj",
@@ -2517,7 +2633,8 @@
    "description": "Game Boy music programs inside the FM-1: LSDj, the tracker, and DMGo!, the drum machine, in a Game Boy emulator on its screen, keys, knobs and sound. Bring your own ROM: nothing of LSDj or DMGo is in the firmware.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://deadactive.github.io/FMDj/firmware/lsdj-base-fmdj-2026.10.22.fwsc",
-   "provenance_paquet": "gh-pages firmware/lsdj-base-fmdj-2026.10.22.fwsc"
+   "provenance_paquet": "gh-pages firmware/lsdj-base-fmdj-2026.10.22.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "spampy",
@@ -2537,7 +2654,8 @@
    "description": "A five-track synthwave groovebox built on Felucca and SLOOP: 170 synth presets, 44 drum kits including KAVINSKY, scenes, effects, a NEON arpeggiator and Slicer modes, extended envelopes, and five built-in arcade games.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/Spampy-Droid/SPAMPY-0.0-r949/releases/download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036.fwsc",
-   "provenance_paquet": "release download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036.fwsc"
+   "provenance_paquet": "release download/v1.0/SPAMPY-r1007-SPAMPY-1.0-ABOUT-FM1-036.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "scintilla",
@@ -2557,7 +2675,8 @@
    "description": "The 1981 Elka Synthex on the FM-1: all 80 factory sounds, Paul Wiffen's laser harp among them, checked sample by sample against the original. Two layers of 8 voices (single, split, double), poly, mono or unison, chorus and reverb.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://github.com/joakimeriksson/scintilla-fm1/releases/download/v0.2.0/scintilla-0.2.0.fwsc",
-   "provenance_paquet": "release download/v0.2.0/scintilla-0.2.0.fwsc"
+   "provenance_paquet": "release download/v0.2.0/scintilla-0.2.0.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "echofield",
@@ -2579,7 +2698,8 @@
    "emulateur_fm1emu": "pas encore évalué",
    "paquet_en_ligne": null,
    "provenance_paquet": "natif seulement ; paquet publié : release download/v0.2.10/echofield-0.2.10.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "elixir",
@@ -2601,7 +2721,8 @@
    "emulateur_fm1emu": "pas encore évalué",
    "paquet_en_ligne": null,
    "provenance_paquet": "natif seulement ; paquet publié : release download/v0.25.2/elixir-0.25.2.fwsc",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "graine",
@@ -2623,7 +2744,8 @@
    "emulateur_fm1emu": "pas encore évalué",
    "paquet_en_ligne": null,
    "provenance_paquet": "natif seulement ; pas de paquet publié (instantané des sources du 7 novembre 2026, sans version marquée)",
-   "natif_seulement": true
+   "natif_seulement": true,
+   "horloge_midi": true
   },
   {
    "id": "karma",
@@ -2644,7 +2766,8 @@
    "description": "A four-track groovebox played live: an acid bass or a Juno-style polysynth, physical modelling, two dozen synthesis models and a drum synth, a 64-step sequencer, song sections, part generators on one chord plan, and stems over USB.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/karma-3.0.5.fwsc",
-   "provenance_paquet": "release download/v3.0.5/karma-3.0.5.fwsc"
+   "provenance_paquet": "release download/v3.0.5/karma-3.0.5.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "dark1",
@@ -2665,7 +2788,8 @@
    "description": "A groovebox for dark music: 21 genres and 210 pieces that evolve on their own, with an arpeggiator and step editing.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/dark1-1.0.5.fwsc",
-   "provenance_paquet": "release download/v1.0.5/DARK-1-1.0.5.fwsc"
+   "provenance_paquet": "release download/v1.0.5/DARK-1-1.0.5.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "demake",
@@ -2686,7 +2810,8 @@
    "description": "A lo-fi ambient machine built from its author's own pedal recordings: three synths with piano rolls, patterns, effects and shared reverbs, a chord machine, an arpeggiator, scenes and a song mode.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/demake-0.4.24.fwsc",
-   "provenance_paquet": "release download/v0.4.24/demake-0.4.24.fwsc"
+   "provenance_paquet": "release download/v0.4.24/demake-0.4.24.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "penumbra",
@@ -2707,7 +2832,8 @@
    "description": "A cinematic space drone: five voices glide from one scene to the next, an instrument to travel through rather than one that plays itself.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/penumbra-1.3.fwsc",
-   "provenance_paquet": "release download/v1.3/penumbra-1.3.fwsc"
+   "provenance_paquet": "release download/v1.3/penumbra-1.3.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "kwasub",
@@ -2728,7 +2854,8 @@
    "description": "A bass synth for drum and bass, dubstep, dub and techno: subs, reese and 808 among nine engines, live wobble and an LFO on any setting.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/kwasub-1.1.02.fwsc",
-   "provenance_paquet": "release download/v1.1.02/K-WASUB-1.1.02.fwsc"
+   "provenance_paquet": "release download/v1.1.02/K-WASUB-1.1.02.fwsc",
+   "horloge_midi": "usb"
   },
   {
    "id": "blop",
@@ -2749,7 +2876,8 @@
    "description": "One-finger chords from 38 grids, with a bass and light drums, MIDI over USB and an animated aquarium on the screen.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/blop-1.1.0.fwsc",
-   "provenance_paquet": "release download/v1.1.0/blop-1.1.0.fwsc"
+   "provenance_paquet": "release download/v1.1.0/blop-1.1.0.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "aisling",
@@ -2770,7 +2898,8 @@
    "description": "Generative Irish ambient: harps and a flute over a drone, with surf, wind and rain; eight pieces that play themselves, to play along with on the keys or from a DAW.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/aisling-1.2.fwsc",
-   "provenance_paquet": "release download/v1.2/aisling-1.2.fwsc"
+   "provenance_paquet": "release download/v1.2/aisling-1.2.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "arcturus",
@@ -2791,7 +2920,8 @@
    "description": "A self-playing wavetable instrument for evolving soundscapes: four PPG-style oscillators, patch matrices and a CRT-style screen.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/arcturus-1.7.fwsc",
-   "provenance_paquet": "release download/v1.7/arcturus-s6-1.7.fwsc"
+   "provenance_paquet": "release download/v1.7/arcturus-s6-1.7.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "artihive",
@@ -2812,7 +2942,8 @@
    "description": "An eight-voice experimental drone and polyphonic FM synth in four interacting pairs, with envelopes, glide, modulation, delay and a 16-step arpeggiator.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/artihive-2.0.3.fwsc",
-   "provenance_paquet": "release download/artihive-2.0.3/artihive-2.0.3.fwsc"
+   "provenance_paquet": "release download/artihive-2.0.3/artihive-2.0.3.fwsc",
+   "horloge_midi": false
   },
   {
    "id": "ptfm",
@@ -2833,7 +2964,8 @@
    "description": "A ProTracker-style pocket studio with 6-operator FM, sixteen voices, many instrument types, a loop station and a DJ mode.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/ptfm-0.26+91deae9e.fwsc",
-   "provenance_paquet": "dans le dépôt dist/firmware/ptfm.fwsc"
+   "provenance_paquet": "dans le dépôt dist/firmware/ptfm.fwsc",
+   "horloge_midi": true
   },
   {
    "id": "bigorna",
@@ -2854,7 +2986,8 @@
    "description": "A noise, industrial and IDM groovebox after the Digitone II: six tracks, four machines, a 16-step sequencer with parameter locks, a looper, send effects and USB audio.",
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bigorna-2026.11.09+8f531156.fwsc",
-   "provenance_paquet": "dans le dépôt docs/firmware/bigorna.fwsc"
+   "provenance_paquet": "dans le dépôt docs/firmware/bigorna.fwsc",
+   "horloge_midi": true
   }
  ]
 }

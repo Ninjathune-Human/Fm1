@@ -6323,7 +6323,7 @@ function buildPanel(fw) {
     const li = document.createElement("li"), b = document.createElement("button");
     b.type = "button"; b.className = "fw-item"; b.dataset.id = e.id;
     if (e.id === active.id) b.setAttribute("aria-current", "true");
-    if ((coreError && e.id !== "fm1va") || emuBarred(e)) b.setAttribute("aria-disabled", "true");
+    if ((coreError && e.id !== "fm1va") || emuBarred(e) || tempoBarred(e)) b.setAttribute("aria-disabled", "true");
     const span = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; return s; };
     const tags = span("fw-tags", "");
     for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
@@ -6492,10 +6492,16 @@ function buildPanel(fw) {
   }
   // en Duo, FM1-B prend FM-1+VA ou un firmware natif : un firmware émulé de plus serait trop lourd (et partagerait sa mémoire)
   function emuBarred(e) { return FM1_ID === "b" && e.id !== "fm1va" && !e.natif; }
+  // en Duo, tempo lié : seuls se choisissent les firmwares qui suivent l'horloge MIDI de la page (horloge_midi, lu dans leur
+  // code : true par l'USB ou la prise TRS, "usb" par l'USB seulement) ; un natif doit aussi lire le MIDI, un émulé le reçoit par la TRS
+  const followsClock = (e) => e.id === "fm1va" || e.id === "local" || (e.natif ? !!e.horloge_midi && e.natif_midi !== 0 : e.horloge_midi === true);
+  function tempoBarred(e) { let d = null; try { d = FM1_ID && window.parent.__duo; } catch { /* hors du Duo */ } return !!(d && d.linked) && !followsClock(e); }
+  window.__fwRefresh = () => { if (!sheet.hidden) { renderSections(); renderResults(); } };   // le tempo lié ou délié, liste ouverte
   async function pick(e) {
     closeSheet();
     restartBtn.hidden = true;
     if (emuBarred(e)) { status.textContent = "En Duo, FM1-B prend FM-1+VA ou un firmware natif."; return; }
+    if (tempoBarred(e)) { status.textContent = `Tempo lié : ${e.nom} ne suit pas l'horloge MIDI.`; return; }
     if (e.id !== "fm1va" && coreError) { status.textContent = "Cœur d'émulation indisponible."; return; }
     if (!ac) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
@@ -6832,6 +6838,7 @@ registerProcessor("duo-horloge", DuoClock);
   for (const f of Object.values(frames)) f.addEventListener("load", () => { try { f.contentWindow.addEventListener("pointerdown", wake, true); } catch { /* */ } });
   linkBtn.addEventListener("click", () => {
     linked = !linked; keep("link", linked ? "1" : "0");
+    for (const f of Object.values(frames)) try { f.contentWindow.__fwRefresh?.(); } catch { /* pas encore chargé */ }
     if (linked) clockOn().then(() => { if (linked) clock.port.postMessage({ t: "run" }); }, () => window.__tip(linkBtn, "L'horloge du tempo lié ne démarre pas dans ce navigateur."));
     else {
       const to = engines();

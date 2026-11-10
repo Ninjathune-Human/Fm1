@@ -35,3 +35,7 @@ test("chaque firmware a un état d'émulation mesuré ou déclaré", () => {
   // un paquet seulement en ligne n'a pas pu être essayé ici : il garde « pas encore évalué »
   for (const e of cat.firmwares) assert.ok(allowed.has(e.emulateur_fm1emu) || (!e.fichier && e.emulateur_fm1emu === "pas encore évalué"), `${e.id} : ${e.emulateur_fm1emu}`);
 });
+
+test("chaque firmware dit s'il suit l'horloge MIDI (tempo lié du Duo) : par l'USB ou la TRS, par l'USB seulement, ou pas", () => {
+  for (const e of cat.firmwares) assert.ok([true, false, "usb"].includes(e.horloge_midi), e.id);
+});

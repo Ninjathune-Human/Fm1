@@ -188,6 +188,33 @@ def test_emulated_follows(page):
     assert a.evaluate("window.__got").count(0xF8) >= 10
 
 
+def test_linked_tempo_greys_unfollowing(page):
+    """Tempo lié : dans le sélecteur, un firmware qui suit l'horloge MIDI se choisit (texte noir), un autre est grisé et
+    ne se choisit pas ; délié, tout se choisit à nouveau, la liste ouverte se met à jour."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    a.wait_for_function("window.__catalogue && window.__catalogue.length")
+    dis = lambda i: a.evaluate("(i) => document.querySelector(`#fw-results .fw-item[data-id='${i}']`).getAttribute('aria-disabled')", i)
+    find = lambda i: a.evaluate("""(i) => { const e = window.__catalogue.find((x) => x.id === i), s = document.getElementById('fw-search');
+      s.value = e.nom; s.dispatchEvent(new Event('input')); }""", i)
+    link(page)
+    a.evaluate("document.getElementById('fw-picker').click()")
+    find("mutable")                                   # émulé, pas d'horloge MIDI dans son code
+    assert dis("mutable") == "true"
+    find("sloop")                                     # émulé, suit l'horloge par sa prise TRS
+    assert dis("sloop") is None
+    find("kwasub")                                    # suit l'horloge, mais par l'USB seulement : l'émulateur ne la lui donne pas
+    assert dis("kwasub") == "true"
+    a.evaluate("document.querySelector(`#fw-results .fw-item[data-id='kwasub']`).click()")
+    assert a.evaluate("document.getElementById('status').textContent") == "Tempo lié : K-WASUB ne suit pas l'horloge MIDI."
+    assert a.evaluate("window.__engine() === window.__fw")
+    a.evaluate("document.getElementById('fw-picker').click()"); find("mutable")
+    page.click(".duo-link")                           # délié, la liste ouverte : tout se choisit
+    page.wait_for_function("!window.__duo.linked")
+    assert dis("mutable") is None
+    assert a.evaluate("window.__catalogue.every((e) => [true, false, 'usb'].includes(e.horloge_midi))")
+
+
 def test_unfollowing_firmware_explained(page):
     """Felucca natif sur son horloge interne (CLK INT) ne démarre pas avec l'autre : la bulle dit quoi régler."""
     a, b = open_duo(page, 1600, 900)

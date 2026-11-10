@@ -253,6 +253,10 @@
    "$1 has stopped."
   ],
   [
+   "^Tempo lié : (.+) ne suit pas l'horloge MIDI\\.$",
+   "Linked tempo: $1 does not follow the MIDI clock."
+  ],
+  [
    "^(.+) n'a pas démarré\\.$",
    "$1 did not start."
   ],
