@@ -1837,6 +1837,18 @@ const KEY_IDS = { "OCT-": 0, "OCT+": 1, FX: 2, SEL: 3, ENV: 4, LFO: 5, EDIT: 6, 
 const noteId = (i) => (Number.isInteger(i) && i >= 0 && i < 27 ? 14 + i : -1);   // 0 = F3 .. 26 = G5
 const ENC_IDS = { SELECT: 0, ALGORITHM: 1, KNOB1: 2, KNOB2: 3, KNOB3: 4, KNOB4: 5, PRESETS: 6 };
 const potAfter = (pot, clicks) => Math.max(0, Math.min(1023, pot + 8 * clicks));
+// l'écran de 240 pixels agrandi d'un nombre entier sans mélange (chaque pixel de la dalle de même taille), puis lissé
+// à la taille du canvas, comme les émulateurs d'origine (ECHOFIELD, GRAINE, Elixir) : un agrandissement direct à une
+// taille qui n'est pas un multiple de 240 rend certaines colonnes plus larges que d'autres, et le texte illisible
+let lcdBig = null;
+function blitLcd(off, cv) {
+  const c = cv.getContext("2d"), n = Math.max(1, Math.ceil(cv.width / 240 - 0.001)), s = 240 * n;
+  if (s === cv.width) { c.imageSmoothingEnabled = false; c.drawImage(off, 0, 0, cv.width, cv.height); return; }
+  lcdBig ||= document.createElement("canvas");
+  if (lcdBig.width !== s) lcdBig.width = lcdBig.height = s;
+  const b = lcdBig.getContext("2d"); b.imageSmoothingEnabled = false; b.drawImage(off, 0, 0, s, s);
+  c.imageSmoothingEnabled = true; c.imageSmoothingQuality = "high"; c.drawImage(lcdBig, 0, 0, cv.width, cv.height);
+}
 function rgb565ToRgba(src, dst) {
   for (let i = 0, j = 0; i < src.length; i++, j += 4) {
     const p = src[i], r = p >> 11, g = (p >> 5) & 63, b = p & 31;
@@ -2178,7 +2190,7 @@ class EmuFirmware {
     c.imageSmoothingEnabled = false;
     if (!this.lcd) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
     if (this.lcdNew) { rgb565ToRgba(this.lcd, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.lcdNew = false; }
-    c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
+    blitLcd(this.off, this.cv);
   }
 
   press(label) { const id = KEY_IDS[label]; if (id === undefined) return; this.down.add(id); this.send({ type: "key", id, down: true }); }
@@ -2327,7 +2339,6 @@ class NativeFirmware {
     this.m2k = this.dialect === "m2k";       // mono2k : ses propres messages {t}, un écran d'un bit par pixel
     this.perKey = this.dialect === "sim" || this.dialect === "monk" || this.m2k;
     this.dinghy = this.dialect === "sim" || this.dialect === "mel";
-    this.basePixels = this.dialect === "base";   // fm1-base (ECHOFIELD, GRAINE) : l'écran déjà dans l'ordre de la machine
     this.potMax = this.x0x || this.dialect === "base" ? 4096 : 1023;
     this.lc = ledConsts(entry.natif_led); this.xf = null;
     this.xfam = this.x0x || this.dialect === "base";   // PLAY à la manière X0X : allumé en vert, sa lueur aussi
@@ -2546,11 +2557,11 @@ class NativeFirmware {
     c.imageSmoothingEnabled = false;
     if (!this.fb) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
     if (this.fbNew) {                       // l'ordre d'octets de la dalle : chaque pixel est inversé avant la conversion
-      const f = this.fb;                    // (sim, MEL et fm1-base donnent l'écran dans l'ordre de la machine)
-      if (!this.dinghy && !this.m2k && !this.basePixels) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
+      const f = this.fb;                    // (sim et MEL donnent l'écran dans l'ordre de la machine)
+      if (!this.dinghy && !this.m2k) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
       rgb565ToRgba(f, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false;
     }
-    c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
+    blitLcd(this.off, this.cv);
   }
   power() { this.on = true; }
   setButtons() { this.send({ type: "buttons", mask: this.buttons >>> 0 }); }

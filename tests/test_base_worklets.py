@@ -64,7 +64,6 @@ def test_native_base_protocol_is_wired_to_host():
     assert 'this.dialect === "base"' in s
     assert 'case "base": return { type: "load", wasm, store: saved || {}, master, parts:' in s
     assert '{ type: "app", part: "midi", data: [s, a, b] }' in s
-    assert "this.basePixels" in s
 
 
 def test_only_pinned_licenced_base_engines_use_the_new_protocol():

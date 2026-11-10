@@ -1,4 +1,5 @@
 """Felucca compilé depuis ses sources (natif) derrière le panneau, à la place de l'émulation."""
+import pytest
 from conftest import lit_pixels, power_on
 from test_emu import rms, use
 
@@ -74,15 +75,32 @@ def test_native_screen_60fps(page):
     assert rate > 33, rate
 
 
-def test_native_colours(page):
-    """L'écran natif est dans l'ordre d'octets de la dalle : un pixel 0x00F8 (rouge pur côté dalle) s'affiche rouge."""
+@pytest.mark.parametrize("fid", ["felucca", "echofield"])
+def test_native_colours(page, fid):
+    """L'écran natif est dans l'ordre d'octets de la dalle : un pixel 0x00F8 (rouge pur côté dalle) s'affiche rouge.
+    fm1-base (ECHOFIELD, GRAINE) aussi, comme dans les émulateurs de leurs auteurs."""
     power_on(page)
     page.set_default_timeout(30000)
-    assert use(page, "felucca") is True
+    assert use(page, fid) is True
     px = page.evaluate("""() => { const e = window.__engine(); e.onWorklet = () => {};
       e.fb = new Uint16Array(240 * 240).fill(0x00F8); e.fbNew = true; e.draw();
       const c = document.getElementById('screen'); return Array.from(c.getContext('2d').getImageData(c.width >> 1, c.height >> 1, 1, 1).data); }""")
     assert px[0] > 200 and px[1] < 40 and px[2] < 40, px
+
+
+def test_native_screen_whole_pixels(page):
+    """Sur un canvas qui n'est pas un multiple de 240, chaque colonne de la dalle garde le même poids à l'écran
+    (agrandie d'un nombre entier, puis lissée) : pas de colonnes deux fois plus larges que leurs voisines."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    sums = page.evaluate("""() => { const e = window.__engine(), c = document.getElementById('screen'); e.onWorklet = () => {};
+      c.width = c.height = 410; const out = [];
+      for (const x of [10, 11, 12, 13, 100, 101, 200, 201]) {
+        e.fb = new Uint16Array(240 * 240); for (let y = 0; y < 240; y++) e.fb[y * 240 + x] = 0xFFFF; e.fbNew = true; e.draw();
+        const d = c.getContext('2d').getImageData(0, 205, 410, 1).data; let s = 0; for (let i = 0; i < d.length; i += 4) s += d[i]; out.push(s); }
+      return out; }""")
+    assert min(sums) > 0 and max(sums) / min(sums) < 1.15, sums
 
 
 def test_x0x_runs_native(page):
