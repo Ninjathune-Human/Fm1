@@ -2634,7 +2634,7 @@
    "emulateur_fm1emu": "vérifié",
    "paquet_en_ligne": "https://deadactive.github.io/FMDj/firmware/lsdj-base-fmdj-2026.10.22.fwsc",
    "provenance_paquet": "gh-pages firmware/lsdj-base-fmdj-2026.10.22.fwsc",
-   "horloge_midi": true
+   "horloge_midi": false
   },
   {
    "id": "spampy",

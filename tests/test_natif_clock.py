@@ -19,6 +19,7 @@ def test_patch_reads_not_writes(tmp_path):
         "static void seq_block(void) {\n"
         "    uint32_t i, run, clock_mode = (uint32_t)song.g[G_CLOCK];\n"           # Felucca, Hortator
         "    uint32_t selected_clock = (uint32_t)song.g[G_CLOCK];\n"              # Melodee, Tessera
+        "    if (song.g[G_CLOCK] && (uint32_t)song.g[G_CLOCK] == src) pulse();\n"   # Hortator, MNM-1 : la porte de l'horloge
         "}\n")
     (src / "midi_clock.c").write_text(
         "static uint32_t clock_src(void)\n{\n    uint32_t m = (uint32_t)song.g[G_CLOCK];\n"   # felucca-base (Duell)
@@ -27,10 +28,11 @@ def test_patch_reads_not_writes(tmp_path):
     (tmp_path / "web/emu/seq.c").write_text("uint32_t clock_mode = (uint32_t)song.g[G_CLOCK];\n")   # (la version navigateur : pas elle)
     out = run("patch", str(tmp_path))
     seq, clk = (src / "seq.c").read_text(), (src / "midi_clock.c").read_text()
-    assert seq.count("web_clock_ext ? 1u : (uint32_t)song.g[G_CLOCK]") == 2
-    assert clk.count("uint32_t m = web_clock_ext ? 1u : (uint32_t)song.g[G_CLOCK];") == 1
-    # un seul fichier définit et exporte web_clock, l'autre le déclare (beaucoup s'incluent les uns les autres)
-    assert (seq + clk).count('export_name("web_clock")') == 1 and (seq + clk).count("extern int web_clock_ext;") == 1
+    assert seq.count("(uint32_t)(web_clock_ext ? 1 : song.g[G_CLOCK])") == 3 and "if ((web_clock_ext ? 1 : song.g[G_CLOCK]) &&" in seq
+    assert clk.count("uint32_t m = (uint32_t)(web_clock_ext ? CLK_AUTO : song.g[G_CLOCK]);") == 1
+    # chacun le définit et l'exporte une fois par unité de compilation, faiblement (beaucoup s'incluent les uns les autres)
+    assert seq.startswith("#ifndef FM1_WEB_CLOCK") and clk.startswith("#ifndef FM1_WEB_CLOCK")
+    assert "__attribute__((weak)) int web_clock_ext;" in seq and seq.count('export_name("web_clock")') == 1
     assert "web_clock" not in (tmp_path / "web/emu/seq.c").read_text()
     assert out.count("horloge du tempo lié") == 2
     assert run("patch", str(tmp_path)) == ""                                     # (une seconde fois : rien)
@@ -45,7 +47,12 @@ def test_sync_of_sloop_and_elixir(tmp_path):
     (tmp_path / "a/project.c").write_text("void p(void) { if ((uint32_t)song.g[G_SYNC] != lights_sync) lights_sync = 1; }\n")
     (tmp_path / "b").mkdir()
     (tmp_path / "b/engine.c").write_text("static void engine_block(void) { sq.sync_ext = par[PAR_BPM] <= 1u; }\n")
-    run("patch", str(tmp_path / "a")); run("patch", str(tmp_path / "b"))
+    (tmp_path / "c").mkdir()
+    (tmp_path / "c/cr_out.c").write_text("static void cr_midi_in(void) { if (cr_cin_mode != cr_route.clock_in) { cr_cin_mode = cr_route.clock_in; } }\n"
+                                         "void ui(void) { cr_route.clock_in = 1; }\n")
+    run("patch", str(tmp_path / "a")); run("patch", str(tmp_path / "b")); run("patch", str(tmp_path / "c"))
+    cr = (tmp_path / "c/cr_out.c").read_text()
+    assert cr.count("(web_clock_ext || cr_route.clock_in)") == 2 and "cr_route.clock_in = 1;" in cr   # (ChoralRoot)
     seq = (tmp_path / "a/seq.c").read_text()
     assert seq.count("(web_clock_ext ? 1 : song.g[G_SYNC])") == 3
     assert "song.g[G_SYNC] = (int16_t)lights_sync;" in seq                        # (le réglage, jamais écrit par nous)
