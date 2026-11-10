@@ -6776,8 +6776,9 @@ registerProcessor("duo-horloge", DuoClock);
     // un FM-1 qui n'a pas démarré avec l'autre : son firmware ne suit pas encore l'horloge, la bulle dit quoi régler
     if (playing && checkAt && performance.now() > checkAt) {
       checkAt = 0;
-      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && E[k].playLight() !== "green");
-      if (late.length) window.__tip(linkBtn, late.map((k) => `<p><b>FM1-${k.toUpperCase()}</b> (${E[k].name}) ` + (E[k].entry && E[k].entry.natif_midi === 0
+      const deaf = (e) => e.entry && e.entry.natif_midi === 0;   // (lancé par son PLAY, il joue, mais à son tempo)
+      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && (deaf(E[k]) || E[k].playLight() !== "green"));
+      if (late.length) window.__tip(linkBtn, late.map((k) => `<p><b>FM1-${k.toUpperCase()}</b> (${E[k].name}) ` + (deaf(E[k])
         ? "ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié.</p>"
         : "n'a pas démarré. S'il sait suivre une horloge MIDI, réglez la sienne sur externe : <b>CLK</b> sur <b>USB</b> (<b>TRS</b> s'il est émulé), page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator.</p>")).join(""));
     }
