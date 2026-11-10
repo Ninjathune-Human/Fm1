@@ -8,10 +8,11 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8"));
 
-test("le catalogue compte 122 entrées aux ids uniques, Bubba Machine, NACHTFAHRT, FMDj, SPAMPY, Scintilla, ECHOFIELD, GRAINE et Elixir compris", () => {
-  assert.equal(cat.firmwares.length, 122);
-  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 122);
+test("le catalogue compte 133 entrées aux ids uniques, Bubba Machine, NACHTFAHRT, FMDj, SPAMPY, Scintilla, ECHOFIELD, GRAINE, Elixir et KARMA compris", () => {
+  assert.equal(cat.firmwares.length, 133);
+  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 133);
   assert.ok(cat.firmwares.some((e) => e.id === "bubba"));
+  assert.ok(cat.firmwares.some((e) => e.id === "karma"));
 });
 
 test("chaque paquet local existe et a l'empreinte du catalogue", () => {

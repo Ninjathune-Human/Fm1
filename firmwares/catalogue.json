@@ -2624,6 +2624,237 @@
    "paquet_en_ligne": null,
    "provenance_paquet": "natif seulement ; pas de paquet publié (instantané des sources du 7 novembre 2026, sans version marquée)",
    "natif_seulement": true
+  },
+  {
+   "id": "karma",
+   "nom": "KARMA",
+   "version": "3.0.5",
+   "auteur": "Ariel Muchnik",
+   "categories": [
+    "Groovebox"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/karma.fwsc",
+   "sha256": "2f288c04ddaca6c1911d8f2cfdfbdbc89d5c89d0b5ab80b2e3c0fb84bde38a11",
+   "taille": 610092,
+   "depot": "https://github.com/eatyourgreensstudio-dotcom/karma-fm1",
+   "commit_source": "23304e93d17d12a79546879d60d58c5c3421aac5",
+   "source_c": 116,
+   "description": "A four-track groovebox played live: an acid bass or a Juno-style polysynth, physical modelling, two dozen synthesis models and a drum synth, a 64-step sequencer, song sections, part generators on one chord plan, and stems over USB.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/karma-3.0.5.fwsc",
+   "provenance_paquet": "release download/v3.0.5/karma-3.0.5.fwsc"
+  },
+  {
+   "id": "dark1",
+   "nom": "DARK-1",
+   "version": "1.0.5",
+   "auteur": "Polystellarflow",
+   "categories": [
+    "Groovebox"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/dark1.fwsc",
+   "sha256": "8b2cf833e12f097058eb02edfd28a4f386c5bc252ae1a3bf0d81193727408525",
+   "taille": 610732,
+   "depot": "https://github.com/sparky480v/Dark-1",
+   "commit_source": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796",
+   "source_c": 51,
+   "description": "A groovebox for dark music: 21 genres and 210 pieces that evolve on their own, with an arpeggiator and step editing.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/dark1-1.0.5.fwsc",
+   "provenance_paquet": "release download/v1.0.5/DARK-1-1.0.5.fwsc"
+  },
+  {
+   "id": "demake",
+   "nom": "Demake",
+   "version": "0.4.24",
+   "auteur": "Sequencist",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": true,
+   "fichier": "firmwares/demake.fwsc",
+   "sha256": "b496d0efdfc403dba0d447a7987331cd7dbe2a5dbc8908cafbc2154f72f584da",
+   "taille": 610113,
+   "depot": "https://github.com/InigoHernandez/demake-synth",
+   "commit_source": "0f47f398581d042ee49764e3ed138ffe05f47c9a",
+   "source_c": 22,
+   "description": "A lo-fi ambient machine built from its author's own pedal recordings: three synths with piano rolls, patterns, effects and shared reverbs, a chord machine, an arpeggiator, scenes and a song mode.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/demake-0.4.24.fwsc",
+   "provenance_paquet": "release download/v0.4.24/demake-0.4.24.fwsc"
+  },
+  {
+   "id": "penumbra",
+   "nom": "Penumbra",
+   "version": "1.3",
+   "auteur": "Lunar Eclipse Forge",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/penumbra.fwsc",
+   "sha256": "314fa0d32c3d0236732e22e9046941853caa36c091e2313011b621fd5ec0a325",
+   "taille": 609697,
+   "depot": "https://github.com/MadMooneyham/Penumbra",
+   "commit_source": "dcc00e18016dd352a4373fc7a3c69ce4f72a1dbf",
+   "source_c": 47,
+   "description": "A cinematic space drone: five voices glide from one scene to the next, an instrument to travel through rather than one that plays itself.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/penumbra-1.3.fwsc",
+   "provenance_paquet": "release download/v1.3/penumbra-1.3.fwsc"
+  },
+  {
+   "id": "kwasub",
+   "nom": "K-WASUB",
+   "version": "1.1.02",
+   "auteur": "Omnipotard (Guizmoh)",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/kwasub.fwsc",
+   "sha256": "226cfda1f63e487deb4f8e515c2a76b77eff1c6b2d4c2a2d5d1440eaeaf8d3f3",
+   "taille": 610280,
+   "depot": "https://github.com/Guizmoh/K-WASUB_Firmware_for_FM1",
+   "commit_source": "69d17131187ea9681ab2e0fb1c96e2c02248dfe7",
+   "source_c": 21,
+   "description": "A bass synth for drum and bass, dubstep, dub and techno: subs, reese and 808 among nine engines, live wobble and an LFO on any setting.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/kwasub-1.1.02.fwsc",
+   "provenance_paquet": "release download/v1.1.02/K-WASUB-1.1.02.fwsc"
+  },
+  {
+   "id": "blop",
+   "nom": "Blop",
+   "version": "1.1.0",
+   "auteur": "Obsimo",
+   "categories": [
+    "Accords"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/blop.fwsc",
+   "sha256": "c6caccf8654d03f518c4b1c79449736579a983f9960f7fd6d14a1c7b3b0e901c",
+   "taille": 611496,
+   "depot": "https://github.com/OSR-Experiment/OSR-1",
+   "commit_source": "e6f1a2fd013a66901daf3d79d393702ce183385d",
+   "source_c": 2,
+   "description": "One-finger chords from 38 grids, with a bass and light drums, MIDI over USB and an animated aquarium on the screen.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/blop-1.1.0.fwsc",
+   "provenance_paquet": "release download/v1.1.0/blop-1.1.0.fwsc"
+  },
+  {
+   "id": "aisling",
+   "nom": "AISLING",
+   "version": "1.2",
+   "auteur": "CU_STE",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/aisling.fwsc",
+   "sha256": "b3cf01bc2bb9f8b67cd85dc19eb5d223fa111cd258db7e9e1a70839d2f5f3451",
+   "taille": 609666,
+   "depot": "https://github.com/stephencummins/fm1-aisling",
+   "commit_source": "4529b34e3977343ed6199171b523443f76f102a9",
+   "source_c": 38,
+   "description": "Generative Irish ambient: harps and a flute over a drone, with surf, wind and rain; eight pieces that play themselves, to play along with on the keys or from a DAW.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/aisling-1.2.fwsc",
+   "provenance_paquet": "release download/v1.2/aisling-1.2.fwsc"
+  },
+  {
+   "id": "arcturus",
+   "nom": "Arcturus S6",
+   "version": "1.7",
+   "auteur": "Zeptosecond DSP",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/arcturus.fwsc",
+   "sha256": "18b829548a23da9ef85087f0cbc1181c4ca0610a25a7d9e393079504172faee3",
+   "taille": 612196,
+   "depot": "https://github.com/zeptosecond-dsp/Arcturus-S6",
+   "commit_source": "7b591b657db87343960a73407b6e1da5f0c09bda",
+   "source_c": 18,
+   "description": "A self-playing wavetable instrument for evolving soundscapes: four PPG-style oscillators, patch matrices and a CRT-style screen.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/arcturus-1.7.fwsc",
+   "provenance_paquet": "release download/v1.7/arcturus-s6-1.7.fwsc"
+  },
+  {
+   "id": "artihive",
+   "nom": "ARTIHIVE",
+   "version": "2.0.3",
+   "auteur": "KHAV",
+   "categories": [
+    "Synthé"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/artihive.fwsc",
+   "sha256": "055aeeed495248b44783f4ffbf4a040916256d66ec20e91139c06295288256f4",
+   "taille": 612230,
+   "depot": "https://github.com/KHAVld/ARTIHIVE",
+   "commit_source": "ed53f4b0ee3b33884c8026a64f6c9ef278a0ba6b",
+   "source_c": 25,
+   "description": "An eight-voice experimental drone and polyphonic FM synth in four interacting pairs, with envelopes, glide, modulation, delay and a 16-step arpeggiator.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/artihive-2.0.3.fwsc",
+   "provenance_paquet": "release download/artihive-2.0.3/artihive-2.0.3.fwsc"
+  },
+  {
+   "id": "ptfm",
+   "nom": "PT/FM",
+   "version": "0.26",
+   "auteur": "hitosu",
+   "categories": [
+    "Tracker"
+   ],
+   "licence": "GPL-3.0",
+   "beta": true,
+   "fichier": "firmwares/ptfm.fwsc",
+   "sha256": "91deae9e804c737e2e78ae88726dbd9e52ca40fc552ea87e3924d98a83681b2a",
+   "taille": 610019,
+   "depot": "https://github.com/hitosu/ptfm",
+   "commit_source": "8de148d5913331c43c996a99c2d06ef7778c21de",
+   "source_c": 115,
+   "description": "A ProTracker-style pocket studio with 6-operator FM, sixteen voices, many instrument types, a loop station and a DJ mode.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/ptfm-0.26+91deae9e.fwsc",
+   "provenance_paquet": "dans le dépôt dist/firmware/ptfm.fwsc"
+  },
+  {
+   "id": "bigorna",
+   "nom": "Bigorna",
+   "version": "2026.11.09",
+   "auteur": "Nuno Zimas",
+   "categories": [
+    "Groovebox"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/bigorna.fwsc",
+   "sha256": "8f531156e1fb3e2649d07b176f5ceb8e0978a1f99bd90edb452ae86f4bbcc8be",
+   "taille": 609992,
+   "depot": "https://github.com/nzimas/bigorna",
+   "commit_source": "3d937bf9dae6157fb6f61dc01fb52eaf46ea1df7",
+   "source_c": 31,
+   "description": "A noise, industrial and IDM groovebox after the Digitone II: six tracks, four machines, a 16-step sequencer with parameter locks, a looper, send effects and USB audio.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/bigorna-2026.11.09+8f531156.fwsc",
+   "provenance_paquet": "dans le dépôt docs/firmware/bigorna.fwsc"
   }
  ]
 }

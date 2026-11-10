@@ -40,11 +40,13 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 |---|---|---|---|---|
 | Firmware officiel V15 | Fabricant du FM-1 | Apache-2.0 | [4c7496d](https://github.com/m-vave/fm1_open/tree/4c7496daac04a95ff10d1afdcc8f9ead2dbabc41) | fonctionne |
 
-### Groovebox (42)
+### Groovebox (45)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
+| Bigorna | Nuno Zimas | GPL-3.0 | [3d937bf](https://github.com/nzimas/bigorna/tree/3d937bf9dae6157fb6f61dc01fb52eaf46ea1df7) | vérifié |
 | Chipbox | Pasquale Barilla | GPL-3.0 | [6fdbc98](https://github.com/pbarilla/chipbox/tree/6fdbc9855361d15ce44065c4e2ef6308de568587) | fonctionne, natif |
+| DARK-1 | Polystellarflow | GPL-3.0 | [a2e7fb7](https://github.com/sparky480v/Dark-1/tree/a2e7fb7d2ce39e6caebbd98206fd3eabbf887796) | vérifié |
 | DUB-1 | sbegueria | GPL-3.0 | [e6fe7b8](https://github.com/sbegueria/fm1-dub/tree/e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d) | fonctionne, natif |
 | ESTAMPIE | Drew Robinson | GPL-3.0 | [b6be8f7](https://github.com/ocean/estampie/tree/b6be8f78adcee97d4b217db7b81f6a4eb02445e8) | vérifié, bêta, natif |
 | Felucca | Leo Kuroshita (Hügelton Instruments) | GPL-3.0 | [d7b1b7c](https://github.com/hugelton/Felucca/tree/d7b1b7c4099bba28854869ddb256b3d9f634cee8) | fonctionne, natif |
@@ -59,6 +61,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | HYP-1 | RedtailWorks | GPL-3.0 | [57c456d](https://github.com/RustyPawz/fm1-HYP1/tree/57c456db61826331d356458c9c1a136517da7cbf) | fonctionne, natif |
 | Jangada | zednaked | GPL-3.0 | [46e6c2c](https://github.com/zednaked/jangada/tree/46e6c2c2ed94b609918aa6f5f7381fac915ffc45) | fonctionne |
 | JIANT FM | juanjiant-bit | GPL-3.0 | [cac23c6](https://github.com/juanjiant-bit/JIANT/tree/cac23c6d0bb9a7f6986eb79bbe42ae710805ce98) | fonctionne, natif |
+| KARMA | Ariel Muchnik | GPL-3.0 | [23304e9](https://github.com/eatyourgreensstudio-dotcom/karma-fm1/tree/23304e93d17d12a79546879d60d58c5c3421aac5) | vérifié |
 | Loom FM-1 | Co-oscillator | GPL-3.0 | [ed6f036](https://github.com/Co-oscillator/Loom-FM-1/tree/ed6f036f9e3187ba22f915c3941d23f477159683) | vérifié, bêta, natif |
 | LOOM-8 | Charles Vestal | MPL-2.0 | [faf459d](https://github.com/charlesvestal/fm1-loom/tree/faf459d1f9cea3e634b6e2622a1c3e91d58b3452) | fonctionne |
 | Makohai | delirioux | GPL-3.0 | [800edc8](https://github.com/delirioux/makohai/tree/800edc8a88d2a883fbeb2cf198a976d7769f3707) | vérifié, natif |
@@ -87,18 +90,22 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | X0X | Charles Vestal | GPL-3.0 | [502b2c2](https://github.com/charlesvestal/fm1-x0x/tree/502b2c28c14ab2bff31eb4f0777fdfd0efcf8bea) | fonctionne, natif |
 | X0X-RMX | Mr-Roboto (Oliver) | GPL-3.0 | [a4e78f3](https://github.com/Mr-Roboto/fm1-x0x-rmx/tree/a4e78f3a6e16fa310b7614e5876d07e16a0020f9) | fonctionne, natif |
 
-### Synthé (44)
+### Synthé (50)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
+| AISLING | CU_STE | GPL-3.0 | [4529b34](https://github.com/stephencummins/fm1-aisling/tree/4529b34e3977343ed6199171b523443f76f102a9) | vérifié |
 | AMB-1 | Charles Vestal | MPL-2.0 | [188b0a4](https://github.com/charlesvestal/fm1-amb/tree/188b0a42f20a547864e732ae5ea1339d0fbcf395) | fonctionne |
 | Arctic Scream | p0larpatch | GPL-3.0 | [7b5b8b2](https://github.com/PolarPatch/Arctic-scream-FM-1/tree/7b5b8b261bf8ea4d5d64485c082636c5b1579854) | vérifié, natif |
+| Arcturus S6 | Zeptosecond DSP | GPL-3.0 | [7b591b6](https://github.com/zeptosecond-dsp/Arcturus-S6/tree/7b591b657db87343960a73407b6e1da5f0c09bda) | vérifié |
+| ARTIHIVE | KHAV | GPL-3.0 | [ed53f4b](https://github.com/KHAVld/ARTIHIVE/tree/ed53f4b0ee3b33884c8026a64f6c9ef278a0ba6b) | vérifié |
 | Bunker Evolved | Kid Bunka | GPL-3.0 | [c9bb0b1](https://github.com/kidbee85-beep/bunker-evolved/tree/c9bb0b1ac4a7dbb420a3f452fc75b705981ab0f4) | fonctionne, natif |
 | Bytemania | lloyd (llozd) | GPL-3.0 | [e670b35](https://github.com/llozd/bytemania/tree/e670b35369f8556ee82683f35c6b8bfbcb366155) | fonctionne |
 | Caravel | BonszaiMusic | GPL-3.0 | [b50bad5](https://github.com/bonszaimusic/caravel/tree/b50bad57dcf32862f36661a5fc2996e13392b93e) | vérifié, bêta, natif |
 | Carnac OS | OrbVorgis | GPL-3.0 | [be8cc10](https://github.com/OwenKirby/carnac-os/tree/be8cc104f3618ba9b12c834827abfdbb4e1686af) | fonctionne, bêta, natif |
 | Clipper | isod89 | GPL-3.0 | [e690672](https://github.com/isod89/clipper-fm1/tree/e69067211c4690f34e494b5b896e4585163dcc2b) | fonctionne, bêta |
 | CS-1 | twochannels | GPL-3.0 | [5dce8fa](https://github.com/twochannels/CS-1/tree/5dce8fadd3aa86cf47a3290289ee1c10b7c102e4) | fonctionne, natif |
+| Demake | Sequencist | GPL-3.0 | [0f47f39](https://github.com/InigoHernandez/demake-synth/tree/0f47f398581d042ee49764e3ed138ffe05f47c9a) | vérifié, bêta |
 | DRIFT | FBNFRTG | GPL-3.0 | [09b5b98](https://github.com/FBNFRTG/drift-fm1/tree/09b5b981f350a37055467d560702af8608f65ad1) | fonctionne, bêta, natif |
 | DUELL | OSCILL/R | GPL-3.0 | [33e2e2e](https://github.com/oscillr/DUELL/tree/33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0) | fonctionne, natif |
 | ECHOFIELD | Philip Bos (PhilipsKnobs) | MIT | [27feb2d](https://github.com/Philip-Bos/echofield-fm1/tree/27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f) | non évalué, natif |
@@ -115,6 +122,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Golana | Gadlele | GPL-3.0 | [472914d](https://github.com/Gadlele/Golana/tree/472914d794fb879eb502f62d3380a3b674ab2547) | fonctionne, natif |
 | GRAINE | Omnipotard | MIT | [40a9a99](https://github.com/Omnipotard/Granular-FM1/tree/40a9a99abfbd03b3c837c98fdea2fab50c169ed3) | non évalué, bêta, natif |
 | J6 | JackieAlacrity2373 | MPL-2.0 | [1f3fbdb](https://github.com/JackieAlacrity2373/fm1-j6/tree/1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2) | vérifié |
+| K-WASUB | Omnipotard (Guizmoh) | GPL-3.0 | [69d1713](https://github.com/Guizmoh/K-WASUB_Firmware_for_FM1/tree/69d17131187ea9681ab2e0fb1c96e2c02248dfe7) | vérifié |
 | Matryoshka | glvno | GPL-3.0 | [e3145af](https://github.com/glvno/matryoshka/tree/e3145af6c7327e0c988ac08b079cc319bb428bc0) | vérifié |
 | MODELAR | Hirakos | MPL-2.0 | [89475ca](https://github.com/hirakos999/MODELAR/tree/89475ca2586d6861cc35cd62ea2e1f23a574d9cc) | fonctionne, bêta |
 | MONK-1 | Charles Vestal | GPL-3.0 | [b21a361](https://github.com/charlesvestal/fm1-monk/tree/b21a361ea43b04b38b7598d35eb1ca651baaa661) | fonctionne, bêta, natif |
@@ -125,6 +133,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | NOIZ DEMONS | SPIKE the Percussionist | GPL-3.0 | [4fe0f1a](https://github.com/SPIKE-the-Percussionist/noiz_demons/tree/4fe0f1afb4d97f56dfb763c176679fe6e059ecec) | fonctionne, natif |
 | OberVave | zvenson | GPL-3.0 | [dc4e5d3](https://github.com/zvenson/obervave/tree/dc4e5d33b09f5e3f927801d78085f26171e9c7b8) | fonctionne, natif |
 | OPN-1 | putchdev | GPL-3.0 | [960c103](https://github.com/putchdev/opn-1/tree/960c1038cb660788026c8136467e99597019a333) | fonctionne |
+| Penumbra | Lunar Eclipse Forge | GPL-3.0 | [dcc00e1](https://github.com/MadMooneyham/Penumbra/tree/dcc00e18016dd352a4373fc7a3c69ce4f72a1dbf) | vérifié |
 | S1Vave | Andrew GG | GPL-3.0 | [9730337](https://github.com/AndrewGG88/S1Vave/tree/97303378678c247ca1d005ae641114f4544acf65) | non évalué, natif |
 | Scintilla | Joakim Eriksson | GPL-3.0 | [83b3752](https://github.com/joakimeriksson/scintilla-fm1/tree/83b375200caa281c22be840970c921efdce0a7fc) | vérifié, bêta |
 | Shine On | zvenson | GPL-3.0 | [2f37738](https://github.com/zvenson/shineon/tree/2f37738d690a628e0ae1d23d07ea5ee3eeda2de7) | fonctionne, natif |
@@ -136,10 +145,11 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Vector37 | genkigenki | GPL-3.0 | [08742a4](https://github.com/genkigenki/Vector37/tree/08742a4198f99e2db2846b00b70ed6808239c447) | fonctionne, bêta, en ligne |
 | ZEN-1 | aceyprime | GPL-3.0 | [ec92952](https://github.com/aceyprime/zen-1/tree/ec9295233ea64ddac224b58b4d07216706c1b8ee) | fonctionne, natif |
 
-### Accords (6)
+### Accords (7)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
+| Blop | Obsimo | GPL-3.0 | [e6f1a2f](https://github.com/OSR-Experiment/OSR-1/tree/e6f1a2fd013a66901daf3d79d393702ce183385d) | vérifié |
 | ChoralRoot | Quixotic7 | GPL-3.0 | [070bd30](https://github.com/Quixotic7/ChoralRootFM1/tree/070bd306ed63c7d08f09bb6ea937262b52b1a6c0) | fonctionne, bêta, natif |
 | CoralFlower | FicusFicusov | GPL-3.0 | [b5ceb99](https://github.com/FicusFicusov/CoralFlower/tree/b5ceb997be330c8a420958eb8f4e0f4b3ca084c2) | fonctionne, bêta, natif |
 | fm1-chord | math0ne | GPL-3.0 | [377235d](https://github.com/math0ne/fm1-chord/tree/377235d9f39a362e673f8fd60a26f0b1748218e7) | fonctionne, bêta |
@@ -159,7 +169,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | PIGEON | The Shrimp Blimp | GPL-3.0 | [48f028f](https://github.com/TheShrimpBlimp/pigeon/tree/48f028f2ee7f6a0140dfef9d9426dc3237f2e466) | fonctionne, bêta, natif |
 | zp12 | zvenson | GPL-3.0 | [7b8b975](https://github.com/zvenson/zp12/tree/7b8b97586ef87854d1859aad907e5f10ca49898d) | fonctionne |
 
-### Tracker (5)
+### Tracker (6)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -167,6 +177,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | FMDj | DEADACTIVE | GPL-3.0 | [10f98c0](https://github.com/DeadActive/FMDj/tree/10f98c0cc24677f3bdf0f89570bffdb033d3a68b) | vérifié, bêta |
 | KAWA | Omnipotard (Guizmoh) | GPL-3.0 | [a101686](https://github.com/Guizmoh/Kawa-Tracker-Fm1/tree/a10168605cb86276f55d8164d1c89ded7e3852aa) | fonctionne, bêta, en ligne |
 | Ketch | risseraka | GPL-3.0 | [58146f3](https://github.com/risseraka/fm1-tracker-ketch/tree/58146f3509861506fa5cfdb5e1c01172aba4955e) | fonctionne, bêta |
+| PT/FM | hitosu | GPL-3.0 | [8de148d](https://github.com/hitosu/ptfm/tree/8de148d5913331c43c996a99c2d06ef7778c21de) | vérifié, bêta |
 | SIDOU | Denis Sablić | GPL-3.0 | [f508588](https://github.com/dsablic/sidou/tree/f50858880db57d301eafefac4883045591497884) | fonctionne, bêta |
 
 ### Autre (16)
