@@ -38,6 +38,11 @@ while :; do
   [ "$P" = . ] && break; P=$(dirname "$P")
 done
 
+# le MIDI temps réel (horloge, Start, Continue, Stop) jusqu'au firmware, comme par l'USB de l'appareil : la version navigateur
+# de la famille Felucca (web_midi, web/emu/felucca_web.c et ses copies) l'écarte, et le tempo lié du Duo en a besoin
+for f in $(grep -rlF 'if (status < 0x80u || status >= 0xF0u)' --include='*.c' . 2>/dev/null | grep -E '(^|/)web/'); do
+  sed -i 's/if (status < 0x80u || status >= 0xF0u)/if (status < 0x80u || (status >= 0xF0u \&\& status < 0xF8u))/' "$f" && echo "natif $ID : MIDI temps réel admis ($f)"
+done
 export HERE                                # (NATIF_AVANT et NATIF_CONSTRUCTION y trouvent nos scripts)
 if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo "natif $ID : préparation en échec (on continue)"; fi
 if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
@@ -93,5 +98,7 @@ sed -i 's#1 / 30#1 / 60#g' "$D/worklet.js"
 sed -i '1i globalThis.TextDecoder ??= class { decode(b) { let s = ""; for (const c of b || []) s += String.fromCharCode(c); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } };' "$D/worklet.js"
 grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { rm -rf "$D"; echec "nom de processeur introuvable"; }
 E=""; [ -n "${NATIF_ECHANTILLONS:-}" ] && E=", \"echantillons\": \"outils/$NATIF_ECHANTILLONS\""
-printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s"%s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$E" > "$D/natif.json"
+# lit-il le MIDI ? (le tempo lié du Duo ne peut rien pour un worklet qui ne le lit pas)
+MIDI=0; grep -qE "(type|t) ?===? ?[\"']midi[\"']|case [\"']midi[\"']|part ?===? ?[\"']midi[\"']|name: ?[\"']midi[\"']|web_midi_in|sim_midi" "$D/worklet.js" && MIDI=1
+printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s", "midi": %s%s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$MIDI" "$E" > "$D/natif.json"
 echo "natif $ID : prêt ($DIALECT, $(basename "$WASM"), $(wc -c < "$WASM") octets)"

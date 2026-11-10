@@ -306,6 +306,8 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
   box-shadow: 0 8px 28px rgb(0 0 0 / 0.16); font: 400 0.9375rem/1.4 var(--body); color: var(--ink); }
 .fs-tip::before { content: ""; position: absolute; top: -7px; left: calc(var(--x) - 6px); width: 12px; height: 12px; background: var(--surface);
   border: 1px solid var(--rule); border-width: 1px 0 0 1px; transform: rotate(45deg); }   /* l'encoche vers le bouton */
+.fs-tip p { margin: 0; }
+.fs-tip p + p { margin-top: 8px; }
 .duo-extra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }   /* Tempo lié contre le titre, puis la disposition */
 .duo { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg); padding-top: env(safe-area-inset-top, 0px); }
 .duo-bar { flex: none; padding: 20px max(16px, env(safe-area-inset-right, 0px), (100% - 1120px) / 2) 8px max(16px, env(safe-area-inset-left, 0px), (100% - 1120px) / 2); }   /* les marges de la page Solo */
@@ -322,10 +324,12 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
 .duo-link .track { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--rule); transition: background 0.2s var(--ease); }
 .duo-link .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3); transition: transform 0.2s var(--ease); }
-.duo-link .dir { min-width: 3.6em; }   /* « · A → B » a sa place réservée : lier le tempo ne pousse rien */
 .duo-link[aria-checked="true"] .track { background: var(--accent); }
 .duo-link[aria-checked="true"] .track::after { transform: translateX(14px); }
-.duo-link[aria-disabled="true"] { opacity: 0.5; }
+.duo-bpm { display: inline-flex; align-items: center; gap: 8px; font: 500 0.9375rem var(--body); color: var(--muted); }   /* BPM, toujours à sa place : grisé tant que le tempo n'est pas lié */
+.duo-bpm input { width: 4.2em; min-height: 40px; box-sizing: border-box; padding: 0 6px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface);
+  font: 600 0.9375rem var(--body); font-variant-numeric: tabular-nums; color: var(--ink); text-align: center; }
+.duo-bpm input:disabled { opacity: 0.5; }
 .duo-stage { flex: 1 1 0; min-height: 0; display: grid; }
 .duo-stage iframe { width: 100%; height: 100%; border: 0; min-height: 0; background: var(--bg); }
 .duo-stage[data-layout="stack"] { grid-template-rows: 1fr 1fr; }
@@ -407,7 +411,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.</dd>
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
-          <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.</dd>
+          <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
           <dt>Plein écran</dt><dd>Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.</dd>
           <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Le volet Sauvegarde et restauration en fait une copie complète, dans un fichier.</dd>
@@ -3332,7 +3336,7 @@ class Firmware {
   sendGlobal() {
     const G = this.G;
     if (this.node) this.node.port.postMessage({ t: "global", g: { tempo: G.tempo, velocity: G.velocity, glideMode: G.glideMode, glideTime: G.glideTime, drive: G.drive, master: G.master, arp: G.arp,
-      sync: G.sync || (this.mi.follow ? 1 : 0), clockOut: G.clockOut || (this.mi.lead ? 1 : 0), local: G.local, seqOut: G.seqOut } });   // Duo, tempo lié : FM1-A mène, FM1-B suit
+      sync: G.sync || (this.mi.follow ? 1 : 0), clockOut: G.clockOut, local: G.local, seqOut: G.seqOut } });   // Duo, tempo lié : il suit l'horloge de la page
   }
   changed(global) {
     if (global) { this.gdirty = true; this.sendGlobal(); } else { this.dirty = true; this.sendPreset(true); }
@@ -5323,7 +5327,7 @@ Object.assign(Firmware.prototype, {
     const S = this.S;
     if (st === 0xf8) { if (this.node) this.node.port.postMessage({ t: "clock" }); return; }
     if (st !== 0xfa && st !== 0xfb && st !== 0xfc) return;
-    if (!this.G.seqOn) { if (this.mi.follow && st !== 0xfc) this.seqOn(true); else return; }   // Duo, tempo lié : Start lance aussi FM1-B
+    if (!this.G.seqOn) { if (this.mi.follow && st !== 0xfc) this.seqOn(true); else return; }   // Duo, tempo lié : Start allume aussi son séquenceur
     if (st === 0xfc) { if (S.playing) this.seqPlay(); return; }   // as PLAY: from real-time into step recording
     if (S.playing) { if (st === 0xfa) { S.restart = true; this.sendSeq(); } return; }
     if (st === 0xfb) { S.from = S.contFrom || 0; S.cont = true; }
@@ -5333,7 +5337,6 @@ Object.assign(Firmware.prototype, {
   // ---------------------------------------------------------------- what goes out
   midiSend(bytes) {
     const M = this.mi;
-    if (M.link && bytes[0] >= 0xf8) M.link(bytes);    // Duo, tempo lié : l'horloge et Start/Stop vers FM1-B
     if (!M.outs.length || !M.ok()) return;
     for (const o of M.outs) { try { o.send(bytes); } catch { /* a port that went away */ } }
   },
@@ -5930,8 +5933,20 @@ function buildPanel(fw) {
   va.load();
   // le panneau parle à un hôte qui délègue au moteur actif : FM-1+VA ou un firmware émulé
   let current = va, emu = null, ac = null, vaNode = null, vaAn = null, vaLive = false, wasm = null, catalogue = [];
+  // en Duo, tempo lié : un PLAY seul (touché, sans autre bouton tenu) lance et arrête aussi l'autre FM-1, par la page du Duo ;
+  // au relâcher, après le firmware (FM-1+VA joue au relâcher ; tenu, PLAY allume son séquenceur)
+  const downs = new Set();
+  let solo = 0;                                      // l'instant d'un PLAY pressé seul, 0 sinon
+  const duoPlay = () => { try { if (FM1_ID && parent.__duoPlay) parent.__duoPlay(); } catch { /* hors du Duo */ } };
   const fw = new Proxy({}, {
-    get: (_, k) => { const v = current[k]; return typeof v === "function" ? v.bind(current) : v; },
+    get: (_, k) => {
+      if (k === "press") return (l) => { solo = l === "PLAY" && !downs.size ? performance.now() : 0; downs.add(l); current.press(l); };
+      if (k === "release") return (l) => {
+        downs.delete(l); current.release(l);
+        if (l === "PLAY" && solo && performance.now() - solo < 900) duoPlay();
+        if (l === "PLAY") solo = 0;
+      };
+      const v = current[k]; return typeof v === "function" ? v.bind(current) : v; },
     set: (_, k, v) => { current[k] = v; return true; },
   });
   const panel = buildPanel(fw);
@@ -6085,7 +6100,7 @@ function buildPanel(fw) {
   ]).then(([d, natifs]) => {
     for (const e of d.firmwares) {
       const n = natifs[e.id];
-      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons });
+      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons, natif_midi: n.midi });
     }
     catalogue = d.firmwares; renderSections();
   }).catch(() => {});
@@ -6565,11 +6580,42 @@ function buildPanel(fw) {
   bind(); window.__bindFullscreen = bind;
 })();
 </script>
+<script type="text/worklet" id="duo-clock-src">
+// L'horloge du tempo lié, d'après duo-clock.js du fork de Jake Pawlik (jpawlik/Fm1, MIT) : 24 impulsions par noire,
+// comptées en échantillons du contexte audio de la page du Duo. Elle tourne tant que le tempo est lié ; « start » place
+// un Start (0xFA) juste avant l'impulsion suivante, qui part alors aussitôt. Le reste (Stop) part de la page.
+class DuoClock extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.bpm = 120; this.on = false; this.next = 0; this.out = [];
+    this.port.onmessage = ({ data: m }) => {
+      if (m.t === "run") { if (!this.on) { this.on = true; this.next = currentFrame; } }
+      else if (m.t === "halt") { this.on = false; this.out.length = 0; }
+      else if (m.t === "start") { this.out.push(0xfa); this.next = currentFrame; }
+      else if (m.t === "tempo") {                       // la phase vers l'impulsion suivante est gardée
+        const old = this.period();
+        this.bpm = Math.max(40, Math.min(240, m.bpm));
+        this.next = currentFrame + Math.max(0, this.next - currentFrame) * this.period() / old;
+      }
+    };
+  }
+  period() { return sampleRate * 60 / (24 * this.bpm); }
+  process() {
+    if (!this.on) return true;
+    const now = currentFrame, end = now + 128, out = this.out.splice(0);
+    if (this.next < now - this.period()) this.next = now;   // après un contexte suspendu : pas de rafale d'impulsions
+    while (this.next < end) { out.push(0xf8); this.next += this.period(); }
+    if (out.length) this.port.postMessage(out);
+    return true;
+  }
+}
+registerProcessor("duo-horloge", DuoClock);
+</script>
 <script>
 // Duo : deux FM-1 à la fois, FM1-A et FM1-B, chacun la page entière dans son cadre (?fm1=a, ?fm1=b), avec son firmware,
 // sa mémoire et son allumage. En portrait l'un au-dessus de l'autre ; en paysage l'un ou l'autre en plein écran (le
-// sélecteur), ou, sur un grand écran, côte à côte au choix. Tempo lié : FM1-A mène, FM1-B suit son horloge (FM-1+VA
-// des deux côtés : un firmware natif ne lit pas encore le MIDI).
+// sélecteur), ou, sur un grand écran, côte à côte au choix. Tempo lié : cette page donne la même horloge MIDI aux deux,
+// quel que soit leur firmware, au BPM choisi.
 "use strict";
 (function () {
   if (!DUO_SHELL) return;
@@ -6582,7 +6628,8 @@ function buildPanel(fw) {
     <div class="duo-bar">
       <span class="mark">FM-1<span>+VA</span></span>
       <div class="duo-extra">
-        <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="dir"></span><span class="track"></span></button>
+        <button type="button" class="duo-link" role="switch" aria-checked="false">Tempo lié<span class="track"></span></button>
+        <label class="duo-bpm"><input type="number" inputmode="numeric" min="40" max="240" step="1" value="120" aria-label="Tempo lié, en BPM">BPM</label>
         <div class="seg duo-view" role="radiogroup" aria-label="Disposition">
           <button type="button" role="radio" data-v="side">Côte à côte</button>
           <button type="button" role="radio" data-v="one">Un à la fois</button>
@@ -6641,50 +6688,112 @@ function buildPanel(fw) {
   addEventListener("blur", () => setTimeout(() => { const f = document.activeElement; if (f && f.tagName === "IFRAME" && stage.dataset.layout !== "one") midiTo(f.name); }));
   for (const f of Object.values(frames)) f.addEventListener("load", () => midiTo(active));
 
-  // le tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre FM-1 suit son horloge, Start, Stop et Continue,
-  // FM-1+VA ou firmware natif (un natif suit s'il sait suivre une horloge MIDI, souvent un réglage Sync à lui)
-  linkBtn.addEventListener("click", () => {
-    if (linkBtn.getAttribute("aria-disabled") === "true") {   // aucun FM-1+VA allumé : rien ne donne l'horloge, la bulle le dit
-      return window.__tip(linkBtn, "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue <b>FM-1+VA</b> : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.");
+  // le tempo lié : l'horloge de cette page (24 impulsions par noire) va aux deux FM-1, quel que soit leur firmware, et tourne
+  // tant que le tempo est lié. Chacun la suit s'il est réglé sur une horloge externe (FM-1+VA de lui-même) ; un PLAY seul,
+  // sur l'un ou l'autre, les lance ensemble (Start, puis l'impulsion suivante) et les arrête ensemble (Stop).
+  const bpmBox = root.querySelector(".duo-bpm input");
+  const toBpm = (v) => Math.max(40, Math.min(240, Math.round(Number(v) || 120)));
+  let bpm = toBpm(keep("bpm") || 120), playing = false, pulses = 0, players = { a: null, b: null }, checkAt = 0;
+  let ctx = null, clock = null, ready = null;
+  bpmBox.value = bpm;
+  const engOf = (k) => { try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? e : null; } catch { return null; } };
+  const engines = () => ({ a: engOf("a"), b: engOf("b") });
+  const vaOf = (k) => { try { return frames[k].contentWindow.__fw || null; } catch { return null; } };
+  function send(byte, to) {                          // un firmware qui refuse le message n'empêche pas l'autre de le recevoir
+    for (const e of [to.a, to.b]) if (e && e.on) try { e.midiIn(Uint8Array.of(byte)); } catch { /* ce firmware seul */ }
+  }
+  // l'horloge naît dans un geste (lier le tempo, un PLAY, un toucher) : iPad n'ouvre le son qu'ainsi
+  function clockOn() {
+    if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {});
+    if (ready) return ready;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC({ latencyHint: "interactive" });
+    const resumed = ctx.resume();
+    ready = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([document.getElementById("duo-clock-src").textContent], { type: "text/javascript" })))
+      .then(() => {
+        clock = new AudioWorkletNode(ctx, "duo-horloge", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [1] });
+        const mute = ctx.createGain(); mute.gain.value = 0;
+        clock.connect(mute).connect(ctx.destination);   // (Safari ne fait tourner qu'un nœud relié à la sortie)
+        clock.port.onmessage = (e) => pulse(e.data);
+        clock.port.postMessage({ t: "tempo", bpm });
+        if (linked) clock.port.postMessage({ t: "run" });
+        return resumed;
+      })
+      .catch((err) => { ready = null; clock = null; ctx = null; throw err; });
+    return ready;
+  }
+  function pulse(bytes) {
+    if (!linked) return;
+    const to = engines();
+    for (const b of bytes) {
+      send(b, to);
+      if (b === 0xfa) pulses = 0; else pulses++;
     }
-    linked = !linked; keep("link", linked ? "1" : "0"); tick();
-  });
-  const engOf = (k) => {
-    try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? (e === w.__fw ? { va: e } : e.kind === "natif" ? { natif: e } : e.kind === "emu" ? { emu: e } : null) : null; } catch { return null; }
+  }
+  function stop(to) { if (playing) { playing = false; send(0xfc, to || engines()); } }
+  window.__duoPlay = () => {                         // un PLAY seul, sur l'un des FM-1 (son cadre l'appelle)
+    if (!linked) return;
+    if (playing) { stop(); tick(); return; }
+    playing = true; players = engines(); checkAt = performance.now() + 1500;
+    clockOn().then(() => { if (playing && linked) clock.port.postMessage({ t: "start" }); }, () => { playing = false; });
+    tick();
   };
-  const fwOf = (k) => { const e = engOf(k); return e && e.va ? e.va : null; };
-  let was = { a: null, b: null };
-  function tick() {
-    const E = { a: engOf("a"), b: engOf("b") };
-    const lead = E.a && E.a.va && E.b ? "a" : E.b && E.b.va && E.a ? "b" : null, other = lead === "a" ? "b" : "a";
-    const on = linked && !!lead;
-    linkBtn.setAttribute("aria-checked", on);
-    linkBtn.setAttribute("aria-disabled", !lead);
-    linkBtn.querySelector(".dir").textContent = on ? (lead === "a" ? " · A → B" : " · B → A") : "";
-    linkBtn.title = lead ? `FM1-${lead.toUpperCase()} mène, FM1-${other.toUpperCase()} suit son horloge` : "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA";
-    for (const k of ["a", "b"]) {                     // ce que chacun doit être maintenant
-      const e = E[k] && (E[k].va || E[k].natif || E[k].emu), isLead = on && k === lead, isFollow = on && k === other;
-      if (was[k] && was[k] !== e && was[k].mi) { was[k].mi.lead = false; was[k].mi.follow = false; was[k].mi.link = null; was[k].sendGlobal(); }
-      was[k] = e;
-      if (!e || !e.mi) continue;
-      const to = E[other] && (E[other].va || E[other].natif || E[other].emu);
-      if (!!e.mi.lead !== isLead || (isLead && e.mi.linkTo !== to)) {
-        e.mi.lead = isLead; e.mi.linkTo = isLead ? to : null;
-        e.mi.link = isLead ? (bytes) => { if (to && to.on) to.midiIn(Uint8Array.from(bytes)); } : null;
-        e.sendGlobal();
-      }
-      if (!!e.mi.follow !== isFollow) { e.mi.follow = isFollow; e.sendGlobal(); }
-      e.mi.tempo = isFollow && E[lead].va ? E[lead].va.G.tempo : 0;
+  const wake = () => { if (linked) clockOn().catch(() => {}); };   // le tempo lié retrouvé au chargement : au premier toucher
+  addEventListener("pointerdown", wake, true);
+  for (const f of Object.values(frames)) f.addEventListener("load", () => { try { f.contentWindow.addEventListener("pointerdown", wake, true); } catch { /* */ } });
+  linkBtn.addEventListener("click", () => {
+    linked = !linked; keep("link", linked ? "1" : "0");
+    if (linked) clockOn().then(() => { if (linked) clock.port.postMessage({ t: "run" }); }, () => window.__tip(linkBtn, "L'horloge du tempo lié ne démarre pas dans ce navigateur."));
+    else {
+      const to = engines();
+      stop(to);
+      if (clock) clock.port.postMessage({ t: "halt" });
+      if ((to.a && to.a !== vaOf("a")) || (to.b && to.b !== vaOf("b")))   // délié, un firmware resté sur horloge externe attend
+        window.__tip(linkBtn, "L'horloge s'arrête. Un firmware resté sur une horloge externe ne joue plus seul : remettez la sienne sur interne, <b>CLK</b> sur <b>INT</b> (page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator).");
     }
-    // le battement de chaque FM-1, sur ses pastilles FM1-A | FM1-B
-    const beat = { a: fwOf("a"), b: fwOf("b") };
+    tick();
+  });
+  bpmBox.addEventListener("change", () => {
+    bpm = toBpm(bpmBox.value); bpmBox.value = bpm; keep("bpm", String(bpm));
+    if (clock) clock.port.postMessage({ t: "tempo", bpm });
+    tick();
+  });
+  addEventListener("pagehide", () => stop());
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
+  function tick() {
+    const E = engines();
+    if (playing && (E.a !== players.a || E.b !== players.b)) stop(E);   // un firmware changé ou éteint : les deux s'arrêtent
+    linkBtn.setAttribute("aria-checked", linked);
+    linkBtn.title = linked ? `Les deux FM-1 reçoivent l'horloge de cette page, à ${bpm} BPM` : "Donner la même horloge aux deux FM-1";
+    bpmBox.disabled = !linked;
+    for (const k of ["a", "b"]) {                     // FM-1+VA suit de lui-même : sa Sync prend l'horloge reçue, son Tempo montre le BPM
+      const va = vaOf(k);
+      if (!va || !va.mi) continue;
+      const follow = linked && E[k] === va, tempo = follow ? bpm : 0;
+      if (!!va.mi.follow !== follow) { va.mi.follow = follow; va.mi.tempo = tempo; va.sendGlobal(); }
+      else va.mi.tempo = tempo;
+    }
+    // un FM-1 qui n'a pas démarré avec l'autre : son firmware ne suit pas encore l'horloge, la bulle dit quoi régler
+    if (playing && checkAt && performance.now() > checkAt) {
+      checkAt = 0;
+      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && E[k].playLight() !== "green");
+      if (late.length) window.__tip(linkBtn, late.map((k) => `<p><b>FM1-${k.toUpperCase()}</b> (${E[k].name}) ` + (E[k].entry && E[k].entry.natif_midi === 0
+        ? "ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié.</p>"
+        : "n'a pas démarré. S'il sait suivre une horloge MIDI, réglez la sienne sur externe : <b>CLK</b> sur <b>USB</b> (<b>TRS</b> s'il est émulé), page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator.</p>")).join(""));
+    }
+    // le battement de chaque FM-1, sur ses pastilles FM1-A | FM1-B : FM-1+VA le sien ; un autre firmware, celui de l'horloge
+    const beat = linked && playing && pulses > 0 && (pulses - 1) % 24 < 8;
     for (const k of ["a", "b"]) {
       const t = tabsOf(k);
-      if (t) for (const b of t.children) { const f = beat[b.dataset.k]; b.querySelector(".beat").classList.toggle("on", !!(f && f.S && f.S.playing && f.beatPhase() < 0.3)); }
+      if (t) for (const b of t.children) {
+        const e = E[b.dataset.k], va = vaOf(b.dataset.k);
+        b.querySelector(".beat").classList.toggle("on", !!e && (e === va ? va.S.playing && va.beatPhase() < 0.3 : beat && e.playLight() === "green"));
+      }
     }
   }
   setInterval(tick, 120);
-  window.__duo = { frames, show, tick, get linked() { return linked; } };   // pour les tests
+  tick();
+  window.__duo = { frames, show, tick, get linked() { return linked; }, get playing() { return playing; }, get bpm() { return bpm; } };   // pour les tests
 })();
 </script>
 

@@ -4,7 +4,7 @@
   "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own. A firmware that stops is restarted with Restart.",
   "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12. Their functions panel explains it.",
   "Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.": "The six FM-1 colourways, as swatches under the FM-1. With FM-1+VA, the screen takes the matching theme.",
-  "Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.": "Solo and Duo, at the top of the page. Two FM-1s at once, FM1-A and FM1-B, each with its own firmware, memory and power: one above the other in portrait, one or the other in landscape, side by side if you like on a large screen. Linked tempo: an FM-1+VA leads (FM1-A if there is one), the other follows its clock and starts with it; a native or emulated firmware receives it too, and follows it if it can follow a MIDI clock (emulated Felucca family: CLK on TRS). FM1-B takes FM-1+VA or a native firmware.",
+  "Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.": "Solo and Duo, at the top of the page. Two FM-1s at once, FM1-A and FM1-B, each with its own firmware, memory and power: one above the other in portrait, one or the other in landscape, side by side if you like on a large screen. Linked tempo: the page gives both FM-1s the same MIDI clock, at the BPM chosen next to it, whatever their firmware; PLAY on its own, on either one, starts and stops them together. FM-1+VA follows it by itself; another firmware follows it if it is set to an external clock (CLK to USB, or TRS if it is emulated: CLOCK page of HOME for Felucca, GLOBAL of GLO for Hortator), a setting to undo afterwards so that it plays on its own again. FM1-B takes FM-1+VA or a native firmware.",
   "Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.": "When the browser handles MIDI, the MIDI button picks the input and the channel, for all firmwares and for this FM-1 only; its light blinks when messages arrive. A connected MIDI keyboard plays the loaded firmware.",
   "Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.": "The button at the top right. Where the browser does not allow it (iPhone), adding the page to the Home Screen, with Share then Add to Home Screen, opens it without a toolbar.",
   "Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Le volet Sauvegarde et restauration en fait une copie complète, dans un fichier.": "The presets, patterns and settings of each firmware, the last firmware chosen, the colourway and the MIDI choice, in this browser only. Powering off erases those of the active firmware; with FM-1+VA, the colourway also returns to Mint. The Backup and restore panel makes a complete copy of it, in a file.",
@@ -61,7 +61,6 @@
   "Molettes": "Knobs",
   "Maintenir": "Hold",
   "Boutons": "Buttons",
-  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.": "The tempo links when both FM-1s are on and one plays FM-1+VA: it gives the clock. Native firmwares do not send one.",
   "Solo et Duo": "Solo and Duo",
   "clavier:Entrée": "Enter",
   "Maj": "Shift",
@@ -114,7 +113,6 @@
   "sauvegarde : délai dépassé": "save: timed out",
   "Réservé à FM-1+VA": "Reserved for FM-1+VA",
   "Ce navigateur n'ouvre pas le plein écran. Touchez <b>Partager</b>, puis <b>Sur l'écran d'accueil</b> : ouvert depuis l'écran d'accueil, le FM-1 occupe tout l'écran.": "This browser cannot open full screen. Tap <b>Share</b>, then <b>Add to Home Screen</b>: opened from the Home Screen, the FM-1 fills the whole screen.",
-  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue <b>FM-1+VA</b> : c'est lui qui donne l'horloge. Les firmwares natifs n'en envoient pas.": "The tempo links when both FM-1s are on and one plays <b>FM-1+VA</b>: it gives the clock. Native firmwares do not send one.",
   "Do 2": "C 2",
   "Do♯ 2": "C♯ 2",
   "Ré 2": "D 2",
@@ -185,7 +183,6 @@
   "La♯ 6": "A♯ 6",
   "Si 6": "B 6",
   "Si♯ 6": "B♯ 6",
-  "Le tempo se lie quand les deux FM-1 sont allumés et que l'un joue FM-1+VA": "The tempo links when both FM-1s are on and one plays FM-1+VA",
   "Sauvegarde et restauration": "Backup and restore",
   "Toute la mémoire du FM-1 dans ce navigateur, en un fichier : presets, patterns et réglages de FM-1+VA, du Solo et du Duo (FM1-A et FM1-B), projets des firmwares natifs, sauvegardes des firmwares émulés et paquets ouverts. À garder dans Fichiers ou iCloud Drive ; il contient aussi vos échantillons et vos firmwares importés.": "Everything the FM-1 keeps in this browser, in one file: the presets, patterns and settings of FM-1+VA, of Solo and Duo (FM1-A and FM1-B), native firmware projects, emulated firmware saves and opened packages. Keep it in Files or iCloud Drive; it also holds your samples and imported firmwares.",
   "Restaurer remplace tout ce que ce navigateur garde du FM-1 : éteindre le FM-1 et fermer ses autres onglets avant.": "Restoring replaces everything this browser keeps of the FM-1: power off the FM-1 and close its other tabs first.",
@@ -224,13 +221,13 @@
   "Type binaire inconnu": "Unknown binary type",
   "Longueur binaire invalide": "Invalid binary length",
   "Objet illisible": "Unreadable object",
-  "Valeur inconnue": "Unknown value"
+  "Valeur inconnue": "Unknown value",
+  "Tempo lié, en BPM": "Linked tempo, in BPM",
+  "Donner la même horloge aux deux FM-1": "Give both FM-1s the same clock",
+  "L'horloge du tempo lié ne démarre pas dans ce navigateur.": "The linked tempo's clock does not start in this browser.",
+  "L'horloge s'arrête. Un firmware resté sur une horloge externe ne joue plus seul : remettez la sienne sur interne, <b>CLK</b> sur <b>INT</b> (page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator).": "The clock stops. A firmware left on an external clock no longer plays on its own: set its clock back to internal, <b>CLK</b> to <b>INT</b> (CLOCK page of <b>HOME</b> for Felucca, GLOBAL of <b>GLO</b> for Hortator)."
  },
  "patterns": [
-  [
-   "^FM1-([AB]) mène, FM1-([AB]) suit son horloge$",
-   "FM1-$1 leads, FM1-$2 follows its clock"
-  ],
   [
    "^Raccourcis clavier : (.*)$",
    "Keyboard shortcuts: $1"
@@ -342,6 +339,18 @@
   [
    "^Échantillons : (.+)$",
    "Samples: $1"
+  ],
+  [
+   "^Les deux FM-1 reçoivent l'horloge de cette page, à (\\d+) BPM$",
+   "Both FM-1s receive this page's clock, at $1 BPM"
+  ],
+  [
+   "^<b>FM1-([AB])</b> \\((.+)\\) n'a pas démarré\\. S'il sait suivre une horloge MIDI, réglez la sienne sur externe : <b>CLK</b> sur <b>USB</b> \\(<b>TRS</b> s'il est émulé\\), page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator\\.$",
+   "<b>FM1-$1</b> ($2) did not start. If it can follow a MIDI clock, set its clock to external: <b>CLK</b> to <b>USB</b> (<b>TRS</b> if it is emulated), CLOCK page of <b>HOME</b> for Felucca, GLOBAL of <b>GLO</b> for Hortator."
+  ],
+  [
+   "^<b>FM1-([AB])</b> \\((.+)\\) ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié\\.$",
+   "<b>FM1-$1</b> ($2) does not read MIDI in the browser: it cannot follow the linked tempo."
   ]
  ]
 }
