@@ -53,12 +53,17 @@ def test_no_stuck_key(page):
 
 
 def test_crisp_lcd(page):
+    """L'écran reste net à une taille qui n'est pas un multiple de 240 : le bord d'un aplat de la dalle ne s'étale
+    pas sur plus d'un pixel de chaque côté (agrandi d'un nombre entier, puis réduit, jamais flou)."""
     power_on(page)
     assert use(page, "monohull") is True
     page.wait_for_timeout(1000)
-    smooth = page.evaluate("""() => { const c = document.getElementById('screen'); c.width = c.height = 731;
-      window.__engine().draw(); return c.getContext('2d').imageSmoothingEnabled; }""")
-    assert smooth is False
+    blurred = page.evaluate("""() => { const c = document.getElementById('screen'), e = window.__engine(); c.width = c.height = 731;
+      e.lcd = new Uint16Array(240 * 240); for (let y = 100; y < 140; y++) for (let x = 100; x < 110; x++) e.lcd[y * 240 + x] = 0xFFFF;
+      e.lcdNew = true; e.draw();
+      const d = c.getContext('2d').getImageData(0, Math.round(120 * 731 / 240), 731, 1).data; let n = 0;
+      for (let i = 0; i < d.length; i += 4) if (d[i] > 30 && d[i] < 225) n++; return n; }""")
+    assert blurred <= 2, blurred
 
 
 def _seed_sector(page, fid):
