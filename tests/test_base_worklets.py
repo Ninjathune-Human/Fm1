@@ -96,3 +96,19 @@ def test_loom_uses_upstream_worklet_with_isolated_empty_callbacks():
     script = (ROOT / "tools/natif_build.sh").read_text()
     assert '[ "$ID" = "loom" ]' in script
     assert "globalThis.fm1App = {};" in script
+
+
+def test_base_bundle_leaves_no_app_behind(tmp_path):
+    """Une fois chargé, le worklet fm1-base garde ses fonctions pour lui et laisse la portée partagée vide : un firmware
+    chargé ensuite dans la même page (MODELAR, Del Rio) ne les prend pas pour les siennes."""
+    (tmp_path / "app_worklet.js").write_text('globalThis.fm1App = { process() { return 1; } };')
+    (tmp_path / "worklet.js").write_text(
+        'class Fm1 { app() { return globalThis.fm1App; } }\n'
+        'registerProcessor("fm1", Fm1);\n'
+    )
+    subprocess.run([sys.executable, str(ROOT / "tools/worklets/fm1base_bundle.py"), str(tmp_path), "natif-demo"], check=True)
+    js = ("const vm = require('vm'), fs = require('fs'); let P; globalThis.registerProcessor = (n, c) => { P = c; };"
+          "vm.runInThisContext(fs.readFileSync(process.argv[1], 'utf8'));"
+          "console.log(JSON.stringify([typeof new P().app().process, Object.keys(globalThis.fm1App).length]));")
+    out = subprocess.run(["node", "-e", js, str(tmp_path / "worklet-bundle.js")], capture_output=True, text=True, check=True)
+    assert out.stdout.strip() == '["function",0]', out.stdout + out.stderr

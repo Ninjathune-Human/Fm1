@@ -65,6 +65,10 @@ part = root / "app_worklet.js"
 if part.exists():
     visit(part)
 visit(root / "worklet.js")
+# and leave none behind: worklet.js took its own (__fm1ScopedApp) above. A firmware loaded later into the same
+# AudioContext whose worklet reads globalThis.fm1App when it starts (MODELAR, Del Rio, CTL-1, LOOM) would otherwise
+# call ECHOFIELD's or GRAINE's callbacks with its own engine, and its processor would stop.
+chunks.append("globalThis.fm1App = {};\n")
 destination = root / "worklet-bundle.js"
 destination.write_text(
     "// SPDX-License-Identifier: MPL-2.0\n"

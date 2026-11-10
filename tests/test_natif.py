@@ -409,6 +409,25 @@ def test_modelar_drone(page):
     assert page.evaluate(shot) != before
 
 
+def test_after_base_others_keep_running(page):
+    """ECHOFIELD puis MODELAR et Del Rio dans la même page : leur processeur continue (ses messages arrivent toujours).
+    ECHOFIELD laissait ses fonctions dans la portée partagée du worklet, et les leurs s'arrêtaient au démarrage."""
+    for i in ("echofield", "modelar", "delrio"):
+        _natif(i)
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "echofield") is True
+    page.wait_for_timeout(1500)
+    for i in ("modelar", "delrio"):
+        assert use(page, i) is True, i
+        page.evaluate("""() => { const e = window.__engine(); window.__frames = 0; window.__perr = false;
+          e.node.onprocessorerror = () => { window.__perr = true; };
+          const o = e.onWorklet.bind(e); e.onWorklet = (ev) => { window.__frames++; o(ev); }; }""")
+        page.wait_for_timeout(1500)
+        assert page.evaluate("window.__perr") is False, i
+        assert page.evaluate("window.__frames") > 20, i
+
+
 def test_beat_natives_play(page):
     """MNM-1, Cut-A-Dor, MYCELIUM : PLAY (ou une touche) fait sonner la machine ; une touche tenue s'allume ou
     l'écran change."""
