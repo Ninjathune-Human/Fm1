@@ -190,7 +190,7 @@ def test_emulated_follows(page):
 
 
 def test_linked_tempo_greys_unfollowing(page):
-    """Tempo lié : dans le sélecteur, un firmware qui suit l'horloge MIDI se choisit (texte noir), un autre est grisé et
+    """Tempo lié : dans le sélecteur, un firmware vérifié en Duo (tempo_lie) se choisit (texte noir), un autre est grisé et
     ne se choisit pas ; délié, tout se choisit à nouveau, la liste ouverte se met à jour."""
     a, b = open_duo(page, 1600, 900)
     power(a)
@@ -202,18 +202,20 @@ def test_linked_tempo_greys_unfollowing(page):
     a.evaluate("document.getElementById('fw-picker').click()")
     find("mutable")                                   # émulé, pas d'horloge MIDI dans son code
     assert dis("mutable") == "true"
-    find("sloop")                                     # émulé, suit l'horloge par sa prise TRS
-    assert dis("sloop") is None
+    find("felucca")                                   # natif, vérifié en Duo
+    assert dis("felucca") is None
+    find("sloop")                                     # émulé : suit l'horloge, mais seulement réglé sur SYNC TRS
+    assert dis("sloop") == "true"
     find("kwasub")                                    # suit l'horloge, mais par l'USB seulement : l'émulateur ne la lui donne pas
     assert dis("kwasub") == "true"
     a.evaluate("document.querySelector(`#fw-results .fw-item[data-id='kwasub']`).click()")
-    assert a.evaluate("document.getElementById('status').textContent") == "Tempo lié : K-WASUB ne suit pas l'horloge MIDI."
+    assert a.evaluate("document.getElementById('status').textContent") == "Tempo lié : K-WASUB ne suit pas encore l'horloge de la page."
     assert a.evaluate("window.__engine() === window.__fw")
     a.evaluate("document.getElementById('fw-picker').click()"); find("mutable")
     page.click(".duo-link")                           # délié, la liste ouverte : tout se choisit
     page.wait_for_function("!window.__duo.linked")
     assert dis("mutable") is None
-    assert a.evaluate("window.__catalogue.every((e) => [true, false, 'usb'].includes(e.horloge_midi))")
+    assert a.evaluate("window.__catalogue.every((e) => [true, false, 'usb'].includes(e.horloge_midi) && typeof e.tempo_lie === 'boolean')")
 
 
 def test_unfollowing_firmware_explained(page):
@@ -365,3 +367,44 @@ def test_every_clock_native_acks(page):
         except Exception:
             bad.append(f"{i} (horloge {a.evaluate('window.__engine().entry.natif_horloge')})")
     assert not bad, bad
+
+
+@pytest.mark.parametrize("kind", ["natif", "emule"])
+def test_tempo_lie_verified(page, kind):
+    """Chaque firmware vérifié en Duo (tempo_lie), sans réglage, sur FM1-A ; FM1-B FM-1+VA : le PLAY de FM1-B le lance en
+    moins de 1,3 s (la bulle du Duo regarde à 1,5 s) et l'arrête, son propre PLAY aussi."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function("window.__catalogue && window.__catalogue.length")
+    ids = a.evaluate(f"window.__catalogue.filter((e) => e.tempo_lie && !!e.natif === {'true' if kind == 'natif' else 'false'}).map((e) => e.id)")
+    if not ids:
+        pytest.skip("aucun")
+    link(page, 120)
+
+    def tap(fr):
+        fr.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(120); fr.evaluate("window.__host.release('PLAY')")
+
+    def lit(want, limit):
+        try:
+            a.wait_for_function(f"(window.__engine().playLight() === 'green') === {'true' if want else 'false'}", timeout=limit)
+            return True
+        except Exception:
+            return False
+
+    bad = []
+    for i in ids:
+        if not a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
+            bad.append(i + " (ne démarre pas)"); continue
+        page.wait_for_timeout(2500 if kind == "natif" else 4000)
+        for who, name in ((b, "FM1-B"), (a, "le sien")):
+            tap(who)
+            if not lit(True, 1300):
+                bad.append(f"{i} (PLAY de {name} : ne part pas)"); break
+            page.wait_for_timeout(1000)
+            tap(who)
+            if not lit(False, 1500):
+                bad.append(f"{i} (PLAY de {name} : ne s'arrête pas)"); break
+            page.wait_for_timeout(500)
+    assert not bad, bad
+
