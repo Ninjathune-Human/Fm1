@@ -1,6 +1,6 @@
 {
  "id": "ravel",
- "resume": "Groovebox de huit pistes pour la conception sonore : treize moteurs de synthèse, percussions frappées et 33 boîtes à rythmes d'après la Machinedrum, avec une grille d'influence où chaque piste peut en déclencher, exciter ou moduler une autre.",
+ "resume": "Groovebox de huit pistes pour la conception sonore : FM, modélisation physique, percussions modélisées, WAVE, un synthé à tables d'ondes d'après les PPG et Waldorf, et WEFT, un patcheur modulaire qui relie les sons et leurs modulations.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -85,12 +85,12 @@
  ],
  "modes": [],
  "a_savoir": [
-  "Chaque effet démarre à zéro : un nouveau projet n'envoie rien dans les bus.",
-  "Le T8 peut devenir le compresseur de bus (HOME, TRACKS, KIND = COMP)."
+  "Le moteur WAVE balaye ses tables d'ondes avec le caractère des PPG et du Microwave ; il ne contient aucune ROM d'origine PPG ou Waldorf.",
+  "La version 1.27.0 ajoute des blocs WEFT ; un patch complexe demande plus au processeur."
  ],
  "source": {
-  "url": "https://github.com/De-Pattern/Ravel_FM1/blob/6a7696d75ae4ffaeff21827f973abf2b93771326/README.md",
-  "commit": "6a7696d75ae4ffaeff21827f973abf2b93771326"
+  "url": "https://github.com/De-Pattern/Ravel_FM1/blob/407276ca17e8b2941967d21981542f4001f9d32a/README.md",
+  "commit": "407276ca17e8b2941967d21981542f4001f9d32a"
  },
  "d_apres_le_code": false
 }

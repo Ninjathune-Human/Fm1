@@ -1,0 +1,110 @@
+{
+ "id": "elixir",
+ "resume": "Boîte à rythmes de sept pistes, portage du firmware de l'Erica Synths LXR-02 sur le FM-1 : six voix, une grille de 16 pas par mesure sur les touches, patterns de quatre mesures, verrous de son, flams, roulements, morphing de kits, outils de jeu par scènes et morceaux.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "SHIFT. Maintenu avec les touches ou les boutons : les fonctions secondes, mute et solo."
+  },
+  {
+   "commande": "OCT+",
+   "role": "COPY. Maintenu, puis une piste, une mesure ou un pattern : le copie ; avec un réglage de son, Control All."
+  },
+  {
+   "commande": "FX",
+   "role": "Bus d'effets général : drive, phaser et flanger, delay, réverbération et compression générale."
+  },
+  {
+   "commande": "SEL",
+   "role": "Gammes et réglages du clavier."
+  },
+  {
+   "commande": "ENV",
+   "role": "Enveloppes d'amplitude et de modulation de la voix."
+  },
+  {
+   "commande": "LFO",
+   "role": "Deux LFO, hasard à chaque coup, modulation croisée et réglages de choke."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Pages de synthèse de la voix et de son modèle sonore. Avec SHIFT : la voix se joue au clavier."
+  },
+  {
+   "commande": "GLO",
+   "role": "Mixage, sorties, envois d'effets et de réverbération, MIDI et synchronisation de l'horloge."
+  },
+  {
+   "commande": "HOME",
+   "role": "La grille principale de 16 pas, les patterns et le morceau ; SHIFT + HOME remet à zéro les effets de jeu."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Sauve ou charge kits, patterns, morceaux, instantanés de morphing et projets."
+  },
+  {
+   "commande": "ARP",
+   "role": "Pages de jeu en direct : roulements, effets de mute, stutter, densité et modulation."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Séquenceur de la piste et détail des pas : probabilité, condition, ratchets, note et vélocité, décalages, verrous et longueurs."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête le séquenceur."
+  },
+  {
+   "commande": "REC",
+   "role": "Arme l'enregistrement de la piste choisie."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume général."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Change de page ou de vue d'édition du séquenceur."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Parcourt les bibliothèques de kits et de sons."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit une piste de batterie ou une voix."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "Les touches 1 à 16 allument et éteignent les pas de la mesure choisie. D'autres vues s'en servent pour les patterns ou le jeu."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Les touches 1 à 7 choisissent la piste, 8 à 11 la mesure affichée. SHIFT et COPY changent leur rôle."
+  }
+ ],
+ "gestes": [
+  "Une touche blanche allume ou éteint un pas ; tenir ce pas et tourner une molette sur une page de son verrouille ce réglage sur le pas.",
+  "COPY (OCT+) maintenu, puis une touche de mesure : copie les pas de la mesure.",
+  "Les touches noires choisissent la piste, puis la mesure."
+ ],
+ "modes": [
+  {
+   "nom": "Patterns et morceau",
+   "texte": "Un pattern compte jusqu'à quatre mesures de 16 pas. 32 patterns et un mode morceau, avec kits, morphing et 128 places dans la bibliothèque de kits."
+  },
+  {
+   "nom": "Jeu en direct",
+   "texte": "PERF : roulements, filtre DJ, FILL, densité, stutter et d'autres effets, qui changent la lecture sans toucher au pattern."
+  }
+ ],
+ "a_savoir": [
+  "Portage du moteur sonore de la LXR-02, non officiel et sans l'aval d'Erica Synths.",
+  "Le natif est la simulation WebAssembly en virgule fixe d'Elixir lui-même. Les fonctions de bibliothèque par USB ne passent pas par le panneau du FM-1."
+ ],
+ "source": {
+  "url": "https://github.com/dmajka/elixir/blob/088b055c507ad4dd83a90fb7e648c211d58148da/README.md",
+  "commit": "088b055c507ad4dd83a90fb7e648c211d58148da"
+ },
+ "d_apres_le_code": false
+}

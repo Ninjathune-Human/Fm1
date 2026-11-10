@@ -1,6 +1,6 @@
 {
  "id": "jiant",
- "resume": "Groovebox bio-synthétique pour jouer en direct et construire des morceaux sans ordinateur : six pistes, plusieurs moteurs, générateur de morceaux et système de sections, hérités de Felucca et de SLOOP.",
+ "resume": "Groovebox bio-synthétique de six pistes : grille de pas pour la batterie, piano roll pour les mélodies, plusieurs moteurs de voix, outils euclidiens, verrous de paramètres et morceau construit en sections.",
  "commandes": [
   { "commande": "OCT-", "role": "Octave du clavier vers le bas. Dans les dialogues : retour ou NON." },
   { "commande": "OCT+", "role": "Octave du clavier vers le haut. Dans les dialogues : fait ou OUI. Les deux ensemble : octave 0." },
@@ -29,12 +29,12 @@
  ],
  "modes": [],
  "a_savoir": [
-  "Peu testé sur un vrai FM-1 (version aperçu).",
-  "Les échantillons utilisateur de Felucca (USR1 à USR3) sont perdus à l'installation."
+  "Version publique V10.6z2 de son auteur, ni la version de développement ni l'aperçu.",
+  "Le natif reprend le moteur sonore, pas les services du firmware propres au matériel (USB, audio)."
  ],
  "source": {
-  "url": "https://github.com/juanjiant-bit/JIANT/blob/c6e7aa189525043806e6b3052dd1f8b3c39c3e33/docs/MANUAL.md",
-  "commit": "c6e7aa189525043806e6b3052dd1f8b3c39c3e33"
+  "url": "https://github.com/juanjiant-bit/JIANT/blob/cac23c6d0bb9a7f6986eb79bbe42ae710805ce98/docs/MANUAL.md",
+  "commit": "cac23c6d0bb9a7f6986eb79bbe42ae710805ce98"
  },
  "d_apres_le_code": false
 }

@@ -1,6 +1,6 @@
 {
  "id": "hortator",
- "resume": "Eight-track drum machine with a step sequencer of up to 64 steps, Grids, compressor, two LFOs per track, resonators and live effects. The white keys are the steps; a beta version.",
+ "resume": "Eight-track drum machine with a step sequencer of up to 64 steps, Grids, compressor, two LFOs per track, resonators and live effects. The white keys are the steps.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -81,12 +81,12 @@
  ],
  "modes": [],
  "a_savoir": [
-  "Beta version, little tested on real hardware.",
+  "Stable release 1.0.1 from its author.",
   "Four project slots, A to D; the last one saved loads at power-up."
  ],
  "source": {
-  "url": "https://github.com/deadactive/hortator/blob/4e40f27232518e34881d02727eb3df3ee9940f03/README.md",
-  "commit": "4e40f27232518e34881d02727eb3df3ee9940f03"
+  "url": "https://github.com/deadactive/hortator/blob/c8cca2ce9a6a1ba5a055ef3bd4aadc9ef5237bb4/README.md",
+  "commit": "c8cca2ce9a6a1ba5a055ef3bd4aadc9ef5237bb4"
  },
  "d_apres_le_code": false
 }

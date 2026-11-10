@@ -86,8 +86,8 @@
   "It does not read projects, presets or samples from other firmwares, and its first save overwrites whatever another firmware kept in that area."
  ],
  "source": {
-  "url": "https://github.com/InigoHernandez/mono2k/blob/b52d67703d4728c176c685c27d213f0c4da52232/web/manual.html",
-  "commit": "b52d67703d4728c176c685c27d213f0c4da52232"
+  "url": "https://github.com/InigoHernandez/mono2k/blob/b443b00ae5b6f15b01eda3e0ad7d5292761a0b53/web/manual.html",
+  "commit": "b443b00ae5b6f15b01eda3e0ad7d5292761a0b53"
  },
  "d_apres_le_code": false
 }

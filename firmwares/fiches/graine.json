@@ -1,0 +1,102 @@
+{
+ "id": "graine",
+ "resume": "Instrument granulaire à six voix : sources synthétisées, sons captés, modulation par LFO et enveloppe, hauteur et durée décalées, gestes rythmiques, écho et réverbération. SEQ est un TAPIS de jeu, pas un séquenceur de notes.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave du clavier plus bas, ou annule une confirmation."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave plus haut, ou confirme une sauvegarde."
+  },
+  {
+   "commande": "FX",
+   "role": "Pages filtre, écho, espace, halo et texture."
+  },
+  {
+   "commande": "SEL",
+   "role": "Choix des sources et balayage de la tête de lecture."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pages de l'enveloppe ; maintenu en tournant une molette, module ce réglage par l'enveloppe."
+  },
+  {
+   "commande": "LFO",
+   "role": "Pages du LFO ; maintenu en tournant une molette, module ce réglage par le LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Pages grain, texture, bourdon et chaos."
+  },
+  {
+   "commande": "GLO",
+   "role": "Réglages globaux : tempo et horloge, capture, tirage au hasard."
+  },
+  {
+   "commande": "HOME",
+   "role": "Vue du nuage et jeu ; maintenu, fige la tête de lecture."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Range le son en cours dans l'emplacement de preset choisi."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpégiateur et modes de pluie rythmique."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Active le TAPIS : les touches blanches deviennent des positions dans l'échantillon, les noires des pads d'effets."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance ou arrête l'horloge des effets rythmiques."
+  },
+  {
+   "commande": "REC",
+   "role": "Capte le son ; maintenu en tournant une molette, enregistre ce geste en boucle."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume général."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Choisit la source sonore."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Choisit parmi les presets d'usine et utilisateur."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Vitesse de lecture, marche arrière et position figée comprises."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent des notes ; en TAPIS, choisissent des positions dans l'échantillon et des effets granulaires le temps de l'appui."
+  }
+ ],
+ "gestes": [
+  "LFO ou ENV maintenu, tourner une des quatre molettes : ce réglage est modulé.",
+  "SEQ : les seize touches blanches deviennent des positions dans l'échantillon, les onze touches noires des effets de jeu.",
+  "REC capte le son en cours ; REC maintenu en tournant une molette enregistre son mouvement."
+ ],
+ "modes": [
+  {
+   "nom": "TAPIS",
+   "texte": "Le clavier devient une carte de l'échantillon à jouer et une rangée de pads d'effets, pas un séquenceur pas à pas."
+  }
+ ],
+ "a_savoir": [
+  "Instantané public de la version 0.2 en développement : son auteur n'a pas encore publié de version 0.2 marquée stable.",
+  "Éteindre par l'interrupteur efface aussi les sons captés ; Sauvegarde et restauration en garde une copie."
+ ],
+ "source": {
+  "url": "https://github.com/Omnipotard/Granular-FM1/blob/40a9a99abfbd03b3c837c98fdea2fab50c169ed3/app/docs/MANUAL.md",
+  "commit": "40a9a99abfbd03b3c837c98fdea2fab50c169ed3"
+ },
+ "d_apres_le_code": false
+}

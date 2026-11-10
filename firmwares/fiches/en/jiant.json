@@ -1,6 +1,6 @@
 {
  "id": "jiant",
- "resume": "Bio-synthetic groovebox for playing live and building songs without a computer: six tracks, several engines, a song generator and a section system, inherited from Felucca and SLOOP.",
+ "resume": "Six-track bio-synthetic groovebox with a drum-step grid, melodic piano-roll sequencing, voice engines, Euclidean tools, parameter locks and section-based song arrangement.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -86,12 +86,12 @@
  ],
  "modes": [],
  "a_savoir": [
-  "Little tested on a real FM-1 (preview version).",
-  "Felucca's user samples (USR1 to USR3) are lost on installation."
+  "This is the upstream V10.6z2 public release, not the development/preview channel.",
+  "Native sound-engine integration is not a substitute for the firmware's own hardware-only USB/audio services."
  ],
  "source": {
-  "url": "https://github.com/juanjiant-bit/JIANT/blob/c6e7aa189525043806e6b3052dd1f8b3c39c3e33/docs/MANUAL.md",
-  "commit": "c6e7aa189525043806e6b3052dd1f8b3c39c3e33"
+  "url": "https://github.com/juanjiant-bit/JIANT/blob/cac23c6d0bb9a7f6986eb79bbe42ae710805ce98/docs/MANUAL.md",
+  "commit": "cac23c6d0bb9a7f6986eb79bbe42ae710805ce98"
  },
  "d_apres_le_code": false
 }

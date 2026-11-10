@@ -43,8 +43,8 @@
     "Pour réparer un FM-1 bloqué, la doc dit de maintenir OCT- au branchement et d'utiliser la page d'installation."
   ],
   "source": {
-    "url": "https://github.com/pbarilla/chipbox/blob/48510318cffe4db2a5ceccfc153a65dcd6c8d6ff/site/guide/index.html",
-    "commit": "48510318cffe4db2a5ceccfc153a65dcd6c8d6ff"
+    "url": "https://github.com/pbarilla/chipbox/blob/6fdbc9855361d15ce44065c4e2ef6308de568587/site/guide/index.html",
+    "commit": "6fdbc9855361d15ce44065c4e2ef6308de568587"
   },
   "d_apres_le_code": false
 }

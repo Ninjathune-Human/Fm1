@@ -18,10 +18,10 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | Clipper | fonctionne selon fm1-emu | vérifié | 3373 | 0.05182 | 0.1 |
 | CoralFlower | fonctionne selon fm1-emu | vérifié | 40142 | 0.02578 | 0.1 |
 | CS-1 | fonctionne selon fm1-emu | vérifié | 52154 | 0.01 | 0.1 |
-| CTL-1 | fonctionne selon fm1-emu | vérifié | 57600 | 0.09101 | 0.2 |
+| CTL-1 | fonctionne selon fm1-emu | silencieux | 57600 | 0 | 0.1 |
 | Cut-A-Dor | fonctionne selon fm1-emu | vérifié | 57600 | 0.09039 | 0.1 |
 | Del Rio | fonctionne selon fm1-emu | vérifié | 57600 | 0.08853 | 0.0 |
-| Dinghy | fonctionne selon fm1-emu | vérifié | 9752 | 0.04756 | 0.1 |
+| Dinghy | vérifié | vérifié | 9755 | 0.04756 | 0.1 |
 | DRIFT | fonctionne selon fm1-emu | vérifié | 8681 | 0.09229 | 0.1 |
 | DUB-1 | fonctionne selon fm1-emu | vérifié | 57600 | 0.01342 | 0.1 |
 | DUELL | fonctionne selon fm1-emu | vérifié | 8671 | 0.02175 | 0.2 |
@@ -33,17 +33,17 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | Felucca 8 Patterns | fonctionne selon fm1-emu | vérifié | 40037 | 0.03966 | 0.2 |
 | Felucca [Salt] | fonctionne selon fm1-emu | vérifié | 2558 | 0.03524 | 0.1 |
 | FiMba-1 | fonctionne selon fm1-emu | vérifié | 57600 | 0.08965 | 0.2 |
-| FIZZ | pas encore évalué | silencieux | 1751 | 0 | 0.1 |
+| FIZZ | vérifié | vérifié | 4526 | 0.02765 | 0.1 |
 | FM-1 Doom | fonctionne selon fm1-emu | silencieux | 3236 | 0 | 0.1 |
 | FM-1 SID | fonctionne selon fm1-emu | silencieux | 57600 | 0 | 0.1 |
 | FM-106 | fonctionne selon fm1-emu | vérifié | 35678 | 0.00652 | 0.1 |
 | FM1 Quest | fonctionne selon fm1-emu | vérifié | 53480 | 0.01534 | 0.1 |
 | fm1-chord | fonctionne selon fm1-emu | vérifié | 22276 | 0.02024 | 0.1 |
-| fm1-dock | fonctionne selon fm1-emu | vérifié | 1170 | 0.05374 | 0.1 |
+| fm1-dock | vérifié | vérifié | 1190 | 0.05375 | 0.2 |
 | FM1-GM | fonctionne selon fm1-emu | vérifié | 57600 | 0.0392 | 0.1 |
 | FMEL-1 | fonctionne selon fm1-emu | vérifié | 57600 | 0.02818 | 0.1 |
 | FMini-1 | fonctionne selon fm1-emu | vérifié | 52378 | 0.05647 | 0.1 |
-| FOMAJAM | fonctionne selon fm1-emu | vérifié | 18946 | 0.12104 | 0.1 |
+| FOMAJAM | vérifié | vérifié | 18946 | 0.12249 | 0.1 |
 | FoMni | fonctionne selon fm1-emu | vérifié | 57600 | 0.10214 | 0.1 |
 | FRASIL | fonctionne selon fm1-emu | vérifié | 57600 | 0.00092 | 0.3 |
 | Frodhes | fonctionne selon fm1-emu | vérifié | 13930 | 0.0538 | 0.2 |
@@ -55,12 +55,12 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | GR!MM | fonctionne selon fm1-emu | vérifié | 23958 | 0.02568 | 0.1 |
 | GuitChordi | pas encore évalué | vérifié | 57600 | 0.00167 | 0.1 |
 | HERA | fonctionne selon fm1-emu | vérifié | 10457 | 0.01053 | 0.1 |
-| Hortator | fonctionne selon fm1-emu | vérifié | 57600 | 0.02544 | 0.0 |
+| Hortator | vérifié | vérifié | 57600 | 0.02589 | 0.1 |
 | J6 | pas encore évalué | vérifié | 17304 | 0.03004 | 0.1 |
 | Jangada | fonctionne selon fm1-emu | vérifié | 41346 | 0.0389 | 0.3 |
 | Ketch | fonctionne selon fm1-emu | silencieux | 6215 | 0 | 0.1 |
 | Loom FM-1 | pas encore évalué | vérifié | 57600 | 0.05301 | 0.1 |
-| LOOM-8 | fonctionne selon fm1-emu | silencieux | 57600 | 0 | 0.1 |
+| LOOM-8 | fonctionne selon fm1-emu | silencieux | 35348 | 0 | 0.0 |
 | Firmware officiel V15 | fonctionne selon fm1-emu | vérifié | 55782 | 0.04619 | 0.1 |
 | Makohai | pas encore évalué | vérifié | 14290 | 0.055 | 0.3 |
 | MAKU | fonctionne selon fm1-emu | vérifié | 10865 | 0.04182 | 0.1 |
@@ -83,7 +83,7 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | NOIZ DEMONS | fonctionne selon fm1-emu | vérifié | 22241 | 0.04139 | 0.1 |
 | OberVave | fonctionne selon fm1-emu | vérifié | 57600 | 0.02076 | 0.0 |
 | OPN-1 | fonctionne selon fm1-emu | vérifié | 12036 | 0.00281 | 0.1 |
-| ORBIT | fonctionne selon fm1-emu | vérifié | 7751 | 0.09094 | 0.1 |
+| ORBIT | vérifié | vérifié | 7751 | 0.09293 | 0.1 |
 | PERF-1 | pas encore évalué | vérifié | 57600 | 0.09282 | 0.0 |
 | PIGEON | fonctionne selon fm1-emu | silencieux | 3302 | 0 | 0.2 |
 | Pocket GammaWave | fonctionne selon fm1-emu | vérifié | 22543 | 0.07378 | 0.3 |
@@ -94,7 +94,7 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | SID-1 | fonctionne selon fm1-emu | vérifié | 57600 | 0.03509 | 0.2 |
 | SIDOU | fonctionne selon fm1-emu | vérifié | 57600 | 0.00655 | 0.1 |
 | Skiff | fonctionne selon fm1-emu | vérifié | 39374 | 0.04038 | 0.2 |
-| SLOOP | fonctionne selon fm1-emu | vérifié | 13471 | 0.07241 | 0.1 |
+| SLOOP | vérifié | vérifié | 13471 | 0.0756 | 0.1 |
 | SLOOP DX7 Banks | fonctionne selon fm1-emu | vérifié | 11698 | 0.07215 | 0.1 |
 | SLOOP Floyd FM | fonctionne selon fm1-emu | vérifié | 11743 | 0.07589 | 0.0 |
 | sloopDX | fonctionne selon fm1-emu | vérifié | 13106 | 0.04677 | 0.2 |

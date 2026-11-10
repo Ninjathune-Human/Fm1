@@ -8,9 +8,9 @@ import { dirname, join } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cat = JSON.parse(readFileSync(join(ROOT, "firmwares/catalogue.json"), "utf8"));
 
-test("le catalogue compte 119 entrées aux ids uniques, Bubba Machine, NACHTFAHRT, FMDj, SPAMPY et Scintilla compris", () => {
-  assert.equal(cat.firmwares.length, 119);
-  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 119);
+test("le catalogue compte 122 entrées aux ids uniques, Bubba Machine, NACHTFAHRT, FMDj, SPAMPY, Scintilla, ECHOFIELD, GRAINE et Elixir compris", () => {
+  assert.equal(cat.firmwares.length, 122);
+  assert.equal(new Set(cat.firmwares.map((e) => e.id)).size, 122);
   assert.ok(cat.firmwares.some((e) => e.id === "bubba"));
 });
 
@@ -22,8 +22,9 @@ test("chaque paquet local existe et a l'empreinte du catalogue", () => {
   }
 });
 
-test("une entrée sans paquet local a un paquet en ligne sur le Hub", () => {
+test("une entrée sans paquet local a un paquet en ligne sur le Hub, sauf un natif seul qui n'y est pas", () => {
   for (const e of cat.firmwares.filter((e) => !e.fichier)) {
+    if (e.paquet_en_ligne === null && e.natif_seulement) continue;   // ECHOFIELD, GRAINE, Elixir
     assert.match(e.paquet_en_ligne || "", /^https:\/\/thefirmwarehub\.com\/fw\//, e.id);
   }
 });

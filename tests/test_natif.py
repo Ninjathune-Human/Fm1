@@ -119,6 +119,36 @@ def test_x0x_store_kept(page):
     assert page.evaluate("window.__engine().lastLoadSectors[3][0]") == 9
 
 
+def test_granular_natives_make_sound(page):
+    """ECHOFIELD et GRAINE (fm1-base) : un vrai son, pas seulement leur écran de démarrage (repris du fork jpawlik/Fm1)."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    for fid in ("echofield", "graine"):
+        assert use(page, fid) is True
+        assert page.evaluate("window.__engine().kind") == "natif"
+        page.wait_for_timeout(2000)
+        assert lit_pixels(page) > 500, fid
+        page.evaluate("window.__host.keyDown(12, 'granular')")
+        page.wait_for_timeout(900)
+        level = rms(page)
+        page.evaluate("window.__host.keyUp('granular')")
+        assert level > 0.0002, (fid, level)
+
+
+def test_base_native_capture_area_restored(page):
+    """fm1-base : la zone de données (les sons captés) se garde à part et revient au démarrage suivant."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "graine") is True
+    page.evaluate("""() => window.__engine().onWorklet({
+        data: { type: 'app', part: 'data', data: Uint8Array.of(17, 34, 51).buffer }
+    })""")
+    page.wait_for_function("window.__engine().pendingSave === null", timeout=5000)
+    power_on(page)
+    assert use(page, "graine") is True
+    assert page.evaluate("new Uint8Array(window.__engine().extraData)[0]") == 17
+
+
 def test_every_native_boots(page):
     """Chaque firmware de natif/manifest.json démarre et dessine son écran."""
     import json, os
@@ -151,14 +181,15 @@ def test_every_native_reacts(page):
         if use(page, i) is not True:
             mute.append((i, "démarrage")); continue
         page.wait_for_timeout(4000)        # après l'écran de démarrage (environ 3 s chez fmini et pigeon), qui ignore le panneau
+        granular = i in ("echofield", "graine")     # des grains discrets qui montent doucement : tenus plus longtemps, seuil plus bas
         before = page.evaluate(shot)
         page.evaluate("window.__host.turn('SELECT', 3)")
         page.wait_for_timeout(400)
         page.evaluate("window.__host.keyDown(12, 't')")
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(900 if granular else 500)
         level = rms(page)
         page.evaluate("window.__host.keyUp('t')")
-        if page.evaluate(shot) == before and level <= 0.001:
+        if page.evaluate(shot) == before and level <= (0.0002 if granular else 0.001):
             mute.append((i, "aucune réaction"))
     assert not mute, mute
 

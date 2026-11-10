@@ -50,8 +50,8 @@
     "Le même firmware tourne aussi sur le clavier SMK-37 Pro."
   ],
   "source": {
-    "url": "https://github.com/illuminus5/skiff/blob/c01fa1ed619266d770ea6552b153612e1b77d0a9/README.md",
-    "commit": "c01fa1ed619266d770ea6552b153612e1b77d0a9"
+    "url": "https://github.com/illuminus5/skiff/blob/76b5f9c9f6d523466f5c3910f9baf91110133b7b/README.md",
+    "commit": "76b5f9c9f6d523466f5c3910f9baf91110133b7b"
   },
   "d_apres_le_code": false
 }

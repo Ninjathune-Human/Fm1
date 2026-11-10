@@ -59,8 +59,8 @@
     "Au démarrage, SAVE maintenu lance le mode sans mémoire (safe mode) ; REC maintenu, le mode de mise à jour ; OCT- et OCT+, le réglage du panneau."
   ],
   "source": {
-    "url": "https://github.com/Quixotic7/FIZZ/blob/664d9812e32d5c24a0f3a89b429d35ccac1a9b32/PLAYING.md",
-    "commit": "664d9812e32d5c24a0f3a89b429d35ccac1a9b32"
+    "url": "https://github.com/Quixotic7/FIZZ/blob/01b5a98414d87ffce45d62997b4cd9d6bdd7364d/PLAYING.md",
+    "commit": "01b5a98414d87ffce45d62997b4cd9d6bdd7364d"
   },
   "d_apres_le_code": false
 }

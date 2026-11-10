@@ -52,8 +52,8 @@
     "Les valeurs GO (LOAD, SAVE, ERASE, NEW, CLRSQ, INIT) demandent deux pressions en 1,5 s environ."
   ],
   "source": {
-    "url": "https://github.com/isod89/sloop-fm1/blob/d89364253b79a5c6002c0d90c5f16b3c3c16ea9d/GUIDE.md",
-    "commit": "d89364253b79a5c6002c0d90c5f16b3c3c16ea9d"
+    "url": "https://github.com/isod89/sloop-fm1/blob/bac9c05ea7627449405aa10e48da21d75b6c8c56/GUIDE.md",
+    "commit": "bac9c05ea7627449405aa10e48da21d75b6c8c56"
   },
   "d_apres_le_code": false
 }

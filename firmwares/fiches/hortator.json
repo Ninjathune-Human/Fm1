@@ -1,6 +1,6 @@
 {
  "id": "hortator",
- "resume": "Boîte à rythmes de huit pistes avec séquenceur pas à pas jusqu'à 64 pas, Grids, compresseur, deux LFO par piste, résonateurs et effets en direct. Les touches blanches sont les pas ; une version bêta.",
+ "resume": "Boîte à rythmes de huit pistes avec séquenceur pas à pas jusqu'à 64 pas, Grids, compresseur, deux LFO par piste, résonateurs et effets en direct. Les touches blanches sont les pas.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -81,12 +81,12 @@
  ],
  "modes": [],
  "a_savoir": [
-  "Version bêta, peu testée sur du vrai matériel.",
+  "Version stable 1.0.1 de son auteur.",
   "Quatre emplacements de projet, A à D ; le dernier sauvé se charge à l'allumage."
  ],
  "source": {
-  "url": "https://github.com/deadactive/hortator/blob/4e40f27232518e34881d02727eb3df3ee9940f03/README.md",
-  "commit": "4e40f27232518e34881d02727eb3df3ee9940f03"
+  "url": "https://github.com/deadactive/hortator/blob/c8cca2ce9a6a1ba5a055ef3bd4aadc9ef5237bb4/README.md",
+  "commit": "c8cca2ce9a6a1ba5a055ef3bd4aadc9ef5237bb4"
  },
  "d_apres_le_code": false
 }

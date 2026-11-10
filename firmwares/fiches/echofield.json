@@ -1,0 +1,97 @@
+{
+ "id": "echofield",
+ "resume": "Échantillonneur granulaire à jouer : modes CLOUD, DUST, TAPE, BLOOM, PULSE et DRIFT, 14 échantillons d'usine, rééchantillonnage, horloge MIDI et effets de jeu le temps d'un appui.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave plus bas. OCT- et OCT+ ensemble annulent le tirage au hasard."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave plus haut."
+  },
+  {
+   "commande": "FX",
+   "role": "Pages d'effets. FX maintenu et une touche noire : un effet de jeu, le temps de l'appui."
+  },
+  {
+   "commande": "SEL",
+   "role": "Pages de l'échantillon et du balayage ; maintenu avec une touche, choisit la tonalité de DRIFT ORACLE."
+  },
+  {
+   "commande": "ENV",
+   "role": "Réglages de l'enveloppe."
+  },
+  {
+   "commande": "LFO",
+   "role": "Réglages de la modulation."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Forme des grains. EDIT maintenu et une touche blanche : l'échantillon tel quel, sans traitement."
+  },
+  {
+   "commande": "GLO",
+   "role": "Réglages globaux : horloge, MIDI et jeu."
+  },
+  {
+   "commande": "HOME",
+   "role": "Vue d'ensemble et pages de lecture ; maintenu, l'aide de la page affichée."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Mémoire des sons ; maintenu avec une touche blanche, les emplacements utilisateur 1 à 16, avec une touche noire, les presets d'usine."
+  },
+  {
+   "commande": "ARP",
+   "role": "Tire les réglages au hasard ; ARP maintenu en tournant une molette verrouille ce réglage."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Fige le nuage de grains."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance ou arrête la lecture continue."
+  },
+  {
+   "commande": "REC",
+   "role": "Rééchantillonne le son en cours."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume général."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Déplace la tête de lecture dans l'échantillon."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Parcourt les sons d'usine et les sons utilisateur."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Choisit CLOUD, DUST, TAPE, BLOOM, PULSE ou DRIFT."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent l'échantillon de façon chromatique ; avec un bouton maintenu, des effets granulaires en direct."
+  }
+ ],
+ "gestes": [
+  "Choisir un échantillon d'usine, tenir une touche blanche et tourner SELECT : la tête de lecture se déplace.",
+  "FX maintenu, puis une touche noire : un effet de jeu le temps de l'appui.",
+  "PLAY fait entendre un nuage de grains continu ; REC capte le son pour le rééchantillonner."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "L'éditeur d'échantillons d'ECHOFIELD, son application compagnon, n'est pas repris : le panneau donne l'instrument et sa banque d'usine.",
+  "Éteindre par l'interrupteur efface aussi ses sons ; Sauvegarde et restauration en garde une copie."
+ ],
+ "source": {
+  "url": "https://github.com/Philip-Bos/echofield-fm1/blob/27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f/README.md",
+  "commit": "27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f"
+ },
+ "d_apres_le_code": false
+}
