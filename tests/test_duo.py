@@ -309,7 +309,7 @@ def test_felucca_follows_linked_tempo(page):
     a.wait_for_function("window.__engine().playLight() !== 'green'", timeout=3000)
 
 
-@pytest.mark.parametrize("fid", ["felucca", "hortator", "duell", "melodee", "spampy", "elixir"])
+@pytest.mark.parametrize("fid", ["felucca", "hortator", "melodee", "spampy", "elixir"])
 def test_native_follows_without_setting(page, fid):
     """Tempo lié : un natif qui sait suivre (web_clock, tools/natif_clock.py) prend l'horloge de la page sans qu'on touche
     à la sienne : un PLAY sur FM1-B (FM-1+VA) le lance, un autre l'arrête ; délié, il revient à son propre réglage."""
@@ -341,7 +341,7 @@ def test_native_follows_without_setting(page, fid):
 
 # les natifs que tools/natif_clock.py sait mettre sur l'horloge de la page (la famille Felucca sauf FMDj, dont la version
 # navigateur fait tourner LSDj, et Purple Monkey, qui ne lit pas l'horloge ; SPAMPY, Elixir, Obervave, Shineon, Mono2k, Cutador, Berlin)
-CLOCK_NATIVES = """felucca bunker caravel choralroot coralflower drift duell estampie felucca8 flyfish fmini ghoulbox golana golanadz hortator
+CLOCK_NATIVES = """felucca bunker caravel choralroot coralflower drift estampie felucca8 flyfish fmini ghoulbox golana golanadz hortator
 jiant loomfm1 maku melodee minitone mnm1 noizdemons pigeon gammawave rainbow skiff tessera tuna unholy waveloop
 spampy elixir berlinan cutador mono2k obervave shineon""".split()
 

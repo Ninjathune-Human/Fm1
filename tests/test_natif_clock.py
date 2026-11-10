@@ -21,15 +21,16 @@ def test_patch_reads_not_writes(tmp_path):
         "    uint32_t selected_clock = (uint32_t)song.g[G_CLOCK];\n"              # Melodee, Tessera
         "    if (song.g[G_CLOCK] && (uint32_t)song.g[G_CLOCK] == src) pulse();\n"   # Hortator, MNM-1 : la porte de l'horloge
         "}\n")
-    (src / "midi_clock.c").write_text(
-        "static uint32_t clock_src(void)\n{\n    uint32_t m = (uint32_t)song.g[G_CLOCK];\n"   # felucca-base (Duell)
-        "    return m == CLK_AUTO ? midi_clock.lock : m < CLK_AUTO ? m : 0u;\n}\n")
+    (src / "midi_clock.c").write_text("static int ext(void) { return song.g[G_CLOCK] != 0; }\n")
+    (tmp_path / "felucca-base/firmware/src").mkdir(parents=True)                  # (Duell : son AUTO suit déjà, pas lui)
+    (tmp_path / "felucca-base/firmware/src/seq.c").write_text("uint32_t clock_mode = (uint32_t)song.g[G_CLOCK];\n")
     (tmp_path / "web/emu").mkdir(parents=True)
     (tmp_path / "web/emu/seq.c").write_text("uint32_t clock_mode = (uint32_t)song.g[G_CLOCK];\n")   # (la version navigateur : pas elle)
     out = run("patch", str(tmp_path))
     seq, clk = (src / "seq.c").read_text(), (src / "midi_clock.c").read_text()
     assert seq.count("(uint32_t)(web_clock_ext ? 1 : song.g[G_CLOCK])") == 3 and "if ((web_clock_ext ? 1 : song.g[G_CLOCK]) &&" in seq
-    assert clk.count("uint32_t m = (uint32_t)(web_clock_ext ? 1 : song.g[G_CLOCK]);") == 1   # (USB, même là où AUTO existe)
+    assert clk.count("return (web_clock_ext ? 1 : song.g[G_CLOCK]) != 0;") == 1
+    assert "web_clock" not in (tmp_path / "felucca-base/firmware/src/seq.c").read_text()
     # chacun le définit et l'exporte une fois par unité de compilation, faiblement (beaucoup s'incluent les uns les autres)
     assert seq.startswith("#ifndef FM1_WEB_CLOCK") and clk.startswith("#ifndef FM1_WEB_CLOCK")
     assert "__attribute__((weak)) int web_clock_ext;" in seq and seq.count('export_name("web_clock")') == 1

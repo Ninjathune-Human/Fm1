@@ -15,9 +15,9 @@ FORCE = "web_clock_ext"
 # (fichiers, motif, remplacement) : chaque lecture du réglage, « l'horloge reçue » tant que la page le demande
 GCLOCK = re.compile(r"(?<![&\w.])song\.g\[G_CLOCK\](?!\s*=[^=])")
 RULES = [
-    # la famille Felucca : CLK (song.g[G_CLOCK] : 0 INT, 1 USB, 2 TRS ; felucca-base, Duell, 3 AUTO), lu par son séquenceur et
-    # son horloge ; USB plutôt qu'AUTO (qui ne prend un port qu'après ses premières impulsions : le Start de la page passerait)
-    (lambda f, t: os.path.basename(f) in ("seq.c", "midi_clock.c"), GCLOCK,
+    # la famille Felucca : CLK (song.g[G_CLOCK] : 0 INT, 1 USB, 2 TRS), lu par son séquenceur et son horloge. Pas felucca-base
+    # (Duell) : son CLK AUTO, réglé d'usine, suit déjà ; forcé sur USB, il ne démarrait pas avec la page
+    (lambda f, t: os.path.basename(f) in ("seq.c", "midi_clock.c") and "felucca-base" not in f.replace(os.sep, "/"), GCLOCK,
      lambda m, t: f"({FORCE} ? 1 : song.g[G_CLOCK])"),
     # la famille Sloop (SPAMPY) : SYNC (song.g[G_SYNC] : 0 OFF, 1 USB, 2 TRS), lu par mclk_on et mclk_event
     (lambda f, t: re.search(r"\bmclk_on\b", t), re.compile(r"(?<![&\w])song\.g\[G_SYNC\](?!\s*=[^=])"),
