@@ -200,3 +200,27 @@ def test_unfollowing_firmware_explained(page):
     page.wait_for_function("document.querySelector('.fs-tip')", timeout=4000)
     tip = page.inner_text(".fs-tip")
     assert "FM1-A" in tip and "CLK" in tip and "USB" in tip
+
+
+def test_felucca_follows_linked_tempo(page):
+    """Felucca natif réglé sur CLK USB (HOME, HOME : la page CLOCK ; KNOB 3) suit le tempo lié : un PLAY sur FM1-B (FM-1+VA)
+    le lance, un autre l'arrête. (Sa version navigateur reçoit le MIDI temps réel depuis tools/natif_build.sh.)"""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.id === 'felucca' && e.natif)")
+    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'felucca'))")
+    page.wait_for_timeout(2500)
+
+    def tap(fr, btn):
+        fr.evaluate(f"window.__host.press('{btn}')"); page.wait_for_timeout(120); fr.evaluate(f"window.__host.release('{btn}')"); page.wait_for_timeout(400)
+
+    tap(a, "HOME"); tap(a, "HOME")
+    a.evaluate("window.__host.turn('KNOB3', 1)")                       # CLK : INT -> USB
+    page.wait_for_timeout(400)
+    link(page, 120)
+    page.wait_for_timeout(600)
+    tap(b, "PLAY")
+    a.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
+    tap(b, "PLAY")
+    a.wait_for_function("window.__engine().playLight() !== 'green'", timeout=3000)
