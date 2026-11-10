@@ -45,6 +45,9 @@ for f in $(grep -rlF 'if (status < 0x80u || status >= 0xF0u)' --include='*.c' . 
 done
 export HERE                                # (NATIF_AVANT et NATIF_CONSTRUCTION y trouvent nos scripts)
 if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo "natif $ID : préparation en échec (on continue)"; fi
+# les LED que l'appareil allume et que la version navigateur garde pour elle (la lueur des boutons X0X, celle de fm1-base,
+# le rétroéclairage de Ravel) : exportées, pour que le panneau les dessine
+python3 "$HERE/tools/natif_leds.py" patch . | sed "s/^/natif $ID : /"
 if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
 else EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; fi; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 
@@ -90,6 +93,7 @@ if [ -n "${NATIF_OUTILS:-}" ]; then
   done
 fi
 LIC=$(ls LICENSE LICENSE.* COPYING 2>/dev/null | head -1); [ -n "$LIC" ] && cp "$LIC" "$D/LICENSE.txt"
+python3 "$HERE/tools/natif_leds.py" worklet "$D/worklet.js" | sed "s/^/natif $ID : /"
 # deux modifications, seulement : un nom de processeur propre à ce firmware (plusieurs dans la même page),
 # et l'écran publié 60 fois par seconde au lieu de 30
 sed -i -E "s/registerProcessor\([\"'][^\"']+[\"']/registerProcessor(\"natif-$ID\"/" "$D/worklet.js"
@@ -100,5 +104,6 @@ grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { rm -rf "$D"; eche
 E=""; [ -n "${NATIF_ECHANTILLONS:-}" ] && E=", \"echantillons\": \"outils/$NATIF_ECHANTILLONS\""
 # lit-il le MIDI ? (le tempo lié du Duo ne peut rien pour un worklet qui ne le lit pas)
 MIDI=0; grep -qE "(type|t) ?===? ?[\"']midi[\"']|case [\"']midi[\"']|part ?===? ?[\"']midi[\"']|name: ?[\"']midi[\"']|web_midi_in|sim_midi" "$D/worklet.js" && MIDI=1
-printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s", "midi": %s%s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$MIDI" "$E" > "$D/natif.json"
+LED=$(python3 "$HERE/tools/natif_leds.py" consts . 2>/dev/null || echo '{}')   # les constantes de ses LED (le panneau dessine leurs niveaux)
+printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s", "midi": %s%s, "led": %s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$MIDI" "$E" "$LED" > "$D/natif.json"
 echo "natif $ID : prêt ($DIALECT, $(basename "$WASM"), $(wc -c < "$WASM") octets)"

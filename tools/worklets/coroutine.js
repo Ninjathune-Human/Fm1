@@ -3,7 +3,7 @@
 // Asyncify : à chaque quantum, la boucle reprend jusqu'à son prochain emscripten_sleep, puis l'audio est tiré par
 // blocs. Le panneau leur parle en protocole Felucca : load {wasm, sectors, master}, buttons et keys en masques,
 // enc {role, n}, master 0..1023 ; frame {fb (ordre de la dalle), leds, sectors, load}.
-// Un profil (frodhes.js, chipbox.js) fournit : restore, keep, block, button, keys, enc, master, et LIT.
+// Un profil (frodhes.js, chipbox.js) fournit : restore, keep, block, button, keys, enc, master, LIT et GLOW.
 const BTN = [12, 13, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];   // bouton n (ordre Dinghy) → bit du panneau
 const ENC = [0, 1, 6, 2, 3, 4, 5];                            // rôle du panneau (SELECT ALGORITHM PRESETS K1..K4) → Dinghy
 const PLAY = 12, FIFO = 1 << 14, MASK = FIFO - 1, PILE = 1 << 17;
@@ -96,7 +96,12 @@ export class Coroutine extends AudioWorkletProcessor {
     let b = 0, k = 0;
     for (let i = 0; i < 14; i++) if (l[i] === this.LIT) b |= i === PLAY ? 1 << 14 : 1 << BTN[i];
     for (let i = 0; i < 27; i++) if (l[14 + i] === this.LIT) k |= 1 << i;
-    msg.leds = [b, k >>> 0];
+    let gb = 0, gk = 0;                                        // la lueur (GLOW, s'il en a une) : le HAL GATOR, 4 µs par image
+    if (this.GLOW) {
+      for (let i = 0; i < 14; i++) if (l[i] === this.GLOW) gb |= 1 << (i === PLAY ? 10 : BTN[i]);
+      for (let i = 0; i < 27; i++) if (l[14 + i] === this.GLOW) gk |= 1 << i;
+    }
+    msg.leds = [b, k >>> 0, gb, gk >>> 0];
     if (this.frames >= sampleRate) { msg.load = this.busy / ((this.frames / sampleRate) * 1000); this.busy = this.frames = 0; }
     this.port.postMessage(msg, tr);
   }

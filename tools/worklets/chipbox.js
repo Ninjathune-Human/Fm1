@@ -4,7 +4,7 @@
 import { Coroutine } from "./coroutine.js";
 
 class Chipbox extends Coroutine {
-  constructor() { super(); this.LIT = 2; this.gain = 0.88; this.gen = 0; }   // ses LED : 2 allumée, 1 tamisée
+  constructor() { super(); this.LIT = 2; this.GLOW = 1; this.gain = 0.88; this.gen = 0; }   // ses LED : 2 allumée, 1 tamisée
   restore(ex, s) {                                       // ses projets (la flash) et ses réglages, gardés par la page
     const put = (b, p, n) => { if (b && b.length === n) new Uint8Array(ex.memory.buffer, p, n).set(b); };
     put(s.flash, ex.web_flash(), ex.web_flash_len());

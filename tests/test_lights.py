@@ -84,21 +84,32 @@ def test_seq_dark_before_power_on(page):
 
 def test_emulated_levels(page):
     """fm1-emu mesure la part du temps où une LED brille : allumée, une colonne sur 11 de la matrice. Ramenée à 0..1 :
-    1/11 est allumée ; un tiers de cela, une lueur que le panneau dessine à son niveau."""
+    1/11 est allumée ; un tiers de cela, une lueur, dessinée à son intensité vue (ledSeen)."""
     power_on(page)
     page.set_default_timeout(30000)
     assert use(page, "monohull") is True
     r = page.evaluate("""() => { const e = window.__engine(); e.onHalt = null; const seq = e.running.seq, leds = new Float32Array(41);
-      leds[8] = 1 / 11; e.onWorklet({ data: { type: 'frame', seq, leds: leds.slice(), green: 0 } });
-      const full = [e.buttonLit('HOME'), e.ledLevels()];
-      leds[14] = 1 / 33; e.onWorklet({ data: { type: 'frame', seq, leds: leds.slice(), green: 0 } });
-      const lv = e.ledLevels(); return [full, lv && [lv[6], lv[14]]]; }""")
-    assert r[0] == [True, None]                                          # tout allumé ou éteint : le dessin habituel
-    assert r[1][0] == 1 and abs(r[1][1] - (1 / 3) ** 0.5) < 0.01        # une lueur : son niveau
+      e.onWorklet = ((f) => (ev) => { if (ev.data.mine) f.call(e, ev); })(e.onWorklet);   // (seules nos images)
+      leds[8] = 1 / 11; leds[14] = 1 / 33; e.onWorklet({ data: { mine: 1, type: 'frame', seq, leds: leds.slice(), green: 0 } });
+      const L = e.ledDuty(); return [e.buttonLit('HOME'), L.d[6], L.d[14], L.live]; }""")
+    assert r[0] is True and abs(r[1] - 1) < 1e-6 and abs(r[2] - 1 / 3) < 0.01 and r[3] is True
+    page.wait_for_timeout(300)
+    i = page.evaluate("() => [+document.querySelector('#device .key[data-key=\"0\"]').style.getPropertyValue('--i'), ledSeen(1 / 3)]")
+    assert abs(i[0] - i[1]) < 0.01 and 0.7 < i[0] < 0.9                  # 1/3 du temps : presque allumée, à l'œil
+
+
+def test_seen_levels(page):
+    """L'intensité vue d'une part du temps allumé (Felucca #35 : 1/4 paraît presque allumée) : croissante, 0 sous le plancher."""
+    page.goto(page.base + "index.html")
+    r = page.evaluate("() => [0, 0.005, 1 / 60, 1 / 30, 0.155, 0.25, 0.6, 1].map(ledSeen)")
+    assert r[0] == 0 and r[1] == 0 and r[-1] == 1
+    assert all(a < b for a, b in zip(r[1:], r[2:]))
+    assert 0.3 < r[3] < 0.45 and 0.65 < r[5] < 0.8                     # la lueur de Felucca ; une image sur 4
 
 
 def test_felucca_layers(page):
-    """Natif Felucca : la lueur de repos, ce qui respire et le niveau moyen des temps DRUM se voient sous l'allumé."""
+    """Natif Felucca : la lueur de repos, ce qui respire et le niveau moyen des temps DRUM se voient sous l'allumé,
+    chacun à sa part du temps (felucca-bsp : la lueur 3,2 µs sur ~95, le milieu une image sur 8)."""
     from test_natif import _natif
     _natif("felucca")
     power_on(page)
@@ -108,9 +119,13 @@ def test_felucca_layers(page):
     page.evaluate("""() => { const e = window.__engine(); e.anim = null; e.onWorklet = ((f) => (ev) => { if (!ev.data.mine) return; f.call(e, ev); })(e.onWorklet);
       e.onWorklet({ data: { mine: 1, type: 'frame', leds: [1 << 0, 1 << 0, 1 << 1, 0b110, 0, 1 << 2, 1 << 3, 1 << 4, 0] } }); }""")
     page.wait_for_timeout(300)
-    keys = page.evaluate("() => [0, 1, 2, 3, 4].map((i) => document.querySelector(`#device .key[data-key='${i}']`)).map((k) => [k.className.baseVal || k.className, +getComputedStyle(k.querySelector('.lamp')).opacity])")
-    caps = page.evaluate("() => ['FX', 'SEL', 'ENV'].map((l) => document.querySelector(`#device .cap[data-label='${l}']`)?.getAttribute('class'))")
-    assert "lit" in keys[0][0] and keys[0][1] == 1                       # l'allumé passe devant la lueur
-    assert "dim" in keys[1][0] and abs(keys[1][1] - 0.3) < 0.01          # la lueur
-    assert "breath" in keys[3][0] and "mid" in keys[4][0] and abs(keys[4][1] - 0.45) < 0.01
-    assert page.evaluate("getComputedStyle(document.querySelector(`#device .key[data-key='3'] .lamp`)).animationName") == "breath-lamp"
+    keys = page.evaluate("() => [0, 1, 2, 3, 4].map((i) => document.querySelector(`#device .key[data-key='${i}']`)).map((k) => [k.getAttribute('class'), k.style.getPropertyValue('--i')])")
+    caps = page.evaluate("() => ['FX', 'SEL', 'ENV'].map((l) => document.querySelector(`#device .cap[data-label='${l}']`)).map((c) => [c.getAttribute('class'), c.style.getPropertyValue('--i')])")
+    seen = page.evaluate("() => [ledSeen(3200 / 95000), ledSeen(1 / 8)]")
+    assert "lit" in keys[0][0] and float(keys[0][1]) == 1                # l'allumé passe devant la lueur
+    assert abs(float(keys[1][1]) - seen[0]) < 0.002                     # la lueur
+    assert "breath" in keys[3][0] and keys[3][1] == "var(--br)"         # ce qui respire, en phase
+    assert abs(float(keys[4][1]) - seen[1]) < 0.002                     # le niveau moyen
+    assert "lit" in caps[0][0] and abs(float(caps[1][1]) - seen[0]) < 0.002 and "breath" in caps[2][0]
+    br = page.evaluate("() => +document.getElementById('device').style.getPropertyValue('--br')")
+    assert 0 <= br <= page.evaluate("ledSeen(154 / 256)") + 1e-3

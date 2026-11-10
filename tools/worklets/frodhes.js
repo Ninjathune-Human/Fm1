@@ -4,7 +4,7 @@
 import { Coroutine } from "./coroutine.js";
 
 class Frodhes extends Coroutine {
-  constructor() { super(); this.LIT = 1; }              // ses LED : 1 allumée, 2 la lueur
+  constructor() { super(); this.LIT = 1; this.GLOW = 2; }              // ses LED : 1 allumée, 2 la lueur
   restore(ex, s) {                                       // les réglages et les presets, gardés par la page
     if (s.store && s.store.length === ex.web_store_n()) new Uint8Array(ex.memory.buffer, ex.web_store(), s.store.length).set(s.store);
   }

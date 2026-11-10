@@ -75,8 +75,17 @@ class Hortator extends AudioWorkletProcessor {
       for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
       msg.fb = f; tr.push(f.buffer);
     }
-    const lb = ex.sim_leds() >>> 0;                            // PLAY allumé : son vert
-    msg.leds = [((lb & ~(1 << PLAY)) | ((lb >> PLAY) & 1) << 14) >>> 0, ex.sim_key_leds() >>> 0];
+    if (ex.sim_layers) {                                       // ses couches (led_dim.c) : la part du temps allumé de chaque LED
+      const w = new Uint32Array(ex.memory.buffer, ex.sim_layers(), 10), g = w[8] / 10000, m = w[9] / 10000;
+      const lb = w[0], duty = new Array(41).fill(0), breath = [w[6], w[7]];
+      for (let i = 0; i < 14; i++) duty[i] = (w[4] >>> i) & 1 ? m : (w[2] >>> i) & 1 ? g : 0;
+      for (let k = 0; k < 27; k++) duty[14 + k] = (w[5] >>> k) & 1 ? m : (w[3] >>> k) & 1 ? g : 0;
+      msg.leds = [((lb & ~(1 << PLAY)) | ((lb >> PLAY) & 1) << 14) >>> 0, w[1]];   // PLAY allumé : son vert
+      msg.duty = duty; msg.breath = breath;
+    } else {
+      const lb = ex.sim_leds() >>> 0;                          // PLAY allumé : son vert
+      msg.leds = [((lb & ~(1 << PLAY)) | ((lb >> PLAY) & 1) << 14) >>> 0, ex.sim_key_leds() >>> 0];
+    }
     const bits = new Uint32Array(ex.memory.buffer, ex.sim_flash_dirty(), FLASH / SECTOR / 32);
     if (bits.some((x) => x)) {                                 // un projet ou un réglage écrit : la mémoire gardée, entière
       const flash = new Uint8Array(ex.memory.buffer, ex.sim_flash(), FLASH);

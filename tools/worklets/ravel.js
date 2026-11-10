@@ -78,6 +78,15 @@ class Ravel extends AudioWorkletProcessor {
     let b = 0;
     for (let i = 0; i < 14; i++) if ((lb >> i) & 1) b |= i === PLAY ? 1 << 14 : 1 << BTN[i];
     msg.leds = [b, ex.rv_leds_keys() >>> 0];
+    // son rétroéclairage (GLO > PANEL : rien, une image sur 6, sur 3, sur 2 ; 1/6 à l'allumage) : chaque LED éteinte,
+    // PLAY sur sa verte (firmware/fm1/src/plat_fm1.c plat_leds)
+    const back = [0, 1 / 6, 1 / 3, 1 / 2][ex.web_backlight ? Math.max(0, ex.web_backlight()) : 1] || 0;
+    if (back) {
+      const k = msg.leds[1], duty = new Array(41).fill(0);
+      for (let i = 0; i < 14; i++) if (i !== 10 && !((b >>> i) & 1)) duty[i] = back;
+      for (let i = 0; i < 27; i++) if (!((k >>> i) & 1)) duty[14 + i] = back;
+      msg.duty = duty; msg.greenDuty = (b >>> 14) & 1 ? 0 : back;
+    }
     if (this.frames >= sampleRate) { msg.load = this.busy / ((this.frames / sampleRate) * 1000); this.busy = this.frames = 0; }
     this.port.postMessage(msg, tr);
   }
