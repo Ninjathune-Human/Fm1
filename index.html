@@ -243,6 +243,12 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 /* Raccourcis clavier : le clavier dessiné, sur toute la largeur quand le volet est ouvert */
 #aide-clavier[open], #aide-manuel[open], #aide-fiche[open] { grid-column: 1 / -1; }
 #aide-manuel .note, #aide-fiche .note { max-width: 52rem; }
+/* Sauvegarde et restauration : deux boutons, et le compte rendu dessous */
+.sauvegarde { display: flex; flex-wrap: wrap; gap: 10px; }
+.sauvegarde button { font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 0 16px; min-height: 40px; cursor: pointer; }
+.sauvegarde button:hover { border-color: var(--accent); }
+.sauvegarde button:disabled { opacity: 0.6; cursor: progress; }
+#backup-status:empty { display: none; }
 .clavier-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #clavier { display: block; width: 100%; min-width: 760px; height: auto; }
 #clavier rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
@@ -404,7 +410,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : un FM-1+VA mène (FM1-A s'il en est un), l'autre suit son horloge et démarre avec lui ; un firmware natif ou émulé la reçoit aussi, et la suit s'il sait suivre une horloge MIDI (émulés de la famille Felucca : CLK sur TRS). FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
           <dt>Plein écran</dt><dd>Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.</dd>
-          <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe.</dd>
+          <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Le volet Sauvegarde et restauration en fait une copie complète, dans un fichier.</dd>
           <dt>Crédits et licences</dt><dd>FM-1+VA n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page. Les firmwares émulés tournent sur le cœur <a href="https://github.com/joakimeriksson/fm1-emu" target="_blank" rel="noopener">fm1-emu</a> de Joakim Eriksson, sous licence MIT. Chaque firmware garde sa licence, rappelée dans le volet de ses fonctions ; leurs textes sont dans le dossier <a href="https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences" target="_blank" rel="noopener">firmwares/licences</a> du dépôt.</dd>
         </dl>
       </div>
@@ -427,6 +433,18 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <div class="note">
         <p class="fiche-meta" id="fiche-meta"></p>
         <div id="fiche"></div>
+      </div>
+    </details>
+    <details id="aide-sauvegarde">
+      <summary>Sauvegarde et restauration</summary>
+      <div class="note">
+        <p>Toute la mémoire du FM-1 dans ce navigateur, en un fichier : presets, patterns et réglages de FM-1+VA, du Solo et du Duo (FM1-A et FM1-B), projets des firmwares natifs, sauvegardes des firmwares émulés et paquets ouverts. À garder dans Fichiers ou iCloud Drive ; il contient aussi vos échantillons et vos firmwares importés.</p>
+        <p>Restaurer remplace tout ce que ce navigateur garde du FM-1 : éteindre le FM-1 et fermer ses autres onglets avant.</p>
+        <div class="sauvegarde">
+          <button id="backup-export" type="button">Exporter une sauvegarde…</button>
+          <label class="file" for="backup-import">Restaurer une sauvegarde…<input id="backup-import" type="file" accept=".json,application/json"></label>
+        </div>
+        <p id="backup-status" role="status" aria-live="polite"></p>
       </div>
     </details>
   </section>
@@ -6661,4 +6679,5 @@ function buildPanel(fw) {
 })();
 </script>
 
+<script type="module" src="./backup.js"></script>
 </body></html>
