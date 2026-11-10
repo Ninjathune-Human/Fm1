@@ -31,7 +31,7 @@ def test_base_worklet_bundle_follows_nested_imports_and_preserves_parts(tmp_path
     assert 'name.startsWith("natif-")' not in bundle
     assert 'import "./' not in bundle
     assert 'const __fm1ScopedApp = globalThis.fm1App || {};' in bundle
-    assert bundle.count("globalThis.fm1App") == 3
+    assert bundle.count("globalThis.fm1App") == 4   # (la remise à vide au début, celle de la fin)
     assert bundle.index("globalThis.fm1App = {};") < bundle.index("globalThis.fm1App = {load() {}};")
 
 
