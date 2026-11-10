@@ -2312,7 +2312,8 @@ class NativeFirmware {
     this.m2k = this.dialect === "m2k";       // mono2k : ses propres messages {t}, un écran d'un bit par pixel
     this.perKey = this.dialect === "sim" || this.dialect === "monk" || this.m2k;
     this.dinghy = this.dialect === "sim" || this.dialect === "mel";
-    this.potMax = this.x0x ? 4096 : 1023;
+    this.basePixels = this.dialect === "base";   // fm1-base (ECHOFIELD, GRAINE) : l'écran déjà dans l'ordre de la machine
+    this.potMax = this.x0x || this.dialect === "base" ? 4096 : 1023;
     this.pot = Math.round((va.G.master ?? 0.88) * 1023);
     this.off = document.createElement("canvas"); this.off.width = this.off.height = 240;
     this.img = this.off.getContext("2d").createImageData(240, 240);
@@ -2328,7 +2329,8 @@ class NativeFirmware {
     if (this.dialect === "choralroot") {               // un paquet USB-MIDI : son code, puis les trois octets
       const cin = s >= 0xf8 ? 0xf : s >= 0x80 && s < 0xf0 ? s >> 4 : 0;
       if (cin) this.send({ type: "midi", pkts: [(cin | (s << 8) | (a << 16) | (b << 24)) >>> 0] });
-    } else if (this.x0x) this.send({ type: "midi", b0: s, b1: a, b2: b });
+    } else if (this.dialect === "base") this.send({ type: "app", part: "midi", data: [s, a, b] });
+    else if (this.x0x) this.send({ type: "midi", b0: s, b1: a, b2: b });
     else if (this.m2k) this.send({ t: "midi", s, a, b });
     else if (this.dialect === "sim") this.send({ t: "midi", d: [s, a, b] });   // OberVave, ShineOn, S1Vave, zp12 : sim_midi
     else this.send({ type: "midi", data: [s, a, b] });
@@ -2345,6 +2347,8 @@ class NativeFirmware {
       let sectors = null;
       try { sectors = await nativeFlash.get(this.entry.id); } catch (err) { this.storageError = err; }
       this.lastLoadSectors = sectors;
+      // fm1-base : la zone de données (les sons captés) se garde à part de la mémoire, et revient avant le démarrage
+      if (this.dialect === "base") try { this.extraData = await nativeFlash.get(this.entry.id + "/data"); } catch (err) { this.storageError = err; }
       if (this.entry.natif_echantillons) try { this.bank = await nativeFlash.get(this.entry.id + "/banque"); } catch { /* sans banque */ }
       if (this.entry.id === "fmdj") try { this.cart = await nativeFlash.get("fmdj/cartouche"); } catch { /* sans ROM */ }
       this.ac = ac;
@@ -2362,6 +2366,9 @@ class NativeFirmware {
       const load = this.loadMessage(wasm, sectors, master);
       if (load) this.send(load, [wasm]);
       await ready;
+      // ECHOFIELD : sa banque d'usine (CC0), que son éditeur crée d'habitude après le démarrage, sur une mémoire vierge
+      // (jamais servie, ou remise en réglages d'usine par l'interrupteur : {})
+      if (this.entry.id === "echofield" && !(sectors && Object.keys(sectors).length)) this.send({ type: "app", id: 0, op: "factory" });
       this.node.connect(this.an);
       this.on = true;
       return true;
@@ -2375,6 +2382,7 @@ class NativeFirmware {
   loadMessage(wasm, saved, master) {
     switch (this.dialect) {
       case "sim": return null;                 // tout passe par les options du processeur
+      case "base": return { type: "load", wasm, store: saved || {}, master, parts: this.extraData instanceof ArrayBuffer ? { data: this.extraData } : {} };
       case "x0x": case "monk": return { type: "load", wasm, store: saved || {}, master };
       case "m2k": return { t: "wasm", bytes: wasm, seed: (Math.random() * 4294967295) >>> 0, store: saved instanceof Uint8Array ? saved : null };
       case "choralroot": return { type: "load", wasm, flash: saved instanceof ArrayBuffer ? saved : null, master };
@@ -2401,6 +2409,7 @@ class NativeFirmware {
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
     if (t === "flash" || t === "store") { this.save(m.data || m.bytes); return; }   // ChoralRoot, sim, mono2k : la mémoire entière
+    if (t === "app" && m.part === "data" && m.data instanceof ArrayBuffer) { this.save(m.data, this.entry.id + "/data"); return; }   // fm1-base : la zone de données
     if (t === "zp12-done") {                                              // zp12 : réponse à une opération de son lien
       const w = this.waits && this.waits.get(m.id);
       if (w) { this.waits.delete(m.id); clearTimeout(w.timer); m.error ? w.ko(new Error(m.error)) : w.ok(m.value); }
@@ -2422,7 +2431,7 @@ class NativeFirmware {
     }
     if (m.buttons !== undefined) this.leds = [m.buttons, m.keys, 0, m.dim | 0, 0, 0, 0, 0];
     if (m.anim !== undefined) this.anim = m.anim;          // famille Felucca : l'animation de l'allumage, niveau par LED
-    if (m.load !== undefined) this.load = this.x0x || this.dialect === "choralroot" ? m.load / 100 : m.load;
+    if (m.load !== undefined) this.load = this.x0x || this.dialect === "choralroot" || this.dialect === "base" ? m.load / 100 : m.load;   // (fm1-base : en pour cent)
     const saved = m.sectors || m.store || m.settings;
     if (saved) this.save(saved);
   }
@@ -2518,8 +2527,8 @@ class NativeFirmware {
     c.imageSmoothingEnabled = false;
     if (!this.fb) { c.fillStyle = "#000"; c.fillRect(0, 0, this.cv.width, this.cv.height); return; }
     if (this.fbNew) {                       // l'ordre d'octets de la dalle : chaque pixel est inversé avant la conversion
-      const f = this.fb;                    // (sim et MEL donnent l'écran dans l'ordre de la machine)
-      if (!this.dinghy && !this.m2k) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
+      const f = this.fb;                    // (sim, MEL et fm1-base donnent l'écran dans l'ordre de la machine)
+      if (!this.dinghy && !this.m2k && !this.basePixels) for (let i = 0; i < f.length; i++) { const v = f[i]; f[i] = ((v >> 8) | (v << 8)) & 0xFFFF; }
       rgb565ToRgba(f, this.img.data); this.off.getContext("2d").putImageData(this.img, 0, 0); this.fbNew = false;
     }
     c.drawImage(this.off, 0, 0, this.cv.width, this.cv.height);
@@ -6419,7 +6428,7 @@ function buildPanel(fw) {
     if (current.kind === "natif") {         // natif : flash effacée, firmware redémarré à neuf
       const n = current, e = n.entry;
       status.textContent = `Réglages d'usine de ${e.nom}…`;
-      try { await nativeFlash.put(e.id, {}); await nativeFlash.put(e.id + "/banque", null); } catch { /* rien de gardé */ }
+      try { await nativeFlash.put(e.id, {}); await nativeFlash.put(e.id + "/banque", null); await nativeFlash.put(e.id + "/data", null); } catch { /* rien de gardé */ }
       await n.stop(); n.node = null; natives.delete(e.id); current = va; vaOut(true);
       const ok = await useEngine(e).catch(() => false);
       status.textContent = ok ? "" : `${e.nom} n'a pas redémarré.`;
