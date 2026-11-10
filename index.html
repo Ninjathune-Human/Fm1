@@ -6027,11 +6027,24 @@ function buildPanel(fw) {
   const downs = new Set();
   let solo = 0;                                      // l'instant d'un PLAY pressé seul, 0 sinon
   const duoPlay = () => { try { if (FM1_ID && parent.__duoPlay) parent.__duoPlay(); } catch { /* hors du Duo */ } };
+  // un autre firmware que FM-1+VA ne reçoit pas ce PLAY seul quand il le lancerait : seul le Start de la page le lance, et,
+  // resté sur son horloge interne, il ne part pas à son propre tempo (la bulle du Duo dit quoi régler). Le PLAY lui
+  // parvient, en retard, si un autre bouton suit ou s'il est tenu 900 ms : ses gestes à lui.
+  let held = 0;                                      // le PLAY retenu (son minuteur), 0 sinon
+  const duoLinked = () => { try { return !!(FM1_ID && parent.__duo && parent.__duo.linked); } catch { return false; } };
+  const letGo = () => { if (held) { clearTimeout(held); held = 0; current.press("PLAY"); } };
   const fw = new Proxy({}, {
     get: (_, k) => {
-      if (k === "press") return (l) => { solo = l === "PLAY" && !downs.size ? performance.now() : 0; downs.add(l); current.press(l); };
+      if (k === "press") return (l) => {
+        solo = l === "PLAY" && !downs.size ? performance.now() : 0;
+        if (l !== "PLAY") letGo();
+        downs.add(l);
+        if (solo && current !== va && current.playLight() !== "green" && duoLinked()) { held = setTimeout(letGo, 900); return; }
+        current.press(l);
+      };
       if (k === "release") return (l) => {
-        downs.delete(l); current.release(l);
+        downs.delete(l);
+        if (l === "PLAY" && held) { clearTimeout(held); held = 0; } else current.release(l);
         if (l === "PLAY" && solo && performance.now() - solo < 900) duoPlay();
         if (l === "PLAY") solo = 0;
       };

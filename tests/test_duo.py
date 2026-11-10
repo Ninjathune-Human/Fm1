@@ -229,6 +229,59 @@ def test_unfollowing_firmware_explained(page):
     assert "FM1-A" in tip and "CLK" in tip and "USB" in tip
 
 
+def estampie_and_va(page):
+    """FM1-A : ESTAMPIE natif (famille Felucca), sur son horloge interne ; FM1-B : FM-1+VA."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.id === 'estampie' && e.natif)")
+    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'estampie'))")
+    page.wait_for_timeout(2500)
+    return a, b
+
+
+def tap(page, fr, btn):
+    fr.evaluate(f"window.__host.press('{btn}')"); page.wait_for_timeout(120); fr.evaluate(f"window.__host.release('{btn}')"); page.wait_for_timeout(400)
+
+
+def test_own_play_on_internal_clock_explained(page):
+    """Tempo lié, un PLAY seul sur ESTAMPIE resté sur CLK INT : il ne part pas à son propre tempo, FM-1+VA part, et la bulle
+    dit quoi régler (avant : ESTAMPIE jouait à son tempo, sa lumière PLAY verte, sans bulle)."""
+    a, b = estampie_and_va(page)
+    link(page, 130)
+    tap(page, a, "PLAY")
+    page.wait_for_function("document.querySelector('.fs-tip')", timeout=4000)
+    tip = page.inner_text(".fs-tip")
+    assert "FM1-A" in tip and "CLK" in tip and "USB" in tip
+    assert a.evaluate("window.__engine().playLight()") != "green"
+    assert b.evaluate("window.__fw.S.playing")
+
+
+def test_own_play_on_external_clock_starts_both(page):
+    """ESTAMPIE sur CLK USB (HOME, HOME : la page CLOCK ; KNOB 3) : un PLAY seul sur lui les lance ensemble, un autre les arrête."""
+    a, b = estampie_and_va(page)
+    tap(page, a, "HOME"); tap(page, a, "HOME")
+    a.evaluate("window.__host.turn('KNOB3', 1)")                       # CLK : INT -> USB
+    page.wait_for_timeout(400)
+    link(page, 130)
+    page.wait_for_timeout(600)
+    tap(page, a, "PLAY")
+    a.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
+    assert b.evaluate("window.__fw.S.playing") and page.evaluate("window.__duo.playing")
+    tap(page, a, "PLAY")
+    a.wait_for_function("window.__engine().playLight() !== 'green'", timeout=3000)
+    assert not b.evaluate("window.__fw.S.playing")
+
+
+def test_own_play_held_reaches_firmware(page):
+    """PLAY tenu seul plus de 0,9 s sur ESTAMPIE : il lui parvient (ses gestes à lui), la page ne lance rien."""
+    a, b = estampie_and_va(page)
+    link(page)
+    a.evaluate("window.__host.press('PLAY')"); page.wait_for_timeout(1100); a.evaluate("window.__host.release('PLAY')")
+    a.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
+    assert not page.evaluate("window.__duo.playing")
+
+
 def test_felucca_follows_linked_tempo(page):
     """Felucca natif réglé sur CLK USB (HOME, HOME : la page CLOCK ; KNOB 3) suit le tempo lié : un PLAY sur FM1-B (FM-1+VA)
     le lance, un autre l'arrête. (Sa version navigateur reçoit le MIDI temps réel depuis tools/natif_build.sh.)"""
