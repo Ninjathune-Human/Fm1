@@ -232,13 +232,14 @@ def test_unfollowing_firmware_explained(page):
     assert "FM1-A" in tip and "CLK" in tip and "USB" in tip
 
 
-def estampie_and_va(page):
-    """FM1-A : ESTAMPIE natif (famille Felucca), sur son horloge interne ; FM1-B : FM-1+VA."""
+def estampie_and_va(page, fid="estampie"):
+    """FM1-A : ESTAMPIE natif (famille Felucca), sur son horloge interne ; FM1-B : FM-1+VA. (Lié, ESTAMPIE prend l'horloge de la
+    page de lui-même, tools/natif_clock.py : resté sur la sienne, c'est MONOHULL, émulé, de la même famille.)"""
     a, b = open_duo(page, 1600, 900)
     power(a)
     power(b)
-    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.id === 'estampie' && e.natif)")
-    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'estampie'))")
+    a.wait_for_function(f"window.__catalogue && window.__catalogue.some((e) => e.id === '{fid}' && (e.natif || e.id !== 'estampie'))")
+    assert a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{fid}'))")
     page.wait_for_timeout(2500)
     return a, b
 
@@ -248,9 +249,9 @@ def tap(page, fr, btn):
 
 
 def test_own_play_on_internal_clock_explained(page):
-    """Tempo lié, un PLAY seul sur ESTAMPIE resté sur CLK INT : il ne part pas à son propre tempo, FM-1+VA part, et la bulle
-    dit quoi régler (avant : ESTAMPIE jouait à son tempo, sa lumière PLAY verte, sans bulle)."""
-    a, b = estampie_and_va(page)
+    """Tempo lié, un PLAY seul sur MONOHULL (émulé) resté sur CLK INT : il ne part pas à son propre tempo, FM-1+VA part, et la
+    bulle dit quoi régler (avant : ESTAMPIE jouait à son tempo, sa lumière PLAY verte, sans bulle)."""
+    a, b = estampie_and_va(page, "monohull")
     link(page, 130)
     tap(page, a, "PLAY")
     page.wait_for_function("document.querySelector('.fs-tip')", timeout=4000)
