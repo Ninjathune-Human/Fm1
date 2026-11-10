@@ -5959,7 +5959,7 @@ function buildPanel(fw) {
     const I = br === 1 ? brI : br === 2 ? puI : ledSeen(d), v = I.toFixed(3);
     if (v !== o.v) { o.v = v; o.g.style.setProperty("--i", v); }
     // (on : la légende s'éclaire, avec son ombre lumineuse ; en dessous, seule la tache diffuse)
-    const st = (br ? 1 : 0) | (live ? 2 : 0) | (br || I > 0.36 ? 4 : 0) | (d >= 1 && !br ? 8 : 0) | (hue === "green" ? 16 : hue === "red" ? 32 : hue === "amber" ? 64 : 0);
+    const st = (br ? 1 : 0) | (live ? 2 : 0) | (br || I > 0.45 ? 4 : 0) | (d >= 1 && !br ? 8 : 0) | (hue === "green" ? 16 : hue === "red" ? 32 : hue === "amber" ? 64 : 0);
     if (st === o.st) return;
     o.st = st;
     const c = o.g.classList, lit = st & 8;
