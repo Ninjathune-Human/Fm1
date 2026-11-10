@@ -14,6 +14,7 @@ if [ -n "${2:-}" ]; then
   cp -r tests "$ROOT/"
   cd "$ROOT"
 fi
+python3 "$HERE/../natif_clock.py" patch . | sed "s/^/spampy : /"   # (le tempo lié du Duo : ces sources-ci, extraites après)
 python3 -c "import importlib.util as u; s=u.spec_from_file_location('b','tools/build.py'); b=u.module_from_spec(s); s.loader.exec_module(b); b.generate()"
 [ -f build/gen/felucca_tables.h ] || { echo "spampy : en-têtes générés absents"; exit 1; }
 EXPORTS=_sim_init,_sim_frame,_sim_render,_sim_btn,_sim_key,_sim_enc,_sim_master,_sim_midi,_sim_leds,_sim_fb,_sim_audio

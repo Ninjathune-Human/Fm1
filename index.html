@@ -2438,6 +2438,7 @@ class NativeFirmware {
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
     if (t === "flash" || t === "store") { this.save(m.data || m.bytes); return; }   // ChoralRoot, sim, mono2k : la mémoire entière
+    if (t === "clock") { this.clockOn = !!m.on; return; }                 // le tempo lié du Duo : il suit l'horloge de la page (web_clock)
     if (t === "app" && m.part === "data" && m.data instanceof ArrayBuffer) { this.save(m.data, this.entry.id + "/data"); return; }   // fm1-base : la zone de données
     if (t === "zp12-done") {                                              // zp12 : réponse à une opération de son lien
       const w = this.waits && this.waits.get(m.id);
@@ -6202,7 +6203,7 @@ function buildPanel(fw) {
   ]).then(([d, natifs]) => {
     for (const e of d.firmwares) {
       const n = natifs[e.id];
-      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons, natif_midi: n.midi, natif_led: n.led });
+      if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons, natif_midi: n.midi, natif_led: n.led, natif_horloge: n.horloge });
     }
     catalogue = d.firmwares; renderSections();
   }).catch(() => {});
@@ -6252,7 +6253,7 @@ function buildPanel(fw) {
       await leave(prev);
       let ok = false;
       try { ok = await n.boot(ac); } catch (err) { n.failure = "boot"; }
-      if (ok) { current = n; return true; }
+      if (ok) { current = n; duoClock(); return true; }
       switchFailure = n.failure; natives.delete(entry.id);
       await enter(prev); current = prev;
       return false;
@@ -6510,6 +6511,14 @@ function buildPanel(fw) {
   const followsClock = (e) => e.id === "fm1va" || e.id === "local" || (e.natif ? !!e.horloge_midi && e.natif_midi !== 0 : e.horloge_midi === true);
   function tempoBarred(e) { let d = null; try { d = FM1_ID && window.parent.__duo; } catch { /* hors du Duo */ } return !!(d && d.linked) && !followsClock(e); }
   window.__fwRefresh = () => { if (!sheet.hidden) { renderSections(); renderResults(); } };   // le tempo lié ou délié, liste ouverte
+  // en Duo, tempo lié : un natif qui le sait (web_clock, tools/natif_clock.py) suit l'horloge de la page sans qu'on règle la
+  // sienne ; délié, il revient à son propre réglage (jamais modifié)
+  function duoClock() {
+    let on = false;
+    try { on = !!(FM1_ID && window.parent.__duo && window.parent.__duo.linked); } catch { /* hors du Duo */ }
+    if (current && current.kind === "natif") current.send({ type: "clock", on });
+  }
+  window.__duoClock = duoClock;
   async function pick(e) {
     closeSheet();
     restartBtn.hidden = true;
@@ -6851,13 +6860,14 @@ registerProcessor("duo-horloge", DuoClock);
   for (const f of Object.values(frames)) f.addEventListener("load", () => { try { f.contentWindow.addEventListener("pointerdown", wake, true); } catch { /* */ } });
   linkBtn.addEventListener("click", () => {
     linked = !linked; keep("link", linked ? "1" : "0");
-    for (const f of Object.values(frames)) try { f.contentWindow.__fwRefresh?.(); } catch { /* pas encore chargé */ }
+    for (const f of Object.values(frames)) try { f.contentWindow.__fwRefresh?.(); f.contentWindow.__duoClock?.(); } catch { /* pas encore chargé */ }
     if (linked) clockOn().then(() => { if (linked) clock.port.postMessage({ t: "run" }); }, () => window.__tip(linkBtn, "L'horloge du tempo lié ne démarre pas dans ce navigateur."));
     else {
       const to = engines();
       stop(to);
       if (clock) clock.port.postMessage({ t: "halt" });
-      if ((to.a && to.a !== vaOf("a")) || (to.b && to.b !== vaOf("b")))   // délié, un firmware resté sur horloge externe attend
+      const own = (k) => to[k] && to[k] !== vaOf(k) && !(to[k].entry && to[k].entry.natif_horloge);   // (ceux-là reviennent seuls à leur réglage)
+      if (own("a") || own("b"))   // délié, un firmware resté sur horloge externe attend
         window.__tip(linkBtn, "L'horloge s'arrête. Un firmware resté sur une horloge externe ne joue plus seul : remettez la sienne sur interne, <b>CLK</b> sur <b>INT</b> (page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator).");
     }
     tick();

@@ -1,4 +1,5 @@
 """Duo : deux FM-1 dans la même page (FM1-A, FM1-B), leurs dispositions, leurs mémoires, le tempo lié (l'horloge de la page)."""
+import pytest
 
 
 def open_duo(page, w=1180, h=820):
@@ -216,12 +217,14 @@ def test_linked_tempo_greys_unfollowing(page):
 
 
 def test_unfollowing_firmware_explained(page):
-    """Felucca natif sur son horloge interne (CLK INT) ne démarre pas avec l'autre : la bulle dit quoi régler."""
+    """Monohull émulé sur son horloge interne (CLK INT) ne démarre pas avec l'autre : la bulle dit quoi régler.
+    (Un natif de la famille Felucca, lui, suit seul : test_native_follows_without_setting.)"""
     a, b = open_duo(page, 1600, 900)
     power(a)
     power(b)
-    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.natif)")
-    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'felucca'))")
+    a.wait_for_function("window.__catalogue && window.__catalogue.length")
+    assert a.evaluate("() => window.__useEngine(window.__catalogue.find((e) => e.id === 'monohull'))")
+    page.wait_for_timeout(1500)
     link(page)
     b.evaluate("window.__host.press('PLAY'); window.__host.release('PLAY')")
     page.wait_for_function("document.querySelector('.fs-tip')", timeout=4000)
@@ -304,3 +307,60 @@ def test_felucca_follows_linked_tempo(page):
     a.wait_for_function("window.__engine().playLight() === 'green'", timeout=3000)
     tap(b, "PLAY")
     a.wait_for_function("window.__engine().playLight() !== 'green'", timeout=3000)
+
+
+@pytest.mark.parametrize("fid", ["felucca", "hortator", "duell", "melodee", "spampy", "elixir"])
+def test_native_follows_without_setting(page, fid):
+    """Tempo lié : un natif qui sait suivre (web_clock, tools/natif_clock.py) prend l'horloge de la page sans qu'on touche
+    à la sienne : un PLAY sur FM1-B (FM-1+VA) le lance, un autre l'arrête ; délié, il revient à son propre réglage."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function(f"window.__catalogue && window.__catalogue.some((e) => e.id === '{fid}' && e.natif)")
+    assert a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{fid}'))")
+    assert a.evaluate("window.__engine().entry.natif_horloge") == 1
+    page.wait_for_timeout(2500)
+
+    def tap(fr, btn):
+        fr.evaluate(f"window.__host.press('{btn}')"); page.wait_for_timeout(120); fr.evaluate(f"window.__host.release('{btn}')"); page.wait_for_timeout(400)
+
+    link(page, 120)
+    page.wait_for_timeout(600)
+    tap(b, "PLAY")
+    a.wait_for_function("window.__engine().playLight() === 'green'", timeout=4000)
+    tap(b, "PLAY")
+    a.wait_for_function("window.__engine().playLight() !== 'green'", timeout=4000)
+    page.click(".duo-link")                           # délié : pas de réglage à remettre, pas de bulle
+    page.wait_for_function("!window.__duo.linked")
+    page.wait_for_timeout(300)
+    assert not page.query_selector(".fs-tip")
+    if fid == "felucca":                              # sur son horloge interne à nouveau : son PLAY le lance seul
+        tap(a, "PLAY")
+        a.wait_for_function("window.__engine().playLight() === 'green'", timeout=4000)
+
+
+# les natifs que tools/natif_clock.py sait mettre sur l'horloge de la page (la famille Felucca, SPAMPY, Elixir, Obervave, Shineon,
+# Mono2k, Cutador, Berlin)
+CLOCK_NATIVES = """felucca bunker caravel choralroot coralflower drift duell estampie felucca8 flyfish fmini ghoulbox golana golanadz hortator
+jiant loomfm1 maku melodee minitone mnm1 noizdemons pigeon gammawave purplemonkey rainbow skiff tessera tuna unholy waveloop fmdj
+spampy elixir berlinan cutador mono2k obervave shineon""".split()
+
+
+def test_every_clock_native_acks(page):
+    """Tempo lié : chacun de ces natifs, choisi, répond qu'il suit l'horloge de la page (web_clock appelé dans son worklet)."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.natif)")
+    built = a.evaluate("window.__catalogue.filter((e) => e.natif).map((e) => e.id)")
+    want = [i for i in CLOCK_NATIVES if i in built]
+    assert len(want) >= len(CLOCK_NATIVES) - 3, sorted(set(CLOCK_NATIVES) - set(built))   # (un natif écarté ce jour-là)
+    link(page)
+    bad = []
+    for i in want:
+        if not a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
+            bad.append(i + " (ne démarre pas)"); continue
+        try:
+            a.wait_for_function("window.__engine().clockOn === true", timeout=3000)
+        except Exception:
+            bad.append(f"{i} (horloge {a.evaluate('window.__engine().entry.natif_horloge')})")
+    assert not bad, bad

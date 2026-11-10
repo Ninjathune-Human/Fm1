@@ -48,6 +48,8 @@ if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo 
 # les LED que l'appareil allume et que la version navigateur garde pour elle (la lueur des boutons X0X, celle de fm1-base,
 # le rétroéclairage de Ravel) : exportées, pour que le panneau les dessine
 python3 "$HERE/tools/natif_leds.py" patch . | sed "s/^/natif $ID : /"
+# le tempo lié du Duo sans réglage : là où il lit son réglage d'horloge, suivre l'USB tant que la page le demande (web_clock)
+python3 "$HERE/tools/natif_clock.py" patch . | sed "s/^/natif $ID : /"
 if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
 else EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; fi; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 
@@ -101,9 +103,11 @@ sed -i 's#1 / 30#1 / 60#g' "$D/worklet.js"
 # TextDecoder manque dans le fil audio de Chrome : quelques worklets s'en servent au chargement
 sed -i '1i globalThis.TextDecoder ??= class { decode(b) { let s = ""; for (const c of b || []) s += String.fromCharCode(c); try { return decodeURIComponent(escape(s)); } catch (e) { return s; } } };' "$D/worklet.js"
 grep -q "registerProcessor(\"natif-$ID\"" "$D/worklet.js" || { rm -rf "$D"; echec "nom de processeur introuvable"; }
+# (web_clock exporté : un message { type: "clock", on } de la page l'appelle)
+CLK=""; grep -q web_clock "$WASM" && python3 "$HERE/tools/natif_clock.py" worklet "$D/worklet.js" "natif-$ID" | sed "s/^/natif $ID : /" && CLK=', "horloge": 1'
 E=""; [ -n "${NATIF_ECHANTILLONS:-}" ] && E=", \"echantillons\": \"outils/$NATIF_ECHANTILLONS\""
 # lit-il le MIDI ? (le tempo lié du Duo ne peut rien pour un worklet qui ne le lit pas)
 MIDI=0; grep -qE "(type|t) ?===? ?[\"']midi[\"']|case [\"']midi[\"']|part ?===? ?[\"']midi[\"']|name: ?[\"']midi[\"']|web_midi_in|sim_midi" "$D/worklet.js" && MIDI=1
 LED=$(python3 "$HERE/tools/natif_leds.py" consts . 2>/dev/null || echo '{}')   # les constantes de ses LED (le panneau dessine leurs niveaux)
-printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s", "midi": %s%s, "led": %s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$MIDI" "$E" "$LED" > "$D/natif.json"
+printf '{"wasm": "%s", "processeur": "natif-%s", "dialecte": "%s", "midi": %s%s%s, "led": %s}\n' "$(basename "$WASM")" "$ID" "$DIALECT" "$MIDI" "$E" "$CLK" "$LED" > "$D/natif.json"
 echo "natif $ID : prêt ($DIALECT, $(basename "$WASM"), $(wc -c < "$WASM") octets)"
