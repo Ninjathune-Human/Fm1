@@ -340,9 +340,9 @@ def test_native_follows_without_setting(page, fid):
 
 
 # les natifs que tools/natif_clock.py sait mettre sur l'horloge de la page (la famille Felucca sauf FMDj, dont la version
-# navigateur fait tourner LSDj ; SPAMPY, Elixir, Obervave, Shineon, Mono2k, Cutador, Berlin)
+# navigateur fait tourner LSDj, et Purple Monkey, qui ne lit pas l'horloge ; SPAMPY, Elixir, Obervave, Shineon, Mono2k, Cutador, Berlin)
 CLOCK_NATIVES = """felucca bunker caravel choralroot coralflower drift duell estampie felucca8 flyfish fmini ghoulbox golana golanadz hortator
-jiant loomfm1 maku melodee minitone mnm1 noizdemons pigeon gammawave purplemonkey rainbow skiff tessera tuna unholy waveloop
+jiant loomfm1 maku melodee minitone mnm1 noizdemons pigeon gammawave rainbow skiff tessera tuna unholy waveloop
 spampy elixir berlinan cutador mono2k obervave shineon""".split()
 
 

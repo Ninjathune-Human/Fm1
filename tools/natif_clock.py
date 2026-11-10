@@ -15,10 +15,10 @@ FORCE = "web_clock_ext"
 # (fichiers, motif, remplacement) : chaque lecture du réglage, « l'horloge reçue » tant que la page le demande
 GCLOCK = re.compile(r"(?<![&\w.])song\.g\[G_CLOCK\](?!\s*=[^=])")
 RULES = [
-    # la famille Felucca : CLK (song.g[G_CLOCK] : 0 INT, 1 USB, 2 TRS), lu par son séquenceur et son horloge ; felucca-base
-    # (Duell) a aussi AUTO, qui suit le port d'où vient l'horloge : celui-là
+    # la famille Felucca : CLK (song.g[G_CLOCK] : 0 INT, 1 USB, 2 TRS ; felucca-base, Duell, 3 AUTO), lu par son séquenceur et
+    # son horloge ; USB plutôt qu'AUTO (qui ne prend un port qu'après ses premières impulsions : le Start de la page passerait)
     (lambda f, t: os.path.basename(f) in ("seq.c", "midi_clock.c"), GCLOCK,
-     lambda m, t: f"({FORCE} ? {'CLK_AUTO' if 'CLK_AUTO' in t else '1'} : song.g[G_CLOCK])"),
+     lambda m, t: f"({FORCE} ? 1 : song.g[G_CLOCK])"),
     # la famille Sloop (SPAMPY) : SYNC (song.g[G_SYNC] : 0 OFF, 1 USB, 2 TRS), lu par mclk_on et mclk_event
     (lambda f, t: re.search(r"\bmclk_on\b", t), re.compile(r"(?<![&\w])song\.g\[G_SYNC\](?!\s*=[^=])"),
      lambda m, t: f"({FORCE} ? 1 : song.g[G_SYNC])"),
@@ -31,9 +31,11 @@ RULES = [
     # Mono2k : SYNC IN (OFF, USB, TRS, BOTH : les bits 1 USB, 2 TRS)
     (None, re.compile(r"(static inline int clk_from\(void\) \{ return )syin_choice\(store_\.set\[S_SYNI\]\);"),
      lambda m, t: f"{m.group(1)}{FORCE} ? 3 : syin_choice(store_.set[S_SYNI]);"),
-    # ChoralRoot, CoralFlower, Purple Monkey (leur propre séquenceur, pas celui de Felucca) : CLOCK IN, lu par cr_midi_in
+    # ChoralRoot (son propre séquenceur, pas celui de Felucca) : CLOCK IN, lu par cr_midi_in ; CoralFlower, par cf_out.c
     (lambda f, t: os.path.basename(f) == "cr_out.c", re.compile(r"(?<![&\w.])cr_route\.clock_in(?!\s*=[^=])"),
      lambda m, t: f"({FORCE} || cr_route.clock_in)"),
+    (lambda f, t: os.path.basename(f) == "cf_out.c", re.compile(r"(?<![&\w.])cfp_cfg\.clock_in(?!\s*=[^=])"),
+     lambda m, t: f"({FORCE} || cfp_cfg.clock_in)"),
     # Cutador : SYNC (project.par[P_SYNC] : 0 INT, 1 USB, 2 TRS), lu par son moteur (pas par l'annulation, qui compare)
     (lambda f, t: f.replace(os.sep, "/").endswith("/cad.c"),
      re.compile(r"(?<![&\w.])project\.par\[P_SYNC\](?!\s*(=[^=]|!=\s*undo_project))"),

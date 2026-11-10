@@ -2051,7 +2051,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/purplemonkey-0.11.fwsc",
    "provenance_paquet": "release download/v0.11/purplemonkey-0.11.fwsc",
    "natif_seulement": true,
-   "horloge_midi": true
+   "horloge_midi": false
   },
   {
    "id": "rainbow",

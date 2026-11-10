@@ -29,7 +29,7 @@ def test_patch_reads_not_writes(tmp_path):
     out = run("patch", str(tmp_path))
     seq, clk = (src / "seq.c").read_text(), (src / "midi_clock.c").read_text()
     assert seq.count("(uint32_t)(web_clock_ext ? 1 : song.g[G_CLOCK])") == 3 and "if ((web_clock_ext ? 1 : song.g[G_CLOCK]) &&" in seq
-    assert clk.count("uint32_t m = (uint32_t)(web_clock_ext ? CLK_AUTO : song.g[G_CLOCK]);") == 1
+    assert clk.count("uint32_t m = (uint32_t)(web_clock_ext ? 1 : song.g[G_CLOCK]);") == 1   # (USB, même là où AUTO existe)
     # chacun le définit et l'exporte une fois par unité de compilation, faiblement (beaucoup s'incluent les uns les autres)
     assert seq.startswith("#ifndef FM1_WEB_CLOCK") and clk.startswith("#ifndef FM1_WEB_CLOCK")
     assert "__attribute__((weak)) int web_clock_ext;" in seq and seq.count('export_name("web_clock")') == 1
