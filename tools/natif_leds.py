@@ -58,26 +58,29 @@ def patch(root):
         p = f.replace(os.sep, "/")
         if "/host/" not in p:                 # (les versions navigateur compilent les fichiers host/ de leur simulateur)
             continue
-        text = read(f); new = text
+        text = read(f); new = text; tail = []
         # la famille X0X : la lueur des boutons éteints (plat_glow), sur l'appareil une image sur GLOW_DIV
         if re.search(r"^void plat_glow\(int on\)", new, re.M) and "web_glow(" not in new:
             if re.search(r"^static int glow_on\b", new, re.M):
-                new += f"\n{EXPORT} int web_glow(void) {{ return glow_on != 0; }}   /* (FM-1 : la lueur des boutons, pour le panneau) */\n"
+                tail.append(f"{EXPORT} int web_glow(void) {{ return glow_on != 0; }}   /* (FM-1 : la lueur des boutons, pour le panneau) */")
             else:                             # (une version qui l'ignore : son état gardé quand même)
                 new = re.sub(r"^void plat_glow\(int on\)", "static void plat_glow_0(int on);\nstatic int web_glow_v = -1;\n"
                              "void plat_glow(int on) { web_glow_v = on != 0; plat_glow_0(on); }\nstatic void plat_glow_0(int on)",
                              new, count=1, flags=re.M)
-                new += f"\n{EXPORT} int web_glow(void) {{ return web_glow_v; }}   /* (FM-1 : la lueur des boutons, pour le panneau) */\n"
+                tail.append(f"{EXPORT} int web_glow(void) {{ return web_glow_v; }}   /* (FM-1 : la lueur des boutons, pour le panneau) */")
         # fm1-base : la force de la lueur (plat_lights : 1 DIM LO, 2 DIM HI) et les touches au niveau moyen (plat_lights_mid)
         if re.search(r"^static int lights_glow;", new, re.M) and "web_glow_level(" not in new:
-            new += f"\n{EXPORT} int web_glow_level(void) {{ return lights_glow; }}   /* (FM-1 : la force de la lueur) */\n"
+            tail.append(f"{EXPORT} int web_glow_level(void) {{ return lights_glow; }}   /* (FM-1 : la force de la lueur) */")
             if re.search(r"^static uint32_t mid_keys;", new, re.M):
-                new += f"{EXPORT} uint32_t web_mid_keys(void) {{ return mid_keys; }}   /* (FM-1 : le niveau moyen) */\n"
+                tail.append(f"{EXPORT} uint32_t web_mid_keys(void) {{ return mid_keys; }}   /* (FM-1 : le niveau moyen) */")
         # Ravel : le rétroéclairage des LED éteintes (plat_backlight : 0 rien, 1 une image sur 6, 2 sur 3, 3 sur 2)
         stub = re.compile(r"^void plat_backlight\(int level\) \{ \(void\)level; \}", re.M)
         if stub.search(new) and "web_backlight(" not in new:
             new = stub.sub("static int web_back_v = -1;\nvoid plat_backlight(int level) { web_back_v = level & 3; }", new, count=1)
-            new += f"\n{EXPORT} int web_backlight(void) {{ return web_back_v; }}   /* (FM-1 : le rétroéclairage) */\n"
+            tail.append(f"{EXPORT} int web_backlight(void) {{ return web_back_v; }}   /* (FM-1 : le rétroéclairage) */")
+        if tail:                              # (beaucoup de ces fichiers effacent __attribute__ pour leur simulateur :
+            new += ("\n#pragma push_macro(\"__attribute__\")\n#undef __attribute__\n" + "\n".join(tail) +   # rétabli le temps
+                    "\n#pragma pop_macro(\"__attribute__\")\n")                                       # de nos exports)
         if new != text:
             open(f, "w", encoding="utf-8").write(new)
             done.append(p)

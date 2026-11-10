@@ -5954,8 +5954,9 @@ function buildPanel(fw) {
   // lights, each frame : l'intensité vue de chaque LED (--i), d'après la part du temps où elle brille (ledDuty : les
   // émulés et les natifs, couche par couche) ; FM-1+VA, allumée ou non, et son animation d'allumage (ledLevels)
   const still = matchMedia("(prefers-reduced-motion: reduce)");
+  let brI = 0, puI = 0;                                // ce qui respire, ce qui pulse : leur intensité à cette image
   const show = (o, d, br, hue, live) => {
-    const I = ledSeen(d), v = br === 1 ? "var(--br)" : br === 2 ? "var(--pu)" : I.toFixed(3);
+    const I = br === 1 ? brI : br === 2 ? puI : ledSeen(d), v = I.toFixed(3);
     if (v !== o.v) { o.v = v; o.g.style.setProperty("--i", v); }
     // (on : la légende s'éclaire, avec son ombre lumineuse ; en dessous, seule la tache diffuse)
     const st = (br ? 1 : 0) | (live ? 2 : 0) | (br || I > 0.36 ? 4 : 0) | (d >= 1 && !br ? 8 : 0) | (hue === "green" ? 16 : hue === "red" ? 32 : hue === "amber" ? 64 : 0);
@@ -5969,7 +5970,10 @@ function buildPanel(fw) {
   function lights() {
     const L = fw.ledDuty ? fw.ledDuty() : null, sweep = !L && fw.ledLevels ? fw.ledLevels() : null;
     const live = !!(L && L.live) || !!sweep;
-    let breathing = 0;
+    // ce qui respire (de l'éteint au haut, ~1,13 s) et ce qui pulse (DUELL, du haut au creux), en phase, comme sur l'appareil
+    const t = performance.now(), ph = still.matches ? 0.5 : null, P = L && L.pulse;
+    brI = L ? ledSeen(L.pk * (ph ?? breathAt(t))) : 0;
+    puI = P ? ledSeen(P.lo + (P.hi - P.lo) * (ph ?? breathAt((t * 1130) / P.ms))) : 0;
     for (const b of Object.values(buttons)) {
       const n = NATIVE_BUTTONS[b.label];
       let d, br = 0, hue = "";
@@ -5985,21 +5989,12 @@ function buildPanel(fw) {
         const on = b.label === "PLAY" ? fw.playLight() : fw.buttonLit(b.label);   // PLAY : "green", "red" ou null
         d = on ? 1 : 0; hue = on === "green" || on === "red" ? on : "";
       }
-      breathing |= br === 1 ? 1 : br === 2 ? 2 : 0;
       show(b, d, br, hue, live);
     }
     keys.forEach((k, i) => {
       const d = L ? L.d[14 + i] : sweep ? sweep[14 + i] : fw.keyLit(i) ? 1 : 0, br = L && L.br ? L.br[14 + i] : 0;
-      breathing |= br === 1 ? 1 : br === 2 ? 2 : 0;
       show(k, d, br, "", live);
     });
-    // ce qui respire (de l'éteint au haut, ~1,13 s) et ce qui pulse (DUELL, du haut au creux), en phase, comme sur l'appareil
-    const t = performance.now(), ph = still.matches ? 0.5 : null;
-    if (breathing & 1) device.style.setProperty("--br", ledSeen(L.pk * (ph ?? breathAt(t))).toFixed(3));
-    if (breathing & 2 && L.pulse) {
-      const P = L.pulse, f = ph ?? breathAt((t * 1130) / P.ms);
-      device.style.setProperty("--pu", ledSeen(P.lo + (P.hi - P.lo) * f).toFixed(3));
-    }
   }
   return { setBody, setSkin, lights, knobs };
 }

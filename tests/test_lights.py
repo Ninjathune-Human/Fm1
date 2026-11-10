@@ -124,8 +124,10 @@ def test_felucca_layers(page):
     seen = page.evaluate("() => [ledSeen(3200 / 95000), ledSeen(1 / 8)]")
     assert "lit" in keys[0][0] and float(keys[0][1]) == 1                # l'allumé passe devant la lueur
     assert abs(float(keys[1][1]) - seen[0]) < 0.002                     # la lueur
-    assert "breath" in keys[3][0] and keys[3][1] == "var(--br)"         # ce qui respire, en phase
+    pk = page.evaluate("ledSeen(154 / 256)")
+    assert "breath" in keys[3][0] and 0 <= float(keys[3][1]) <= pk + 1e-3   # ce qui respire, jusqu'à 60 % de l'allumé
     assert abs(float(keys[4][1]) - seen[1]) < 0.002                     # le niveau moyen
     assert "lit" in caps[0][0] and abs(float(caps[1][1]) - seen[0]) < 0.002 and "breath" in caps[2][0]
-    br = page.evaluate("() => +document.getElementById('device').style.getPropertyValue('--br')")
-    assert 0 <= br <= page.evaluate("ledSeen(154 / 256)") + 1e-3
+    a = float(keys[3][1]); page.wait_for_timeout(300)
+    b = float(page.evaluate("document.querySelector(`#device .key[data-key='3']`).style.getPropertyValue('--i')"))
+    assert a != b                                                        # elle respire, image par image
