@@ -39,6 +39,27 @@ def test_felucca_layers_duty(page):
     assert near(du["d"][SEL], G_LO) and near(du["d"][14], 1 / 4) and near(du["d"][FX], 1 / 4)
 
 
+def test_fm106_backlight(page):
+    """FM-106 : le rétroéclairage des boutons à la part de l'appareil (fm1_led_bg_ns 10 µs sur une image de 95 µs, relevé dans
+    ses sources), et non aux 20 % que donne sa version navigateur : un bouton allumé (REC armé) se voit sur les autres."""
+    frame = [{"leds": [1 << FX, 0, 0x3FFF, 0, 20, 0, 0, 0]}]
+    r = duty(page, "felucca", frame, led={"glow_ns": 4000, "bg_ns": 10000}, fid="fm106")
+    assert r["d"][FX] == 1 and near(r["d"][SEL], 10000 / 95000) and near(r["d"][PLAY], 10000 / 95000)
+    old = duty(page, "felucca", frame, led={"glow_ns": 4000}, fid="fm106")   # (des constantes sans lui : la part de la page)
+    assert near(old["d"][SEL], 0.20)
+
+
+def test_natif_leds_backlight(tmp_path):
+    """natif_leds.py : le rétroéclairage que le firmware règle (FM-106 : fm1_led_bg_ns = 10000u), et non sa déclaration."""
+    (tmp_path / "firmware/hal").mkdir(parents=True)
+    (tmp_path / "firmware/src").mkdir(parents=True)
+    (tmp_path / "firmware/hal/fm1_input.h").write_text("#define FM1_GLOW_NS 4000u\nstatic volatile uint16_t fm1_led_bg_ns;\n")
+    (tmp_path / "firmware/src/app.c").write_text("static void init(void)\n{\n    fm1_led_bg_ns = 10000u;  /* dim pulse */\n}\n")
+    tool = os.path.join(ROOT, "tools/natif_leds.py")
+    c = json.loads(subprocess.run([sys.executable, tool, "consts", str(tmp_path)], capture_output=True, text=True, check=True).stdout)
+    assert c == {"glow_ns": 4000, "bg_ns": 10000}
+
+
 def test_play_two_leds(page):
     """PLAY : sa LED rouge (la sienne) et une verte. Felucca : bit 14 la verte ; sa lueur sur la rouge."""
     r = duty(page, "felucca", [{"leds": [1 << 14, 0, 1 << PLAY, 0, 0, 0, 0, 0]}])

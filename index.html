@@ -1889,7 +1889,8 @@ function ledConsts(k) {
   const ns = (v) => v / LED_FRAME_NS;
   return { glow: [ns(k.dim_ns ?? k.glow_ns ?? 3200), ns(k.dim_lo_ns ?? 1600)], mid: [1 / (k.mid_n ?? 8), 1 / (k.mid_n_lo ?? 12)],
     pk: [(k.br_pk ?? 154) / 256, (k.br_pk_lo ?? 77) / 256], div: 1 / (k.glow_div ?? k.dim_div ?? 4),
-    glowDiv: k.glow_div ? 1 / k.glow_div : 0, glowDef: k.glow_def ?? 1, dim2: ns(k.dim2_ns ?? 9600), faint: ns(k.faint_ns ?? 1300) };
+    glowDiv: k.glow_div ? 1 / k.glow_div : 0, glowDef: k.glow_def ?? 1, dim2: ns(k.dim2_ns ?? 9600), faint: ns(k.faint_ns ?? 1300),
+    bg: k.bg_ns ? ns(k.bg_ns) : 0 };
 }
 const CATEGORY_ORDER = ["FM-1+VA", "Officiel", "Groovebox", "Synthé", "Accords", "Boîte à rythmes", "Tracker", "Autre"];
 const HIDDEN = new Set(["bubba"]);
@@ -2841,8 +2842,8 @@ class NativeFirmware {
       }
       if (x.levels) x.levels.forEach((v, i) => { d[i] = Math.max(d[i], v >= 255 ? 1 : v ? Math.max(1 / 32, (v / 255) ** 2) : 0); });   // NIAGARA
     } else if (l.length >= 4) {                          // famille Felucca (web/emu) : la lueur, le niveau moyen, la respiration
-      const lv = l[4] | 0, lo = lv === 1 ? 1 : 0;        // (FM-106 : sa lueur en pour cent de l'allumé)
-      const g = lv > 1 ? lv / 100 : C.glow[lo], M = C.mid[lo];
+      const lv = l[4] | 0, lo = lv === 1 ? 1 : 0;        // (FM-106 : son rétroéclairage, celui de l'appareil relevé dans ses
+      const g = lv > 1 ? C.bg || lv / 100 : C.glow[lo], M = C.mid[lo];   // sources ; à défaut, la part, en %, de sa version navigateur)
       B(l[2], g); K(l[3], g);
       const midK = l[7] | 0, midB = l.length === 9 ? l[8] | 0 : l.length >= 17 ? l[9] | 0 : 0;   // (DRIFT [8], DUELL [9] : des boutons)
       for (let i = 0; i < 27; i++) if ((midK >>> i) & 1) d[14 + i] = Math.max(d[14 + i], M + ((l[3] >>> i) & 1 ? (1 - M) * g : 0));

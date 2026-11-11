@@ -5,7 +5,8 @@ NativeFirmware.setDuty). Lancé par natif_build.sh :
                                  la lueur et le niveau moyen de felucca-bsp (FM1_LED_DIM_NS, _DIM_LO_NS, _MID_N, _MID_N_LO),
                                  le haut d'une respiration (FM1_LED_BREATH_PK, _PK_LO), la lueur d'un HAL GATOR (FM1_GLOW_NS),
                                  les niveaux de ChoralRoot (FM1_LED_DIM2_NS, FM1_LED_FAINT_NS), les touches tamisées de FiMba
-                                 (FM1_LED_DIM), la lueur des boutons de la famille X0X (GLOW_DIV, glow_on à l'allumage)
+                                 (FM1_LED_DIM), la lueur des boutons de la famille X0X (GLOW_DIV, glow_on à l'allumage),
+                                 le rétroéclairage des boutons que FM-106 règle au démarrage (fm1_led_bg_ns = …)
   natif_leds.py patch <dépôt>    avant la compilation : ce que l'appareil allume et que sa version navigateur garde pour
                                  elle, exporté (la lueur des boutons X0X, plat_glow ; la force de la lueur de fm1-base et son
                                  niveau moyen ; le rétroéclairage de Ravel, plat_backlight)
@@ -17,6 +18,7 @@ NAMES = {"FM1_LED_DIM_NS": "dim_ns", "FM1_LED_DIM_LO_NS": "dim_lo_ns", "FM1_LED_
          "FM1_LED_DIM2_NS": "dim2_ns", "FM1_LED_FAINT_NS": "faint_ns", "FM1_LED_DIM": "dim_div", "GLOW_DIV": "glow_div"}
 DEFINE = re.compile(r"^\s*#\s*define\s+(" + "|".join(NAMES) + r")\s+(\d+)u?\b", re.M)
 GLOW_ON = re.compile(r"^static\s+uint8_t\s+glow_on\s*=\s*([01])\b", re.M)
+BG_NS = re.compile(r"^\s*fm1_led_bg_ns\s*=\s*(\d+)u?\s*;", re.M)   # (FM-106 : son rétroéclairage, réglé une fois au démarrage)
 SKIP = {"third_party", "node_modules", "vendor", "tests", "test", ".git", "build"}
 EXPORT = '__attribute__((used, visibility("default")))'
 
@@ -45,6 +47,9 @@ def consts(root):
         text = read(f)
         for name, value in DEFINE.findall(text):
             out.setdefault(NAMES[name], int(value))
+        m = BG_NS.search(text)
+        if m and int(m.group(1)) and "bg_ns" not in out:
+            out["bg_ns"] = int(m.group(1))
         if os.path.basename(f) == "plat_fm1.c" and "glow_def" not in out:
             m = GLOW_ON.search(text)
             if m:
