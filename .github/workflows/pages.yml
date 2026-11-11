@@ -219,3 +219,10 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+      # le tag deploye sur le commit publié : ce qui est en ligne se lit dans le dépôt, sans accès particulier
+      - name: Tag deploye
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/deploye" -f sha="$GITHUB_SHA" -F force=true \
+            || gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" -f ref=refs/tags/deploye -f sha="$GITHUB_SHA"
