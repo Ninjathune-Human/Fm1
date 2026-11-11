@@ -39,10 +39,11 @@
   }
  ],
  "a_savoir": [
+  "Anciennement Felucca 8 Patterns : le projet s'appelle Argo depuis le 5 novembre 2026.",
   "Les séquences occupent la flash des emplacements d'échantillons utilisateur : cette branche n'a pas d'échantillons utilisateur."
  ],
  "source": {
-  "url": "https://github.com/echoe/Felucca_8_patterns/blob/21fc592dab76907b6bea34d97950dfe129ad9fd8/README.md",
+  "url": "https://github.com/echoe/argo_fm1/blob/21fc592dab76907b6bea34d97950dfe129ad9fd8/README.md",
   "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8"
  },
  "d_apres_le_code": false

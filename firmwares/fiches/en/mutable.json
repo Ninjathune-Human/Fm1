@@ -1,0 +1,90 @@
+{
+ "id": "mutable",
+ "resume": "Six freely assignable tracks and twelve sound engines, partly taken from Mutable Instruments' Plaits, Rings and Elements: 224 factory sounds and 76 Biomes, small sound worlds that unfold by themselves, with generated rhythms, a granular bus, and shared delay and room.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard one octave down; the sequence notes do not change."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard one octave up; the sequence notes do not change."
+  },
+  {
+   "commande": "FX",
+   "role": "The GRANULAR BUS, TAPE / MOTION, SHARED SPACE and MARBLES / TIDES / WARPS pages, one after another. On GRANULAR BUS: K1 mix, K2 grain length, K3 position, K4 feedback."
+  },
+  {
+   "commande": "SEL",
+   "role": "Mutes or unmutes the chosen track."
+  },
+  {
+   "commande": "ENV",
+   "role": "Undoes the last variation; only one is kept."
+  },
+  {
+   "commande": "LFO",
+   "role": "Freezes the granular memory: the cloud keeps playing; again, recording resumes."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The track's SOUND, VELVET FILTER, ENVELOPE / BLOOM, MIX / NOTES and GLOBAL MIXER pages, one after another."
+  },
+  {
+   "commande": "GLO",
+   "role": "The HARMONY / GLOBAL, QUALITY / SYSTEM, LOOK / STARTUP, MIDI / PERFORMANCE and USER BANKS pages."
+  },
+  {
+   "commande": "HOME",
+   "role": "LIVE BIOME page: K1 DENSITY (number of events), K2 MOTION (melodic movement), K3 COLOUR (brighter or darker), K4 SPACE (granular level)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps the Biome and the preferences; only when stopped, on the internal clock."
+  },
+  {
+   "commande": "ARP",
+   "role": "Locks the random seed: the same seed repeats."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The RHYTHM, GROOVE / REPEATS, BASS / MOTIFS and PHRASE / NOTES pages. On RHYTHM: hits, length, rotation, and on K4 the event probability."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts and stops; when stopped, the sound decays by itself; starting again restarts the sequence."
+  },
+  {
+   "commande": "REC",
+   "role": "New variation of the seed and rhythms. On QUALITY / SYSTEM and MIDI / PERFORMANCE: panic, everything goes silent, the tape too."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Chooses one of the six tracks."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "One of the track's 224 sounds or one of the 76 Biomes (or Blank), depending on the page: the bottom bar says PRESET: TONE or PRESET: BIOME."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Changes the chosen track's sound engine (twelve), and opens the SOUND page."
+  },
+  {
+   "commande": "Touches",
+   "role": "Play the chosen track; the first key is F3."
+  }
+ ],
+ "gestes": [
+  "Hold a button: its help shows, with no other effect; releasing it does nothing."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "The granular audio is not saved."
+ ],
+ "source": {
+  "url": "https://github.com/kidbee85-beep/mutable-dreams/blob/04cf468420f4325f6bdbbecfd59695b06c481a8a/Mutable-Dreams-1.1-Source.zip",
+  "commit": "04cf468420f4325f6bdbbecfd59695b06c481a8a"
+ },
+ "d_apres_le_code": true
+}

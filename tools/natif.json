@@ -176,7 +176,7 @@
   },
   {
    "id": "felucca8",
-   "depot": "echoe/Felucca_8_patterns",
+   "depot": "echoe/argo_fm1",
    "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8",
    "script": "web/emu/build.sh"
   },
@@ -234,6 +234,14 @@
    "depot": "charlesvestal/fm1-fomni",
    "commit": "6ecd227013cc18def0e89d035b3760eb268b342b",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "frasil",
+   "depot": "styvesgoupil/frasil",
+   "commit": "422cac668d2753cda4e76e07d5a1f26bf4b1007e",
+   "script": "build.sh",
+   "construction": "sh build.sh --web",
+   "wasm": "app/build/emu/app.wasm"
   },
   {
    "id": "frodhes",
@@ -330,6 +338,15 @@
    "wasm": "build/emu/amb.wasm"
   },
   {
+   "id": "j6",
+   "depot": "JackieAlacrity2373/fm1-j6",
+   "commit": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2",
+   "script": "build.sh",
+   "avant": "git init -q /tmp/fm1-base-web && git -C /tmp/fm1-base-web fetch -q --depth 1 https://github.com/charlesvestal/fm1-base 934e40d846d84e76e9c428d37b74bccb6192c823 && git -C /tmp/fm1-base-web archive FETCH_HEAD web | tar -x -C fm1-base",
+   "construction": "python3 fm1-base/tools/build.py . --web",
+   "wasm": "build/emu/app.wasm"
+  },
+  {
    "id": "jiant",
    "depot": "juanjiant-bit/JIANT",
    "commit": "cac23c6d0bb9a7f6986eb79bbe42ae710805ce98",
@@ -420,6 +437,15 @@
    "depot": "slothpallas/mope-1",
    "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
    "script": "web/emu/build.sh"
+  },
+  {
+   "id": "mutable",
+   "depot": "kidbee85-beep/mutable-dreams",
+   "commit": "04cf468420f4325f6bdbbecfd59695b06c481a8a",
+   "script": "mutable-dreams-1.1/tools/build_local.py",
+   "avant": "curl -sSL https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-34/wasi-sdk-34.0-x86_64-linux.tar.gz | tar -xz -C /tmp && python3 -c \"import zipfile; zipfile.ZipFile('Mutable-Dreams-1.1-Source.zip').extractall('.')\"",
+   "construction": "cd mutable-dreams-1.1 && WASI_SDK=/tmp/wasi-sdk-34.0-x86_64-linux python3 tools/build_local.py web && { cat web/app_worklet.js; grep -v '^import \"./app_worklet.js\";' web/worklet.js; } > app/build/wasm/worklet.js",
+   "wasm": "mutable-dreams-1.1/app/build/wasm/dreams.wasm"
   },
   {
    "id": "mycelium",

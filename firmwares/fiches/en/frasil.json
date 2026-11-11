@@ -1,0 +1,104 @@
+{
+ "id": "frasil",
+ "resume": "Drone and ambient texture instrument: tapping a key lights a drone, a note or a chord in the chosen scale, which swells in slowly and stays. On top, GLINT, small FM bells played by hand, as an arpeggio or a 32-step sequence; underneath, BASS holds a low note or plays its own 16-step line. Everything goes into CLOUD, a large reverb with shimmer and freeze.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave down, to -3; with OCT+, back to -1. Blinks on the beat."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave up, to +2; with OCT-, back to -1."
+  },
+  {
+   "commande": "FX",
+   "role": "GENERATIVE FX, CLOUD and PUMP. Held: FREEZE, the cloud holds what it contains."
+  },
+  {
+   "commande": "SEL",
+   "role": "HARMONY: root, scale, chord, voicing. Held + a key: a single note over a chord."
+  },
+  {
+   "commande": "ENV",
+   "role": "DRONE SHAPE. Held: SWELL, every drone voice swells together."
+  },
+  {
+   "commande": "LFO",
+   "role": "DRONE MOTION and the three LFOs. Held while turning K1 to K4: puts that setting on an LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "DRONE PARAMS and the pages of the CHOIR, PARTIALS and BREATH layers. Held: COMPARE, the scene as saved."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLOBAL, MIDI and MASTERING. Held while moving a CC: MIDI learn."
+  },
+  {
+   "commande": "HOME",
+   "role": "The play page; again, the MIXER; again, the logo screen. Held: on-screen help (5 pages, turn SELECT)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "SCENES: the slot (K1 or SELECT), MORPH, LOAD; again, back. Held + REC: saves the scene. Held + a white key: loads that scene."
+  },
+  {
+   "commande": "ARP",
+   "role": "The GLINT pages: GLINT I, II, ADSR, DELAY, then GLINT ARP or the sequencer pages. Held: arpeggio LATCH."
+  },
+  {
+   "commande": "SEQ",
+   "role": "The BASS pages: BASS, II, ADSR, BASS SEQ, BASS SEQ II."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Starts or stops the GLINT and bass sequences together, from the start; on SCENES, loads. Held: RELEASE ALL; held when nothing plays: RESTORE, the scene again."
+  },
+  {
+   "commande": "REC",
+   "role": "Records into the GLINT sequencer or, with the keys on BASS, into the bass one; again: RECORD OFF. Held: turns the metronome off or on."
+  },
+  {
+   "commande": "SELECT",
+   "role": "KEYS: what the keys play (DRONE, GLINT, BASS). A page button held + SELECT: that button's pages."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The drone preset: 24, and your CUSTOM."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "BODY: thins the drone, whatever the preset."
+  },
+  {
+   "commande": "Touches",
+   "role": "Tap: lights a drone, which swells in slowly and stays; another tap fades it; pressing harder makes it swell. With KEYS on GLINT or BASS, they play GLINT or the bass."
+  }
+ ],
+ "gestes": [
+  "Every button acts when released (OCT at once); held, it does something else.",
+  "Keys on BASS: a tap holds a low note; another key, the bass glides to it; its own key, it lets go."
+ ],
+ "modes": [
+  {
+   "nom": "Scenes",
+   "texte": "16 slots, 7 of them factory scenes that play as soon as they load. A scene keeps the sound, its TEMPO, the latched drones, the GLINT arpeggio and sequence, the bass and its sequence. MORPH glides the sound to the scene, or changes it at once (CUT)."
+  },
+  {
+   "nom": "Harmony",
+   "texte": "12 scales; chords built in the scale (SINGLE, FIFTH, TRIAD, SEVENTH, SUS2, SUS4, ADD9, QUARTAL) or fixed (MAJ, MIN, MAJ7, MIN7, DOM7, AUG, DIM); voicings CLOSE, OPEN, WIDE. A key outside the scale plays the scale note just below; the scale's keys light up."
+  },
+  {
+   "nom": "GLINT",
+   "texte": "4 two-operator FM voices, 22 presets. Its SEQ setting (GLINT I) chooses how the keys play it: one glint per key, its arpeggiator (UP, DOWN, UPDOWN, RANDOM, DRIFT, with latch and CHANCE) or a 32-step sequencer."
+  }
+ ],
+ "a_savoir": [
+  "FRASIL reads only its own records, not another firmware's projects or samples."
+ ],
+ "source": {
+  "url": "https://github.com/styvesgoupil/frasil/blob/422cac668d2753cda4e76e07d5a1f26bf4b1007e/README.fr.md",
+  "commit": "422cac668d2753cda4e76e07d5a1f26bf4b1007e"
+ },
+ "d_apres_le_code": false
+}

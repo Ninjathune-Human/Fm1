@@ -1,0 +1,104 @@
+{
+ "id": "frasil",
+ "resume": "Instrument de drones et de textures ambient : un tap sur une touche allume un drone, une note ou un accord dans la gamme choisie, qui monte lentement et reste. Par-dessus, GLINT, de petites cloches FM jouées à la main, en arpège ou en séquence de 32 pas ; dessous, BASS tient une note grave ou joue sa ligne de 16 pas. Le tout passe dans CLOUD, une grande réverb avec shimmer et freeze.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Octave plus bas, jusqu'à -3 ; avec OCT+, retour à -1. Clignote sur le temps."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Octave plus haut, jusqu'à +2 ; avec OCT-, retour à -1."
+  },
+  {
+   "commande": "FX",
+   "role": "GENERATIVE FX, CLOUD et PUMP. Maintenu : FREEZE, le nuage retient ce qu'il contient."
+  },
+  {
+   "commande": "SEL",
+   "role": "HARMONY : fondamentale, gamme, accord, voicing. Maintenu + une touche : une note seule par-dessus un accord."
+  },
+  {
+   "commande": "ENV",
+   "role": "DRONE SHAPE. Maintenu : SWELL, toutes les voix du drone gonflent ensemble."
+  },
+  {
+   "commande": "LFO",
+   "role": "DRONE MOTION et les trois LFO. Maintenu en tournant K1 à K4 : met ce réglage sur un LFO."
+  },
+  {
+   "commande": "EDIT",
+   "role": "DRONE PARAMS et les pages des couches CHOIR, PARTIALS et BREATH. Maintenu : COMPARE, la scène telle que sauvée."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLOBAL, MIDI et MASTERING. Maintenu en bougeant un CC : MIDI learn."
+  },
+  {
+   "commande": "HOME",
+   "role": "La page de jeu ; encore une fois, le MIXER ; encore une fois, l'écran du logo. Maintenu : l'aide à l'écran (5 pages, tourner SELECT)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "SCENES : l'emplacement (K1 ou SELECT), MORPH, LOAD ; encore une fois, retour. Maintenu + REC : sauvegarde la scène. Maintenu + une touche blanche : charge cette scène."
+  },
+  {
+   "commande": "ARP",
+   "role": "Les pages de GLINT : GLINT I, II, ADSR, DELAY, puis GLINT ARP ou celles du séquenceur. Maintenu : LATCH de l'arpège."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Les pages de BASS : BASS, II, ADSR, BASS SEQ, BASS SEQ II."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance ou arrête ensemble les séquences de GLINT et de la basse, depuis le début ; sur SCENES, charge. Maintenu : RELEASE ALL ; maintenu quand rien ne joue : RESTORE, la scène de nouveau."
+  },
+  {
+   "commande": "REC",
+   "role": "Enregistre dans le séquenceur de GLINT ou, touches sur BASS, dans celui de la basse ; encore une fois : RECORD OFF. Maintenu : éteint ou rallume le métronome."
+  },
+  {
+   "commande": "SELECT",
+   "role": "KEYS : ce que jouent les touches (DRONE, GLINT, BASS). Un bouton de page maintenu + SELECT : les pages de ce bouton."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Le preset du drone : 24, et votre CUSTOM."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "BODY : amincit le drone, quel que soit le preset."
+  },
+  {
+   "commande": "Touches",
+   "role": "Tap : allume un drone, qui monte lentement et reste ; un autre tap l'estompe ; appuyer plus fort le fait gonfler. Avec KEYS sur GLINT ou BASS, elles jouent GLINT ou la basse."
+  }
+ ],
+ "gestes": [
+  "Chaque bouton agit quand on le relâche (OCT tout de suite) ; maintenu, il fait autre chose.",
+  "Touches sur BASS : un tap tient une note grave ; une autre touche, la basse glisse vers elle ; sa propre touche, elle lâche."
+ ],
+ "modes": [
+  {
+   "nom": "Scènes",
+   "texte": "16 emplacements, dont 7 scènes d'usine qui jouent dès qu'on les charge. Une scène garde le son, son TEMPO, les drones latchés, l'arpège et la séquence de GLINT, la basse et sa séquence. MORPH fait glisser le son vers la scène, ou le change d'un coup (CUT)."
+  },
+  {
+   "nom": "Harmonie",
+   "texte": "12 gammes ; accords construits dans la gamme (SINGLE, FIFTH, TRIAD, SEVENTH, SUS2, SUS4, ADD9, QUARTAL) ou fixes (MAJ, MIN, MAJ7, MIN7, DOM7, AUG, DIM) ; voicings CLOSE, OPEN, WIDE. Une touche hors gamme joue la note de la gamme juste en dessous ; les touches de la gamme s'allument."
+  },
+  {
+   "nom": "GLINT",
+   "texte": "4 voix de FM à deux opérateurs, 22 presets. Son réglage SEQ (GLINT I) choisit comment les touches le jouent : chaque touche son glint, son arpégiateur (UP, DOWN, UPDOWN, RANDOM, DRIFT, avec latch et CHANCE) ou un séquenceur de 32 pas."
+  }
+ ],
+ "a_savoir": [
+  "FRASIL ne lit que ses propres enregistrements, pas les projets ni les échantillons d'un autre firmware."
+ ],
+ "source": {
+  "url": "https://github.com/styvesgoupil/frasil/blob/422cac668d2753cda4e76e07d5a1f26bf4b1007e/README.fr.md",
+  "commit": "422cac668d2753cda4e76e07d5a1f26bf4b1007e"
+ },
+ "d_apres_le_code": false
+}

@@ -666,7 +666,7 @@
   },
   {
    "id": "felucca8",
-   "nom": "Felucca 8 Patterns",
+   "nom": "Argo",
    "version": "1.6.1_and_sequences",
    "auteur": "echoe",
    "categories": [
@@ -677,7 +677,7 @@
    "fichier": null,
    "sha256": "f47b12cbface0c8010037094b68829b64b792d50d7418cde92dd701baa2faab5",
    "taille": 610090,
-   "depot": "https://github.com/echoe/Felucca_8_patterns",
+   "depot": "https://github.com/echoe/argo_fm1",
    "commit_source": "21fc592dab76907b6bea34d97950dfe129ad9fd8",
    "source_c": 180,
    "description": "Felucca 1.5.1 with eight sequences a track to switch between and chain one after another; the user samples are left out to make room.",

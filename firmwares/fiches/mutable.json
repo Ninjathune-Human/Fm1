@@ -1,0 +1,90 @@
+{
+ "id": "mutable",
+ "resume": "Six pistes librement assignables et douze moteurs de son, en partie repris de Plaits, Rings et Elements de Mutable Instruments : 224 sons d'usine et 76 Biomes, de petits mondes sonores qui se déploient seuls, avec rythmes générés, bus granulaire, délai et salle partagés.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Clavier une octave plus bas ; les notes de la séquence ne changent pas."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Clavier une octave plus haut ; les notes de la séquence ne changent pas."
+  },
+  {
+   "commande": "FX",
+   "role": "Les pages GRANULAR BUS, TAPE / MOTION, SHARED SPACE et MARBLES / TIDES / WARPS, l'une après l'autre. Sur GRANULAR BUS : K1 mélange, K2 longueur du grain, K3 position, K4 réinjection."
+  },
+  {
+   "commande": "SEL",
+   "role": "Coupe ou rétablit la piste choisie."
+  },
+  {
+   "commande": "ENV",
+   "role": "Annule la dernière variation ; une seule est gardée."
+  },
+  {
+   "commande": "LFO",
+   "role": "Fige la mémoire granulaire : le nuage continue de jouer ; encore une fois, l'enregistrement reprend."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Les pages SOUND, VELVET FILTER, ENVELOPE / BLOOM, MIX / NOTES et GLOBAL MIXER de la piste, l'une après l'autre."
+  },
+  {
+   "commande": "GLO",
+   "role": "Les pages HARMONY / GLOBAL, QUALITY / SYSTEM, LOOK / STARTUP, MIDI / PERFORMANCE et USER BANKS."
+  },
+  {
+   "commande": "HOME",
+   "role": "Page LIVE BIOME : K1 DENSITY (nombre d'événements), K2 MOTION (mouvement mélodique), K3 COLOUR (plus clair ou plus sombre), K4 SPACE (niveau granulaire)."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Garde le Biome et les préférences ; à l'arrêt seulement, sur l'horloge interne."
+  },
+  {
+   "commande": "ARP",
+   "role": "Verrouille la graine aléatoire : la même graine se répète."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Les pages RHYTHM, GROOVE / REPEATS, BASS / MOTIFS et PHRASE / NOTES. Sur RHYTHM : coups, longueur, rotation, et sur K4 la probabilité des événements."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête ; à l'arrêt, le son s'éteint de lui-même ; relancer reprend la séquence du début."
+  },
+  {
+   "commande": "REC",
+   "role": "Nouvelle variation de la graine et des rythmes. Sur QUALITY / SYSTEM et MIDI / PERFORMANCE : panique, tout se tait, la bande aussi."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Choisit l'une des six pistes."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Un des 224 sons de la piste ou un des 76 Biomes (ou Blank), selon la page : la barre du bas dit PRESET: TONE ou PRESET: BIOME."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Change le moteur de son de la piste choisie (douze), et ouvre la page SOUND."
+  },
+  {
+   "commande": "Touches",
+   "role": "Jouent la piste choisie ; la première touche est Fa3."
+  }
+ ],
+ "gestes": [
+  "Maintenir un bouton : son aide s'affiche, sans autre effet ; le relâcher ne fait rien."
+ ],
+ "modes": [],
+ "a_savoir": [
+  "L'audio granulaire n'est pas sauvegardé."
+ ],
+ "source": {
+  "url": "https://github.com/kidbee85-beep/mutable-dreams/blob/04cf468420f4325f6bdbbecfd59695b06c481a8a/Mutable-Dreams-1.1-Source.zip",
+  "commit": "04cf468420f4325f6bdbbecfd59695b06c481a8a"
+ },
+ "d_apres_le_code": true
+}

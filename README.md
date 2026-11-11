@@ -44,13 +44,13 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
+| Argo | echoe | GPL-3.0 | [21fc592](https://github.com/echoe/argo_fm1/tree/21fc592dab76907b6bea34d97950dfe129ad9fd8) | fonctionne, natif |
 | Bigorna | Nuno Zimas | GPL-3.0 | [3d937bf](https://github.com/nzimas/bigorna/tree/3d937bf9dae6157fb6f61dc01fb52eaf46ea1df7) | vérifié |
 | Chipbox | Pasquale Barilla | GPL-3.0 | [6fdbc98](https://github.com/pbarilla/chipbox/tree/6fdbc9855361d15ce44065c4e2ef6308de568587) | fonctionne, natif |
 | DARK-1 | Polystellarflow | GPL-3.0 | [a2e7fb7](https://github.com/sparky480v/Dark-1/tree/a2e7fb7d2ce39e6caebbd98206fd3eabbf887796) | vérifié |
 | DUB-1 | sbegueria | GPL-3.0 | [e6fe7b8](https://github.com/sbegueria/fm1-dub/tree/e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d) | fonctionne, natif |
 | ESTAMPIE | Drew Robinson | GPL-3.0 | [b6be8f7](https://github.com/ocean/estampie/tree/b6be8f78adcee97d4b217db7b81f6a4eb02445e8) | vérifié, bêta, natif |
 | Felucca | Leo Kuroshita (Hügelton Instruments) | GPL-3.0 | [d7b1b7c](https://github.com/hugelton/Felucca/tree/d7b1b7c4099bba28854869ddb256b3d9f634cee8) | fonctionne, natif |
-| Felucca 8 Patterns | echoe | GPL-3.0 | [21fc592](https://github.com/echoe/Felucca_8_patterns/tree/21fc592dab76907b6bea34d97950dfe129ad9fd8) | fonctionne, natif |
 | Felucca [Salt] | Chance Roth (ChanceTheMaker) | GPL-3.0 | [9490527](https://github.com/ChanceTheMaker/Felucca/tree/949052728758229ab5ab1816ccf9fa61fafc5803) | fonctionne, bêta |
 | FIZZ | Quixotic7 | MPL-2.0 | [01b5a98](https://github.com/Quixotic7/FIZZ/tree/01b5a98414d87ffce45d62997b4cd9d6bdd7364d) | vérifié, bêta |
 | FM1-GM | jartificer | GPL-3.0 | [fcc7655](https://github.com/jartificer/fm1-gm/tree/fcc7655dd0bfe5a29440f99dbcadba417cf1dbc7) | fonctionne |

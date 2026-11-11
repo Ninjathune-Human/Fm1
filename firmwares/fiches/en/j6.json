@@ -1,0 +1,88 @@
+{
+ "id": "j6",
+ "resume": "Six-voice polysynth after the Roland JUNO-60: one DCO per voice (saw, pulse, sub, noise), resonant low-pass filter, one ADSR envelope, LFO and chorus. Arpeggiator, 16-step sequencer and 56 memories.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Keyboard one octave down. With OCT+: panic, all notes off, sequence and recording stopped."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Keyboard one octave up. With OCT-: panic."
+  },
+  {
+   "commande": "FX",
+   "role": "CHORUS page: CHORUS (OFF, I, II, I+II), MODE (POLY, UNISON, SOLO), PORTA, SPREAD."
+  },
+  {
+   "commande": "SEL",
+   "role": "VCF page: CUTOFF, RES, ENV, KEYS; again, the second half: HPF, ENV (NORMAL or INVERT), VCA, LEVEL."
+  },
+  {
+   "commande": "ENV",
+   "role": "ENVELOPE page: ATTACK, DECAY, SUSTAIN, RELEASE, shared by the filter and the volume."
+  },
+  {
+   "commande": "LFO",
+   "role": "LFO page: RATE, DELAY, TO DCO, TO VCF."
+  },
+  {
+   "commande": "EDIT",
+   "role": "DCO page: SAW, PULSE, SUB, NOISE; again, the second half: RANGE, PW, PWM."
+  },
+  {
+   "commande": "GLO",
+   "role": "GLOBAL page: TUNE, VELOCITY, ARP, OCTAVES; again, the second half: TEMPO, THEME, LINK."
+  },
+  {
+   "commande": "HOME",
+   "role": "SOUND page: sound name, mode, arp, hold and sequencer state, 16-step pattern; there K1 to K4 set CUTOFF, RES, ATTACK, RELEASE."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Keeps the sound, the settings and the pattern; lit while something has changed."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpeggiator on or off; while recording, inserts a rest."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Starts or stops the pattern in a loop (EMPTY: REC if there is none); starting it turns the arpeggiator off."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Hold: notes keep sounding after the keys are released; again to let go."
+  },
+  {
+   "commande": "REC",
+   "role": "Starts recording and clears the old pattern: play up to 16 notes, ARP for a rest; REC again to finish."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Flips between a page's two halves."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Previous or next memory (56: 16 factory sounds, the rest INIT)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Jumps eight memories."
+  },
+  {
+   "commande": "Touches",
+   "role": "The 27-key keyboard; pressing harder makes the note louder and adds a little vibrato."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "J6 keeps only its own data: its 56 memories, its settings and its pattern."
+ ],
+ "source": {
+  "url": "https://github.com/JackieAlacrity2373/fm1-j6/blob/1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2/docs/GUIDE.md",
+  "commit": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2"
+ },
+ "d_apres_le_code": false
+}

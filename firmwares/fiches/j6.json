@@ -1,0 +1,88 @@
+{
+ "id": "j6",
+ "resume": "Synthé polyphonique à six voix d'après le JUNO-60 de Roland : un DCO par voix (dent de scie, impulsion, sub, bruit), filtre passe-bas résonant, une enveloppe ADSR, LFO et chorus. Arpégiateur, séquenceur de 16 pas et 56 mémoires.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Clavier une octave plus bas. Avec OCT+ : panique, toutes les notes coupées, séquence et enregistrement arrêtés."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Clavier une octave plus haut. Avec OCT- : panique."
+  },
+  {
+   "commande": "FX",
+   "role": "Page CHORUS : CHORUS (OFF, I, II, I+II), MODE (POLY, UNISON, SOLO), PORTA, SPREAD."
+  },
+  {
+   "commande": "SEL",
+   "role": "Page VCF : CUTOFF, RES, ENV, KEYS ; encore une fois, la seconde moitié : HPF, ENV (NORMAL ou INVERT), VCA, LEVEL."
+  },
+  {
+   "commande": "ENV",
+   "role": "Page ENVELOPE : ATTACK, DECAY, SUSTAIN, RELEASE, partagée par le filtre et le volume."
+  },
+  {
+   "commande": "LFO",
+   "role": "Page LFO : RATE, DELAY, TO DCO, TO VCF."
+  },
+  {
+   "commande": "EDIT",
+   "role": "Page DCO : SAW, PULSE, SUB, NOISE ; encore une fois, la seconde moitié : RANGE, PW, PWM."
+  },
+  {
+   "commande": "GLO",
+   "role": "Page GLOBAL : TUNE, VELOCITY, ARP, OCTAVES ; encore une fois, la seconde moitié : TEMPO, THEME, LINK."
+  },
+  {
+   "commande": "HOME",
+   "role": "Page SOUND : nom du son, mode, état de l'arpège, du hold et du séquenceur, motif de 16 pas ; K1 à K4 y règlent CUTOFF, RES, ATTACK, RELEASE."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Garde le son, les réglages et le motif ; allumé tant que quelque chose a changé."
+  },
+  {
+   "commande": "ARP",
+   "role": "Arpégiateur marche ou arrêt ; pendant l'enregistrement, insère un silence."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Lance ou arrête le motif en boucle (EMPTY: REC s'il n'y en a pas) ; le lancer coupe l'arpégiateur."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Hold : les notes continuent après avoir lâché les touches ; encore une fois pour les relâcher."
+  },
+  {
+   "commande": "REC",
+   "role": "Commence l'enregistrement et efface l'ancien motif : jouer jusqu'à 16 notes, ARP pour un silence ; REC de nouveau pour finir."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Passe d'une moitié de la page à l'autre."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Mémoire précédente ou suivante (56 : 16 sons d'usine, les autres INIT)."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Saute de huit mémoires."
+  },
+  {
+   "commande": "Touches",
+   "role": "Le clavier de 27 touches ; appuyer plus fort rend la note plus forte et ajoute un peu de vibrato."
+  }
+ ],
+ "gestes": [],
+ "modes": [],
+ "a_savoir": [
+  "J6 ne garde que ses propres données : ses 56 mémoires, ses réglages et son motif."
+ ],
+ "source": {
+  "url": "https://github.com/JackieAlacrity2373/fm1-j6/blob/1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2/docs/GUIDE.md",
+  "commit": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2"
+ },
+ "d_apres_le_code": false
+}
