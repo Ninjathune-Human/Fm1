@@ -196,7 +196,8 @@
    "id": "fm106",
    "depot": "PatttF/fm-106",
    "commit": "3833499bfd0f2f4df522793526690f743b7164c9",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "avant": "python3 \"$HERE/tools/worklets/fm106_midi.py\""
   },
   {
    "id": "fmdj",

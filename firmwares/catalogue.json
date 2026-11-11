@@ -848,7 +848,7 @@
    "provenance_paquet": "dans le dépôt web/fm106.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "fm1quest",
@@ -1295,7 +1295,7 @@
    "paquet_en_ligne": "https://github.com/DeadActive/hortator/releases/download/drum-v1.0.1/hortator-1.0.1.fwsc",
    "provenance_paquet": "release download/drum-v1.0.1/hortator-1.0.1.fwsc",
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "hyp1",
@@ -2843,7 +2843,7 @@
    "provenance_paquet": "natif seulement ; paquet publié : release download/v0.25.2/elixir-0.25.2.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "graine",

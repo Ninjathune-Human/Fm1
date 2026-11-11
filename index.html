@@ -6811,6 +6811,10 @@ registerProcessor("duo-horloge", DuoClock);
   const bpmBox = root.querySelector(".duo-bpm input");
   const toBpm = (v) => Math.max(40, Math.min(240, Math.round(Number(v) || 120)));
   let bpm = toBpm(keep("bpm") || 120), playing = false, pulses = 0, players = { a: null, b: null }, checkAt = 0;
+  // un firmware qui joue : sa lumière PLAY verte dans le dernier temps (Hortator, Elixir la font clignoter au temps, comme
+  // l'appareil : regardée à un instant, elle peut être éteinte)
+  const greenAt = { a: 0, b: 0 };
+  const lit = (k) => performance.now() - greenAt[k] < Math.max(700, 75000 / bpm);
   let ctx = null, clock = null, ready = null;
   bpmBox.value = bpm;
   const engOf = (k) => { try { const w = frames[k].contentWindow, e = w.__engine && w.__engine(); return e && e.on ? e : null; } catch { return null; } };
@@ -6881,6 +6885,7 @@ registerProcessor("duo-horloge", DuoClock);
   document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
   function tick() {
     const E = engines();
+    for (const k of ["a", "b"]) if (E[k] && E[k].playLight() === "green") greenAt[k] = performance.now();
     if (playing && (E.a !== players.a || E.b !== players.b)) stop(E);   // un firmware changé ou éteint : les deux s'arrêtent
     linkBtn.setAttribute("aria-checked", linked);
     linkBtn.title = linked ? `Les deux FM-1 reçoivent l'horloge de cette page, à ${bpm} BPM` : "Donner la même horloge aux deux FM-1";
@@ -6896,7 +6901,7 @@ registerProcessor("duo-horloge", DuoClock);
     if (playing && checkAt && performance.now() > checkAt) {
       checkAt = 0;
       const deaf = (e) => e.entry && e.entry.natif_midi === 0;   // (lancé par son PLAY, il joue, mais à son tempo)
-      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && (deaf(E[k]) || E[k].playLight() !== "green"));
+      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && (deaf(E[k]) || !lit(k)));
       if (late.length) window.__tip(linkBtn, late.map((k) => `<p><b>FM1-${k.toUpperCase()}</b> (${E[k].name}) ` + (deaf(E[k])
         ? "ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié.</p>"
         : "n'a pas démarré. S'il sait suivre une horloge MIDI, réglez la sienne sur externe : <b>CLK</b> sur <b>USB</b> (<b>TRS</b> s'il est émulé), page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator.</p>")).join(""));
@@ -6907,13 +6912,13 @@ registerProcessor("duo-horloge", DuoClock);
       const t = tabsOf(k);
       if (t) for (const b of t.children) {
         const e = E[b.dataset.k], va = vaOf(b.dataset.k);
-        b.querySelector(".beat").classList.toggle("on", !!e && (e === va ? va.S.playing && va.beatPhase() < 0.3 : beat && e.playLight() === "green"));
+        b.querySelector(".beat").classList.toggle("on", !!e && (e === va ? va.S.playing && va.beatPhase() < 0.3 : beat && lit(b.dataset.k)));
       }
     }
   }
   setInterval(tick, 120);
   tick();
-  window.__duo = { frames, show, tick, get linked() { return linked; }, get playing() { return playing; }, get bpm() { return bpm; } };   // pour les tests
+  window.__duo = { frames, show, tick, lit, get linked() { return linked; }, get playing() { return playing; }, get bpm() { return bpm; } };   // pour les tests
 })();
 </script>
 

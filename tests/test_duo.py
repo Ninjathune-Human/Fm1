@@ -369,15 +369,19 @@ def test_every_clock_native_acks(page):
     assert not bad, bad
 
 
-@pytest.mark.parametrize("kind", ["natif", "emule"])
+@pytest.mark.parametrize("kind", ["natif", "natif_b", "emule"])
 def test_tempo_lie_verified(page, kind):
-    """Chaque firmware vérifié en Duo (tempo_lie), sans réglage, sur FM1-A ; FM1-B FM-1+VA : le PLAY de FM1-B le lance en
-    moins de 1,3 s (la bulle du Duo regarde à 1,5 s) et l'arrête, son propre PLAY aussi."""
+    """Chaque firmware vérifié en Duo (tempo_lie), sans réglage, sur FM1-A (natif_b : sur FM1-B) ; l'autre FM-1 FM-1+VA. Le
+    PLAY de FM-1+VA le lance en moins de 1,3 s (la bulle du Duo regarde à 1,5 s), il joue encore 1,5 s plus tard (sa lumière
+    PLAY verte dans le dernier temps : certaines clignotent au temps), un second PLAY l'arrête ; 3 s d'arrêt, puis son
+    propre PLAY, de même."""
     a, b = open_duo(page, 1600, 900)
     power(a)
     power(b)
-    a.wait_for_function("window.__catalogue && window.__catalogue.length")
-    ids = a.evaluate(f"window.__catalogue.filter((e) => e.tempo_lie && !!e.natif === {'true' if kind == 'natif' else 'false'}).map((e) => e.id)")
+    pos = "b" if kind == "natif_b" else "a"
+    me, other = (b, a) if pos == "b" else (a, b)
+    me.wait_for_function("window.__catalogue && window.__catalogue.length")
+    ids = me.evaluate(f"window.__catalogue.filter((e) => e.tempo_lie && !!e.natif === {'false' if kind == 'emule' else 'true'}).map((e) => e.id)")
     if not ids:
         pytest.skip("aucun")
     link(page, 120)
@@ -387,24 +391,26 @@ def test_tempo_lie_verified(page, kind):
 
     def lit(want, limit):
         try:
-            a.wait_for_function(f"(window.__engine().playLight() === 'green') === {'true' if want else 'false'}", timeout=limit)
+            page.wait_for_function(f"window.__duo.lit('{pos}') === {'true' if want else 'false'}", timeout=limit)
             return True
         except Exception:
             return False
 
     bad = []
     for i in ids:
-        if not a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
+        if not me.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
             bad.append(i + " (ne démarre pas)"); continue
-        page.wait_for_timeout(2500 if kind == "natif" else 4000)
-        for who, name in ((b, "FM1-B"), (a, "le sien")):
+        page.wait_for_timeout(2500 if kind != "emule" else 4000)
+        for who, name in ((other, "l'autre"), (me, "le sien")):
             tap(who)
             if not lit(True, 1300):
                 bad.append(f"{i} (PLAY de {name} : ne part pas)"); break
-            page.wait_for_timeout(1000)
+            page.wait_for_timeout(1500)
+            if not page.evaluate(f"window.__duo.lit('{pos}')"):
+                bad.append(f"{i} (PLAY de {name} : s'arrête seul)"); break
             tap(who)
-            if not lit(False, 1500):
+            if not lit(False, 2200):
                 bad.append(f"{i} (PLAY de {name} : ne s'arrête pas)"); break
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(3000)
     assert not bad, bad
 
