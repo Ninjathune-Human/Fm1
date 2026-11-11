@@ -289,6 +289,26 @@ def test_own_play_held_reaches_firmware(page):
     assert not page.evaluate("window.__duo.playing")
 
 
+def test_linked_tempo_pill(page):
+    """En Duo, la pastille « tempo lié » marque FM-1+VA et les natifs dont le séquenceur suit l'autre FM-1 (tempo_lie, pas
+    demarre false) ; ni les sans-séquenceur (GATOR), ni les autres ; aucune hors du Duo."""
+    a, _ = open_duo(page, 1600, 900)
+    power(a)
+    a.wait_for_function("window.__catalogue && window.__catalogue.some((e) => e.natif)")
+    a.evaluate("document.getElementById('fw-picker').click()")
+    a.evaluate("() => { for (const h of document.querySelectorAll('.fw-sec-head')) if (h.getAttribute('aria-expanded') !== 'true') h.click(); }")
+    page.wait_for_timeout(400)
+    got = set(a.evaluate("[...document.querySelectorAll('.fw-item')].filter((x) => x.querySelector('.fw-lie')).map((x) => x.dataset.id)"))
+    want = set(a.evaluate("window.__catalogue.filter((e) => e.natif && e.tempo_lie && e.demarre !== false).map((e) => e.id)")) | {"fm1va"}
+    assert got == want and "gator" not in got and "felucca" in got
+    solo = page.context.new_page()
+    solo.goto(page.base + "/index.html")
+    solo.wait_for_function("window.__catalogue && window.__catalogue.length")
+    solo.evaluate("document.getElementById('fw-picker').click()")
+    solo.wait_for_timeout(400)
+    assert solo.evaluate("document.querySelectorAll('.fw-lie').length") == 0
+
+
 @pytest.mark.parametrize("fid", ["cs1", "monk"])
 def test_unlaunched_keeps_own_play(page, fid):
     """Tempo lié, un natif que rien ne lance (demarre false : CS-1 lit le MIDI, MONK-1 non) : son PLAY seul lui parvient (HOLD,

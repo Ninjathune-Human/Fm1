@@ -195,6 +195,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .fw-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
 .fw-tags:empty { display: none; }
 .fw-tag { font: 500 0.6875rem/1 var(--body); letter-spacing: 0.02em; color: var(--muted); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 7px; }
+.fw-tag.fw-lie { color: var(--accent); border-color: var(--accent); }
 .fw-tier { margin: 10px 12px 2px; font: 600 0.6875rem/1 var(--body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .fw-tier ~ .fw-tier { margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--rule); }
 .fw-note { margin: 4px 12px 6px; font: 600 0.8125rem var(--body); color: var(--muted); }
@@ -6329,6 +6330,7 @@ function buildPanel(fw) {
 
   function tagsOf(e) {
     const t = [];
+    if (FM1_ID && seqLinked(e)) t.push("tempo lié");   // en Duo : son séquenceur suit l'autre FM-1
     if (e.beta) t.push("bêta");
     if (e.id !== "fm1va" && !e.fichier && !e.natif) t.push("en ligne");   // (un natif n'a plus de paquet dans le dépôt)
     if (e.emulateur_fm1emu === "pas encore évalué") t.push("non évalué");
@@ -6342,7 +6344,7 @@ function buildPanel(fw) {
     if ((coreError && e.id !== "fm1va") || emuBarred(e) || tempoBarred(e)) b.setAttribute("aria-disabled", "true");
     const span = (cls, text) => { const s = document.createElement("span"); s.className = cls; s.textContent = text; return s; };
     const tags = span("fw-tags", "");
-    for (const t of tagsOf(e)) tags.append(span("fw-tag", t));
+    for (const t of tagsOf(e)) tags.append(span(t === "tempo lié" ? "fw-tag fw-lie" : "fw-tag", t));
     b.append(span("fw-n", e.nom), span("fw-a", e.auteur || ""), span("fw-d", e.description || ""), tags);
     b.addEventListener("click", () => pick(e));
     const star = document.createElement("button");
@@ -6509,9 +6511,10 @@ function buildPanel(fw) {
   // en Duo, FM1-B prend FM-1+VA ou un firmware natif : un firmware émulé de plus serait trop lourd (et partagerait sa mémoire)
   function emuBarred(e) { return FM1_ID === "b" && e.id !== "fm1va" && !e.natif; }
   // en Duo, tempo lié : seuls se choisissent FM-1+VA et les firmwares optimisés (natifs) vérifiés en Duo (tempo_lie : sans
-  // réglage, ils partent et s'arrêtent avec l'autre FM-1, par son PLAY comme par le leur). Pas d'émulé, fichier ouvert compris
-  // (horloge_midi dit ce que le code de chacun sait faire)
+  // réglage, ils partent et s'arrêtent avec l'autre FM-1, par son PLAY comme par le leur ; ou, demarre false, rien ne les
+  // lance). Pas d'émulé, fichier ouvert compris (horloge_midi dit ce que le code de chacun sait faire)
   const followsClock = (e) => e.id === "fm1va" || (!!e.natif && e.tempo_lie === true);
+  const seqLinked = (e) => followsClock(e) && e.demarre !== false;   // un séquenceur au tempo lié : sa pastille
   function tempoBarred(e) { let d = null; try { d = FM1_ID && window.parent.__duo; } catch { /* hors du Duo */ } return !!(d && d.linked) && !followsClock(e); }
   window.__fwRefresh = () => { if (!sheet.hidden) { renderSections(); renderResults(); } };   // le tempo lié ou délié, liste ouverte
   // en Duo, tempo lié : un natif qui le sait (web_clock, tools/natif_clock.py) suit l'horloge de la page sans qu'on règle la
