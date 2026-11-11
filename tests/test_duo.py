@@ -206,6 +206,7 @@ def test_linked_tempo_greys_unfollowing(page):
     assert dis("felucca") is None
     find("sloop")                                     # émulé : suit l'horloge, mais seulement réglé sur SYNC TRS
     assert dis("sloop") == "true"
+    assert a.evaluate("window.__catalogue.every((e) => !e.tempo_lie || e.natif)")   # (aucun émulé)
     find("kwasub")                                    # suit l'horloge, mais par l'USB seulement : l'émulateur ne la lui donne pas
     assert dis("kwasub") == "true"
     a.evaluate("document.querySelector(`#fw-results .fw-item[data-id='kwasub']`).click()")
@@ -370,7 +371,7 @@ def test_every_clock_native_acks(page):
     assert not bad, bad
 
 
-@pytest.mark.parametrize("kind", ["natif", "natif_b", "emule"])
+@pytest.mark.parametrize("kind", ["natif", "natif_b"])
 def test_tempo_lie_verified(page, kind):
     """Chaque firmware vérifié en Duo (tempo_lie), sans réglage, sur FM1-A (natif_b : sur FM1-B) ; l'autre FM-1 FM-1+VA. Le
     PLAY de FM-1+VA le lance en moins de 1,3 s (la bulle du Duo regarde à 1,5 s), il joue encore 1,5 s plus tard (sa lumière
@@ -382,7 +383,7 @@ def test_tempo_lie_verified(page, kind):
     pos = "b" if kind == "natif_b" else "a"
     me, other = (b, a) if pos == "b" else (a, b)
     me.wait_for_function("window.__catalogue && window.__catalogue.length")
-    ids = me.evaluate(f"window.__catalogue.filter((e) => e.tempo_lie && !!e.natif === {'false' if kind == 'emule' else 'true'}).map((e) => e.id)")
+    ids = me.evaluate("window.__catalogue.filter((e) => e.tempo_lie).map((e) => e.id)")
     if not ids:
         pytest.skip("aucun")
     link(page, 120)
@@ -401,7 +402,7 @@ def test_tempo_lie_verified(page, kind):
     for i in ids:
         if not me.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
             bad.append(i + " (ne démarre pas)"); continue
-        page.wait_for_timeout(2500 if kind != "emule" else 4000)
+        page.wait_for_timeout(2500)
         for who, name in ((other, "l'autre"), (me, "le sien")):
             tap(who)
             if not lit(True, 1300):

@@ -6506,9 +6506,10 @@ function buildPanel(fw) {
   }
   // en Duo, FM1-B prend FM-1+VA ou un firmware natif : un firmware émulé de plus serait trop lourd (et partagerait sa mémoire)
   function emuBarred(e) { return FM1_ID === "b" && e.id !== "fm1va" && !e.natif; }
-  // en Duo, tempo lié : seuls se choisissent les firmwares vérifiés en Duo (tempo_lie : sans réglage, ils partent et s'arrêtent
-  // avec l'autre FM-1, par son PLAY comme par le leur) ; les autres attendent (horloge_midi dit ce que leur code sait faire)
-  const followsClock = (e) => e.id === "fm1va" || e.id === "local" || e.tempo_lie === true;
+  // en Duo, tempo lié : seuls se choisissent FM-1+VA et les firmwares optimisés (natifs) vérifiés en Duo (tempo_lie : sans
+  // réglage, ils partent et s'arrêtent avec l'autre FM-1, par son PLAY comme par le leur). Pas d'émulé, fichier ouvert compris
+  // (horloge_midi dit ce que le code de chacun sait faire)
+  const followsClock = (e) => e.id === "fm1va" || (!!e.natif && e.tempo_lie === true);
   function tempoBarred(e) { let d = null; try { d = FM1_ID && window.parent.__duo; } catch { /* hors du Duo */ } return !!(d && d.linked) && !followsClock(e); }
   window.__fwRefresh = () => { if (!sheet.hidden) { renderSections(); renderResults(); } };   // le tempo lié ou délié, liste ouverte
   // en Duo, tempo lié : un natif qui le sait (web_clock, tools/natif_clock.py) suit l'horloge de la page sans qu'on règle la

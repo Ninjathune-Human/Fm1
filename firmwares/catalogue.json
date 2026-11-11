@@ -95,7 +95,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/amb-1.3.fwsc",
    "provenance_paquet": "release download/v1.3/amb-1.3.fwsc",
    "horloge_midi": true,
-   "tempo_lie": true
+   "tempo_lie": false
   },
   {
    "id": "arctic",
@@ -1693,7 +1693,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/mnm1-1.0.1.fwsc",
    "provenance_paquet": "release download/v1.0.1/mnm1-1.0.1.fwsc",
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "modelar",
