@@ -2,7 +2,7 @@
  "exact": {
   "Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.": "Power on, on the FM-1, starts the sound and the chosen firmware; the switch under the FM-1 does too. Powering off with the switch resets the active firmware to factory settings (its presets, patterns and settings are erased), then reloads the page.",
   "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own. A firmware that stops is restarted with Restart.",
-  "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12. Their functions panel explains it.",
+  "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12, MIDI file with SLOOP: a .mid file into one of its tracks, like its editor's Import MIDI, after a preview of what changes on the way. Their functions panel explains it.",
   "Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.": "The six FM-1 colourways, as swatches under the FM-1. With FM-1+VA, the screen takes the matching theme.",
   "Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.": "Solo and Duo, at the top of the page. Two FM-1s at once, FM1-A and FM1-B, each with its own firmware, memory and power: one above the other in portrait, one or the other in landscape, side by side if you like on a large screen. Linked tempo: the page gives both FM-1s the same MIDI clock, at the BPM chosen next to it, whatever their firmware; PLAY on its own, on either one, starts and stops them together. FM-1+VA follows it by itself; another firmware follows it if it is set to an external clock (CLK to USB, or TRS if it is emulated: CLOCK page of HOME for Felucca, GLOBAL of GLO for Hortator), a setting to undo afterwards so that it plays on its own again. FM1-B takes FM-1+VA or a native firmware.",
   "Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.": "When the browser handles MIDI, the MIDI button picks the input and the channel, for all firmwares and for this FM-1 only; its light blinks when messages arrive. A connected MIDI keyboard plays the loaded firmware.",
@@ -226,7 +226,28 @@
   "Tempo lié, en BPM": "Linked tempo, in BPM",
   "Donner la même horloge aux deux FM-1": "Give both FM-1s the same clock",
   "L'horloge du tempo lié ne démarre pas dans ce navigateur.": "The linked tempo's clock does not start in this browser.",
-  "L'horloge s'arrête. Un firmware resté sur une horloge externe ne joue plus seul : remettez la sienne sur interne, <b>CLK</b> sur <b>INT</b> (page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator).": "The clock stops. A firmware left on an external clock no longer plays on its own: set its clock back to internal, <b>CLK</b> to <b>INT</b> (CLOCK page of <b>HOME</b> for Felucca, GLOBAL of <b>GLO</b> for Hortator)."
+  "L'horloge s'arrête. Un firmware resté sur une horloge externe ne joue plus seul : remettez la sienne sur interne, <b>CLK</b> sur <b>INT</b> (page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator).": "The clock stops. A firmware left on an external clock no longer plays on its own: set its clock back to internal, <b>CLK</b> to <b>INT</b> (CLOCK page of <b>HOME</b> for Felucca, GLOBAL of <b>GLO</b> for Hortator).",
+  "Fichier MIDI…": "MIDI file…",
+  "Un fichier MIDI (.mid) dans une piste de SLOOP, comme « Import MIDI » de son éditeur : un aperçu d'abord": "A MIDI file (.mid) into a SLOOP track, like its editor's Import MIDI: a preview first",
+  "Importer un fichier MIDI": "Import a MIDI file",
+  "Piste du fichier": "File track",
+  "Piste de SLOOP": "SLOOP track",
+  "Piste 1": "Track 1",
+  "Piste 2": "Track 2",
+  "Piste 3": "Track 3",
+  "Batterie": "Drums",
+  "Annuler": "Cancel",
+  "Importer": "Import",
+  "Grille de la piste": "The track's grid",
+  "Rien à ajuster : chaque note tombe sur un pas.": "Nothing to adjust: every note falls on a step.",
+  "Les pas de la piste sont remplacés ; SAVE, sur SLOOP, garde le projet.": "The track's steps are replaced; SAVE, on SLOOP, keeps the project.",
+  "Les notes General MIDI vont sur les 16 voix de la batterie. Les pas de la piste sont remplacés ; SAVE, sur SLOOP, garde le projet.": "General MIDI notes go to the drum track's 16 voices. The track's steps are replaced; SAVE, on SLOOP, keeps the project.",
+  "SLOOP : connexion par l'USB…": "SLOOP: connecting over USB…",
+  "Fichier MIDI : avec SLOOP seulement, pour l'instant.": "MIDI file: with SLOOP only, for now.",
+  "SLOOP : pas de réponse.": "SLOOP: no answer.",
+  "SLOOP : il ne s'est pas présenté sur l'USB.": "SLOOP: it did not show up on USB.",
+  "SLOOP : DIV ou LEN introuvables.": "SLOOP: DIV or LEN not found.",
+  "SLOOP : le cœur d'émulation de cette page n'a pas l'USB.": "SLOOP: this page's emulation core has no USB."
  },
  "patterns": [
   [
@@ -356,6 +377,78 @@
   [
    "^<b>FM1-([AB])</b> \\((.+)\\) ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié\\.$",
    "<b>FM1-$1</b> ($2) does not read MIDI in the browser: it cannot follow the linked tempo."
+  ],
+  [
+   "^Grille (.+)$",
+   "Grid $1"
+  ],
+  [
+   "^(\\d+) pas sur (\\d+)$",
+   "$1 steps of $2"
+  ],
+  [
+   "^(\\d+) notes hors grille, posées sur le pas le plus proche$",
+   "$1 notes off the grid, moved to the nearest step"
+  ],
+  [
+   "^(\\d+) notes de trop dans des accords \\(4 au plus par pas\\)$",
+   "$1 notes too many in chords (4 at most per step)"
+  ],
+  [
+   "^(\\d+) accords écourtés par le suivant$",
+   "$1 chords cut short by the next one"
+  ],
+  [
+   "^(\\d+) coups en double sur une même voix$",
+   "$1 duplicate hits on one voice"
+  ],
+  [
+   "^(\\d+) notes en double sur un même pas$",
+   "$1 duplicate notes on one step"
+  ],
+  [
+   "^(\\d+) notes après le pas (\\d+), laissées de côté$",
+   "$1 notes after step $2, left out"
+  ],
+  [
+   "^Longueur de la piste : (\\d+) pas$",
+   "Track length: $1 steps"
+  ],
+  [
+   "^(\\d+) : sans nom \\((\\d+) notes\\)$",
+   "$1: untitled ($2 notes)"
+  ],
+  [
+   "^(\\d+) : (.+) \\((\\d+) notes\\)$",
+   "$1: $2 ($3 notes)"
+  ],
+  [
+   "^SLOOP : pas (\\d+) sur (\\d+)…$",
+   "SLOOP: step $1 of $2…"
+  ],
+  [
+   "^(\\d+) notes dans la piste (\\d) de SLOOP\\. SAVE, sur SLOOP, garde le projet\\.$",
+   "$1 notes in SLOOP's track $2. SAVE, on SLOOP, keeps the project."
+  ],
+  [
+   "^(\\d+) notes dans la batterie de SLOOP\\. SAVE, sur SLOOP, garde le projet\\.$",
+   "$1 notes in SLOOP's drum track. SAVE, on SLOOP, keeps the project."
+  ],
+  [
+   "^SLOOP : la version (.+) n'a pas l'import par pistes\\.$",
+   "SLOOP: version $1 cannot import into tracks."
+  ],
+  [
+   "^« (.+) » n'a aucune note\\.$",
+   "\"$1\" has no notes."
+  ],
+  [
+   "^« (.+) » : ce n'est pas un fichier MIDI\\.$",
+   "\"$1\": not a MIDI file."
+  ],
+  [
+   "^« (.+) » : le temps SMPTE n'est pas pris en charge\\.$",
+   "\"$1\": SMPTE time is not supported."
   ]
  ]
 }

@@ -131,6 +131,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .midi-pop label { display: grid; gap: 4px; font: 600 0.75rem var(--body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .midi-pop select { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); }
 .midi-pop p { margin: 0; font-size: 0.8125rem; line-height: 1.35; color: var(--muted); }
+/* Fichier MIDI (SLOOP) : l'aperçu dans la même bulle */
+.midi-pop h3 { margin: 0; font: 600 0.9375rem var(--body); color: var(--ink); overflow-wrap: anywhere; }
+.midi-pop ul { margin: 0; padding-left: 18px; font-size: 0.8125rem; line-height: 1.4; color: var(--ink); }
+.midi-pop label.check { display: flex; align-items: center; gap: 8px; font: 500 0.875rem var(--body); letter-spacing: 0; text-transform: none; color: var(--ink); }
+.midi-pop .actions { display: flex; justify-content: flex-end; gap: 8px; }
+.midi-pop .actions .pri { border-color: var(--accent); }
 /* l'interrupteur marche / arrêt : le symbole et un curseur, menthe quand le FM-1 est allumé */
 #power { padding: 0 12px 0 14px; }
 #power svg { width: 16px; height: 16px; flex: none; }
@@ -388,6 +394,10 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         </div>
         <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">Importer…</span></label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept=".kob,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream" multiple>Échantillons…</label>
+        <div class="midi" id="smf-box" hidden>
+          <label class="file" for="smf" title="Un fichier MIDI (.mid) dans une piste de SLOOP, comme « Import MIDI » de son éditeur : un aperçu d'abord"><input type="file" id="smf" accept=".mid,.midi,audio/midi,audio/x-midi,application/octet-stream">Fichier MIDI…</label>
+          <div class="midi-pop" id="smf-pop" role="dialog" aria-label="Importer un fichier MIDI" hidden></div>
+        </div>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
     </div>
@@ -400,7 +410,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         <dl>
           <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
           <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.</dd>
-          <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12. Le volet de leurs fonctions l'explique.</dd>
+          <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
@@ -2017,6 +2027,172 @@ function keyboardModel(letter) {
   });
   return { width: 18.5, height: KB_ROWS.length, keys };
 }
+
+// SLOOP : un fichier MIDI (.mid) dans une piste, comme « Import MIDI » de son éditeur web. Repris de cet éditeur
+// (isod89/sloop-fm1 2.8.5, web/editor.html, GPL-3.0 : SMF, ROLL, req, parse) : la lecture du fichier, sa mise en pas, et
+// les trames SysEx de son protocole (web/EDITOR_PROTOCOL.md : F0 7D 46 4C <cmd> <args> F7, une réponse par requête).
+const SLOOP = {
+  HDR: [0x7D, 0x46, 0x4C],
+  CMD: { INFO: 1, DESC: 5, TRACK: 27, TRACK_DUMP: 29, TRACK_STEP: 30, TRACK_PARAM: 31, DRUM_STEP: 33 },
+  ENUM: 8, STEPS: 13,                                   // formats de DESC (firmware core.h)
+  DIV_PER_BAR: [4, 8, 16, 32, 12, 24, 2, 1, 0.5],      // pas d'une mesure en 4/4 selon DIV (params.c N_SDIV)
+  // les notes GM de la batterie vers ses 16 voies (firmware drums.c LANE_OF_GM)
+  LANE_OF_GM: [1, 0, 7, 2, 3, 8, 9, 4, 9, 6, 9, 5, 10, 10, 11, 10, 12, 11, 12, 13, 11, 15, 11, 13, 12, 14, 14, 14, 14, 14,
+    14, 14, 15, 15, 13, 13, 15, 15, 13, 13, 7, 7, 7, 14, 14, 15, 15],
+  laneOf: (key) => (key < 35 ? 0 : key > 81 ? 13 : SLOOP.LANE_OF_GM[key - 35]),
+  levelOf: (vel) => (vel < 56 ? 1 : vel < 88 ? 2 : vel < 116 ? 0 : 3),   // drums.c vel_lvl : GHOST, SOFT, NORM, HARD
+  rest: () => ({ n: 0, notes: [0, 0, 0, 0], time: 2, flags: 0, vel: 0, lvl: 0, rat: 0 }),
+  tie: () => ({ n: 0, notes: [0, 0, 0, 0], time: 1, flags: 0, vel: 0, lvl: 0, rat: 0 }),
+  emptyDrum: () => ({ on: 0, lvl: new Array(16).fill(0), rat: new Array(16).fill(0) }),
+  v14: (v) => { const u = Math.max(-8192, Math.min(8191, Math.round(v))) + 8192; return [u & 0x7F, (u >> 7) & 0x7F]; },
+  frame(cmd, args = []) {
+    for (const b of args) if (!(Number.isInteger(b) && b >= 0 && b <= 0x7F)) throw new Error("octet de données invalide : " + b);
+    return [0xF0, ...SLOOP.HDR, cmd & 0x7F, ...args, 0xF7];
+  },
+  // -> { cmd, a } ou null quand ce n'est pas une trame de l'éditeur
+  unframe(d) {
+    if (!d || d.length < 6 || d[0] !== 0xF0 || d[d.length - 1] !== 0xF7) return null;
+    if (d[1] !== SLOOP.HDR[0] || d[2] !== SLOOP.HDR[1] || d[3] !== SLOOP.HDR[2]) return null;
+    return { cmd: d[4], a: Array.from(d.slice(5, d.length - 1)) };
+  },
+  reader(a) {
+    let i = 0;
+    const b = () => { if (i >= a.length) throw new Error("réponse trop courte"); return a[i++]; };
+    return { b, v: () => { const lo = b(); return (lo | (b() << 7)) - 8192; },
+      s: () => { let s = ""; for (;;) { const c = b(); if (!c) return s; s += String.fromCharCode(c); } }, more: () => i < a.length };
+  },
+  info(a) {
+    const r = SLOOP.reader(a);
+    const o = { version: r.s(), nengines: r.b(), pcount: r.b(), gcount: r.b(), nstep: r.b(), pe0: r.b(), engines: [] };
+    for (let k = 0; k < o.nengines; k++) o.engines.push(r.s());
+    o.ntrk = r.more() ? r.b() : 0;
+    o.proto = r.more() ? r.b() : 0;
+    return o;
+  },
+  desc(a) {
+    const r = SLOOP.reader(a);
+    const o = { scope: r.b(), id: r.b(), fmt: r.b(), min: r.v(), max: r.v(), def: r.v(), label: r.s(), unit: r.s(), names: [] };
+    if (o.fmt === SLOOP.ENUM) for (let k = 0; k <= o.max - o.min && k < 64 && r.more(); k++) o.names.push(r.s());
+    return o;
+  },
+  // TRACK (question) -> { sel, ntrk } ; TRACK_DUMP -> { track, engine, preset, p: P_COUNT valeurs }
+  track(a) { return { sel: a[0], ntrk: a[1] }; },
+  trackDump(a, pcount) {
+    const r = SLOOP.reader(a);
+    const o = { track: r.b(), engine: r.b(), preset: r.b(), p: [] };
+    for (let k = 0; k < pcount; k++) o.p.push(r.v());
+    return o;
+  },
+  // les arguments d'un pas : TRACK_STEP (piste, index, n, 4 notes, time, flags, vel, lvl, hi, rat) et DRUM_STEP
+  stepArgs(tr, i, st) {
+    const n = Math.max(0, Math.min(4, st.n | 0)), notes = [0, 1, 2, 3].map((k) => (st.notes[k] | 0) & 0x7F);
+    return [tr & 0x7F, i & 0x7F, n, ...notes, Math.max(0, Math.min(2, st.time | 0)), st.flags & 3, (st.vel | 0) & 0x7F,
+      (st.lvl | 0) & 0x7F, (((st.lvl | 0) >> 7) & 1) | ((((st.rat | 0) >> 7) & 1) << 1), (st.rat | 0) & 0x7F];
+  },
+  drumArgs(i, d) {
+    let lv = 0, rt = 0;
+    for (let l = 0; l < 16; l++) if ((d.on >> l) & 1) { lv += ((d.lvl[l] | 0) & 3) * 4 ** l; rt += ((d.rat[l] | 0) & 3) * 4 ** l; }
+    const g7 = (x, n) => Array.from({ length: n }, (_, k) => Math.floor(x / 2 ** (7 * k)) & 0x7F);
+    return [i & 0x7F, ...g7(d.on & 0xFFFF, 3), ...g7(lv, 5), ...g7(rt, 5)];
+  },
+  // un fichier MIDI -> { format, ppq, bpm, tracks: [{ name, notes: [{ t, dur, key, vel, ch }] }] } ; refuse un autre fichier
+  readSmf(bytes) {
+    const d = bytes instanceof Uint8Array ? bytes : Uint8Array.from(bytes);
+    const str = (o) => String.fromCharCode(d[o], d[o + 1], d[o + 2], d[o + 3]);
+    const u32 = (o) => ((d[o] << 24) | (d[o + 1] << 16) | (d[o + 2] << 8) | d[o + 3]) >>> 0;
+    if (d.length < 14 || str(0) !== "MThd") throw new Error("ce n'est pas un fichier MIDI");
+    const format = (d[8] << 8) | d[9], ntrk = (d[10] << 8) | d[11], div = (d[12] << 8) | d[13];
+    if (div & 0x8000) throw new Error("le temps SMPTE n'est pas pris en charge");
+    let o = 8 + u32(4), bpm = 0;
+    const tracks = [];
+    for (let k = 0; k < ntrk && o + 8 <= d.length; k++) {
+      if (str(o) !== "MTrk") { o += 8 + u32(o + 4); k--; if (o >= d.length) break; continue; }
+      const end = Math.min(d.length, o + 8 + u32(o + 4));
+      let p = o + 8, t = 0, run = 0, name = "";
+      const on = new Map(), notes = [];
+      const vlq = () => { let n = 0, c; do { c = d[p++]; n = (n << 7) | (c & 0x7F); } while (c & 0x80 && p < end); return n; };
+      const off = (ch, key) => {
+        const q = on.get(ch * 128 + key);
+        if (q && q.length) { const n = q.shift(); n.dur = Math.max(1, t - n.t); notes.push(n); }
+      };
+      while (p < end) {
+        t += vlq();
+        let st = d[p];
+        if (st & 0x80) p++; else st = run;
+        if (st === 0xFF) {
+          const type = d[p++], len = vlq();
+          if (type === 0x51 && len === 3 && !bpm) bpm = 60000000 / ((d[p] << 16) | (d[p + 1] << 8) | d[p + 2]);
+          if (type === 0x03 && !name) name = String.fromCharCode(...d.subarray(p, p + len)).replace(/[^\x20-\x7E]/g, "");
+          p += len;
+          continue;
+        }
+        if (st === 0xF0 || st === 0xF7) { p += vlq(); continue; }
+        run = st;
+        const hi = st & 0xF0, ch = st & 15;
+        const a = d[p++], b = hi === 0xC0 || hi === 0xD0 ? 0 : d[p++];
+        if (hi === 0x90 && b) {
+          const q = on.get(ch * 128 + a) || [];
+          q.push({ t, dur: 0, key: a, vel: b, ch });
+          on.set(ch * 128 + a, q);
+        } else if (hi === 0x80 || (hi === 0x90 && !b)) off(ch, a);
+      }
+      for (const [, q] of on) for (const n of q) { n.dur = Math.max(1, t - n.t); notes.push(n); }   // sans note-off : jusqu'à la fin
+      notes.sort((x, y) => x.t - y.t || x.key - y.key);
+      tracks.push({ name, notes });
+      o = end;
+    }
+    return { format, ppq: div || 96, bpm: Math.round(bpm || 120), tracks };
+  },
+  // des notes -> les pas d'une piste à DIV div, nstep au plus ; le compte rendu dit ce qui change en route :
+  // { notes, steps, moved (hors grille de plus d'un quart de pas), chordCut (plus de 4 notes sur un pas), overlap (un accord
+  //   coupé par le suivant), dropped (après le dernier pas), merged (la même note sur un pas, ou la même voie de batterie) }
+  toSteps(notes, ppq, div, nstep, drum = false) {
+    const tk = ppq * 4 / (SLOOP.DIV_PER_BAR[div] ?? 16);
+    const rep = { notes: notes.length, steps: 0, moved: 0, chordCut: 0, overlap: 0, dropped: 0, merged: 0 };
+    const at = new Map();
+    for (const n of notes) {
+      const pos = n.t / tk, i = Math.round(pos);
+      if (Math.abs(pos - i) > 0.25) rep.moved++;
+      if (i >= nstep) { rep.dropped++; continue; }
+      if (!at.has(i)) at.set(i, []);
+      at.get(i).push({ ...n, end: Math.max(i + 1, Math.round((n.t + n.dur) / tk)) });
+    }
+    if (drum) {
+      const ds = Array.from({ length: nstep }, SLOOP.emptyDrum);
+      let last = -1;
+      for (const [i, list] of at) {
+        for (const n of list) {
+          const l = SLOOP.laneOf(n.key);
+          if ((ds[i].on >> l) & 1) { rep.merged++; continue; }
+          ds[i].on |= 1 << l;
+          ds[i].lvl[l] = SLOOP.levelOf(n.vel);
+        }
+        last = Math.max(last, i);
+      }
+      rep.steps = last + 1;
+      return { dsteps: ds, len: Math.max(1, last + 1), report: rep };
+    }
+    const steps = Array.from({ length: nstep }, SLOOP.rest);
+    const starts = [...at.keys()].sort((a, b) => a - b);
+    let last = -1;
+    starts.forEach((i, k) => {
+      let list = at.get(i);
+      const keys = new Set();
+      list = list.filter((n) => (keys.has(n.key) ? (rep.merged++, false) : keys.add(n.key)));
+      if (list.length > 4) { rep.chordCut += list.length - 4; list = list.slice().sort((a, b) => b.vel - a.vel).slice(0, 4); }
+      list.sort((a, b) => a.key - b.key);
+      const vel = Math.max(...list.map((n) => n.vel));
+      let end = Math.min(nstep, Math.max(...list.map((n) => n.end)));
+      const next = k + 1 < starts.length ? starts[k + 1] : nstep;
+      if (end > next) { rep.overlap++; end = next; }
+      steps[i] = { n: list.length, notes: list.map((n) => n.key).concat([0, 0, 0, 0]).slice(0, 4), time: 0, flags: 0, vel, lvl: 0, rat: 0 };
+      for (let j = i + 1; j < end; j++) steps[j] = SLOOP.tie();
+      last = Math.max(last, end - 1);
+    });
+    rep.steps = last + 1;
+    return { steps, len: Math.max(1, last + 1), report: rep };
+  },
+};
 </script>
 <script id="fm1-emu">
 "use strict";
@@ -2060,6 +2236,11 @@ class EmuFirmware {
   // le MIDI, par la prise MIDI IN de l'appareil émulé (fm1-emu : l'UART1, à 31 250 bauds) ; l'horloge aussi : un
   // firmware la suit s'il sait suivre celle de cette prise (Felucca et les siens : CLK sur TRS)
   midiIn(d) { if (this.running) this.send({ type: "midi", bytes: Array.from(d) }); }
+  // l'USB, un câble vers la page (tools/fm1emu_usb.py) : branché à la demande, puis un message complet à la fois, SysEx
+  // compris ; ce que le firmware répond arrive par onUsb. this.usb (des images du worklet) : 0 sans câble, 1 en cours,
+  // 2 un appareil USB configuré, undefined avec un cœur qui n'a pas l'USB
+  usbPlug() { if (this.running) this.send({ type: "usb-plug" }); }
+  usbSend(bytes) { if (this.running) this.send({ type: "usb", bytes: Uint8Array.from(bytes) }); }
 
   async attach(ac, wasm) {
     if (!this.mod) this.mod = await import("./runtime/persistence.js");
@@ -2178,7 +2359,14 @@ class EmuFirmware {
       clearTimeout(w.timer); this.bootWaiters.delete(m.seq); w.resolve();
       return;
     }
+    if (m.type === "usb") {                                          // chaque message : sa longueur (2 octets), ses octets
+      if (m.seq !== this.running?.seq || !this.onUsb) return;
+      const b = m.bytes;
+      for (let i = 0; i + 2 <= b.length;) { const n = b[i] | (b[i + 1] << 8); this.onUsb(b.subarray(i + 2, i + 2 + n)); i += 2 + n; }
+      return;
+    }
     if (m.type !== "frame" || m.seq !== this.running?.seq) return;   // la machine en marche, même si un démarrage a échoué
+    this.usb = m.usb;
     if (m.lcd) { this.lcd = m.lcd; this.lcdNew = true; }
     if (m.leds) { this.leds = m.leds; this.green = m.green || 0; }
     if (m.halted && !this.halted) this.onHalt?.();
@@ -6487,6 +6675,8 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
+    $("smf-box").hidden = !(current.kind === "emu" && current.entry?.id === "sloop");   // Fichier MIDI : SLOOP, pour l'instant
+    if ($("smf-box").hidden) window.__smfClose?.();
     // sur l'iPad, l'app Fichiers directement : les sons par leurs extensions et application/octet-stream, sans
     // audio/* (qui propose la photothèque et l'appareil photo) ; .kob pour Pigeon seulement
     const fmdj = current.entry?.id === "fmdj";
@@ -6606,6 +6796,129 @@ function buildPanel(fw) {
     catch (err) { status.textContent = (rom ? "ROM : " : "Échantillons : ") + (err && err.message ? err.message : err); }
   }
   $("samples").addEventListener("change", (e) => { const f = [...e.target.files]; e.target.value = ""; takeSamples(f); });
+
+  // SLOOP : un fichier MIDI dans une piste, comme « Import MIDI » de son éditeur web, par le même protocole (SysEx sur l'USB
+  // du FM-1 émulé : tools/fm1emu_usb.py). Un aperçu d'abord : la piste du fichier, celle de SLOOP, ce qui change en route
+  const smfPop = $("smf-pop"), smfWait = (ms) => new Promise((r) => setTimeout(r, ms));
+  let smf = null;                                     // l'import en cours : { name, midi, src, track, link, plan, setlen }
+  class SloopLink {
+    constructor(e) { this.emu = e; this.pending = null; this.chain = Promise.resolve(); e.onUsb = (msg) => this.rx(msg); }
+    rx(msg) {                                         // (les notes et l'horloge que SLOOP envoie aussi par l'USB : ignorées)
+      const f = SLOOP.unframe(msg), w = this.pending;
+      if (!f || !w || f.cmd !== w.cmd) return;
+      this.pending = null; clearTimeout(w.timer); w.ok(f.a);
+    }
+    rq(cmd, args = [], ms = 2000) {                   // une requête à la fois, une réponse chacune
+      const run = () => new Promise((ok, ko) => {
+        const timer = setTimeout(() => { this.pending = null; ko(new Error("pas de réponse")); }, ms);
+        this.pending = { cmd, ok, timer };
+        this.emu.usbSend(SLOOP.frame(cmd, args));
+      });
+      const p = this.chain.then(run, run);
+      this.chain = p.catch(() => {});
+      return p;
+    }
+    async open() {
+      const e = this.emu;
+      if (e.usb === undefined) { await smfWait(400); if (e.usb === undefined) throw new Error("le cœur d'émulation de cette page n'a pas l'USB"); }
+      if (e.usb !== 2) e.usbPlug();                   // le câble : SLOOP se présente comme un appareil MIDI USB
+      for (const t0 = performance.now(); e.usb !== 2; await smfWait(100)) {
+        if (performance.now() - t0 > 15000) throw new Error("il ne s'est pas présenté sur l'USB");
+      }
+      const info = this.info = SLOOP.info(await this.rq(SLOOP.CMD.INFO));
+      if (!(info.proto >= 5 && info.ntrk >= 4)) throw new Error(`la version ${info.version} n'a pas l'import par pistes`);
+      const desc = async (id) => SLOOP.desc(await this.rq(SLOOP.CMD.DESC, [0, id]));
+      let div = await desc(30), len = await desc(29);  // DIV et LEN de la piste, là où l'éditeur les cherche d'abord
+      if (div.label !== "DIV" || len.fmt !== SLOOP.STEPS) {
+        div = len = null;
+        for (let id = 0; id < info.pe0 && !(div && len); id++) { const d = await desc(id); if (d.label === "DIV") div ??= d; else if (d.fmt === SLOOP.STEPS) len ??= d; }
+        if (!div || !len) throw new Error("DIV ou LEN introuvables");
+      }
+      this.pDiv = div.id; this.pLen = len.id; this.divNames = div.names;
+      this.sel = SLOOP.track(await this.rq(SLOOP.CMD.TRACK)).sel;
+    }
+    async divOf(track) {
+      const v = SLOOP.trackDump(await this.rq(SLOOP.CMD.TRACK_DUMP, [track]), this.info.pcount).p[this.pDiv] | 0;
+      return Math.max(0, Math.min(SLOOP.DIV_PER_BAR.length - 1, v));
+    }
+  }
+  window.__SloopLink = SloopLink;                     // (pour les tests : relire les pas)
+  function smfClose() { smf = null; smfPop.hidden = true; smfPop.replaceChildren(); }
+  window.__smfClose = smfClose;                      // (un autre firmware choisi : l'aperçu se ferme)
+  async function smfRender() {
+    const s = smf, L = s.link;
+    const srcs = s.midi.tracks.map((t, k) => [t, k]).filter(([t]) => t.notes.length);
+    if (!srcs.some(([, k]) => k === s.src)) s.src = srcs[0][1];
+    const drum = s.track === 3, div = await L.divOf(s.track);
+    if (smf !== s) return;
+    const plan = s.plan = SLOOP.toSteps(s.midi.tracks[s.src].notes, s.midi.ppq, div, L.info.nstep, drum), R = plan.report;
+    const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
+    const pick = (label, opts, value, on) => {
+      const sel = el("select");
+      for (const [v, t] of opts) sel.add(new Option(t, String(v)));
+      sel.value = String(value);
+      sel.addEventListener("change", () => { on(+sel.value); smfRender().catch((err) => { status.textContent = "SLOOP : " + err.message + "."; smfClose(); }); });
+      return el("label", {}, label, sel);
+    };
+    const warn = [];
+    if (R.moved) warn.push(`${R.moved} notes hors grille, posées sur le pas le plus proche`);
+    if (R.chordCut) warn.push(`${R.chordCut} notes de trop dans des accords (4 au plus par pas)`);
+    if (R.overlap) warn.push(`${R.overlap} accords écourtés par le suivant`);
+    if (R.merged) warn.push(drum ? `${R.merged} coups en double sur une même voix` : `${R.merged} notes en double sur un même pas`);
+    if (R.dropped) warn.push(`${R.dropped} notes après le pas ${L.info.nstep}, laissées de côté`);
+    const setlen = s.setlen = el("input", { type: "checkbox", checked: true });
+    const go = el("button", { type: "button", className: "pri", textContent: "Importer" });
+    go.addEventListener("click", smfImport);
+    const cancel = el("button", { type: "button", textContent: "Annuler" });
+    cancel.addEventListener("click", smfClose);
+    smfPop.replaceChildren(
+      el("h3", { textContent: s.name }),
+      pick("Piste du fichier", srcs.map(([t, k]) => [k, `${k + 1} : ${t.name || "sans nom"} (${t.notes.length} notes)`]), s.src, (v) => { s.src = v; }),
+      pick("Piste de SLOOP", [[0, "Piste 1"], [1, "Piste 2"], [2, "Piste 3"], [3, "Batterie"]], s.track, (v) => { s.track = v; }),
+      el("ul", {}, ...[`${R.notes} notes`, `Grille ${L.divNames[div] || "de la piste"}`, `${plan.len} pas sur ${L.info.nstep}`].map((t) => el("li", { textContent: t }))),
+      warn.length ? el("ul", {}, ...warn.map((t) => el("li", { textContent: t }))) : el("p", { textContent: "Rien à ajuster : chaque note tombe sur un pas." }),
+      el("label", { className: "check" }, setlen, `Longueur de la piste : ${plan.len} pas`),
+      el("p", { textContent: (drum ? "Les notes General MIDI vont sur les 16 voix de la batterie. " : "") + "Les pas de la piste sont remplacés ; SAVE, sur SLOOP, garde le projet." }),
+      el("div", { className: "actions" }, cancel, go));
+    smfPop.hidden = false;
+  }
+  async function smfImport(ev) {
+    const s = smf;
+    if (!s || !s.plan || s.busy) return;
+    const btn = ev.currentTarget;
+    s.busy = true; btn.disabled = true;
+    const L = s.link, plan = s.plan, n = L.info.nstep, tr = s.track;
+    try {
+      for (let i = 0; i < n; i++) {
+        status.textContent = `SLOOP : pas ${i + 1} sur ${n}…`;
+        if (plan.dsteps) await L.rq(SLOOP.CMD.DRUM_STEP, SLOOP.drumArgs(i, plan.dsteps[i]));
+        else await L.rq(SLOOP.CMD.TRACK_STEP, SLOOP.stepArgs(tr, i, plan.steps[i]));
+      }
+      if (s.setlen.checked) await L.rq(SLOOP.CMD.TRACK_PARAM, [tr, L.pLen, ...SLOOP.v14(plan.len)]);
+      status.textContent = `${plan.report.notes} notes dans la ${tr === 3 ? "batterie" : "piste " + (tr + 1)} de SLOOP. SAVE, sur SLOOP, garde le projet.`;
+      smfClose();
+    } catch (err) { status.textContent = "SLOOP : " + err.message + "."; s.busy = false; btn.disabled = false; }
+  }
+  $("smf").addEventListener("change", async (e) => {
+    const f = e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    smfClose();
+    if (!(current.kind === "emu" && current.entry?.id === "sloop" && current.running)) { status.textContent = "Fichier MIDI : avec SLOOP seulement, pour l'instant."; return; }
+    let midi;
+    try { midi = SLOOP.readSmf(new Uint8Array(await f.arrayBuffer())); } catch (err) { status.textContent = `« ${f.name} » : ${err.message}.`; return; }
+    if (!midi.tracks.some((t) => t.notes.length)) { status.textContent = `« ${f.name} » n'a aucune note.`; return; }
+    status.textContent = "SLOOP : connexion par l'USB…";
+    const link = new SloopLink(current);
+    try {
+      await link.open();
+      smf = { name: f.name, midi, src: 0, track: link.sel, link };
+      await smfRender();
+      status.textContent = "";
+    } catch (err) { status.textContent = "SLOOP : " + err.message + "."; smfClose(); }
+  });
+  document.addEventListener("pointerdown", (e) => { if (!smfPop.hidden && !$("smf-box").contains(e.target)) smfClose(); });
+  $("smf-box").addEventListener("keydown", (e) => { if (e.key === "Escape" && !smfPop.hidden) { e.stopPropagation(); smfClose(); } });
   device.addEventListener("dragover", (e) => { e.preventDefault(); });
   device.addEventListener("drop", (e) => {
     e.preventDefault();
