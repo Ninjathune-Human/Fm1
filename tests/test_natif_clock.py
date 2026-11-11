@@ -82,3 +82,22 @@ def test_worklet_forwards_clock(tmp_path):
     out = subprocess.run(["node", "-e", js, str(w)], capture_output=True, text=True, check=True)
     assert out.stdout.strip() == '[1,"clocktrue",0,"clockfalse"]', out.stdout + out.stderr   # (et la réponse, une fois fait)
     assert run("worklet", str(w), "natif-felucca").startswith("worklet : horloge inchangée")
+
+
+def test_fm106_slave_while_linked(tmp_path):
+    """FM-106 : lié, SYNC SLAVE (chaque impulsion le fait avancer : pas de dérive entre deux FM-1), son moteur remis en
+    ordre au liage comme au déliage ; son propre réglage n'est jamais écrit. Seulement firmware/src (src/ en est une copie
+    ancienne, que sa version navigateur ne compile pas)."""
+    body = ("static void seq_sync_apply(void)\n{\n    fm106_seq_t *s = &g_synth.seq;\n"
+            "    uint8_t slave = (uint8_t)(g_synth.sync_mode == 2u);\n    fm106_midi_clock_mode(s, slave);\n}\n"
+            "void menu(void) { g_synth.sync_mode = 1u; seq_sync_apply(); }\n")
+    for d in ("firmware/src", "src"):
+        (tmp_path / d).mkdir(parents=True)
+        (tmp_path / d / "fm106.c").write_text(body)
+    run("patch", str(tmp_path))
+    f = (tmp_path / "firmware/src/fm106.c").read_text()
+    assert "uint8_t slave = (uint8_t)(web_clock_ext || g_synth.sync_mode == 2u);" in f
+    assert "g_synth.sync_mode = 1u;" in f
+    assert 'export_name("web_clock"))) void web_clock(int on) { web_clock_ext = on != 0; seq_sync_apply(); }' in f
+    assert "web_clock" not in (tmp_path / "src/fm106.c").read_text()
+

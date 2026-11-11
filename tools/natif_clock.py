@@ -50,6 +50,14 @@ BERLIN_EXPORT = ('\nstatic int web_clock_was = -1;   /* (FM-1 : le tempo lié du
                  '{\n    if (on) { if (web_clock_was < 0) web_clock_was = rt.ext; rt_set_sync(1); }\n'
                  '    else if (web_clock_was >= 0) { rt_set_sync(web_clock_was); web_clock_was = -1; }\n}\n'
                  '#pragma pop_macro("__attribute__")\n')
+# FM-106 : SYNC (OFF, MASTER, SLAVE). En OFF et en MASTER, il part et s'arrête sur Start et Stop mais avance à son propre
+# BPM (un entier estimé d'après l'horloge) : deux FM-1 dérivent l'un de l'autre. En SLAVE, chaque impulsion le fait
+# avancer. Lié, il est SLAVE (seq_sync_apply remet son moteur en ordre) ; délié, son réglage revient
+FM106_SLAVE = "    uint8_t slave = (uint8_t)(g_synth.sync_mode == 2u);"
+FM106_EXPORT = ('\n#pragma push_macro("__attribute__")\n#undef __attribute__\n'
+                '__attribute__((used, visibility("default"), weak, export_name("web_clock"))) void web_clock(int on)'
+                ' { web_clock_ext = on != 0; seq_sync_apply(); }   /* (FM-1 : le tempo lié du Duo) */\n'
+                '#pragma pop_macro("__attribute__")\n')
 # en tête de chaque fichier modifié, une fois par unité de compilation (beaucoup s'incluent les uns les autres, et certains
 # ne sont pas compilés, comme le séquenceur de Felucca sous ChoralRoot) : faibles, d'une unité à l'autre ils n'en font qu'un
 HEAD = ('#ifndef FM1_WEB_CLOCK   /* (FM-1 : le tempo lié du Duo, web_clock ; tools/natif_clock.py) */\n#define FM1_WEB_CLOCK\n'
@@ -76,6 +84,11 @@ def patch(root):
             continue
         if BERLIN.search(text) and "rt.ext = ext ? 1 : 0;" in text and not done:
             open(f, "w", encoding="utf-8").write(text + BERLIN_EXPORT)
+            done.append(f.replace(os.sep, "/"))
+            continue
+        if FM106_SLAVE in text and "static void seq_sync_apply(void)" in text and "/firmware/src/" in f.replace(os.sep, "/") and not done:
+            new = text.replace(FM106_SLAVE, f"    uint8_t slave = (uint8_t)({FORCE} || g_synth.sync_mode == 2u);", 1)
+            open(f, "w", encoding="utf-8").write(f"static int {FORCE};   /* (FM-1 : le tempo lié du Duo, web_clock) */\n" + new + FM106_EXPORT)
             done.append(f.replace(os.sep, "/"))
             continue
         new = text
