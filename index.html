@@ -6030,7 +6030,9 @@ function buildPanel(fw) {
   const duoPlay = () => { try { if (FM1_ID && parent.__duoPlay) parent.__duoPlay(); } catch { /* hors du Duo */ } };
   // un autre firmware que FM-1+VA ne reçoit pas ce PLAY seul quand il le lancerait : seul le Start de la page le lance, et,
   // resté sur son horloge interne, il ne part pas à son propre tempo (la bulle du Duo dit quoi régler). Le PLAY lui
-  // parvient, en retard, si un autre bouton suit ou s'il est tenu 900 ms : ses gestes à lui.
+  // parvient, en retard, si un autre bouton suit ou s'il est tenu 900 ms : ses gestes à lui. Un firmware que rien ne lance
+  // (demarre false au catalogue : ni séquenceur ni son que Start lance) garde son PLAY, et ne lance pas l'autre FM-1.
+  const launches = () => !(current.entry && current.entry.demarre === false);
   let held = 0;                                      // le PLAY retenu (son minuteur), 0 sinon
   const duoLinked = () => { try { return !!(FM1_ID && parent.__duo && parent.__duo.linked); } catch { return false; } };
   const letGo = () => { if (held) { clearTimeout(held); held = 0; current.press("PLAY"); } };
@@ -6040,13 +6042,13 @@ function buildPanel(fw) {
         solo = l === "PLAY" && !downs.size ? performance.now() : 0;
         if (l !== "PLAY") letGo();
         downs.add(l);
-        if (solo && current !== va && current.playLight() !== "green" && duoLinked()) { held = setTimeout(letGo, 900); return; }
+        if (solo && current !== va && launches() && current.playLight() !== "green" && duoLinked()) { held = setTimeout(letGo, 900); return; }
         current.press(l);
       };
       if (k === "release") return (l) => {
         downs.delete(l);
         if (l === "PLAY" && held) { clearTimeout(held); held = 0; } else current.release(l);
-        if (l === "PLAY" && solo && performance.now() - solo < 900) duoPlay();
+        if (l === "PLAY" && solo && launches() && performance.now() - solo < 900) duoPlay();
         if (l === "PLAY") solo = 0;
       };
       const v = current[k]; return typeof v === "function" ? v.bind(current) : v; },
@@ -6902,7 +6904,8 @@ registerProcessor("duo-horloge", DuoClock);
     if (playing && checkAt && performance.now() > checkAt) {
       checkAt = 0;
       const deaf = (e) => e.entry && e.entry.natif_midi === 0;   // (lancé par son PLAY, il joue, mais à son tempo)
-      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && (deaf(E[k]) || !lit(k)));
+      const idle = (e) => e.entry && e.entry.demarre === false;   // (rien à lancer : il joue de ses touches)
+      const late = ["a", "b"].filter((k) => E[k] && E[k] !== vaOf(k) && !idle(E[k]) && (deaf(E[k]) || !lit(k)));
       if (late.length) window.__tip(linkBtn, late.map((k) => `<p><b>FM1-${k.toUpperCase()}</b> (${E[k].name}) ` + (deaf(E[k])
         ? "ne lit pas le MIDI dans le navigateur : il ne peut pas suivre le tempo lié.</p>"
         : "n'a pas démarré. S'il sait suivre une horloge MIDI, réglez la sienne sur externe : <b>CLK</b> sur <b>USB</b> (<b>TRS</b> s'il est émulé), page CLOCK de <b>HOME</b> pour Felucca, GLOBAL de <b>GLO</b> pour Hortator.</p>")).join(""));

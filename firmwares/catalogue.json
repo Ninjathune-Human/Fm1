@@ -235,7 +235,8 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/bytemania-1.2.0.fwsc",
    "provenance_paquet": "release download/v1.2.0/bytemania-1.2.0.fwsc",
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "caravel",
@@ -402,7 +403,8 @@
    "provenance_paquet": "dans le dépôt web/site/firmware/cs1.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "ctl",
@@ -1106,7 +1108,8 @@
    "provenance_paquet": "release download/fumi-1.1.0/fumi-1.1.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "gator",
@@ -1129,7 +1132,8 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/gator-0.6.fwsc",
    "provenance_paquet": "release download/v0.6/gator-0.6.fwsc",
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "ghoulbox",
@@ -1740,7 +1744,8 @@
    "provenance_paquet": "release download/v0.9.1/monk-0.9.1.fwsc",
    "natif_seulement": true,
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "mono2k",
@@ -2684,7 +2689,8 @@
    "provenance_paquet": "release download/v1.2/zen-1-1.2.fwsc",
    "natif_seulement": true,
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "zp12",
@@ -2795,7 +2801,8 @@
    "paquet_en_ligne": "https://github.com/joakimeriksson/scintilla-fm1/releases/download/v0.2.0/scintilla-0.2.0.fwsc",
    "provenance_paquet": "release download/v0.2.0/scintilla-0.2.0.fwsc",
    "horloge_midi": false,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "echofield",

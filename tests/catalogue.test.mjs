@@ -40,9 +40,10 @@ test("chaque firmware dit s'il suit l'horloge MIDI (tempo lié du Duo) : par l'U
   for (const e of cat.firmwares) assert.ok([true, false, "usb"].includes(e.horloge_midi), e.id);
 });
 
-test("chaque firmware dit s'il est vérifié en Duo, tempo lié (tempo_lie) : seulement s'il sait suivre l'horloge MIDI", () => {
+test("chaque firmware dit s'il est vérifié en Duo, tempo lié (tempo_lie) : seulement s'il sait suivre l'horloge MIDI, ou si rien ne le lance (demarre false)", () => {
   for (const e of cat.firmwares) {
     assert.equal(typeof e.tempo_lie, "boolean", e.id);
-    if (e.tempo_lie) assert.ok(e.horloge_midi, e.id);
+    assert.ok(!("demarre" in e) || e.demarre === false, e.id);
+    if (e.tempo_lie) assert.ok(e.horloge_midi || e.demarre === false, e.id);
   }
 });

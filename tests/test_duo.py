@@ -289,6 +289,27 @@ def test_own_play_held_reaches_firmware(page):
     assert not page.evaluate("window.__duo.playing")
 
 
+@pytest.mark.parametrize("fid", ["cs1", "monk"])
+def test_unlaunched_keeps_own_play(page, fid):
+    """Tempo lié, un natif que rien ne lance (demarre false : CS-1 lit le MIDI, MONK-1 non) : son PLAY seul lui parvient (HOLD,
+    sa lumière s'allume) sans lancer l'autre FM-1 ; le PLAY de FM-1+VA les lance sans bulle « n'a pas démarré »."""
+    a, b = open_duo(page, 1600, 900)
+    power(a)
+    power(b)
+    a.wait_for_function(f"window.__catalogue && window.__catalogue.some((e) => e.id === '{fid}' && e.natif)")
+    link(page, 120)
+    assert a.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{fid}'))")
+    page.wait_for_timeout(3000)
+    tap(page, a, "PLAY")
+    a.wait_for_function("window.__engine().playLight()", timeout=3000)
+    page.wait_for_timeout(800)
+    assert not page.evaluate("window.__duo.playing") and not b.evaluate("window.__fw.S.playing")
+    tap(page, b, "PLAY")
+    page.wait_for_timeout(2500)
+    assert page.evaluate("window.__duo.playing")
+    assert not page.evaluate("document.querySelector('.fs-tip')")
+
+
 def test_felucca_follows_linked_tempo(page):
     """Felucca natif réglé sur CLK USB (HOME, HOME : la page CLOCK ; KNOB 3) suit le tempo lié : un PLAY sur FM1-B (FM-1+VA)
     le lance, un autre l'arrête. (Sa version navigateur reçoit le MIDI temps réel depuis tools/natif_build.sh.)"""
@@ -383,7 +404,7 @@ def test_tempo_lie_verified(page, kind):
     pos = "b" if kind == "natif_b" else "a"
     me, other = (b, a) if pos == "b" else (a, b)
     me.wait_for_function("window.__catalogue && window.__catalogue.length")
-    ids = me.evaluate("window.__catalogue.filter((e) => e.tempo_lie).map((e) => e.id)")
+    ids = me.evaluate("window.__catalogue.filter((e) => e.tempo_lie && e.demarre !== false).map((e) => e.id)")
     if not ids:
         pytest.skip("aucun")
     link(page, 120)
