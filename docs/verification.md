@@ -24,7 +24,8 @@ Chaque paquet local démarre dans le sélecteur (Chromium sans interface, cœur 
 | Penumbra | vérifié | vérifié | 11208 | 0.00522 | 0.3 |
 | PT/FM | vérifié | vérifié | 4809 | 0.0186 | 0.3 |
 | SLOOP | À VÉRIFIER | vérifié | 13471 | 0.0756 | 0.1 |
+| SPELLBOX | vérifié | vérifié | 57600 | 0.04024 | 0.1 |
 
-Total : 20 firmwares, 18 vérifiés, 2 démarrés sans son mesuré, 0 qui ne démarrent pas.
+Total : 21 firmwares, 19 vérifiés, 2 démarrés sans son mesuré, 0 qui ne démarrent pas.
 
 « Silencieux » : le firmware démarre et affiche son écran, mais ne produit pas de son avec PLAY et une touche ; c'est attendu pour un contrôleur MIDI ou un moniteur, et ne vaut pas un échec.

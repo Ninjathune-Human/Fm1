@@ -1,0 +1,111 @@
+{
+ "id": "dark1",
+ "resume": "Un groupe qui joue tout seul, pour la musique sombre : batterie, basse, nappe, ligne acid et mélodie pincée, inventées à la volée dans 21 genres sombres (dark techno, EBM, witch house, dark ambient…), dix morceaux chacun. Vous dirigez : accords, breaks, effets, mutes ; Wander fait évoluer la musique d'elle-même.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Une octave plus bas, jusqu'à -3 : sur les pages d'une voix, cette voix ; ailleurs, tout le morceau. Dans le séquenceur, la batterie précédente ; dans le menu FX, coupe tous les effets."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Une octave plus haut, jusqu'à +3, de même. Dans le séquenceur, la batterie suivante."
+  },
+  {
+   "commande": "FX",
+   "role": "Ouvre et ferme le menu des effets. Deux appuis rapides : les réglages du dernier effet joué."
+  },
+  {
+   "commande": "SEL",
+   "role": "Majuscule, à tenir avec une autre commande. Tenu seul : une carte dit ce qu'il fait sur la page."
+  },
+  {
+   "commande": "ENV",
+   "role": "Page Pad ; encore : Pad env, Pad LFO, Chords. Avec SEL : la voix à l'écran se joue à la main (encore : elle repart seule)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Page Bass ; encore : Bass env, Bass LFO, Bass line."
+  },
+  {
+   "commande": "EDIT",
+   "role": "L'accord suivant, à la mesure suivante."
+  },
+  {
+   "commande": "GLO",
+   "role": "Page Global : tonique, thème, accordage, genre ; SAVE y garde le morceau. Maintenu : la table de mix (mutes, solos, scènes, auto-DJ, tap tempo)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Page Tempo ; encore : l'écran Perform. Deux appuis rapides : les visualiseurs. Maintenu : les réglages."
+  },
+  {
+   "commande": "SAVE",
+   "role": "Un break à la mesure suivante ; encore : la montée et le drop. Maintenu : le drop. Sur Global : garde le morceau."
+  },
+  {
+   "commande": "ARP",
+   "role": "Page Acid ; encore : Acid env, Acid line, Pluck, Pluck 2, Deja vu."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Page Drums ; encore : Links, Kit, Drum drift, Groove, Steps, Feel, Phrase. Maintenu : le séquenceur."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Lance et arrête. Avec SEL : Dice, un tirage des changements de Wander."
+  },
+  {
+   "commande": "REC",
+   "role": "Freeze : l'accord tient et la reverb résonne jusqu'au prochain appui. Avec SEL : Capture, la mesure jouée sur Jam écrite dans la ligne acid ou la boucle du pluck."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "Les pages, dans l'ordre. Avec HOME maintenu : le tempo. Dans le menu FX : la banque d'effets. Sur les visualiseurs : le suivant."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "Le morceau, 1 à 10. Avec SEL : il démarre à la mesure suivante. Avec GLO maintenu : le genre."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "Le mode de la gamme, qui donne l'humeur. Avec SEL : le son de la voix à l'écran (sur les pages de batterie, tout le kit)."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "La gamme : chaque touche ajoute ou retire sa note (la tonique reste). Sur les pages d'une voix jouée à la main et sur Jam : cette voix. Dans le séquenceur : les 16 pas. Dans le menu FX : les effets."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "Comme les touches blanches."
+  }
+ ],
+ "gestes": [
+  "SEL + SAVE maintenus 1,5 s sur Global : le morceau revient à son état d'usine.",
+  "ENV, LFO, ARP, EDIT, REC, OCT- ou OCT+ maintenu seul 0,9 s : une carte dit ce qu'il fait.",
+  "Une touche d'effet : un tap le verrouille ; tenue plus longtemps, l'effet joue tant qu'on la tient.",
+  "Une touche de scène maintenue 0,6 s garde la scène ; un tap la rappelle.",
+  "OCT- et OCT+ maintenus 5 s : mode de mise à jour."
+ ],
+ "modes": [
+  {
+   "nom": "Jam",
+   "texte": "La page après Global, sept pages à la molette SELECT : Jam, Jam Sound, Jam Steps, Jam Steps 2, Jam Arp, Jam Arp 2, Jam Arp 3. On y joue une voix aux touches, avec un arpégiateur ; Jam Steps montre la ligne (Pluck ou Acid) en 16 pas sur les touches blanches, REC y enregistre en direct, SEL + REC l'efface."
+  },
+  {
+   "nom": "Wander",
+   "texte": "Deux pages de réglages (SEL + FX, puis la molette jusqu'à WANDER et WANDER 2) qui font évoluer la musique d'elle-même : d'un morceau ou d'un genre à l'autre, des sons échangés, des réglages qui dérivent, des couches coupées, au rythme et dans la mesure choisis. Jamais la grosse caisse ni la caisse claire, jamais les morceaux gardés."
+  }
+ ],
+ "a_savoir": [
+  "Les réglages de Wander, d'Auto FX et de Drum Vary ne sont pas gardés à l'extinction."
+ ],
+ "source": {
+  "url": "https://github.com/sparky480v/Dark-1/blob/a2e7fb7d2ce39e6caebbd98206fd3eabbf887796/docs/MANUAL.md",
+  "commit": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796"
+ },
+ "d_apres_le_code": false
+}

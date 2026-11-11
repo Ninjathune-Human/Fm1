@@ -91,7 +91,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | X0X | Charles Vestal | GPL-3.0 | [502b2c2](https://github.com/charlesvestal/fm1-x0x/tree/502b2c28c14ab2bff31eb4f0777fdfd0efcf8bea) | fonctionne, natif |
 | X0X-RMX | Mr-Roboto (Oliver) | GPL-3.0 | [a4e78f3](https://github.com/Mr-Roboto/fm1-x0x-rmx/tree/a4e78f3a6e16fa310b7614e5876d07e16a0020f9) | fonctionne, natif |
 
-### Synthé (50)
+### Synthé (51)
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -140,6 +140,7 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Shine On | zvenson | GPL-3.0 | [2f37738](https://github.com/zvenson/shineon/tree/2f37738d690a628e0ae1d23d07ea5ee3eeda2de7) | fonctionne, natif |
 | SID-1 | putchdev | GPL-3.0 | [1d0555b](https://github.com/putchdev/sid-1/tree/1d0555b784173bb61e3e371ccedfbe8ff2559d18) | fonctionne |
 | SLOOP Floyd FM | René Bohne | GPL-3.0 | [f8f9f9d](https://github.com/renebohne/sloop-fm1/tree/f8f9f9d021bb5c9d60b01aa9d43e0d1e6d118a85) | fonctionne |
+| SPELLBOX | pjac1810 | GPL-3.0 | [d1b90ea](https://github.com/pjac1810/spellbox/tree/d1b90ea5d22200d424fbf2ab154bf52923378abe) | vérifié |
 | TastyWaves | marksweiss | GPL-3.0 | [15fd698](https://github.com/marksweiss/tastywaves/tree/15fd6986007ef51965303d7fd6410493e89c9ff4) | vérifié |
 | Tonitor | Nuno Zimas | GPL-3.0 | [0dccfca](https://github.com/nzimas/tonitor/tree/0dccfcaed372368dd1519db22f4f4c5a109132d0) | fonctionne |
 | Unholy Union | actuallysparky | GPL-3.0 | [3c0dfd9](https://github.com/actuallysparky/FM-1-Unholy-Union-generative-drone-firmware/tree/3c0dfd93571774a0a2386bd1d2bc2b80de48fdfb) | fonctionne, bêta, natif |

@@ -3128,6 +3128,30 @@
    "provenance_paquet": "dans le dépôt docs/firmware/bigorna.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
+  },
+  {
+   "id": "spellbox",
+   "nom": "SPELLBOX",
+   "version": "0.3",
+   "auteur": "pjac1810",
+   "categories": [
+    "Synthé",
+    "Autre"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": "firmwares/spellbox.fwsc",
+   "sha256": "b4b3f5ca96c4f7f5971586e9ada95cc343d789a8d4b3761b832c39f0920a4c05",
+   "taille": 610110,
+   "depot": "https://github.com/pjac1810/spellbox",
+   "commit_source": "d1b90ea5d22200d424fbf2ab154bf52923378abe",
+   "source_c": 3,
+   "description": "A talking spelling toy after the 1978 Speak & Spell: an 8-character fluorescent display, an LPC voice at 8 kHz, five spelling games on four levels, SING, LETTER SYNTH and SPEAK on the keys, and circuit-bending knobs.",
+   "emulateur_fm1emu": "vérifié",
+   "paquet_en_ligne": "https://github.com/pjac1810/spellbox/releases/download/v0.3/spellbox-0.3.fwsc",
+   "provenance_paquet": "release download/v0.3/spellbox-0.3.fwsc",
+   "horloge_midi": false,
+   "tempo_lie": false
   }
  ]
 }

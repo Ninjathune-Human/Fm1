@@ -10,6 +10,12 @@
    "wasm": "web/emu/app.wasm"
   },
   {
+   "id": "aisling",
+   "depot": "stephencummins/fm1-aisling",
+   "commit": "4529b34e3977343ed6199171b523443f76f102a9",
+   "script": "web/emu/build.sh"
+  },
+  {
    "id": "amb",
    "depot": "charlesvestal/fm1-amb",
    "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395",
@@ -106,6 +112,15 @@
    "wasm": "build/natif/cutador.wasm",
    "worklet": "tools/worklets/cutador.js",
    "dialecte": "felucca"
+  },
+  {
+   "id": "dark1",
+   "depot": "sparky480v/Dark-1",
+   "commit": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796",
+   "script": "web/emu/build_clang.sh",
+   "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
+   "construction": "EN_VERSION=1.0.5 sh web/emu/build_clang.sh",
+   "wasm": "build/emu/amb.wasm"
   },
   {
    "id": "delrio",
@@ -355,6 +370,12 @@
    "wasm": "build/emu/felucca.wasm"
   },
   {
+   "id": "karma",
+   "depot": "eatyourgreensstudio-dotcom/karma-fm1",
+   "commit": "23304e93d17d12a79546879d60d58c5c3421aac5",
+   "script": "web/emu/build.sh"
+  },
+  {
    "id": "loom",
    "depot": "charlesvestal/fm1-loom",
    "commit": "faf459d1f9cea3e634b6e2622a1c3e91d58b3452",
@@ -485,6 +506,12 @@
    "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8",
    "script": "web/sim/build.sh",
    "zig": "0.17.0"
+  },
+  {
+   "id": "penumbra",
+   "depot": "MadMooneyham/Penumbra",
+   "commit": "dcc00e18016dd352a4373fc7a3c69ce4f72a1dbf",
+   "script": "web/emu/build.sh"
   },
   {
    "id": "perf1",
