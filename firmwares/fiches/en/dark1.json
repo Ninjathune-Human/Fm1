@@ -1,0 +1,111 @@
+{
+ "id": "dark1",
+ "resume": "A band that plays by itself, for dark music: drums, bass, pad, an acid line and a plucked melody, made up on the spot in 21 dark genres (dark techno, EBM, witch house, dark ambient…), ten pieces each. You conduct: chords, breakdowns, effects, mutes; Wander makes the music evolve by itself.",
+ "commandes": [
+  {
+   "commande": "OCT-",
+   "role": "Down an octave, to -3: on a voice's pages, that voice; elsewhere, the whole piece. In the sequencer, the previous drum; in the FX menu, turns every effect off."
+  },
+  {
+   "commande": "OCT+",
+   "role": "Up an octave, to +3, the same way. In the sequencer, the next drum."
+  },
+  {
+   "commande": "FX",
+   "role": "Opens and closes the effects menu. Twice quickly: the settings of the last effect played."
+  },
+  {
+   "commande": "SEL",
+   "role": "Shift, held with another control. Held alone: a card says what it does on the page."
+  },
+  {
+   "commande": "ENV",
+   "role": "Pad page; again: Pad env, Pad LFO, Chords. With SEL: the voice on screen is played by hand (again: it plays by itself)."
+  },
+  {
+   "commande": "LFO",
+   "role": "Bass page; again: Bass env, Bass LFO, Bass line."
+  },
+  {
+   "commande": "EDIT",
+   "role": "The next chord, on the next bar."
+  },
+  {
+   "commande": "GLO",
+   "role": "Global page: root, theme, tune, genre; SAVE there stores the piece. Held: the mix map (mutes, solos, scenes, auto-DJ, tap tempo)."
+  },
+  {
+   "commande": "HOME",
+   "role": "Tempo page; again: the Perform screen. Twice quickly: the visualizers. Held: the settings."
+  },
+  {
+   "commande": "SAVE",
+   "role": "A breakdown on the next bar; again: the build and the drop. Held: the drop. On Global: stores the piece."
+  },
+  {
+   "commande": "ARP",
+   "role": "Acid page; again: Acid env, Acid line, Pluck, Pluck 2, Deja vu."
+  },
+  {
+   "commande": "SEQ",
+   "role": "Drums page; again: Links, Kit, Drum drift, Groove, Steps, Feel, Phrase. Held: the sequencer."
+  },
+  {
+   "commande": "PLAY",
+   "role": "Play and stop. With SEL: Dice, a roll of Wander's changes."
+  },
+  {
+   "commande": "REC",
+   "role": "Freeze: the chord holds and the reverb rings on until the next press. With SEL: Capture, the bar played on Jam written into the acid line or the pluck loop."
+  },
+  {
+   "commande": "MASTER",
+   "role": "Volume."
+  },
+  {
+   "commande": "SELECT",
+   "role": "The pages, in order. With HOME held: the tempo. In the FX menu: the effects bank. On the visualizers: the next one."
+  },
+  {
+   "commande": "PRESETS",
+   "role": "The piece, 1 to 10. With SEL: it starts on the next bar. With GLO held: the genre."
+  },
+  {
+   "commande": "ALGORITHM",
+   "role": "The scale's mode, which sets the mood. With SEL: the sound of the voice on screen (on the drum pages, the whole kit)."
+  },
+  {
+   "commande": "Touches blanches",
+   "role": "The scale: each key adds or removes its note (the root stays). On the pages of a voice played by hand and on Jam: that voice. In the sequencer: the 16 steps. In the FX menu: the effects."
+  },
+  {
+   "commande": "Touches noires",
+   "role": "The same as the white keys."
+  }
+ ],
+ "gestes": [
+  "SEL + SAVE held 1.5 s on Global: the piece goes back to factory.",
+  "ENV, LFO, ARP, EDIT, REC, OCT- or OCT+ held alone 0.9 s: a card says what it does.",
+  "An effect key: a tap latches it; held longer, the effect plays while held.",
+  "A scene key held 0.6 s stores the scene; a tap recalls it.",
+  "OCT- and OCT+ held 5 s: update mode."
+ ],
+ "modes": [
+  {
+   "nom": "Jam",
+   "texte": "The page after Global, seven pages on the SELECT dial: Jam, Jam Sound, Jam Steps, Jam Steps 2, Jam Arp, Jam Arp 2, Jam Arp 3. You play a voice on the keys, with an arpeggiator; Jam Steps shows the line (Pluck or Acid) as 16 steps on the white keys, REC records into it live, SEL + REC clears it."
+  },
+  {
+   "nom": "Wander",
+   "texte": "Two settings pages (SEL + FX, then the dial to WANDER and WANDER 2) that make the music evolve by itself: between pieces and genres, swapped sounds, drifting knobs, muted layers, on the schedule and by the amount you set. Never the kick or snare, never your stored pieces."
+  }
+ ],
+ "a_savoir": [
+  "Wander, Auto FX and Drum Vary settings are not kept at power-off."
+ ],
+ "source": {
+  "url": "https://github.com/sparky480v/Dark-1/blob/a2e7fb7d2ce39e6caebbd98206fd3eabbf887796/docs/MANUAL.md",
+  "commit": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796"
+ },
+ "d_apres_le_code": false
+}

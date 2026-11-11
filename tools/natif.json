@@ -108,6 +108,15 @@
    "dialecte": "felucca"
   },
   {
+   "id": "dark1",
+   "depot": "sparky480v/Dark-1",
+   "commit": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796",
+   "script": "web/emu/build_clang.sh",
+   "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
+   "construction": "EN_VERSION=1.0.5 sh web/emu/build_clang.sh",
+   "wasm": "build/emu/amb.wasm"
+  },
+  {
    "id": "delrio",
    "depot": "jsopdebeeck/fm1-delrio",
    "commit": "c604e5659b4505c98788b30982364289a8348178",
