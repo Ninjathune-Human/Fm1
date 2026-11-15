@@ -1,4 +1,7 @@
-"""Génère assets/banniere.png (1280 × 640) : le panneau FM-1 avec Felucca à l'écran, et le titre."""
+"""Génère assets/banniere.png (1280 × 640) : le panneau FM-1 avec Felucca à l'écran, et le titre ; avec `en`,
+assets/banner-en.png, le titre en anglais (README.en.md).
+    python3 tools/banniere.py [en]
+"""
 import base64
 import os
 import sys
@@ -19,13 +22,18 @@ h1 span { color: #2b7865; }
 p { font: 400 21px/1.4 Inter; color: #6e6e73; margin: 22px 0 0; max-width: 330px; }
 img { width: 800px; margin-left: -10px; filter: drop-shadow(0 30px 40px rgb(0 0 0 / .18)); }
 </style>
-<div class="text"><p class="eyebrow">Dans le navigateur</p><h1>FM-1</h1>
-<p>Émulateur FM-1 avec firmwares open source optimisés.</p></div>
+<div class="text"><p class="eyebrow">{eyebrow}</p><h1>FM-1</h1>
+<p>{tagline}</p></div>
 <img src="data:image/png;base64,{img}">"""
 
 
+TEXTES = {"fr": ("banniere.png", "Dans le navigateur", "Émulateur FM-1 avec firmwares open source optimisés."),
+          "en": ("banner-en.png", "In the browser", "FM-1 emulator with optimized open source firmwares.")}
+
+
 def main():
-    out = os.path.join(ROOT, "assets", "banniere.png")
+    name, eyebrow, tagline = TEXTES[sys.argv[1] if len(sys.argv) > 1 else "fr"]
+    out = os.path.join(ROOT, "assets", name)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with serve(ROOT) as url, sync_playwright() as p:
         b = p.chromium.launch(args=["--autoplay-policy=no-user-gesture-required"])
@@ -37,10 +45,12 @@ def main():
         pg.wait_for_timeout(3000)
         shot = pg.locator("#device").screenshot()
         pg.set_viewport_size({"width": 1280, "height": 640})
-        pg.set_content(PAGE.replace("{img}", base64.b64encode(shot).decode()))
+        pg.set_content(PAGE.replace("{eyebrow}", eyebrow).replace("{tagline}", tagline).replace("{img}", base64.b64encode(shot).decode()))
         pg.wait_for_timeout(300)
         pg.screenshot(path=out, clip={"x": 0, "y": 0, "width": 1280, "height": 640})
         b.close()
+    from PIL import Image                      # (la capture est en 2x : ramenée à 1280 × 640, comme banniere.png)
+    Image.open(out).convert("RGB").resize((1280, 640), Image.LANCZOS).save(out, optimize=True)
     print(out)
 
 

@@ -2,46 +2,42 @@
 
 # FM-1
 
-Émulateur FM-1 avec firmwares open source optimisés, dans le navigateur.
+Émulateur FM-1 avec firmwares open source optimisés, dans le navigateur. · [English](README.en.md)
 
-**Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**
-
-Chrome, Edge, Firefox et Safari récents, sur ordinateur, iPad et iPhone : souris, tactile et stylet.
+**Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**, dans Chrome, Edge, Firefox ou Safari récents, sur ordinateur, iPad et iPhone (souris, tactile, stylet).
 
 ## Utilisation
 
-1. **Allumer** démarre le son et le firmware choisi.
-2. Le contrôle **Firmware**, sous le panneau, ouvre la liste. La recherche accepte les fautes de frappe et les mots dans n'importe quel ordre ; Entrée démarre le premier résultat.
-3. Toucher une ligne démarre le firmware. Chaque firmware garde ses presets et ses patterns dans le navigateur, séparément des autres.
-4. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur. Il n'est envoyé nulle part.
-5. L'interrupteur **marche / arrêt**, sous le panneau, allume le FM-1. L'éteindre efface les sauvegardes du seul firmware actif.
-
-Sous le FM-1, quatre menus : le manuel d'utilisation, les raccourcis clavier (dessinés), les fonctions du firmware chargé, et **Sauvegarde et restauration**, qui exporte dans un fichier .json toute la mémoire du FM-1 dans ce navigateur (presets et patterns du Solo et du Duo, projets des firmwares natifs et émulés, paquets ouverts) et la restaure, FM-1 éteint. Le format est celui du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1), d'où vient cette fonction : une sauvegarde passe d'un site à l'autre. Les fiches existent pour les firmwares optimisés et FM-1+VA ; les autres affichent « Pas de fiche pour ce firmware pour l'instant ». Le bouton FR / EN, en haut à droite, passe l'interface, le manuel, les raccourcis et ces fiches en anglais (firmwares/fiches/en/, assets/lang-en.json) ; le choix est gardé dans le navigateur et suit d'un cadre du Duo à l'autre.
-
-Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne » (paquet chargé depuis le FM-1 Firmware Hub), « non évalué » (pas encore essayé dans l'émulateur).
+- **Allumer** démarre le son. Le contrôle **Firmware**, sous le panneau, ouvre la liste : la recherche tolère les fautes et l'ordre des mots, Entrée démarre le premier résultat. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur, sans l'envoyer nulle part.
+- Chaque firmware garde ses presets et ses patterns dans le navigateur. L'interrupteur **marche / arrêt** éteint le FM-1 ; l'éteindre efface les sauvegardes du seul firmware actif.
+- Sous le panneau : le manuel, les raccourcis clavier, les fonctions du firmware chargé, et **Sauvegarde et restauration**, toute la mémoire du FM-1 dans un fichier .json, au format du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1) (une sauvegarde passe d'un site à l'autre). **FR / EN** traduit l'interface, le manuel et les fiches.
+- **Duo** (`index.html?duo`) : deux FM-1 dans la page, chacun avec son firmware et sa mémoire. Avec **Tempo lié**, la page leur donne la même horloge MIDI au BPM choisi et un PLAY lance les deux ; seuls se choisissent alors les firmwares vérifiés en Duo. L'horloge vient du fork de Jake Pawlik.
+- **Fichier MIDI** : avec SLOOP, un fichier .mid entre dans une piste, comme par « Import MIDI » de [son éditeur web](https://github.com/isod89/sloop-fm1), dont la page parle le protocole.
 
 ## Comment ça marche
 
-- **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, écrans, séquenceur et MIDI (par Web MIDI : clavier, contrôleurs, horloge, patches DX7 en SysEx). Ce n'est pas son firmware : FM-1+VA de Baud Girl n'est pas redistribué ici, et la réimplémentation ne reprend aucun code de son firmware.
-- **Duo** (`index.html?duo`) : deux FM-1 dans la même page, FM1-A et FM1-B, chacun avec son firmware et sa mémoire ; en portrait l'un au-dessus de l'autre, en paysage l'un ou l'autre (ou côte à côte sur un grand écran), avec un tempo lié au choix : la page donne la même horloge MIDI aux deux, au BPM choisi, quel que soit leur firmware, et un PLAY seul sur l'un les lance et les arrête ensemble (FM-1+VA la suit de lui-même, comme les firmwares natifs de la famille Felucca (sauf FMDj, Purple Monkey et Duell, déjà sur CLK AUTO), SPAMPY, Elixir, Obervave, Shineon, Mono2k, Cutador, Berlin et FM-106 (mis en SLAVE : en MASTER, deux FM-1 dériveraient l'un de l'autre) : la page met leur horloge sur la sienne, puis leur rend leur réglage ; un autre firmware s'il est réglé sur une horloge externe, par exemple CLK sur TRS pour un Felucca émulé). Dans le sélecteur, tempo lié, seuls se choisissent les firmwares optimisés vérifiés en Duo (tempo_lie du catalogue : sans réglage, ils partent et s'arrêtent avec l'autre FM-1), et ceux sans séquenceur, que rien ne lance (demarre false : GATOR, MONK-1, Scintilla, Bytemania, ZEN-1, FuMi-1, CS-1, dont le delay suit l'horloge ; leur PLAY reste le leur) ; les autres sont grisés, les émulés tous. L'horloge, comptée sur un AudioWorklet, vient du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1).
-- **Les autres firmwares** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson. À chaque mise à jour du dépôt, une action GitHub le compile en WebAssembly au commit figé `60645a5`, puis publie le site.
-- **86 firmwares tournent en natif** : compilés depuis leurs sources pour le navigateur, sans processeur émulé (voir [performances](docs/performance.md)). Leur paquet émulé n'est plus dans le dépôt ; si leur compilation manquait, la page les émulerait depuis le paquet en ligne du FM-1 Firmware Hub (ECHOFIELD, GRAINE et Elixir, venus du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1), n'en ont pas : ils ne tournent qu'en natif). ECHOFIELD et GRAINE parlent le protocole de fm1-base, le cadre commun de leurs auteurs.
-- **Fichier MIDI, avec SLOOP** : un fichier .mid dans une piste de SLOOP (1, 2, 3 ou la batterie), comme « Import MIDI » de [son éditeur web](https://github.com/isod89/sloop-fm1), après un aperçu de ce qui change en route. La page branche un câble USB au FM-1 émulé (l'hôte USB de fm1-emu, ouvert à la page par `tools/fm1emu_usb.py`) et parle à SLOOP comme son éditeur, par SysEx (son `web/EDITOR_PROTOCOL.md`) ; la lecture du fichier et sa mise en pas viennent de cet éditeur (GPL-3.0). Les pas importés sont ceux de la piste en cours : SAVE, sur SLOOP, garde le projet.
-- **Les LED** : sur le FM-1, une LED est allumée ou éteinte, et un niveau entre les deux est une part du temps allumée (la lueur de repos de Felucca, 1/30 ; celle des boutons de la famille X0X, une image sur 4 ; le niveau moyen, la respiration, le rétroéclairage du firmware officiel, ~20 %). Le panneau dessine chaque LED à cette part, relevée dans les sources de chaque firmware (`tools/natif_leds.py`) ou mesurée par l'émulateur, vue comme l'œil la voit : à peu près son logarithme, car une LED allumée un quart du temps paraît presque allumée. Faible, elle éclaire d'abord le silicone sous la légende ou le centre de la fente, puis la légende entière.
-- Les paquets `.fwsc` sont ceux publiés par leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json)). Chacun a été démarré dans l'émulateur : voir le [rapport de vérification](docs/verification.md).
+- **86 firmwares natifs** : une action GitHub les compile depuis leurs sources en WebAssembly, sans processeur émulé ([performances](docs/performance.md)). Ce sont eux qui suivent les nouvelles versions de leurs auteurs.
+- **Les 47 autres** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson, compilé au commit figé `60645a5`. Ils restent à leur version, en attendant d'être intégrés en natif ou retirés.
+- **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, séquenceur, MIDI (Web MIDI, patches DX7 en SysEx). Son firmware n'est pas redistribué ici et aucun code n'en est repris.
+- **Les LED** : sur le FM-1, un niveau entre éteint et allumé est une part du temps allumée. Le panneau dessine cette part, relevée dans les sources de chaque firmware ou mesurée par l'émulateur, telle que l'œil la perçoit.
+- Les paquets `.fwsc` sont ceux de leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json), [rapport de vérification](docs/verification.md)).
 
 ## Firmwares
 
-« État » : vérifié (démarré ici, image et son mesurés), fonctionne (déclaré fonctionnel par fm1-emu), non évalué ; « natif » : compilé depuis ses sources, sans émulation.
+« État » : vérifié (démarré ici, image et son mesurés), fonctionne (selon fm1-emu), non évalué ; « natif » : compilé depuis ses sources ; « en ligne » : paquet chargé depuis le FM-1 Firmware Hub ; « bêta » : version de test de son auteur.
 
 <!-- firmwares -->
-### Officiel (1)
+<details>
+<summary>Officiel (1)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
 | Firmware officiel V15 | Fabricant du FM-1 | Apache-2.0 | [4c7496d](https://github.com/m-vave/fm1_open/tree/4c7496daac04a95ff10d1afdcc8f9ead2dbabc41) | fonctionne |
 
-### Groovebox (45)
+</details>
+
+<details>
+<summary>Groovebox (45)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -91,7 +87,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | X0X | Charles Vestal | GPL-3.0 | [512c0da](https://github.com/charlesvestal/fm1-x0x/tree/512c0daaf25f82c5b70e9eceee195864e7da378c) | fonctionne, natif |
 | X0X-RMX | Mr-Roboto (Oliver) | GPL-3.0 | [a4e78f3](https://github.com/Mr-Roboto/fm1-x0x-rmx/tree/a4e78f3a6e16fa310b7614e5876d07e16a0020f9) | fonctionne, natif |
 
-### Synthé (51)
+</details>
+
+<details>
+<summary>Synthé (51)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -147,7 +146,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | Vector37 | genkigenki | GPL-3.0 | [08742a4](https://github.com/genkigenki/Vector37/tree/08742a4198f99e2db2846b00b70ed6808239c447) | fonctionne, bêta, en ligne |
 | ZEN-1 | aceyprime | GPL-3.0 | [ec92952](https://github.com/aceyprime/zen-1/tree/ec9295233ea64ddac224b58b4d07216706c1b8ee) | fonctionne, natif |
 
-### Accords (7)
+</details>
+
+<details>
+<summary>Accords (7)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -159,7 +161,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | FuMi-1 | cartesive | GPL-3.0 | [6a20fa3](https://github.com/cartesive/fumi-1/tree/6a20fa387cf6bc28a33309a09aaa94a108325e2e) | fonctionne, natif |
 | GuitChordi | Stoogs | GPL-3.0 | [09a4f17](https://github.com/stoogs/guitchordi/tree/09a4f170d76e7e6b1fad6cb3f3609553eabaf498) | vérifié, bêta |
 
-### Boîte à rythmes (7)
+</details>
+
+<details>
+<summary>Boîte à rythmes (7)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -171,7 +176,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | PIGEON | The Shrimp Blimp | GPL-3.0 | [48f028f](https://github.com/TheShrimpBlimp/pigeon/tree/48f028f2ee7f6a0140dfef9d9426dc3237f2e466) | fonctionne, bêta, natif |
 | zp12 | zvenson | GPL-3.0 | [7b8b975](https://github.com/zvenson/zp12/tree/7b8b97586ef87854d1859aad907e5f10ca49898d) | fonctionne |
 
-### Tracker (6)
+</details>
+
+<details>
+<summary>Tracker (6)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -182,7 +190,10 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | PT/FM | hitosu | GPL-3.0 | [8de148d](https://github.com/hitosu/ptfm/tree/8de148d5913331c43c996a99c2d06ef7778c21de) | vérifié, bêta |
 | SIDOU | Denis Sablić | GPL-3.0 | [f508588](https://github.com/dsablic/sidou/tree/f50858880db57d301eafefac4883045591497884) | fonctionne, bêta |
 
-### Autre (16)
+</details>
+
+<details>
+<summary>Autre (16)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -202,16 +213,16 @@ Marqueurs de la liste : « bêta » (version de test de son auteur), « en ligne
 | PurpleMonkey | Quixotic7 | GPL-3.0 | [8c9bba1](https://github.com/Quixotic7/PurpleMonkeyFM1/tree/8c9bba141fea1a12ab1b65d429a0d226b7e0b451) | fonctionne, bêta, natif |
 | Rainbow Mode | joshbartlettband-web | GPL-3.0 | [0baf362](https://github.com/joshbartlettband-web/felucca-rainbow/tree/0baf362731c65398ad963229a3fe5500c75c6e3e) | fonctionne, natif |
 | Tuna | delirioux | GPL-3.0 | [6f9a6dd](https://github.com/delirioux/tuna/tree/6f9a6dd0d1fa43a8eb457dfca0eb50cf6ec22662) | fonctionne, natif |
+
+</details>
 <!-- /firmwares -->
 
 ## Licences et crédits
 
-- **Ce dépôt** : licence MIT (`LICENSE`), © 2026 Ninjathune-Human, sauf les fichiers ci-dessous, qui reprennent du code sous GPL-3.0 et restent donc sous GPL-3.0 (`LICENSES/GPL-3.0.txt`) :
-  - `index.html`, dont le panneau (dessin et gestes) est adapté de l'[émulateur DUB-1](https://github.com/sbegueria/fm1-dub). Le moteur FM-1+VA qu'elle contient, écrit ici d'après le manuel, est sous MIT, comme sa copie `engine.js` ;
-  - les adaptateurs de `tools/worklets/` écrits d'après le code de leur firmware : `chipbox.js`, `frodhes.js`, `hera.js`, `hortator.js`, `hortator_sim.c`, `ravel.js` (marqués `SPDX-License-Identifier: GPL-3.0-only`).
-- **Polices** : M PLUS Rounded 1c et Barlow Semi Condensed, incluses dans `index.html`, sont sous SIL Open Font License 1.1 (`LICENSES/OFL-1.1.txt`).
-- **fm1-emu** : licence MIT, © 2026 Joakim Eriksson. Ses fichiers d'exécution sont publiés avec leur licence (`runtime/LICENSE-fm1-emu.txt`).
-- **Firmwares** : chacun reste sous la licence de son auteur (GPL-3.0 pour la plupart, MPL-2.0 pour neuf d'entre eux, Apache-2.0 pour le firmware officiel V15). Les textes sont dans `firmwares/licences/`, et la colonne « Source » renvoie au code source exact de chaque paquet.
-- **Catalogue** : établi d'après le [FM-1 Firmware Hub](https://thefirmwarehub.com/) de zvenson.
-- **FM-1+VA** est une création de Baud Girl ([baudgirl.com](https://baudgirl.com/work/FM-1+VA)) ; son firmware n'est pas redistribué ici.
+- **Ce dépôt** : licence MIT (`LICENSE`), © 2026 Ninjathune-Human, sauf ce qui reprend du code sous GPL-3.0 et reste sous GPL-3.0 (`LICENSES/GPL-3.0.txt`) : `index.html`, dont le panneau est adapté de l'[émulateur DUB-1](https://github.com/sbegueria/fm1-dub) (le moteur FM-1+VA, écrit ici, est sous MIT, comme sa copie `engine.js`), et les adaptateurs de `tools/worklets/` écrits d'après le code de leur firmware (marqués `SPDX-License-Identifier: GPL-3.0-only`).
+- **Polices** : M PLUS Rounded 1c et Barlow Semi Condensed, SIL Open Font License 1.1 (`LICENSES/OFL-1.1.txt`).
+- **fm1-emu** : licence MIT, © 2026 Joakim Eriksson (`runtime/LICENSE-fm1-emu.txt`).
+- **Firmwares** : chacun sous la licence de son auteur (GPL-3.0 pour la plupart, MPL-2.0 pour neuf, Apache-2.0 pour le firmware officiel V15), textes dans `firmwares/licences/` ; la colonne « Source » renvoie au code exact de chaque paquet.
+- **Catalogue** : d'après le [FM-1 Firmware Hub](https://thefirmwarehub.com/) de zvenson.
+- **FM-1+VA** est une création de Baud Girl ([baudgirl.com](https://baudgirl.com/work/FM-1+VA)).
 - FM-1 est une marque de son propriétaire. Projet indépendant.

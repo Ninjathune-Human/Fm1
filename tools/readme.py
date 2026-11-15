@@ -1,4 +1,4 @@
-"""Écrit, dans README.md, la liste des firmwares par catégorie, entre les marqueurs <!-- firmwares -->."""
+"""Écrit, dans README.md, la liste des firmwares par catégorie (une section repliable chacune), entre les marqueurs <!-- firmwares -->."""
 import json
 import os
 import re
@@ -29,7 +29,8 @@ def main():
             continue
         first = (e["categories"] or ["Autre"])[0]
         groups["Autre" if first not in groups else first].append(e)
-    body = "\n\n".join(f"### {c} ({len(v)})\n\n{table(v)}" for c, v in groups.items() if v)
+    # chaque catégorie repliée : la liste reste entière (liens vers les sources), le README court à lire
+    body = "\n\n".join(f"<details>\n<summary>{c} ({len(v)})</summary>\n\n{table(v)}\n\n</details>" for c, v in groups.items() if v)
     path = os.path.join(ROOT, "README.md")
     text = open(path, encoding="utf-8").read()
     text = re.sub(r"<!-- firmwares -->.*<!-- /firmwares -->", lambda _: f"<!-- firmwares -->\n{body}\n<!-- /firmwares -->", text, flags=re.S)
