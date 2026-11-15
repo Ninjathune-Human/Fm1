@@ -85,8 +85,8 @@
   "The repository's other three firmwares (LOF-1, ECO-1, GRAV-1) are experimental and are not described here."
  ],
  "source": {
-  "url": "https://github.com/RustyPawz/fm1-HYP1/blob/57c456db61826331d356458c9c1a136517da7cbf/README.md",
-  "commit": "57c456db61826331d356458c9c1a136517da7cbf"
+  "url": "https://github.com/RustyPawz/fm1-HYP1/blob/824316eed62a877cb0d9554ad0a80714830f51e4/README.md",
+  "commit": "824316eed62a877cb0d9554ad0a80714830f51e4"
  },
  "d_apres_le_code": false
 }

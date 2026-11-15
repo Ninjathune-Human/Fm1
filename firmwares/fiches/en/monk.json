@@ -63,8 +63,8 @@
   "Single voice: the most recently held key sounds; when released, the previous one resumes, and moving from one to another glides (GLIDE)."
  ],
  "source": {
-  "url": "https://github.com/charlesvestal/fm1-monk/blob/b21a361ea43b04b38b7598d35eb1ca651baaa661/docs/MANUAL.md",
-  "commit": "b21a361ea43b04b38b7598d35eb1ca651baaa661"
+  "url": "https://github.com/charlesvestal/fm1-monk/blob/7f4de9c94ee4cffc5671babd01adefd1c62ed1a2/docs/MANUAL.md",
+  "commit": "7f4de9c94ee4cffc5671babd01adefd1c62ed1a2"
  },
  "d_apres_le_code": false
 }

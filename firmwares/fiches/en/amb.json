@@ -84,8 +84,8 @@
   "KNOB 1 to 4 set the four values of the page; a layer's level is always on KNOB 1."
  ],
  "source": {
-  "url": "https://github.com/charlesvestal/fm1-amb/blob/188b0a42f20a547864e732ae5ea1339d0fbcf395/docs/MANUAL.md",
-  "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395"
+  "url": "https://github.com/charlesvestal/fm1-amb/blob/7c538516d6c52216ff4c8a4881cf2f0dcb07c44b/docs/MANUAL.md",
+  "commit": "7c538516d6c52216ff4c8a4881cf2f0dcb07c44b"
  },
  "d_apres_le_code": false
 }

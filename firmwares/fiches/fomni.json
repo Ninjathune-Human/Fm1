@@ -88,8 +88,8 @@
   "Le MIDI entre par l'USB et la prise TRS, et sort par l'USB."
  ],
  "source": {
-  "url": "https://github.com/charlesvestal/fm1-fomni/blob/6ecd227013cc18def0e89d035b3760eb268b342b/README.md",
-  "commit": "6ecd227013cc18def0e89d035b3760eb268b342b"
+  "url": "https://github.com/charlesvestal/fm1-fomni/blob/17a740b7b2d19615ffe19aa73f8eda67f60f223d/README.md",
+  "commit": "17a740b7b2d19615ffe19aa73f8eda67f60f223d"
  },
  "d_apres_le_code": false
 }

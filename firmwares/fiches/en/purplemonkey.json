@@ -81,8 +81,8 @@
   "Beta version: the docs recommend reading the install and rollback section before installing."
  ],
  "source": {
-  "url": "https://github.com/Quixotic7/PurpleMonkeyFM1/blob/7590d4a5205bd4932b206d676c09b9521843a023/docs/PURPLEMONKEY.md",
-  "commit": "7590d4a5205bd4932b206d676c09b9521843a023"
+  "url": "https://github.com/Quixotic7/PurpleMonkeyFM1/blob/8c9bba141fea1a12ab1b65d429a0d226b7e0b451/docs/PURPLEMONKEY.md",
+  "commit": "8c9bba141fea1a12ab1b65d429a0d226b7e0b451"
  },
  "d_apres_le_code": false
 }

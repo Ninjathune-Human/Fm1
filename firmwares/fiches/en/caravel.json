@@ -93,8 +93,8 @@
   "The documentation says tests on a real FM-1 are pending, and refers to the Felucca manual for inherited controls."
  ],
  "source": {
-  "url": "https://github.com/bonszaimusic/caravel/blob/b50bad57dcf32862f36661a5fc2996e13392b93e/docs/menus-and-pages.md",
-  "commit": "b50bad57dcf32862f36661a5fc2996e13392b93e"
+  "url": "https://github.com/bonszaimusic/caravel/blob/89bf631f01cda2a68f3a85cdb9e81dcbbf53088c/docs/menus-and-pages.md",
+  "commit": "89bf631f01cda2a68f3a85cdb9e81dcbbf53088c"
  },
  "d_apres_le_code": false
 }

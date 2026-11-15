@@ -90,8 +90,8 @@
   "Powering off with the switch also erases its sounds; Backup and restore keeps a copy."
  ],
  "source": {
-  "url": "https://github.com/Philip-Bos/echofield-fm1/blob/27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f/README.md",
-  "commit": "27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f"
+  "url": "https://github.com/Philip-Bos/echofield-fm1/blob/4734e972d4b4b7126c30f509f7af3368590e28ac/README.md",
+  "commit": "4734e972d4b4b7126c30f509f7af3368590e28ac"
  },
  "d_apres_le_code": false
 }

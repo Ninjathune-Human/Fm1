@@ -91,8 +91,8 @@
   "USB MIDI: notes on any channel with velocity, pitch bend of plus or minus 2 semitones, and 12 learned CC bindings."
  ],
  "source": {
-  "url": "https://github.com/llozd/bytemania/blob/e670b35369f8556ee82683f35c6b8bfbcb366155/README.md",
-  "commit": "e670b35369f8556ee82683f35c6b8bfbcb366155"
+  "url": "https://github.com/llozd/bytemania/blob/139748d2181216af68afca26d251fb34c055f888/README.md",
+  "commit": "139748d2181216af68afca26d251fb34c055f888"
  },
  "d_apres_le_code": false
 }

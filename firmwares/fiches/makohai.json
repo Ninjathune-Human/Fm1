@@ -1,6 +1,6 @@
 {
  "id": "makohai",
- "resume": "Groovebox génératif dans l'esprit de la musique tracker du début des années 90 : six pistes (lead, arp, pad, basse, batterie, sfx) composées en direct dans dix styles. On mixe les styles au lieu de programmer des pas.",
+ "resume": "Groovebox génératif dans l'esprit de la musique tracker du début des années 90 : six pistes (lead, arp, pad, basse, batterie, sfx) composées en direct dans dix-huit styles. On mixe les styles au lieu de programmer des pas.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -74,7 +74,8 @@
  "gestes": [
   "HOME maintenu : SETUP.",
   "REC un appui : INTER ; REC maintenu : DROP.",
-  "SEL + ENV : verrouille la piste."
+  "SEL + ENV : verrouille la piste.",
+  "SEL + HOME : les images en plein écran, coupées sur le temps."
  ],
  "modes": [
   {
@@ -90,8 +91,8 @@
   "KNOB 1 à 4 règlent le réglage affiché pour les quatre pistes de la fenêtre."
  ],
  "source": {
-  "url": "https://github.com/delirioux/makohai/blob/800edc8a88d2a883fbeb2cf198a976d7769f3707/README.md",
-  "commit": "800edc8a88d2a883fbeb2cf198a976d7769f3707"
+  "url": "https://github.com/delirioux/makohai/blob/bf6646ff2dbcb6ac10a726724348d5302b37ab17/README.md",
+  "commit": "bf6646ff2dbcb6ac10a726724348d5302b37ab17"
  },
  "d_apres_le_code": false
 }

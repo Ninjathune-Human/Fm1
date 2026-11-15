@@ -6511,6 +6511,9 @@ function buildPanel(fw) {
       await catalogueReady;
       const e = catalogue.find((c) => c.id === id);
       if (my === ficheSeq && e) ficheMeta.textContent = [e.auteur, e.version, e.licence].filter(Boolean).join(" · ");
+      // une fiche pas encore relue depuis la mise à jour du firmware (son commit n'est plus celui du catalogue) : le dire
+      if (my === ficheSeq && e && x?.source?.commit && e.commit_source && x.source.commit !== e.commit_source)
+        ficheBox.lastElementChild?.append(" · Fiche d'une version précédente : le firmware a pu changer depuis.");
     }
   }
   ficheDetails.addEventListener("toggle", () => { if (ficheDetails.open) showFiche(); });

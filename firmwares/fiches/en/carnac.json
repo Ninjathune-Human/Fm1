@@ -106,8 +106,8 @@
   "Carnac is in beta (0.9.x). To restore the original firmware, the repository cites OCT- and OCT+ held for 5 seconds."
  ],
  "source": {
-  "url": "https://github.com/OwenKirby/carnac-os/blob/be8cc104f3618ba9b12c834827abfdbb4e1686af/docs/manual.md",
-  "commit": "be8cc104f3618ba9b12c834827abfdbb4e1686af"
+  "url": "https://github.com/OwenKirby/carnac-os/blob/55cf5b5391951c3393972c83b937e8af344c1ddd/docs/manual.md",
+  "commit": "55cf5b5391951c3393972c83b937e8af344c1ddd"
  },
  "d_apres_le_code": false
 }

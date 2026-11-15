@@ -1,6 +1,6 @@
 {
  "id": "makohai",
- "resume": "A generative groovebox in the spirit of early-90s tracker music: six lanes (lead, arp, pad, bass, drums, sfx) composed live in ten styles. You mix styles instead of programming steps.",
+ "resume": "A generative groovebox in the spirit of early-90s tracker music: six lanes (lead, arp, pad, bass, drums, sfx) composed live in eighteen styles. You mix styles instead of programming steps.",
  "commandes": [
   {
    "commande": "OCT-",
@@ -74,7 +74,8 @@
  "gestes": [
   "HOME held: SETUP.",
   "REC one press: INTER; REC held: DROP.",
-  "SEL + ENV: locks the track."
+  "SEL + ENV: locks the track.",
+  "SEL + HOME: the pictures full screen, cut on the beat."
  ],
  "modes": [
   {
@@ -90,8 +91,8 @@
   "KNOB 1 to 4 set the displayed setting for the four tracks of the window."
  ],
  "source": {
-  "url": "https://github.com/delirioux/makohai/blob/800edc8a88d2a883fbeb2cf198a976d7769f3707/README.md",
-  "commit": "800edc8a88d2a883fbeb2cf198a976d7769f3707"
+  "url": "https://github.com/delirioux/makohai/blob/bf6646ff2dbcb6ac10a726724348d5302b37ab17/README.md",
+  "commit": "bf6646ff2dbcb6ac10a726724348d5302b37ab17"
  },
  "d_apres_le_code": false
 }

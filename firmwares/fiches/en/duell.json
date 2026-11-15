@@ -59,12 +59,12 @@
   },
   {
    "nom": "LAYER",
-   "texte": "Default mode: both parts on the keys together, with balance, velocity crossfade and keyboard split."
+   "texte": "Default mode: both parts on the keys together, with velocity crossfade and keyboard split."
   }
  ],
  "source": {
-  "url": "https://github.com/oscillr/DUELL/blob/33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0/docs/QUICKSTART.md",
-  "commit": "33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0"
+  "url": "https://github.com/oscillr/DUELL/blob/f48c5340be18ab98870fb5a47a237bdbb5729cf2/docs/QUICKSTART.md",
+  "commit": "f48c5340be18ab98870fb5a47a237bdbb5729cf2"
  },
  "d_apres_le_code": false
 }

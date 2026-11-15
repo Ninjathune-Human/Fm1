@@ -98,6 +98,7 @@
   "À savoir": "Good to know",
   "Manuel complet": "Full manual",
   "· Rédigée d'après le code du firmware, faute de doc.": "· Written from the firmware's code, for lack of documentation.",
+  "· Fiche d'une version précédente : le firmware a pu changer depuis.": "· Written for an earlier version: the firmware may have changed since.",
   "Pas de fiche pour ce firmware.": "No sheet for this firmware.",
   "Pas de fiche pour ce firmware pour l'instant.": "No sheet for this firmware yet.",
   "Fiche indisponible pour le moment.": "Sheet unavailable for now.",

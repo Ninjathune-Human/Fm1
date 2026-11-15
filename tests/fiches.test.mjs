@@ -37,8 +37,10 @@ test("chaque fiche suit le format", () => {
     }
     const e = cat.find((c) => c.id === id);
     assert.ok(e, `${id} : absent du catalogue`);
-    assert.equal(x.source.commit, e.commit_source, `${id} : commit`);
-    assert.ok([`${e.depot}/blob/${e.commit_source}/`, `${e.depot}/tree/${e.commit_source}/`].some((p) => x.source.url.startsWith(p)), `${id} : url`);
+    // le commit de la doc lue : celui du catalogue, ou celui d'une version précédente tant que la fiche n'est pas relue
+    // (la page le signale alors sous la fiche)
+    assert.match(x.source.commit, /^[0-9a-f]{40}$/, `${id} : commit`);
+    assert.ok([`${e.depot}/blob/${x.source.commit}/`, `${e.depot}/tree/${x.source.commit}/`].some((p) => x.source.url.startsWith(p)), `${id} : url`);
   }
 });
 

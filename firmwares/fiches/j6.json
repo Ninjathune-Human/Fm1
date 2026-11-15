@@ -64,7 +64,7 @@
   },
   {
    "commande": "PRESETS",
-   "role": "Mémoire précédente ou suivante (56 : 16 sons d'usine, les autres INIT)."
+   "role": "Mémoire précédente ou suivante (56 sons d'usine)."
   },
   {
    "commande": "ALGORITHM",
@@ -81,8 +81,8 @@
   "J6 ne garde que ses propres données : ses 56 mémoires, ses réglages et son motif."
  ],
  "source": {
-  "url": "https://github.com/JackieAlacrity2373/fm1-j6/blob/1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2/docs/GUIDE.md",
-  "commit": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2"
+  "url": "https://github.com/JackieAlacrity2373/fm1-j6/blob/36f033fe8f6fde178be957c073f9b3ad7e4d53ab/docs/GUIDE.md",
+  "commit": "36f033fe8f6fde178be957c073f9b3ad7e4d53ab"
  },
  "d_apres_le_code": false
 }
