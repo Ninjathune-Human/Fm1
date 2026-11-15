@@ -50,6 +50,8 @@ if [ -n "${NATIF_AVANT:-}" ]; then bash -c "$NATIF_AVANT" >>"$LOG" 2>&1 || echo 
 python3 "$HERE/tools/natif_leds.py" patch . | sed "s/^/natif $ID : /"
 # le tempo lié du Duo sans réglage : là où il lit son réglage d'horloge, suivre l'USB tant que la page le demande (web_clock)
 python3 "$HERE/tools/natif_clock.py" patch . | sed "s/^/natif $ID : /"
+# une entrée MIDI pour les simulateurs dont la page ne remplit pas la file (familles X0X et AMB) : natif_midi.py
+python3 "$HERE/tools/natif_midi.py" patch . | sed "s/^/natif $ID : /"
 if [ -n "${NATIF_CONSTRUCTION:-}" ]; then bash -c "$NATIF_CONSTRUCTION" 2>&1 | tee -a "$LOG"
 else EMU_PREVIEW=0 bash "$SCRIPT" 2>&1 | tee -a "$LOG"; fi; [ "${PIPESTATUS[0]}" = 0 ] || echec "la compilation a échoué"
 

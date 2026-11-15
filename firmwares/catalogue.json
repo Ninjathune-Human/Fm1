@@ -544,7 +544,7 @@
    "provenance_paquet": "release download/v1.4.3/dub-1.4.3.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "duell",
@@ -1037,7 +1037,7 @@
    "provenance_paquet": "gh-pages firmware/omni-0.4.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "frasil",
@@ -1323,7 +1323,7 @@
    "provenance_paquet": "introuvable",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "j6",
@@ -1650,7 +1650,7 @@
    "provenance_paquet": "release download/v0.2.1/min-0.2.1.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "minitone",
@@ -1720,7 +1720,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/modelar-0.3.fwsc",
    "provenance_paquet": "release download/v0.3/modelar-0.3.fwsc",
    "horloge_midi": true,
-   "tempo_lie": true
+   "tempo_lie": false
   },
   {
    "id": "monk",
@@ -2051,7 +2051,7 @@
    "provenance_paquet": "release download/v0.17.0/perf1-0.17.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "pigeon",
@@ -2641,7 +2641,7 @@
    "provenance_paquet": "release download/v1.2.2/x0x-1.2.2.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "x0xrmx",
@@ -2665,7 +2665,7 @@
    "provenance_paquet": "release download/v1.1.0/x0x-1.1.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "zen",
@@ -2735,7 +2735,7 @@
    "paquet_en_ligne": "https://fartypants.github.io/fm1-nachtfahrt/firmware/nachtfahrt-1.0.0.fwsc",
    "provenance_paquet": "gh-pages firmware/nachtfahrt-1.0.0.fwsc",
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "fmdj",
@@ -2920,7 +2920,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/dark1-1.0.6.fwsc",
    "provenance_paquet": "release download/v1.0.6/DARK-1-1.0.6.fwsc",
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "demake",
