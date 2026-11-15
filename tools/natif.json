@@ -13,7 +13,10 @@
    "id": "amb",
    "depot": "charlesvestal/fm1-amb",
    "commit": "7c538516d6c52216ff4c8a4881cf2f0dcb07c44b",
-   "script": "web/app/build.sh"
+   "script": "build.sh",
+   "construction": "sh build.sh --web && python3 \"$HERE/tools/worklets/fm1base_bundle.py\" app/build/emu natif-amb",
+   "wasm": "app/build/emu/app.wasm",
+   "dialecte": "base"
   },
   {
    "id": "arctic",
@@ -620,7 +623,11 @@
    "id": "vector37",
    "depot": "genkigenki/Vector37",
    "commit": "08742a4198f99e2db2846b00b70ed6808239c447",
-   "script": "web/sim/build.sh"
+   "script": "web/sim/build.sh",
+   "construction": "bash \"$HERE/tools/worklets/vector37.sh\" build/natif/vector37.wasm 0.3.2",
+   "wasm": "build/natif/vector37.wasm",
+   "worklet": "tools/worklets/vector37.js",
+   "dialecte": "felucca"
   },
   {
    "id": "waveloop",
