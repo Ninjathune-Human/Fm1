@@ -444,6 +444,12 @@ def test_tempo_lie_verified(page, kind):
         if not me.evaluate(f"() => window.__useEngine(window.__catalogue.find((e) => e.id === '{i}'))"):
             bad.append(i + " (ne démarre pas)"); continue
         page.wait_for_timeout(2500)
+        if i == "choralroot":                        # son PLAY joue la boucle enregistrée : une, puis arrêtée (Stop)
+            for x in ("REC", "C4", "REC"):
+                if x == "C4": me.evaluate("window.__host.keyDown(7, 't')"); page.wait_for_timeout(1500); me.evaluate("window.__host.keyUp(7, 't')")
+                else: me.evaluate(f"window.__host.press('{x}')"); page.wait_for_timeout(120); me.evaluate(f"window.__host.release('{x}')")
+                page.wait_for_timeout(400)
+            me.evaluate("window.__engine().midiIn([0xFC])"); page.wait_for_timeout(1500)
         for who, name in ((other, "l'autre"), (me, "le sien")):
             tap(who)
             if not lit(True, 1300):

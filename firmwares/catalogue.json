@@ -332,7 +332,7 @@
    "provenance_paquet": "release download/v0.41/choralroot-0.41.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "clipper",
