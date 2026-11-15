@@ -36,6 +36,12 @@ RULES = [
      lambda m, t: f"({FORCE} || cr_route.clock_in)"),
     (lambda f, t: os.path.basename(f) == "cf_out.c", re.compile(r"(?<![&\w.])cfp_cfg\.clock_in(?!\s*=[^=])"),
      lambda m, t: f"({FORCE} || cfp_cfg.clock_in)"),
+    # CTL-1 : CLOCK (proj.clock : CLK_INT_OUT, CLK_INT, CLK_EXT), comparé par son moteur et son interface
+    (lambda f, t: "CLK_EXT" in t and "proj.clock" in t, re.compile(r"(?<![&\w.])proj\.clock(?=\s*[!=]=)"),
+     lambda m, t: f"({FORCE} ? CLK_EXT : proj.clock)"),
+    # MODELAR : SOURCE (patch.clock_src : 0 INT, 1 MIDI, 2 OSC4), comparé par son moteur
+    (lambda f, t: os.path.basename(f) == "engine.c" and "patch.clock_src" in t,
+     re.compile(r"(?<![&\w.])patch\.clock_src(?=\s*[!=]=)"), lambda m, t: f"({FORCE} ? 1 : patch.clock_src)"),
     # Cutador : SYNC (project.par[P_SYNC] : 0 INT, 1 USB, 2 TRS), lu par son moteur (pas par l'annulation, qui compare)
     (lambda f, t: f.replace(os.sep, "/").endswith("/cad.c"),
      re.compile(r"(?<![&\w.])project\.par\[P_SYNC\](?!\s*(=[^=]|!=\s*undo_project))"),

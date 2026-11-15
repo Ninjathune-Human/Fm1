@@ -96,6 +96,8 @@ if [ -n "${NATIF_OUTILS:-}" ]; then
 fi
 LIC=$(ls LICENSE LICENSE.* COPYING 2>/dev/null | head -1); [ -n "$LIC" ] && cp "$LIC" "$D/LICENSE.txt"
 python3 "$HERE/tools/natif_leds.py" worklet "$D/worklet.js" | sed "s/^/natif $ID : /"
+# le MIDI de la page, pour un worklet fm1-base qui ne le lit pas alors que son .wasm a l'entrée (web_midi_in)
+python3 "$HERE/tools/natif_midi.py" worklet "$D/worklet.js" "$WASM" "$DIALECT" | sed "s/^/natif $ID : /"
 # deux modifications, seulement : un nom de processeur propre à ce firmware (plusieurs dans la même page),
 # et l'écran publié 60 fois par seconde au lieu de 30
 sed -i -E "s/registerProcessor\([\"'][^\"']+[\"']/registerProcessor(\"natif-$ID\"/" "$D/worklet.js"
