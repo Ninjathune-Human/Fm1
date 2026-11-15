@@ -1,4 +1,5 @@
 """L'aide : manuel, raccourcis clavier, fiches par firmware."""
+import pytest
 
 NO_LAYOUT = "Object.defineProperty(Navigator.prototype, 'keyboard', { get: () => undefined });"
 
@@ -69,7 +70,7 @@ from test_picker import click_row
 from conftest import power_on
 
 
-def fake(page, fid, delay=0, status=200, modes=()):
+def fake(page, fid, delay=0, status=200, modes=(), commit="y"):
     """Sert une fiche factice pour firmwares/fiches/<fid>.json, après `delay` ms."""
     def handle(route):
         if delay:
@@ -77,7 +78,7 @@ def fake(page, fid, delay=0, status=200, modes=()):
         if status != 200:
             return route.fulfill(status=status, body="")
         body = {"id": fid, "resume": f"Résumé de {fid}.", "commandes": [{"commande": "FX", "role": "Effets de test."}],
-                "gestes": [], "modes": list(modes), "source": {"url": f"https://github.com/x/{fid}/blob/y/README.md", "commit": "y"},
+                "gestes": [], "modes": list(modes), "source": {"url": f"https://github.com/x/{fid}/blob/{commit}/README.md", "commit": commit},
                 "d_apres_le_code": False}
         route.fulfill(status=200, content_type="application/json", body=json.dumps(body))
     page.route(f"**/firmwares/fiches/{fid}.json", handle)
@@ -179,6 +180,24 @@ def test_fiche_echec_garde(page):
     click_row(page, "amb")
     page.wait_for_function("document.getElementById('status').textContent !== ''", timeout=30000)
     assert fiche_titre(page) == "Fonctions de FM-1+VA"
+
+
+@pytest.mark.parametrize("a_jour", [False, True])
+def test_fiche_version_precedente(page, a_jour):
+    """Une fiche lue sur la doc d'une version précédente (son commit n'est plus celui du catalogue) le dit sous la
+    fiche ; à jour, rien."""
+    import os
+    from conftest import ROOT
+    cat = {e["id"]: e for e in json.load(open(os.path.join(ROOT, "firmwares/catalogue.json")))["firmwares"]}
+    stub_core(page)
+    fake(page, "amb", commit=cat["amb"]["commit_source"] if a_jour else "0" * 40)
+    page.goto(page.base + "index.html")
+    open_fiche(page)
+    page.click("#fw-picker")
+    click_row(page, "amb")
+    page.wait_for_function("document.getElementById('fiche').textContent.includes('Résumé de amb.')")
+    page.wait_for_function("document.getElementById('fiche-meta').textContent.trim().length > 0")
+    assert ("version précédente" in page.inner_text("#fiche")) is not a_jour
 
 
 def test_fiche_absente_garde_la_ligne_meta(page):
