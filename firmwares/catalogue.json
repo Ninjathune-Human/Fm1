@@ -124,7 +124,7 @@
   {
    "id": "beetle",
    "nom": "BEETLE",
-   "version": "1.8.3",
+   "version": "1.7.14",
    "auteur": "Joppe Sikken (SikkenWorks)",
    "categories": [
     "Tracker"
@@ -132,15 +132,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/beetle.fwsc",
-   "sha256": "1c88c620b6d8763835597e085c3287b54dba9921d535efc764f4b4c5f3468538",
-   "taille": 610129,
+   "sha256": "1887bb3926cfbbb4680882e6b39d44a98e76022062466f4ac384312841791dc0",
+   "taille": 610086,
    "depot": "https://github.com/SikkenWorks/BEETLE",
-   "commit_source": "45ba09a6cd60bd42d5079022c39de0c7f5ff5b01",
+   "commit_source": "c8b286a9445cfc9798e117835ceac3bd5e92c49f",
    "source_c": 315,
    "description": "A tracker for the FM-1: patterns written top to bottom, step by step, with note, instrument, chord and effect columns, the way trackers have always worked.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/beetle-1.8.3.fwsc",
-   "provenance_paquet": "release download/V1.8.3/BEETLE-V1.8.3.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/beetle-1.7.14.fwsc",
+   "provenance_paquet": "release download/V1.7.14/BEETLE-V1.7.14.fwsc",
    "horloge_midi": "usb",
    "tempo_lie": false
   },
@@ -337,7 +337,7 @@
   {
    "id": "clipper",
    "nom": "Clipper",
-   "version": "1.3.1",
+   "version": "1.1-experimental",
    "auteur": "isod89",
    "categories": [
     "Synthé"
@@ -345,15 +345,15 @@
    "licence": "GPL-3.0",
    "beta": true,
    "fichier": "firmwares/clipper.fwsc",
-   "sha256": "b29d53498a7bc40eb6d8409270b15b53576a6d116c2839217ac6210bf96e752a",
-   "taille": 610105,
+   "sha256": "3a23a37c431c813bcdf97321f49722c7328d1f9134ba469ff3ba194ad9f05206",
+   "taille": 610055,
    "depot": "https://github.com/isod89/clipper-fm1",
-   "commit_source": "7bc15a950a8b3fd51aec280514905448e4faaf1b",
+   "commit_source": "e69067211c4690f34e494b5b896e4585163dcc2b",
    "source_c": 163,
    "description": "A deep synth grown out of SLOOP: 23 engines and 407 sounds, from HYBRID (three oscillators, two filters, a mod matrix) to six-operator FM, wavetables, wave sequencing, a Juno and physical models; arp, step sequencer, MPE and a web editor for every parameter.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/clipper-1.3.1.fwsc",
-   "provenance_paquet": "release download/v1.3.1/clipper-1.3.1.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/clipper-1.1-experimental.fwsc",
+   "provenance_paquet": "release download/v1.1-experimental/clipper-1.1-experimental.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -597,7 +597,7 @@
   {
    "id": "etch",
    "nom": "ETCH",
-   "version": "1.88",
+   "version": "1.61",
    "auteur": "SikkenWorks",
    "categories": [
     "Synthé"
@@ -605,15 +605,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/etch.fwsc",
-   "sha256": "65bcb51012d81c9c8206c4843ce04b5c03177b8f09ed74313799ebec0798330f",
+   "sha256": "f2cb183b3b5d4171f2fb9957599e1dfce5e3bcf76037054cf3bab9c09f81651c",
    "taille": 610086,
    "depot": "https://github.com/SikkenWorks/ETCH",
-   "commit_source": "2eaaad834f153f64dfae0b910e664e17acbb6901",
+   "commit_source": "57676c0e321bc08e54682585509529a0b581749c",
    "source_c": 307,
    "description": "Draw the sound: a waveform drawn and changed with the knobs, saved, morphed into another one, and a third waveform modulating the result.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/etch-1.88.fwsc",
-   "provenance_paquet": "release download/V1.88/ETCH-V1.88.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/etch-1.61.fwsc",
+   "provenance_paquet": "release download/V1.61/ETCH-V1.61.fwsc",
    "horloge_midi": "usb",
    "tempo_lie": false
   },
@@ -738,7 +738,7 @@
   {
    "id": "fizz",
    "nom": "FIZZ",
-   "version": "0.12.0-beta.17",
+   "version": "0.12.0-beta.14",
    "auteur": "Quixotic7",
    "categories": [
     "Groovebox"
@@ -746,15 +746,15 @@
    "licence": "MPL-2.0",
    "beta": true,
    "fichier": "firmwares/fizz.fwsc",
-   "sha256": "f2f9b9cb68e435374619ac777909ed1569f6961bb530214a3eb9b92478d7278a",
+   "sha256": "a98d97af506252caa421a7d6cc5018dbd1b07f8c9350c2f319343318e4572605",
    "taille": 1042154,
    "depot": "https://github.com/Quixotic7/FIZZ",
-   "commit_source": "d87e33d7faddadfe73a54e3434195fc4271ccea2",
+   "commit_source": "01b5a98414d87ffce45d62997b4cd9d6bdd7364d",
    "source_c": 229,
    "description": "A groovebox around one engine, ChoralRoot's FM TONE: eight tracks, p-locks and preset sound locks, conditions, ratchets, chords, and MIDI FX for generative patterns and for reworking the ones you have.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fizz-0.12.0-beta.17.fwsc",
-   "provenance_paquet": "release download/v0.12.0-beta.17/fizz-0.12.0-beta.17.fwsc",
+   "paquet_en_ligne": "https://github.com/Quixotic7/FIZZ/releases/download/v0.12.0-beta.14/fizz-0.12.0-beta.14.fwsc",
+   "provenance_paquet": "release download/v0.12.0-beta.14/fizz-0.12.0-beta.14.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -855,7 +855,7 @@
   {
    "id": "fm1quest",
    "nom": "FM1 Quest",
-   "version": "42",
+   "version": "38",
    "auteur": "Hericdk",
    "categories": [
     "Autre"
@@ -863,15 +863,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/fm1quest.fwsc",
-   "sha256": "08a9d725bdb3f00aef7703e0a00f27a9f3e2e63794d47bfc1f152507a3c0f483",
-   "taille": 610052,
+   "sha256": "9c29c3e72e4380c478faf68f77e418c05f2a8ae2dc08bdce8d84fd6619130a64",
+   "taille": 610019,
    "depot": "https://github.com/hericdk/fm1-quest",
-   "commit_source": "451069dbd7c1fda9229d57420df2d01ff5d93606",
+   "commit_source": "0996503bfe83c8c2217c63b29e1be75ebbcdddaf",
    "source_c": 111,
    "description": "A pixel-art RPG while you make music, built on SLOOP: four heroes, one a track, walk through a village and fight monsters and bosses as your loop plays, every SLOOP screen redrawn in the game's style.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1quest-42.fwsc",
-   "provenance_paquet": "release download/quest-42/fm1-quest-42.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1quest-38.fwsc",
+   "provenance_paquet": "release download/quest-38/fm1-quest-38.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -901,7 +901,7 @@
   {
    "id": "fm1dock",
    "nom": "fm1-dock",
-   "version": "0.8.2",
+   "version": "0.8",
    "auteur": "joakimeriksson",
    "categories": [
     "Autre"
@@ -909,22 +909,22 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/fm1dock.fwsc",
-   "sha256": "068d0a4530ae1aabbbc419439c329fc5942af24083ab1e062f2cd18a7806046a",
-   "taille": 610157,
+   "sha256": "ed5d8c0330e87959b01fd8b6716c13d181eebf369e8820175f8a8470bf1545d6",
+   "taille": 610130,
    "depot": "https://github.com/joakimeriksson/fm1-dock",
-   "commit_source": "6199d250c10376fca0270b917da2e79c7c604691",
+   "commit_source": "501cb23f9f44981e8dc5a32091ef50122e1abb2b",
    "source_c": 194,
    "description": "One firmware, many synths: CS-1, Scintilla and OberVave as modules in flash; HOME opens the picker.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1dock-0.8.2.fwsc",
-   "provenance_paquet": "release download/v0.8.2/fm1-dock-0.8.2.fwsc",
+   "paquet_en_ligne": "https://github.com/joakimeriksson/fm1-dock/releases/download/v0.8/fm1-dock-0.8.fwsc",
+   "provenance_paquet": "release download/v0.8/fm1-dock-0.8.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
   {
    "id": "fm1gm",
    "nom": "FM1-GM",
-   "version": "1.2.0",
+   "version": "1.1.0",
    "auteur": "jartificer",
    "categories": [
     "Groovebox"
@@ -932,14 +932,14 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/fm1gm.fwsc",
-   "sha256": "42187d51166f2850005aa1235ca440f40e94ec41911f71e8e75d06ce8e45f75e",
+   "sha256": "8bdfb7df4cce2519d611db0195a26c88d397c4924a1b79844649787d450ce358",
    "taille": 609661,
    "depot": "https://github.com/jartificer/fm1-gm",
-   "commit_source": "7a40a75adcae898e345c5bb6072fa0f69902e3a2",
+   "commit_source": "fcc7655dd0bfe5a29440f99dbcadba417cf1dbc7",
    "source_c": 57,
    "description": "A General MIDI sequencer with 16 tracks, 128 General MIDI instruments to choose from and a drum kit (on track 10). It can store up to 64 songs, each containing up to 128 measures.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1gm-1.2.0.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fm1gm-1.1.0.fwsc",
    "provenance_paquet": "dans le dépôt web/fm1gm.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
@@ -995,7 +995,7 @@
   {
    "id": "fomajam",
    "nom": "FOMAJAM",
-   "version": "0.1.12",
+   "version": "0.1.10",
    "auteur": "konsumer",
    "categories": [
     "Boîte à rythmes"
@@ -1003,15 +1003,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/fomajam.fwsc",
-   "sha256": "b18d747f4e005f392a4071a00847268fe244d5e4e7d8bd7a359c25bd9dc3ac88",
-   "taille": 610132,
+   "sha256": "b33c4a644e0eddec8cf83be30c30251bb0e375b1ca178efe5b0daf68670c11fc",
+   "taille": 610131,
    "depot": "https://github.com/konsumer/fomajam",
-   "commit_source": "bf21d39510f9d38752560c17f2fba93639ccfcc0",
+   "commit_source": "ee103264944aba303fb3b478fce7b96183f566eb",
    "source_c": 62,
    "description": "A drum machine in the classic step-grid style: voices after the 909, 808, 707, 606, DMX and more, a machine per voice, accents and patterns. Play it in the browser first.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/fomajam-0.1.12.fwsc",
-   "provenance_paquet": "release download/v0.1.12/fomajam-0.1.12.fwsc",
+   "paquet_en_ligne": "https://github.com/konsumer/fomajam/releases/download/v0.1.10/fomajam-0.1.10.fwsc",
+   "provenance_paquet": "release download/v0.1.10/fomajam-0.1.10.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -1398,7 +1398,7 @@
   {
    "id": "kawa",
    "nom": "KAWA",
-   "version": "0.9",
+   "version": "0.5",
    "auteur": "Omnipotard (Guizmoh)",
    "categories": [
     "Tracker"
@@ -1409,11 +1409,11 @@
    "sha256": null,
    "taille": null,
    "depot": "https://github.com/Guizmoh/Kawa-Tracker-Fm1",
-   "commit_source": "757b4bdab86816351000dd7184e5d802398707f7",
+   "commit_source": "a10168605cb86276f55d8164d1c89ded7e3852aa",
    "source_c": 59,
    "description": "A pocket tracker for any style: six tracks with an engine each (pulse, 4-bit wave, noise, 6-operator FM, drum kit or sample), patterns chained into a song, 32 live effects and tools that write beats for you. A beta, not yet tried on a real FM-1 by its maker.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/kawa-0.9.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/kawa-0.5.fwsc",
    "provenance_paquet": "introuvable",
    "horloge_midi": "usb",
    "tempo_lie": false
@@ -1539,7 +1539,7 @@
   {
    "id": "matryoshka",
    "nom": "Matryoshka",
-   "version": "1.13.0",
+   "version": "1.4.2",
    "auteur": "glvno",
    "categories": [
     "Synthé"
@@ -1547,14 +1547,14 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/matryoshka.fwsc",
-   "sha256": "5d52951efcc1d44ca530a2ad777dafb44d8323d50dedf45a10034b4bb6975d31",
-   "taille": 610609,
+   "sha256": "9f995387835b513e9adec606a3649e076794013ca5765e3bf3a1e9a4ccda0f0a",
+   "taille": 610129,
    "depot": "https://github.com/glvno/matryoshka",
-   "commit_source": "d604efe0d3f7d15d5620fa392925f9789d5b0b2c",
+   "commit_source": "e3145af6c7327e0c988ac08b079cc319bb428bc0",
    "source_c": 78,
    "description": "A modular synth you patch in the browser: modules (oscillators, filters, envelopes, delays) nest into assemblies you save and reuse, and the patch plays on the FM-1, polyphonic with a Voicing module.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/matryoshka-1.13.0.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/matryoshka-1.4.2.fwsc",
    "provenance_paquet": "dans le dépôt web/public/firmware/matryoshka.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
@@ -1608,7 +1608,7 @@
   {
    "id": "midimon",
    "nom": "MIDIMON",
-   "version": "0.5",
+   "version": "0.4",
    "auteur": "ignis32",
    "categories": [
     "Autre"
@@ -1616,15 +1616,15 @@
    "licence": "MPL-2.0",
    "beta": true,
    "fichier": "firmwares/midimon.fwsc",
-   "sha256": "8d13651e14a84a68107832de5d5fa569fa1b645a051745d8f6aed9356c254159",
-   "taille": 614938,
+   "sha256": "cbe4868b87206a415396ddf77836a6b6a0f838fe3e30879acd0c5a78f1321328",
+   "taille": 611496,
    "depot": "https://github.com/ignis32/midimonitor_fm1",
-   "commit_source": "acde38e61c9678dfc7a1c3e73e1427e9874426d4",
+   "commit_source": "e00e86395363c61367d1d260e75116a6e6d03cea",
    "source_c": 6,
    "description": "A MIDI monitor for USB, the TRS jack and Bluetooth (as device and host at once): hex or words, filters, stats. Its THRU routes, each filtered, make the FM-1 a Bluetooth MIDI dongle.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/midimon-0.5.fwsc",
-   "provenance_paquet": "release download/v0.5/midimon-0.5.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/midimon-0.4.fwsc",
+   "provenance_paquet": "release download/v0.4/midimon-0.4.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -1915,7 +1915,7 @@
   {
    "id": "nmsfm",
    "nom": "No Man Sky FM",
-   "version": "0.9",
+   "version": "0.5",
    "auteur": "Hericdk",
    "categories": [
     "Autre"
@@ -1923,15 +1923,15 @@
    "licence": "GPL-3.0",
    "beta": true,
    "fichier": "firmwares/nmsfm.fwsc",
-   "sha256": "3633c4ff4955ab107df2bec30919017ab40c02469d8e922f64f8b9963db623f0",
-   "taille": 610052,
+   "sha256": "a0852a4ed57a5b6a96531dc4eddd65fc855f08aa815a1198dd4d546b49eb0e20",
+   "taille": 610035,
    "depot": "https://github.com/hericdk/nomanskyFM",
-   "commit_source": "82715395f289b2df19d639d8003f11667705ab1a",
+   "commit_source": "32e7f4c14a5e9f468d7fde69c91d78b3e0424f61",
    "source_c": 90,
    "description": "A space adventure while you make music, built on SLOOP 2.7.1: fly between planets with two knobs, land, mine, fight sentinels and warp between stars, every SLOOP screen floating over the game.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/nmsfm-0.9.fwsc",
-   "provenance_paquet": "dans le dépôt release/nmsfm-0.9.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/nmsfm-0.5.fwsc",
+   "provenance_paquet": "dans le dépôt release/nmsfm-0.5.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -1986,7 +1986,7 @@
   {
    "id": "opn1",
    "nom": "OPN-1",
-   "version": "2.0.1",
+   "version": "2.0.0",
    "auteur": "putchdev",
    "categories": [
     "Synthé"
@@ -1994,15 +1994,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/opn1.fwsc",
-   "sha256": "629394e97c3878eb9a7ffec2338a7191c452e6c2337d04669902e6f863f75739",
-   "taille": 610131,
+   "sha256": "31b88c6fd4ec081ce85393977453e61ff86c6f545f10e7b1db2023986803675c",
+   "taille": 610110,
    "depot": "https://github.com/putchdev/opn-1",
-   "commit_source": "9651acd3b415ef64dfbf201bd23950c2f4a43393",
+   "commit_source": "960c1038cb660788026c8136467e99597019a333",
    "source_c": 55,
    "description": "The Sega Genesis / Mega Drive's Yamaha YM2612: six channels of 4-operator FM. Its web app takes patches from game music (VGM) and OPM files and streams VGM tunes to the FM-1 to play.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/opn1-2.0.1.fwsc",
-   "provenance_paquet": "release download/v2.0.1/opn1-2.0.1.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/opn1-2.0.0.fwsc",
+   "provenance_paquet": "release download/v2.0.0/opn1-2.0.0.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
   },
@@ -2248,7 +2248,7 @@
   {
    "id": "sid1",
    "nom": "SID-1",
-   "version": "1.0.1",
+   "version": "1.0.0",
    "auteur": "putchdev",
    "categories": [
     "Synthé"
@@ -2256,22 +2256,22 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/sid1.fwsc",
-   "sha256": "22b9e3d7f517da612926534f322504c82dda61c8f7af571dfa91f099283d1629",
-   "taille": 610131,
+   "sha256": "4ee3dbe2079ea066e33a3843ec8e508e9eab191a500cad4944e00fd603683838",
+   "taille": 610110,
    "depot": "https://github.com/putchdev/sid-1",
-   "commit_source": "d73d09dce5cb22023ca7618a88d6fd5132ab0eeb",
+   "commit_source": "1d0555b784173bb61e3e371ccedfbe8ff2559d18",
    "source_c": 65,
    "description": "The Commodore 64's SID chip, twice for six voices. Its web app edits patches and takes them straight from .sid game music files.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sid1-1.0.1.fwsc",
-   "provenance_paquet": "release download/v1.0.1/sid1-1.0.1.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sid1-1.0.0.fwsc",
+   "provenance_paquet": "release download/v1.0.0/sid1-1.0.0.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
   },
   {
    "id": "sidou",
    "nom": "SIDOU",
-   "version": "1.9.0",
+   "version": "0.5.0",
    "auteur": "Denis Sablić",
    "categories": [
     "Tracker"
@@ -2279,15 +2279,15 @@
    "licence": "GPL-3.0",
    "beta": true,
    "fichier": "firmwares/sidou.fwsc",
-   "sha256": "f88bbead3178fcd3894a67f45d262d2009c812eb32e87ed3474711887390d445",
+   "sha256": "fdebaf41074fc0284a3a34d5a65c4a1639054e16e228c2d19109d008e0f019b2",
    "taille": 610090,
    "depot": "https://github.com/dsablic/sidou",
-   "commit_source": "63b0bea5890bb1edf20d98ccb91318b79c9953e9",
+   "commit_source": "f50858880db57d301eafefac4883045591497884",
    "source_c": 569,
    "description": "Turns the FM-1 into a C64 SID machine: two SIDs (6581 and 8580) with the chip's character dialled in, a GoatTracker 2 compatible tracker and step sequencer, and a live instrument to play over a song.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sidou-1.9.0.fwsc",
-   "provenance_paquet": "release download/v1.9.0/sidou-1.9.0.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sidou-0.5.0.fwsc",
+   "provenance_paquet": "release download/v0.5.0/sidou-0.5.0.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -2387,7 +2387,7 @@
   {
    "id": "sloopdx",
    "nom": "sloopDX",
-   "version": "4.0.1",
+   "version": "4.0",
    "auteur": "zvenson",
    "categories": [
     "Groovebox"
@@ -2395,15 +2395,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/sloopdx.fwsc",
-   "sha256": "cebc88c0f996f338d4741502ec7f99d05ecb9c6de3715ab674401a14d6a255d7",
-   "taille": 610154,
+   "sha256": "133aa53357e9fc2e3b498ec798121d09d971eb4a4a63bc1a240e8e3728bd8dec",
+   "taille": 610130,
    "depot": "https://github.com/zvenson/dxsloop",
-   "commit_source": "f2c377a43bcd7443d30521c4c7b874c6d51b94e3",
+   "commit_source": "9870b846e77a123aafc84786b4bedfd1d53ac0f7",
    "source_c": 106,
    "description": "SLOOP's live workflow with Dexed's DX7 engine and 128 steps a track: six operators, 32 algorithms, your own .syx banks, every voice edited on the FM-1, FM drums you program.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sloopdx-4.0.1.fwsc",
-   "provenance_paquet": "release download/v4.0.1/felucca-4.0.1.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/sloopdx-4.0+133aa533.fwsc",
+   "provenance_paquet": "release download/v4.0/felucca-4.0.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -2457,7 +2457,7 @@
   {
    "id": "tonitor",
    "nom": "Tonitor",
-   "version": "2026.11.10",
+   "version": "2026.10.27",
    "auteur": "Nuno Zimas",
    "categories": [
     "Synthé"
@@ -2465,14 +2465,14 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/tonitor.fwsc",
-   "sha256": "c5d8838dc39505be4948f5ce4583c734bbec5130912e59f3a83d91ad73d26f79",
-   "taille": 610014,
+   "sha256": "d44a89680f1ab9588f64b2c1991af593c6a73908663718df11c1d040640b3b32",
+   "taille": 609992,
    "depot": "https://github.com/nzimas/tonitor",
-   "commit_source": "b1ffc1897b3f859fa88bb934435f88d08bc139df",
+   "commit_source": "0dccfcaed372368dd1519db22f4f4c5a109132d0",
    "source_c": 66,
    "description": "Six tracks for live ambient and experimental music: three synth engines, patches generated by algorithm, free-length loops with up to ten overdubs each, a granulator, filters and a lush reverb.",
    "emulateur_fm1emu": "fonctionne selon fm1-emu",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/tonitor-2026.11.10.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/tonitor-2026.10.27+d44a8968.fwsc",
    "provenance_paquet": "dans le dépôt docs/firmware/tonitor.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
@@ -2879,7 +2879,7 @@
   {
    "id": "karma",
    "nom": "KARMA",
-   "version": "3.1.1",
+   "version": "3.0.5",
    "auteur": "Ariel Muchnik",
    "categories": [
     "Groovebox"
@@ -2887,15 +2887,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/karma.fwsc",
-   "sha256": "ad9bbe96f9ddb4bdf19dc2a907055d1706cb55bef8631dc9f8691e6cead8fe86",
+   "sha256": "2f288c04ddaca6c1911d8f2cfdfbdbc89d5c89d0b5ab80b2e3c0fb84bde38a11",
    "taille": 610092,
    "depot": "https://github.com/eatyourgreensstudio-dotcom/karma-fm1",
-   "commit_source": "3c2b87765a7e6eb80a3345dde4979dcc3c0f87ad",
+   "commit_source": "23304e93d17d12a79546879d60d58c5c3421aac5",
    "source_c": 116,
    "description": "A four-track groovebox played live: an acid bass or a Juno-style polysynth, physical modelling, two dozen synthesis models and a drum synth, a 64-step sequencer, song sections, part generators on one chord plan, and stems over USB.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/karma-3.1.1.fwsc",
-   "provenance_paquet": "release download/v3.1.1/karma-3.1.1.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/karma-3.0.5.fwsc",
+   "provenance_paquet": "release download/v3.0.5/karma-3.0.5.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -3017,7 +3017,7 @@
   {
    "id": "aisling",
    "nom": "AISLING",
-   "version": "1.4",
+   "version": "1.2",
    "auteur": "CU_STE",
    "categories": [
     "Synthé"
@@ -3025,15 +3025,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/aisling.fwsc",
-   "sha256": "25ae2e8bd28b724ac477a1b533dce6903a63dee2cd723591042f3bcfeb54c117",
+   "sha256": "b3cf01bc2bb9f8b67cd85dc19eb5d223fa111cd258db7e9e1a70839d2f5f3451",
    "taille": 609666,
    "depot": "https://github.com/stephencummins/fm1-aisling",
-   "commit_source": "55222e1fbade9ffeb669dbcb5b997b70f3b2f2cc",
+   "commit_source": "4529b34e3977343ed6199171b523443f76f102a9",
    "source_c": 38,
    "description": "Generative Irish ambient: harps and a flute over a drone, with surf, wind and rain; eight pieces that play themselves, to play along with on the keys or from a DAW.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/aisling-1.4.fwsc",
-   "provenance_paquet": "release download/v1.4/aisling-1.4.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/aisling-1.2.fwsc",
+   "provenance_paquet": "release download/v1.2/aisling-1.2.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
   },
@@ -3063,7 +3063,7 @@
   {
    "id": "artihive",
    "nom": "ARTIHIVE",
-   "version": "2.0.4",
+   "version": "2.0.3",
    "auteur": "KHAV",
    "categories": [
     "Synthé"
@@ -3071,15 +3071,15 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/artihive.fwsc",
-   "sha256": "03dc25e0291ea0ed555b70ed0fd439426c35e4db48df7fa9563d74c19053f7bc",
+   "sha256": "055aeeed495248b44783f4ffbf4a040916256d66ec20e91139c06295288256f4",
    "taille": 612230,
    "depot": "https://github.com/KHAVld/ARTIHIVE",
-   "commit_source": "2d075e19153c3f56513b018c07b82e885b660083",
+   "commit_source": "ed53f4b0ee3b33884c8026a64f6c9ef278a0ba6b",
    "source_c": 25,
    "description": "An eight-voice experimental drone and polyphonic FM synth in four interacting pairs, with envelopes, glide, modulation, delay and a 16-step arpeggiator.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/artihive-2.0.4.fwsc",
-   "provenance_paquet": "release download/artihive-2.0.4/artihive-2.0.4.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/artihive-2.0.3.fwsc",
+   "provenance_paquet": "release download/artihive-2.0.3/artihive-2.0.3.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
   },
@@ -3109,7 +3109,7 @@
   {
    "id": "bigorna",
    "nom": "Bigorna",
-   "version": "2026.11.12",
+   "version": "2026.11.09",
    "auteur": "Nuno Zimas",
    "categories": [
     "Groovebox"
@@ -3117,14 +3117,14 @@
    "licence": "GPL-3.0",
    "beta": false,
    "fichier": "firmwares/bigorna.fwsc",
-   "sha256": "cc8e764072889cddbbcd02aef456ef9be6d22aecea58e92ef4e536bbf4f556fb",
+   "sha256": "8f531156e1fb3e2649d07b176f5ceb8e0978a1f99bd90edb452ae86f4bbcc8be",
    "taille": 609992,
    "depot": "https://github.com/nzimas/bigorna",
-   "commit_source": "1366e866f80b48966ff366cb9641324ac696c2cf",
+   "commit_source": "3d937bf9dae6157fb6f61dc01fb52eaf46ea1df7",
    "source_c": 31,
    "description": "A noise, industrial and IDM groovebox after the Digitone II: six tracks, four machines, a 16-step sequencer with parameter locks, a looper, send effects and USB audio.",
    "emulateur_fm1emu": "vérifié",
-   "paquet_en_ligne": "https://thefirmwarehub.com/fw/bigorna-2026.11.12.fwsc",
+   "paquet_en_ligne": "https://thefirmwarehub.com/fw/bigorna-2026.11.09+8f531156.fwsc",
    "provenance_paquet": "dans le dépôt docs/firmware/bigorna.fwsc",
    "horloge_midi": true,
    "tempo_lie": false
