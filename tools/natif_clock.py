@@ -46,6 +46,10 @@ RULES = [
     (lambda f, t: f.replace(os.sep, "/").endswith("/cad.c"),
      re.compile(r"(?<![&\w.])project\.par\[P_SYNC\](?!\s*(=[^=]|!=\s*undo_project))"),
      lambda m, t: f"({FORCE} ? 1 : project.par[P_SYNC])"),
+    # Carnac : CLOCK SRC (perf_state.clock_source : CLKSRC_INTERNAL, CLKSRC_MIDI), lu par son horloge (clock_source)
+    (lambda f, t: os.path.basename(f) == "midi_clock.c" and "perf_state.clock_source == CLKSRC_MIDI ?" in t,
+     re.compile(r"(?<![&\w.])perf_state\.clock_source == CLKSRC_MIDI \?"),
+     lambda m, t: f"({FORCE} || perf_state.clock_source == CLKSRC_MIDI) ?"),
 ]
 # Berlin : son mode d'horloge (rt.ext) ne change qu'à l'arrêt, par rt_set_sync, qui remet son moteur en ordre : web_clock
 # l'appelle, et lui rend son propre mode au déliage

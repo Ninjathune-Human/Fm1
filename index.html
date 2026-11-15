@@ -2438,6 +2438,9 @@ class EmuFirmware {
 // Deux protocoles voisins : famille Felucca (load {sectors}, master 0..1023 ; frame {fb, leds, sectors, load 0..1})
 // et famille X0X (load {store}, master 0..4096 ; frame {fb, buttons, keys, store, load en %}). Les deux reçoivent
 // buttons / keys (masques), enc {role, n}, master, et répondent ready ou error.
+// la couleur de PLAY qui dit « il joue » : verte, sauf pour les firmwares qui jouent en rouge (DUELL, FMini, CoralFlower,
+// Tessera : lecture_rouge au catalogue ; DUELL est vert à l'arrêt). Le Duo s'en sert pour savoir qui joue
+const playingColour = (fw) => (fw && fw.entry && fw.entry.lecture_rouge ? "red" : "green");
 const NATIVE_BUTTONS = { FX: 0, SEL: 1, ENV: 2, LFO: 3, EDIT: 4, GLO: 5, HOME: 6, SAVE: 7, ARP: 8, SEQ: 9, PLAY: 10, REC: 11, "OCT-": 12, "OCT+": 13 };
 const NATIVE_ROLES = { SELECT: 0, ALGORITHM: 1, PRESETS: 2, KNOB1: 3, KNOB2: 4, KNOB3: 5, KNOB4: 6 };
 // Trois autres familles, ramenées au même modèle (leds : [boutons dans l'ordre ci-dessus, bit 14 le vert de PLAY ; touches]) :
@@ -2654,7 +2657,7 @@ class NativeFirmware {
     if (m.leds || m.buttons !== undefined || m.anim !== undefined) this.setDuty(m);
     // (le Duo : sa lumière PLAY verte vue à chaque image, sur l'horloge commune aux cadres ; S1VAVE ne la fait
     // briller que 90 ms par temps, qu'un regard toutes les 120 ms manque souvent)
-    if (this.playLight() === "green") this.greenAt = performance.timeOrigin + performance.now();
+    if (this.playLight() === playingColour(this)) this.greenAt = performance.timeOrigin + performance.now();
     if (m.load !== undefined) this.load = this.x0x || this.dialect === "choralroot" || this.dialect === "base" ? m.load / 100 : m.load;   // (fm1-base : en pour cent)
     const saved = m.sectors || m.store || m.settings;
     if (saved) this.save(saved);
@@ -6235,7 +6238,7 @@ function buildPanel(fw) {
         solo = l === "PLAY" && !downs.size ? performance.now() : 0;
         if (l !== "PLAY") letGo();
         downs.add(l);
-        if (solo && current !== va && launches() && current.playLight() !== "green" && duoLinked()) { held = setTimeout(letGo, 900); return; }
+        if (solo && current !== va && launches() && current.playLight() !== playingColour(current) && duoLinked()) { held = setTimeout(letGo, 900); return; }
         current.press(l);
       };
       if (k === "release") return (l) => {
@@ -7212,7 +7215,7 @@ registerProcessor("duo-horloge", DuoClock);
   function tick() {
     const E = engines();
     for (const k of ["a", "b"]) {
-      if (E[k] && E[k].playLight() === "green") greenAt[k] = performance.now();
+      if (E[k] && E[k].playLight() === playingColour(E[k])) greenAt[k] = performance.now();
       else if (E[k] && E[k].greenAt) greenAt[k] = Math.max(greenAt[k], E[k].greenAt - performance.timeOrigin);   // (vue entre deux regards)
     }
     if (playing && (E.a !== players.a || E.b !== players.b)) stop(E);   // un firmware changé ou éteint : les deux s'arrêtent

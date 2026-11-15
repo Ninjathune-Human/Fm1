@@ -165,7 +165,7 @@
    "paquet_en_ligne": "https://thefirmwarehub.com/fw/berlinan-0.5.1.fwsc",
    "provenance_paquet": "release download/v0.5.1/berlinan-0.5.1.fwsc",
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "bubba",
@@ -284,7 +284,7 @@
    "provenance_paquet": "gh-pages firmware/carnac-0.9.4.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true
   },
   {
    "id": "chipbox",
@@ -379,7 +379,8 @@
    "provenance_paquet": "release download/v0.7.1/coralflower-0.7.1.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "lecture_rouge": true
   },
   {
    "id": "cs1",
@@ -568,7 +569,8 @@
    "provenance_paquet": "release download/v1.2/duell-1.2.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "lecture_rouge": true
   },
   {
    "id": "estampie",
@@ -990,7 +992,8 @@
    "provenance_paquet": "release download/v1.8.0/FMini-1-v1.8.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "lecture_rouge": true
   },
   {
    "id": "fomajam",
@@ -2452,7 +2455,8 @@
    "provenance_paquet": "release download/v3.5.2/tessera-3.5.2.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "lecture_rouge": true
   },
   {
    "id": "tonitor",
