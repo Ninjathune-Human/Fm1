@@ -141,3 +141,24 @@ def test_screen_60fps(page):
       setTimeout(() => { e.onWorklet = o; e.draw = d; done({ frames: frames / 2, draws: draws / 2 }); }, 2000); })""")
     assert rates["frames"] >= 50, rates
     assert rates["draws"] > 36, rates   # au-dessus de l'ancien plafond (33) ; le dessin suit requestAnimationFrame, qui ralentit sous charge
+
+
+def test_every_emulated_boots(page):
+    """Chaque firmware émulé du catalogue (paquet local, sauf ceux notés « ne démarre pas ») démarre sur le cœur
+    fm1-emu et dessine son écran : la vérification d'une mise à jour du cœur ou des paquets."""
+    import json, os
+    from conftest import ROOT
+    natifs = {f["id"] for f in json.load(open(os.path.join(ROOT, "tools/natif.json")))["firmwares"]}
+    ids = sorted(e["id"] for e in json.load(open(os.path.join(ROOT, "firmwares/catalogue.json")))["firmwares"]
+                 if e["id"] not in natifs and e.get("fichier") and e["emulateur_fm1emu"] != "ne démarre pas")
+    power_on(page)
+    page.set_default_timeout(30000)
+    bad = []
+    for i in ids:
+        if use(page, i) is not True or page.evaluate("window.__engine().kind") == "natif":
+            bad.append((i, "démarrage")); continue
+        for _ in range(20):                         # jusqu'à 10 s : les écrans de démarrage des émulés sont plus longs
+            page.wait_for_timeout(500)
+            if lit_pixels(page) >= 500: break
+        else: bad.append((i, "écran"))
+    assert not bad, bad
