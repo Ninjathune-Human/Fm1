@@ -5,9 +5,9 @@ rejoignent plus, et le firmware relit sa file en boucle sans plus rien recevoir 
 envoie 48 par seconde : au bout de 5 s, un Start ne le lance plus). Les deux indices comptent désormais sans fin,
 masqués seulement pour lire la file, comme ceux du firmware sur l'appareil. Lancé à la racine de son dépôt, avant
 la compilation (NATIF_AVANT, tools/natif.json)."""
-import sys
+import os, sys
 
-F = "web/emu/fm106_web.c"
+F = "emu/fm106_web.c" if os.path.exists("emu/fm106_web.c") else "web/emu/fm106_web.c"   # (emu/ depuis la 1.0)
 OLD = ("    uint32_t next = (midi_w + 1u) & 255u;\n"
        "    if (next == (midi_r & 255u)) return 0; /* full */\n")
 NEW = "    if (midi_w - midi_r >= 255u) return 0; /* full */\n"

@@ -144,7 +144,7 @@
    "id": "duell",
    "depot": "oscillr/DUELL",
    "commit": "f48c5340be18ab98870fb5a47a237bdbb5729cf2",
-   "script": "felucca-base/web/emu/build.sh"
+   "script": "duell/web/emu/build.sh"
   },
   {
    "id": "echofield",
@@ -180,13 +180,13 @@
   {
    "id": "felucca",
    "depot": "hugelton/Felucca",
-   "commit": "6162de864075ad9edb8cd35e0e45ba75faa5d0db",
+   "commit": "d7b1b7c4099bba28854869ddb256b3d9f634cee8",
    "script": "web/emu/build.sh"
   },
   {
    "id": "felucca8",
    "depot": "echoe/argo_fm1",
-   "commit": "603db219059d7c715ce2f9137795ab13ee729a0f",
+   "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8",
    "script": "web/emu/build.sh"
   },
   {
@@ -205,7 +205,7 @@
    "id": "fm106",
    "depot": "PatttF/fm-106",
    "commit": "b795c3d9431c4cd552d5951f70b549eeff5c288d",
-   "script": "web/emu/build.sh",
+   "script": "emu/build.sh",
    "avant": "python3 \"$HERE/tools/worklets/fm106_midi.py\""
   },
   {
@@ -249,7 +249,7 @@
    "depot": "styvesgoupil/frasil",
    "commit": "e7a8fb2f5398a48992d8659cf9361878f8acb839",
    "script": "build.sh",
-   "construction": "sh build.sh --web",
+   "construction": "sh build.sh --web || [ -f app/build/emu/app.wasm ]",
    "wasm": "app/build/emu/app.wasm"
   },
   {
@@ -361,7 +361,8 @@
    "commit": "d247fd9c311be4b33bde64d8794d6d83ec8a99b4",
    "script": "web/emu/build.sh",
    "dialecte": "felucca",
-   "wasm": "build/emu/felucca.wasm"
+   "wasm": "build/emu/felucca.wasm",
+   "avant": "touch web/emu/sample-bank.js"
   },
   {
    "id": "loom",
@@ -444,7 +445,7 @@
   {
    "id": "mope1",
    "depot": "slothpallas/mope-1",
-   "commit": "a584c5702de6258892ed05e8ada070fbfaa9f73c",
+   "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
    "script": "web/emu/build.sh"
   },
   {
@@ -522,7 +523,10 @@
    "id": "polly",
    "depot": "charlesvestal/fm1-polly",
    "commit": "fecf93ed5a08d294b6ee2f2bdabf37c30882930e",
-   "script": "web/emu/build.sh"
+   "script": "web/emu/build.sh",
+   "construction": "sh web/emu/build.sh && python3 \"$HERE/tools/worklets/fm1base_bundle.py\" app/build/emu natif-polly",
+   "wasm": "app/build/emu/app.wasm",
+   "dialecte": "base"
   },
   {
    "id": "purplemonkey",
