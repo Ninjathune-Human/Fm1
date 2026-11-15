@@ -3,7 +3,7 @@
   {
    "id": "386dx",
    "depot": "seajaysec/386-DX-FM1-KaraokeBot",
-   "commit": "2caa8fbb990a108d1856496b54d83519bb0f2ba8",
+   "commit": "e0f06f2bc62665fdb10df55febb5f41841872c91",
    "script": "tools/build_web.py",
    "avant": "git clone --branch 1.52.0 --depth 1 https://github.com/espeak-ng/espeak-ng.git vendor/espeak-ng",
    "construction": "python3 tools/build_web.py",
@@ -12,13 +12,13 @@
   {
    "id": "amb",
    "depot": "charlesvestal/fm1-amb",
-   "commit": "188b0a42f20a547864e732ae5ea1339d0fbcf395",
+   "commit": "7c538516d6c52216ff4c8a4881cf2f0dcb07c44b",
    "script": "web/app/build.sh"
   },
   {
    "id": "arctic",
    "depot": "PolarPatch/Arctic-scream-FM-1",
-   "commit": "7b5b8b261bf8ea4d5d64485c082636c5b1579854",
+   "commit": "e7d301f0e0bbe8ecb918e2a6d979ef6cd2932694",
    "script": "web/build_web.sh"
   },
   {
@@ -38,11 +38,11 @@
   {
    "id": "bytemania",
    "depot": "llozd/bytemania",
-   "commit": "e670b35369f8556ee82683f35c6b8bfbcb366155",
+   "commit": "139748d2181216af68afca26d251fb34c055f888",
    "script": "build.sh",
    "zig": "0.17.0",
    "avant": "cp \"$HERE/tools/worklets/dinghy_host.c\" tests/host.c",
-   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/bytemania.wasm -DDINGHY_HOST '-DAPP_VER=\"1.2.0\"' -Ifirmware/src -Ifirmware/gen firmware/src/bytemania.c",
+   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/bytemania.wasm -DDINGHY_HOST '-DAPP_VER=\"1.3.1\"' -Ifirmware/src -Ifirmware/gen firmware/src/bytemania.c",
    "wasm": "build/natif/bytemania.wasm",
    "worklet": "tools/worklets/dinghy.js",
    "dialecte": "felucca"
@@ -50,19 +50,19 @@
   {
    "id": "caravel",
    "depot": "bonszaimusic/caravel",
-   "commit": "b50bad57dcf32862f36661a5fc2996e13392b93e",
+   "commit": "89bf631f01cda2a68f3a85cdb9e81dcbbf53088c",
    "script": "web/emu/build.sh"
   },
   {
    "id": "carnac",
    "depot": "OwenKirby/carnac-os",
-   "commit": "be8cc104f3618ba9b12c834827abfdbb4e1686af",
+   "commit": "55cf5b5391951c3393972c83b937e8af344c1ddd",
    "script": "web/emu/build.sh"
   },
   {
    "id": "chipbox",
    "depot": "pbarilla/chipbox",
-   "commit": "6fdbc9855361d15ce44065c4e2ef6308de568587",
+   "commit": "8b3e67e30443b2336c769af2481e1e997f1fa253",
    "script": "web/build.sh",
    "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/chipbox.wasm -DCHIPBOX_HOST -DCHIPBOX_WEB '-DAPP_VER=\"web\"' -Ifirmware/src -Ifirmware/gen firmware/src/chipbox.c",
    "wasm": "build/natif/chipbox.wasm",
@@ -73,14 +73,14 @@
   {
    "id": "choralroot",
    "depot": "Quixotic7/ChoralRootFM1",
-   "commit": "070bd306ed63c7d08f09bb6ea937262b52b1a6c0",
+   "commit": "1890b160d0176af33b34bb92b8f5148264e545d4",
    "script": "tools/emu/web/build_web.sh",
    "wasm": "build/emu-web/choralroot.wasm"
   },
   {
    "id": "coralflower",
    "depot": "FicusFicusov/CoralFlower",
-   "commit": "b5ceb997be330c8a420958eb8f4e0f4b3ca084c2",
+   "commit": "46790b943bdb5e4143212d83dc495c832eefdbb8",
    "script": "tools/emu/web/build_web.sh"
   },
   {
@@ -110,16 +110,16 @@
   {
    "id": "dark1",
    "depot": "sparky480v/Dark-1",
-   "commit": "a2e7fb7d2ce39e6caebbd98206fd3eabbf887796",
+   "commit": "3f7cd6323a168c4880a82eacdcf453389a5347d0",
    "script": "web/emu/build_clang.sh",
    "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
-   "construction": "EN_VERSION=1.0.5 sh web/emu/build_clang.sh",
+   "construction": "EN_VERSION=1.0.6 sh web/emu/build_clang.sh",
    "wasm": "build/emu/amb.wasm"
   },
   {
    "id": "delrio",
    "depot": "jsopdebeeck/fm1-delrio",
-   "commit": "c604e5659b4505c98788b30982364289a8348178",
+   "commit": "f452e5dff61e8cb153aaf9d7f2faf96ae121f614",
    "script": "build.sh",
    "construction": "sh build.sh --web",
    "wasm": "app/build/emu/app.wasm"
@@ -127,29 +127,29 @@
   {
    "id": "drift",
    "depot": "FBNFRTG/drift-fm1",
-   "commit": "09b5b981f350a37055467d560702af8608f65ad1",
+   "commit": "08b65e1233fea6b542f9f22629ad6c1d761c7667",
    "script": "web/emu/build.sh"
   },
   {
    "id": "dub",
    "depot": "sbegueria/fm1-dub",
-   "commit": "e6fe7b8f8f3114019bb36b5b536ad458eacd2c2d",
+   "commit": "e89138a3de7d11f97c941ef467d166eb0763d160",
    "script": "web/emu/build.sh",
    "avant": "mkdir -p build/gen build/emu && (python3 tools/gen_font.py build/gen/felucca_font.h || python3 tools/gen_font_noraqm.py tools/gen_font.py build/gen/felucca_font.h) && python3 tools/gen_words.py firmware/words.tsv web/words build/gen/ann_words.h",
-   "construction": "$ZIG cc -target wasm32-wasi -mexec-model=reactor -O2 -g0 -ffp-contract=off -std=gnu99 -w -DEN_HOST -DEN_WEB '-DEN_VERSION=\"1.3.0\"' -Ifirmware/src -Ifirmware/src/dsp -Ibuild/gen -Wl,--strip-debug -Wl,--export-dynamic -Wl,-z,stack-size=1048576 -Wl,--initial-memory=33554432 -o build/emu/amb.wasm web/emu/amb_web.c firmware/src/dsp/amb.c && cp web/emu/worklet.js build/emu/",
+   "construction": "$ZIG cc -target wasm32-wasi -mexec-model=reactor -O2 -g0 -ffp-contract=off -std=gnu99 -w -DEN_HOST -DEN_WEB '-DEN_VERSION=\"1.4.3\"' -Ifirmware/src -Ifirmware/src/dsp -Ibuild/gen -Wl,--strip-debug -Wl,--export-dynamic -Wl,-z,stack-size=1048576 -Wl,--initial-memory=33554432 -o build/emu/amb.wasm web/emu/amb_web.c firmware/src/dsp/amb.c && cp web/emu/worklet.js build/emu/",
    "wasm": "build/emu/amb.wasm",
    "zig": "0.17.0"
   },
   {
    "id": "duell",
    "depot": "oscillr/DUELL",
-   "commit": "33e2e2ed36a9d1a33a39ac1d1f06282c9045aab0",
+   "commit": "f48c5340be18ab98870fb5a47a237bdbb5729cf2",
    "script": "felucca-base/web/emu/build.sh"
   },
   {
    "id": "echofield",
    "depot": "Philip-Bos/echofield-fm1",
-   "commit": "27feb2d23dc60bf1f8dbd7209286ee5a15a6b88f",
+   "commit": "4734e972d4b4b7126c30f509f7af3368590e28ac",
    "script": "base/tools/build.py",
    "construction": "python3 base/tools/build.py app --web && python3 \"$HERE/tools/worklets/fm1base_bundle.py\" app/build/emu natif-echofield",
    "wasm": "app/build/emu/app.wasm",
@@ -158,7 +158,7 @@
   {
    "id": "elixir",
    "depot": "dmajka/elixir",
-   "commit": "088b055c507ad4dd83a90fb7e648c211d58148da",
+   "commit": "c072bf2a3e75f73c7e4879776e463a8704251d6a",
    "script": "web/emu/build.sh",
    "avant": "sh tools/gen.sh",
    "wasm": "build/emu/elixir.wasm",
@@ -167,7 +167,7 @@
   {
    "id": "estampie",
    "depot": "ocean/estampie",
-   "commit": "b6be8f78adcee97d4b217db7b81f6a4eb02445e8",
+   "commit": "57ea691aae13122cfb59b1f5a6518179ff029cd2",
    "script": "web/emu/build.sh",
    "zig": "0.17.0"
   },
@@ -180,31 +180,31 @@
   {
    "id": "felucca",
    "depot": "hugelton/Felucca",
-   "commit": "d7b1b7c4099bba28854869ddb256b3d9f634cee8",
+   "commit": "6162de864075ad9edb8cd35e0e45ba75faa5d0db",
    "script": "web/emu/build.sh"
   },
   {
    "id": "felucca8",
    "depot": "echoe/argo_fm1",
-   "commit": "21fc592dab76907b6bea34d97950dfe129ad9fd8",
+   "commit": "603db219059d7c715ce2f9137795ab13ee729a0f",
    "script": "web/emu/build.sh"
   },
   {
    "id": "fimba",
    "depot": "jadamsowers/fm1-fimba",
-   "commit": "0485ed0d387ce78216428c7b19f97d77bbe10b4d",
+   "commit": "838aa1d233d934c8a388acaaa47358655d6bfffe",
    "script": "web/emu/build.sh"
   },
   {
    "id": "flyfish",
    "depot": "delirioux/flyfish",
-   "commit": "4e5efb8a7623cfb19a55fdc08cb12e8cfdfce578",
+   "commit": "9abe2e8f5455c506cb0a5057f8a56cd42f6fdc06",
    "script": "web/emu/build.sh"
   },
   {
    "id": "fm106",
    "depot": "PatttF/fm-106",
-   "commit": "3833499bfd0f2f4df522793526690f743b7164c9",
+   "commit": "b795c3d9431c4cd552d5951f70b549eeff5c288d",
    "script": "web/emu/build.sh",
    "avant": "python3 \"$HERE/tools/worklets/fm106_midi.py\""
   },
@@ -235,19 +235,19 @@
   {
    "id": "fmini",
    "depot": "ruppert/fmini-1",
-   "commit": "ab0f5c83d9c3b8cf10fd2f9ef3dc760a06c3abb3",
+   "commit": "be48549213d9177336007d2df477aeb0bbad96f6",
    "script": "web/emu/build.sh"
   },
   {
    "id": "fomni",
    "depot": "charlesvestal/fm1-fomni",
-   "commit": "6ecd227013cc18def0e89d035b3760eb268b342b",
+   "commit": "17a740b7b2d19615ffe19aa73f8eda67f60f223d",
    "script": "web/emu/build.sh"
   },
   {
    "id": "frasil",
    "depot": "styvesgoupil/frasil",
-   "commit": "422cac668d2753cda4e76e07d5a1f26bf4b1007e",
+   "commit": "e7a8fb2f5398a48992d8659cf9361878f8acb839",
    "script": "build.sh",
    "construction": "sh build.sh --web",
    "wasm": "app/build/emu/app.wasm"
@@ -255,7 +255,7 @@
   {
    "id": "frodhes",
    "depot": "leonardoMirabal/frodhes",
-   "commit": "33c9730c04f1c72b1319aec68124b8759419fd68",
+   "commit": "279a7aff4e65fa32f188e177393a640d9f635c80",
    "script": "web/build.sh",
    "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/frodhes.wasm -DDINGHY_HOST -DDINGHY_WEB -DHOST_SAVE_MS=1u '-DAPP_VER=\"web\"' -Ifirmware/src -Ifirmware/gen firmware/src/frodhes.c",
    "wasm": "build/natif/frodhes.wasm",
@@ -315,7 +315,7 @@
   {
    "id": "grimm",
    "depot": "GRiMMBIENT/grimm",
-   "commit": "815ca6be81d973445851238dbaf12b4536d1e6d8",
+   "commit": "b519acbee7dbdb3e0fb82b15b86a913898c6f8f5",
    "script": "web/build_web.sh"
   },
   {
@@ -340,16 +340,16 @@
   {
    "id": "hyp1",
    "depot": "RustyPawz/fm1-HYP1",
-   "commit": "57c456db61826331d356458c9c1a136517da7cbf",
+   "commit": "824316eed62a877cb0d9554ad0a80714830f51e4",
    "script": "web/emu/build_clang.sh",
    "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
-   "construction": "EN_VERSION=1.5.54 sh web/emu/build_clang.sh",
+   "construction": "EN_VERSION=1.5.62 sh web/emu/build_clang.sh",
    "wasm": "build/emu/amb.wasm"
   },
   {
    "id": "j6",
    "depot": "JackieAlacrity2373/fm1-j6",
-   "commit": "1f3fbdbd2dc46a2477b2ea976a4b3e8a7405d4e2",
+   "commit": "36f033fe8f6fde178be957c073f9b3ad7e4d53ab",
    "script": "build.sh",
    "avant": "git init -q /tmp/fm1-base-web && git -C /tmp/fm1-base-web fetch -q --depth 1 https://github.com/charlesvestal/fm1-base 934e40d846d84e76e9c428d37b74bccb6192c823 && git -C /tmp/fm1-base-web archive FETCH_HEAD web | tar -x -C fm1-base",
    "construction": "python3 fm1-base/tools/build.py . --web",
@@ -358,7 +358,7 @@
   {
    "id": "jiant",
    "depot": "juanjiant-bit/JIANT",
-   "commit": "cac23c6d0bb9a7f6986eb79bbe42ae710805ce98",
+   "commit": "d247fd9c311be4b33bde64d8794d6d83ec8a99b4",
    "script": "web/emu/build.sh",
    "dialecte": "felucca",
    "wasm": "build/emu/felucca.wasm"
@@ -366,7 +366,7 @@
   {
    "id": "loom",
    "depot": "charlesvestal/fm1-loom",
-   "commit": "faf459d1f9cea3e634b6e2622a1c3e91d58b3452",
+   "commit": "ffc0cd1d8ca7005ef7088257f200e506e4a30a9c",
    "script": "build.sh",
    "construction": "sh build.sh --web",
    "wasm": "app/build/emu/app.wasm"
@@ -380,7 +380,7 @@
   {
    "id": "makohai",
    "depot": "delirioux/makohai",
-   "commit": "800edc8a88d2a883fbeb2cf198a976d7769f3707",
+   "commit": "bf6646ff2dbcb6ac10a726724348d5302b37ab17",
    "script": "web/emu/makohai_build.sh"
   },
   {
@@ -392,7 +392,7 @@
   {
    "id": "melodee",
    "depot": "keremimo/melodee",
-   "commit": "f40dd70fd8b497b5372ee5de886e4dfae1cd8062",
+   "commit": "165d177a425944f3d30b0b669255a6ed0050c3a5",
    "script": "tools/build.py",
    "construction": "bash \"$HERE/tools/worklets/melodee.sh\" build/natif/melodee.wasm",
    "wasm": "build/natif/melodee.wasm",
@@ -432,25 +432,25 @@
   {
    "id": "monk",
    "depot": "charlesvestal/fm1-monk",
-   "commit": "b21a361ea43b04b38b7598d35eb1ca651baaa661",
+   "commit": "7f4de9c94ee4cffc5671babd01adefd1c62ed1a2",
    "script": "web/emu/build.sh"
   },
   {
    "id": "mono2k",
    "depot": "InigoHernandez/mono2k",
-   "commit": "b443b00ae5b6f15b01eda3e0ad7d5292761a0b53",
+   "commit": "95d5763495d961f3ed225f5e4201328934ca4247",
    "script": "web/build.sh"
   },
   {
    "id": "mope1",
    "depot": "slothpallas/mope-1",
-   "commit": "59be1e7a5d01b94ba039f4c1c50d32cb734fc1c1",
+   "commit": "a584c5702de6258892ed05e8ada070fbfaa9f73c",
    "script": "web/emu/build.sh"
   },
   {
    "id": "mutable",
    "depot": "kidbee85-beep/mutable-dreams",
-   "commit": "04cf468420f4325f6bdbbecfd59695b06c481a8a",
+   "commit": "faf56b957b42998dbf12b4b20c58f5ba93f62d58",
    "script": "mutable-dreams-1.1/tools/build_local.py",
    "avant": "curl -sSL https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-34/wasi-sdk-34.0-x86_64-linux.tar.gz | tar -xz -C /tmp && python3 -c \"import zipfile; zipfile.ZipFile('Mutable-Dreams-1.1-Source.zip').extractall('.')\"",
    "construction": "cd mutable-dreams-1.1 && WASI_SDK=/tmp/wasi-sdk-34.0-x86_64-linux python3 tools/build_local.py web && { cat web/app_worklet.js; grep -v '^import \"./app_worklet.js\";' web/worklet.js; } > app/build/wasm/worklet.js",
@@ -479,7 +479,7 @@
   {
    "id": "niagara",
    "depot": "evanyerburgh/niagara-drift",
-   "commit": "802daa818af060293cae77afec013df3dec0a060",
+   "commit": "1635475af6bf36c7b3657ffe612a966e5bf4aa84",
    "script": "web/emu/build.sh"
   },
   {
@@ -491,17 +491,17 @@
   {
    "id": "obervave",
    "depot": "zvenson/obervave",
-   "commit": "dc4e5d33b09f5e3f927801d78085f26171e9c7b8",
+   "commit": "4673c4a7579a9dd0260d08febe875ffac9608917",
    "script": "web/sim/build.sh",
    "zig": "0.17.0"
   },
   {
    "id": "perf1",
    "depot": "deamonSLINKY/PERF-1",
-   "commit": "d2ed6aa95867dd5b395eee36fb447bcb99b9949b",
+   "commit": "c5699ba61dc338b0c65bc5f82d04868c3f1cef0a",
    "script": "web/emu/build_clang.sh",
    "avant": "mkdir -p build/gen && python3 tools/gen_font.py build/gen/felucca_font.h",
-   "construction": "EN_VERSION=0.13.0 sh web/emu/build_clang.sh",
+   "construction": "EN_VERSION=0.17.0 sh web/emu/build_clang.sh",
    "wasm": "build/emu/amb.wasm"
   },
   {
@@ -521,13 +521,13 @@
   {
    "id": "polly",
    "depot": "charlesvestal/fm1-polly",
-   "commit": "62cd07ea7c95c30021c31e957cea8be448415fa7",
+   "commit": "fecf93ed5a08d294b6ee2f2bdabf37c30882930e",
    "script": "web/emu/build.sh"
   },
   {
    "id": "purplemonkey",
    "depot": "Quixotic7/PurpleMonkeyFM1",
-   "commit": "7590d4a5205bd4932b206d676c09b9521843a023",
+   "commit": "8c9bba141fea1a12ab1b65d429a0d226b7e0b451",
    "script": "tools/emu/web/build_pm_web.sh"
   },
   {
@@ -539,7 +539,7 @@
   {
    "id": "ravel",
    "depot": "De-Pattern/Ravel_FM1",
-   "commit": "407276ca17e8b2941967d21981542f4001f9d32a",
+   "commit": "1ee0b2ab2535d539e120219e27ecda6cd74887e5",
    "script": "web/emu/build.sh",
    "wasm": "web/emu/ravel.wasm",
    "worklet": "tools/worklets/ravel.js",
@@ -548,18 +548,18 @@
   {
    "id": "s1vave",
    "depot": "AndrewGG88/S1Vave",
-   "commit": "97303378678c247ca1d005ae641114f4544acf65",
+   "commit": "e8370184f85b05f7c50f7e9f65cb3f6b69642d30",
    "script": "web/sim/build.sh",
    "zig": "0.17.0"
   },
   {
    "id": "scintilla",
    "depot": "joakimeriksson/scintilla-fm1",
-   "commit": "83b375200caa281c22be840970c921efdce0a7fc",
+   "commit": "c9465b4fa67d65d6d099ae679d6e8430058bd841",
    "script": "firmware/build.sh",
    "zig": "0.17.0",
    "avant": "cp \"$HERE/tools/worklets/dinghy_host.c\" firmware/tests/host.c",
-   "construction": "cd firmware && \"$HERE/tools/worklets/asyncify.sh\" ../build/natif/scintilla.wasm -DDINGHY_HOST -DDH_LIBC=1 -DDH_CV_ROWS=64u '-DAPP_VER=\"0.2.0\"' -Ifirmware/src -Ifirmware/gen -I../engine firmware/src/scintilla.c ../engine/sc_voice.c ../engine/sc_synth.c",
+   "construction": "cd firmware && \"$HERE/tools/worklets/asyncify.sh\" ../build/natif/scintilla.wasm -DDINGHY_HOST -DDH_LIBC=1 -DDH_CV_ROWS=64u '-DAPP_VER=\"0.3.2\"' -Ifirmware/src -Ifirmware/gen -I../engine firmware/src/scintilla.c ../engine/sc_voice.c ../engine/sc_synth.c",
    "wasm": "build/natif/scintilla.wasm",
    "worklet": "tools/worklets/dinghy.js",
    "dialecte": "felucca"
@@ -567,14 +567,14 @@
   {
    "id": "shineon",
    "depot": "zvenson/shineon",
-   "commit": "2f37738d690a628e0ae1d23d07ea5ee3eeda2de7",
+   "commit": "91979ae74af5e8a90ade4ddcb1d6ef331e6b91a8",
    "script": "web/sim/build.sh",
    "zig": "0.17.0"
   },
   {
    "id": "skiff",
    "depot": "illuminus5/skiff",
-   "commit": "76b5f9c9f6d523466f5c3910f9baf91110133b7b",
+   "commit": "0ea36820a548dadcb67d9ed29e03e80b32cf6034",
    "script": "web/emu/build.sh"
   },
   {
@@ -590,7 +590,7 @@
   {
    "id": "tessera",
    "depot": "Rastapopolix/tessera",
-   "commit": "094f53582cc4bc04d62e95537eb2ff22264f4819",
+   "commit": "a4bbd6df833edda9a09dda5398b421282e58eace",
    "script": "web/sim/build.sh",
    "avant": "python3 tools/gen_909_tables.py build/gen/x0x_drum_tables.h"
   },
@@ -603,7 +603,7 @@
   {
    "id": "tuna",
    "depot": "delirioux/tuna",
-   "commit": "f06047dc7e4a4c061818b9a29f5412359a2fb607",
+   "commit": "6f9a6dd0d1fa43a8eb457dfca0eb50cf6ec22662",
    "script": "web/emu/build.sh"
   },
   {
@@ -627,7 +627,7 @@
   {
    "id": "x0x",
    "depot": "charlesvestal/fm1-x0x",
-   "commit": "502b2c28c14ab2bff31eb4f0777fdfd0efcf8bea",
+   "commit": "512c0daaf25f82c5b70e9eceee195864e7da378c",
    "script": "web/emu/build.sh"
   },
   {

@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FM1_EMU_COMMIT: 93cb7ee3f7008b27959ba73073b864e37efd7289
-  RUNTIME_TAG: runtime-93cb7ee
+  FM1_EMU_COMMIT: 60645a58d6cd1597ed565a3f00e4981964623232
+  RUNTIME_TAG: runtime-60645a5
   EMSDK_VERSION: 3.1.64
   NATIF_TAG: natif
 

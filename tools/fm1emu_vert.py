@@ -24,8 +24,9 @@ patch(f"{emu}/crates/fm1-soc/src/periph.rs", [
     ("            led_acc: [0; 41],\n", "            led_acc: [0; 42],\n            play_green: 0.0,\n"),
     ("            for row in 1..5usize {\n                if lines & (1 << row) != 0 {\n                    let id = KEYMAP[row][col];",
      "            if col == 8 && lines & 2 != 0 {\n                self.led_acc[41] += dt;\n            }\n            for row in 1..5usize {\n                if lines & (1 << row) != 0 {\n                    let id = KEYMAP[row][col];"),
-    ("        let mut out = [0f32; 41];\n",
-     "        self.play_green = self.led_acc[41] as f32 / span;\n        self.led_acc[41] = 0;\n        let mut out = [0f32; 41];\n"),
+    ("        let span = (self.cycles - self.led_since).max(1) as f32;\n        std::array::from_fn(|i| self.led_acc[i] as f32 / span)\n",
+     "        let span = (self.cycles - self.led_since).max(1) as f32;\n        self.play_green = self.led_acc[41] as f32 / span;\n        std::array::from_fn(|i| self.led_acc[i] as f32 / span)\n"),
+    ("        self.led_acc = [0; 41];\n", "        self.led_acc = [0; 42];\n"),
 ])
 patch(f"{emu}/crates/fm1-web/src/lib.rs", [
     ("#[no_mangle]\npub extern \"C\" fn fm1_leds() -> *const f32 {",
