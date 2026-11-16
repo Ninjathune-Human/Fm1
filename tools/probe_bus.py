@@ -17,7 +17,7 @@ patch(f"{emu}/crates/fm1-core/src/jit_wasm.rs", [
 patch(f"{emu}/crates/fm1-web/src/lib.rs", [
     ("""    let report = machine().map(|m| format!("[{},{}]", m.cpu.jit_profile_json(),
         m.cpu1.as_ref().map_or_else(|| "null".to_owned(), |c| c.jit_profile_json()))).unwrap_or_else(|| "[]".to_owned());""",
-     """    let hist = { #[cfg(target_arch = "wasm32")] { let mut v: Vec<(u32, u32)> = fm1_core::jit_wasm::BUSHIST.as_ref().map_or_else(Vec::new, |h| h.iter().map(|(a, n)| (*a, *n)).collect());
+     """    #[allow(static_mut_refs)] let hist = unsafe { #[cfg(target_arch = "wasm32")] { let mut v: Vec<(u32, u32)> = fm1_core::jit_wasm::BUSHIST.as_ref().map_or_else(Vec::new, |h| h.iter().map(|(a, n)| (*a, *n)).collect());
         v.sort_by(|a, b| b.1.cmp(&a.1)); v.truncate(24); format!("{{{}}}", v.iter().map(|(a, n)| format!("\\"{a:08x}\\":{n}")).collect::<Vec<_>>().join(",")) } #[cfg(not(target_arch = "wasm32"))] { "{}".to_owned() } };
     let report = machine().map(|m| format!("[{},{},{}]", m.cpu.jit_profile_json(),
         m.cpu1.as_ref().map_or_else(|| "null".to_owned(), |c| c.jit_profile_json()), hist)).unwrap_or_else(|| "[]".to_owned());"""),
