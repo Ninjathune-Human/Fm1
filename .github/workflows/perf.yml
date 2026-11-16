@@ -64,20 +64,16 @@ jobs:
               print(f"| {f} | échec : {e} | | | | |")
           P
           done
-      - name: Profil des appels d'aide (cœur publié)
+      - name: Sonde des lectures du bus (non publiée)
         working-directory: fm1-emu
+        env:
+          CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
+          RUSTFLAGS: -Cllvm-args=-inline-threshold=2000 -Clink-arg=--export-table -Clink-arg=--growable-table
         run: |
+          python3 ../tools/probe_bus.py .
+          cargo build --release -p fm1-web --target wasm32-unknown-unknown --target-dir target/probe 2>&1 | tail -2
           for f in melodee dark1 clipper sloopdx; do
-            FM1_PROFILE=1 FM1_WASM=../base.wasm FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/p.json node web/bench.mjs 100 6 > /dev/null 2>&1
-            echo "### profil $f"
-            python3 - <<'P'
-          import json
-          p = json.load(open('/tmp/p.json')).get('profile')
-          c = p[0]
-          print({k: (v if not isinstance(v, (list, dict)) else '...') for k, v in c.items()} if isinstance(c, dict) else str(c)[:300])
-          for k, v in (c.items() if isinstance(c, dict) else []):
-              if isinstance(v, (list, dict)):
-                  items = sorted(v.items(), key=lambda kv: -(kv[1] if isinstance(kv[1], (int, float)) else 0))[:14] if isinstance(v, dict) else v[:14]
-                  print(k, items)
-          P
+            FM1_PROFILE=1 FM1_WASM=$PWD/target/probe/wasm32-unknown-unknown/release/fm1_web.wasm FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/p.json node web/bench.mjs 100 6 > /dev/null 2>&1
+            echo "### bus $f"
+            python3 -c "import json; print(json.load(open('/tmp/p.json'))['profile'][2])"
           done
