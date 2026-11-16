@@ -1,4 +1,5 @@
 """Lumières des boutons : seule la légende s'éclaire ; PLAY vert en lecture, rouge à l'arrêt séquenceur actif, éteint sinon."""
+import pytest
 from conftest import power_on
 from test_emu import use
 
@@ -127,7 +128,21 @@ def test_felucca_layers(page):
     pk = page.evaluate("ledSeen(154 / 256)")
     assert "breath" in keys[3][0] and 0 <= float(keys[3][1]) <= pk + 1e-3   # ce qui respire, jusqu'à 60 % de l'allumé
     assert abs(float(keys[4][1]) - seen[1]) < 0.002                     # le niveau moyen
-    assert "lit" in caps[0][0] and abs(float(caps[1][1]) - seen[0]) < 0.002 and "breath" in caps[2][0]
+    # (un bouton éteint : sa lueur de fond ne passe jamais le seuil où la légende s'éclaire, 0,35, pareil pour tous)
+    assert "lit" in caps[0][0] and 0 < float(caps[1][1]) <= 0.351 and "breath" in caps[2][0]
     a = float(keys[3][1]); page.wait_for_timeout(300)
     b = float(page.evaluate("document.querySelector(`#device .key[data-key='3']`).style.getPropertyValue('--i')"))
     assert a != b                                                        # elle respire, image par image
+
+
+@pytest.mark.parametrize("fid", ["fm106", "dark1", "makohai"])
+def test_idle_buttons_same_whatever_the_backlight(page, fid):
+    """Le rétroéclairage des boutons éteints (vu 0,39 à 0,74, FM-106 : 0,58) ne change ni leur légende ni leur couleur : tous à
+    l'encre, PLAY sans teinte ; seul un bouton allumé s'éclaire."""
+    power_on(page)
+    assert use(page, fid) is True
+    page.wait_for_timeout(2500)
+    caps = page.evaluate("""() => [...document.querySelectorAll('#device .cap')].map((g) => [g.getAttribute('class'), +g.style.getPropertyValue('--i')])""")
+    idle = [c for c in caps if "lit" not in c[0] and "breath" not in c[0]]
+    assert len(idle) >= 10
+    assert all(i <= 0.351 and "hue-" not in cl for cl, i in idle), idle

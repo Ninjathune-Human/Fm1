@@ -6198,7 +6198,11 @@ function buildPanel(fw) {
   // émulés et les natifs, couche par couche) ; FM-1+VA, allumée ou non, et son animation d'allumage (ledLevels)
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   let brI = 0, puI = 0;                                // ce qui respire, ce qui pulse : leur intensité à cette image
-  const show = (o, d, br, hue, live) => {
+  // la lueur de fond d'un bouton éteint (le rétroéclairage : 0,39 à 0,74 selon le firmware) ne touche ni sa légende ni sa
+  // couleur : seule une LED allumée (ou qui respire, ou qui pulse) les change ; un bouton éteint reste à l'encre, partout pareil
+  const AMBIENT = 0.027;                               // sa part du temps : vue 0,35, juste sous le seuil où la légende s'éclaire
+  const show = (o, d, br, hue, live, button) => {
+    if (button && !br && d < 1) { hue = ""; if (d > AMBIENT) d = AMBIENT; }
     const I = br === 1 ? brI : br === 2 ? puI : ledSeen(d), v = I.toFixed(3);
     if (v !== o.v) { o.v = v; o.g.style.setProperty("--i", v); }
     // (on : la légende s'éclaire, avec son ombre lumineuse ; en dessous, seule la tache diffuse)
@@ -6232,7 +6236,7 @@ function buildPanel(fw) {
         const on = b.label === "PLAY" ? fw.playLight() : fw.buttonLit(b.label);   // PLAY : "green", "red" ou null
         d = on ? 1 : 0; hue = on === "green" || on === "red" ? on : "";
       }
-      show(b, d, br, hue, live);
+      show(b, d, br, hue, live, !sweep);
     }
     keys.forEach((k, i) => {
       const d = L ? L.d[14 + i] : sweep ? sweep[14 + i] : fw.keyLit(i) ? 1 : 0, br = L && L.br ? L.br[14 + i] : 0;
