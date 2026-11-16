@@ -1,0 +1,72 @@
+# Essai du cœur accéléré (tools/fm1emu_perf.py) : compile, vérifie qu'il calcule la même chose que le cœur publié (fop_selftest, puis le
+# son de chaque firmware, octet pour octet), mesure la vitesse. N'est lancé que sur la branche d'essai ; ne publie rien.
+name: Perf
+
+on:
+  push:
+    branches: [essai-perf]
+  workflow_dispatch:
+
+env:
+  FM1_EMU_COMMIT: 60645a58d6cd1597ed565a3f00e4981964623232
+
+jobs:
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: joakimeriksson/fm1-emu
+          ref: ${{ env.FM1_EMU_COMMIT }}
+          path: fm1-emu
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: rustup target add wasm32-unknown-unknown
+      - name: Cœur publié (référence)
+        run: curl -fsSL -o base.wasm https://ninjathune-human.github.io/Fm1/runtime/fm1_web.wasm
+      - name: Patchs du site et d'accélération
+        run: |
+          python3 tools/fm1emu_vert.py fm1-emu fm1-emu/web/worklet.js
+          python3 tools/fm1emu_usb.py fm1-emu fm1-emu/web/worklet.js
+          python3 tools/fm1emu_perf.py fm1-emu
+      - name: Compilation du cœur accéléré
+        working-directory: fm1-emu
+        env:
+          CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
+          RUSTFLAGS: -Cllvm-args=-inline-threshold=2000 -Clink-arg=--export-table -Clink-arg=--growable-table
+        run: cargo build --release -p fm1-web --target wasm32-unknown-unknown --target-dir target/wasm
+      - name: Les calculs flottants en ligne contre l'exécuteur
+        working-directory: fm1-emu
+        run: FM1_WASM=$PWD/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm node --test web/jit.test.mjs 2>&1 | tail -40
+      - name: Son identique et vitesse, firmware par firmware
+        working-directory: fm1-emu
+        run: |
+          NEW=$PWD/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm
+          echo "| firmware | vitesse avant | vitesse après | pire quantum avant | après | son |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for f in melodee clipper sloopdx dark1 fm1sid zp12 nachtfahrt mutable scintilla fmdj; do
+            for w in base new; do
+              W=$([ $w = base ] && echo ../base.wasm || echo $NEW)
+              FM1_WASM=$W FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/$f.$w.json node web/bench.mjs 100 8 /tmp/$f.$w.raw > /dev/null 2>&1 || echo "$f $w : échec"
+            done
+            python3 - "$f" >> $GITHUB_STEP_SUMMARY <<'P'
+          import json, sys, filecmp
+          f = sys.argv[1]
+          try:
+              a, b = (json.load(open(f"/tmp/{f}.{w}.json")) for w in ("base", "new"))
+              same = filecmp.cmp(f"/tmp/{f}.base.raw", f"/tmp/{f}.new.raw", shallow=False)
+              print(f"| {f} | {a['steadyRealtime']:.2f}x | {b['steadyRealtime']:.2f}x | {a['steadyRenderMs']['max']:.0f} ms | {b['steadyRenderMs']['max']:.0f} ms | {'identique' if same else 'DIFFÉRENT'} |")
+          except Exception as e:
+              print(f"| {f} | échec : {e} | | | | |")
+          P
+          done
+      - name: Profil des appels d'aide (cœur publié)
+        working-directory: fm1-emu
+        run: |
+          for f in melodee dark1 clipper; do
+            FM1_PROFILE=1 FM1_WASM=../base.wasm FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/p.json node web/bench.mjs 100 6 > /dev/null 2>&1
+            echo "### profil $f" >> $GITHUB_STEP_SUMMARY
+            python3 -c "import json; p=json.load(open('/tmp/p.json')).get('profile'); print('\`\`\`'); print(json.dumps(p)[:1800]); print('\`\`\`')" >> $GITHUB_STEP_SUMMARY
+          done
