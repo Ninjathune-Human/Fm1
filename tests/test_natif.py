@@ -49,6 +49,30 @@ def test_native_then_emulated_then_back(page):
     assert page.evaluate("window.__engine() === window.__fw")
 
 
+def test_left_native_pauses(page):
+    """Un natif quitté (gardé pour son état) ne travaille plus au bout de 10 s : plus rien vers la page ; il reprend au retour,
+    et c'est le même (sinon les natifs visités s'accumulent et la page ralentit jusqu'à se figer)."""
+    power_on(page)
+    page.set_default_timeout(30000)
+    assert use(page, "felucca") is True
+    page.wait_for_timeout(2500)
+    page.evaluate("window.__left = window.__engine(); window.__leftN = 0; window.__left.node.port.addEventListener('message', () => window.__leftN++)")
+    assert use(page, "x0x") is True
+    page.wait_for_timeout(12000)
+    page.evaluate("window.__leftN = 0")
+    page.wait_for_timeout(2000)
+    assert page.evaluate("window.__leftN") == 0
+    assert use(page, "felucca") is True
+    assert page.evaluate("window.__left === window.__engine()")
+    page.wait_for_timeout(1000)
+    assert page.evaluate("window.__leftN") > 10
+    page.evaluate("window.__host.keyDown(12, 't')")
+    page.wait_for_timeout(500)
+    level = rms(page)
+    page.evaluate("window.__host.keyUp('t')")
+    assert level > 0.001, level
+
+
 def test_native_saves_kept(page):
     """Ce que Felucca écrit dans sa flash revient à la prochaine ouverture de la page."""
     power_on(page)

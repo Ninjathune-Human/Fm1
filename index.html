@@ -2561,11 +2561,13 @@ class NativeFirmware {
   // démarre le firmware (une fois par page : son worklet garde l'état) ; ensuite, rebranche seulement
   async boot(ac) {
     this.failure = null;
-    if (this.node && this.ac === ac) { this.node.connect(this.an); this.on = true; return true; }
+    if (this.node && this.ac === ac) { this.pause(false); this.node.connect(this.an); this.on = true; return true; }
     const base = this.entry.natif;
     try {
+      // la pause des firmwares quittés (assets/natif-pause.js) : chargée une fois, avant le worklet du firmware
+      if (!ac.fm1Pause) ac.fm1Pause = ac.audioWorklet.addModule("assets/natif-pause.js");
       const [wasm] = await Promise.all([fetch(base + this.entry.natif_wasm).then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }),
-        ac.audioWorklet.addModule(base + "worklet.js")]);
+        ac.fm1Pause.then(() => ac.audioWorklet.addModule(base + "worklet.js"))]);
       let sectors = null;
       try { sectors = await nativeFlash.get(this.entry.id); } catch (err) { this.storageError = err; }
       this.lastLoadSectors = sectors;
@@ -2627,6 +2629,14 @@ class NativeFirmware {
     await this.pendingSave?.catch(() => {});
     if (this.node) this.node.disconnect();
     this.on = false;
+    // quitté, il se met en pause au bout de 10 s (le temps d'enregistrer ce qu'il avait encore à écrire) ; il reprend au retour
+    clearTimeout(this.pauseTimer);
+    this.pauseTimer = setTimeout(() => this.pause(true), 10000);
+  }
+  pause(on) {
+    clearTimeout(this.pauseTimer);
+    const p = this.node && this.node.parameters.get("fm1Pause");
+    if (p) p.value = on ? 1 : 0;
   }
   onWorklet(e) {
     const m = e.data, t = m.type || m.t;
