@@ -309,7 +309,7 @@ def test_linked_tempo_pill(page):
     assert solo.evaluate("document.querySelectorAll('.fw-lie').length") == 0
 
 
-@pytest.mark.parametrize("fid", ["cs1", "monk"])
+@pytest.mark.parametrize("fid", ["cs1", "monk", "maku", "fimba"])
 def test_unlaunched_keeps_own_play(page, fid):
     """Tempo lié, un natif que rien ne lance (demarre false : CS-1 lit le MIDI, MONK-1 non) : son PLAY seul lui parvient (HOLD,
     sa lumière s'allume) sans lancer l'autre FM-1 ; le PLAY de FM-1+VA les lance sans bulle « n'a pas démarré »."""

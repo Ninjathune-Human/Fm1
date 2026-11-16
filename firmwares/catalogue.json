@@ -735,7 +735,8 @@
    "provenance_paquet": "release download/v0.7.0/fimba-0.7.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "fizz",
@@ -1537,7 +1538,8 @@
    "provenance_paquet": "release download/maku-v1.0/maku-1.0.fwsc",
    "natif_seulement": true,
    "horloge_midi": true,
-   "tempo_lie": false
+   "tempo_lie": true,
+   "demarre": false
   },
   {
    "id": "matryoshka",
