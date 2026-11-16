@@ -8,7 +8,7 @@
 
 ## Utilisation
 
-- **Allumer** démarre le son. Le contrôle **Firmware**, sous le panneau, ouvre la liste : la recherche tolère les fautes et l'ordre des mots, Entrée démarre le premier résultat. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur, sans l'envoyer nulle part.
+- **Allumer** démarre le son. Le contrôle **Firmware**, sous le panneau, ouvre la liste : la recherche tolère les fautes et l'ordre des mots, Entrée démarre le premier résultat. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur, sans l'envoyer nulle part ; il reste ensuite dans la liste, sous Mes firmwares, dans ce navigateur.
 - Chaque firmware garde ses presets et ses patterns dans le navigateur. L'interrupteur **marche / arrêt** éteint le FM-1 ; l'éteindre efface les sauvegardes du seul firmware actif.
 - Sous le panneau : le manuel, les raccourcis clavier, les fonctions du firmware chargé, et **Sauvegarde et restauration**, toute la mémoire du FM-1 dans un fichier .json, au format du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1) (une sauvegarde passe d'un site à l'autre). **FR / EN** traduit l'interface, le manuel et les fiches.
 - **Duo** (`index.html?duo`) : deux FM-1 dans la page, chacun avec son firmware et sa mémoire. Avec **Tempo lié**, la page leur donne la même horloge MIDI au BPM choisi et un PLAY lance les deux ; seuls se choisissent alors les firmwares vérifiés en Duo. L'horloge vient du fork de Jake Pawlik.

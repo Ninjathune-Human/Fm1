@@ -1,7 +1,7 @@
 {
  "exact": {
   "Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.": "Power on, on the FM-1, starts the sound and the chosen firmware; the switch under the FM-1 does too. Powering off with the switch resets the active firmware to factory settings (its presets, patterns and settings are erased), then reloads the page.",
-  "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own. A firmware that stops is restarted with Restart.",
+  "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own, which then stays in the list, under My firmwares (in this browser; the cross removes it). A firmware that stops is restarted with Restart.",
   "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12, MIDI file with SLOOP: a .mid file into one of its tracks, like its editor's Import MIDI, after a preview of what changes on the way. Their functions panel explains it.",
   "Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.": "The six FM-1 colourways, as swatches under the FM-1. With FM-1+VA, the screen takes the matching theme.",
   "Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.": "Solo and Duo, at the top of the page. Two FM-1s at once, FM1-A and FM1-B, each with its own firmware, memory and power: one above the other in portrait, one or the other in landscape, side by side if you like on a large screen. Linked tempo: the page gives both FM-1s the same MIDI clock, at the BPM chosen next to it, whatever their firmware; PLAY on its own, on either one, starts and stops them together. FM-1+VA follows it by itself; another firmware follows it if it is set to an external clock (CLK to USB, or TRS if it is emulated: CLOCK page of HOME for Felucca, GLOBAL of GLO for Hortator), a setting to undo afterwards so that it plays on its own again. FM1-B takes FM-1+VA or a native firmware.",
@@ -89,6 +89,9 @@
   "Retirer des favoris": "Remove from favourites",
   "Ajouter aux favoris": "Add to favourites",
   "Favoris": "Favourites",
+  "Mes firmwares": "My firmwares",
+  "Retirer de Mes firmwares": "Remove from My firmwares",
+  "Ouvert depuis un fichier, gardé dans ce navigateur.": "Opened from a file, kept in this browser.",
   "Réimplémentation d'après Baud Girl": "Reimplementation after Baud Girl",
   "Réimplémentation d'après Baud Girl · 102 · GPL-3.0": "Reimplementation after Baud Girl · 102 · GPL-3.0",
   "Le firmware de Baud Girl réécrit d'après son manuel : FM six opérateurs, Virtual Analog et 8-Bit.": "Baud Girl's firmware rewritten from its manual: six-operator FM, Virtual Analog and 8-Bit.",
@@ -258,6 +261,14 @@
   [
    "^Ajouter (.+) aux favoris$",
    "Add $1 to favourites"
+  ],
+  [
+   "^Retirer (.+) de Mes firmwares$",
+   "Remove $1 from My firmwares"
+  ],
+  [
+   "^(.+) : fichier introuvable dans ce navigateur\\.$",
+   "$1: file not found in this browser."
   ],
   [
    "^Retirer (.+) des favoris$",

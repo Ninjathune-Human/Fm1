@@ -188,11 +188,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .fw-n { font-weight: 600; }
 .fw-item[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .fw-n[aria-current="true"]::before, .fw-item[aria-current="true"] .fw-n::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 2px 0; border-radius: 50%; background: var(--accent); }
-/* l'étoile des favoris : à droite de la ligne, une cible de 44 px */
-.fw-star { position: absolute; top: 0; right: 0; width: 44px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
+/* l'étoile des favoris : à droite de la ligne, une cible de 44 px ; à sa place, dans Mes firmwares, la croix qui retire */
+.fw-star, .fw-del { position: absolute; top: 0; right: 0; width: 44px; height: 40px; padding: 0; border: 0; background: none; cursor: pointer;
   display: grid; place-items: center; color: var(--muted); opacity: 0.5; touch-action: manipulation; transition: opacity 0.15s, color 0.15s; }
-.fw-star svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
-.fw-star:hover { opacity: 1; }
+.fw-star svg, .fw-del svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+.fw-star:hover, .fw-del:hover { opacity: 1; }
 .fw-star[aria-pressed="true"] { color: var(--accent); opacity: 1; }
 .fw-star[aria-pressed="true"] svg { fill: currentColor; }
 .fw-sec[data-cat="Favoris"] { margin-bottom: 4px; }
@@ -409,7 +409,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <div class="note">
         <dl>
           <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
-          <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi. Un firmware qui s'arrête se relance par Redémarrer.</dd>
+          <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.</dd>
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.</dd>
@@ -2496,6 +2496,31 @@ const nativeFlash = {                     // la flash gardée de chaque firmware
   async put(id, sectors) {
     const db = await this.open();
     return new Promise((ok, ko) => { const t = db.transaction("flash", "readwrite"); t.objectStore("flash").put(sectors, SKEY(id)); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
+  },
+};
+// Mes firmwares : les paquets ouverts depuis un fichier (.fwsc), gardés dans ce navigateur pour revenir dans la liste ;
+// rien n'est publié. Les paquets dans IndexedDB, leur liste (id, nom) dans localStorage, pour FM1-A comme pour FM1-B
+const myPackages = {
+  db: null,
+  open() {
+    if (!this.db) this.db = new Promise((ok, ko) => {
+      const r = indexedDB.open("fm1-mes", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("paquets");
+      r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+    });
+    return this.db;
+  },
+  async get(id) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const r = db.transaction("paquets").objectStore("paquets").get(id); r.onsuccess = () => ok(r.result || null); r.onerror = () => ko(r.error); });
+  },
+  async put(id, bytes) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const t = db.transaction("paquets", "readwrite"); t.objectStore("paquets").put(bytes, id); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
+  },
+  async remove(id) {
+    const db = await this.open();
+    return new Promise((ok, ko) => { const t = db.transaction("paquets", "readwrite"); t.objectStore("paquets").delete(id); t.oncomplete = () => ok(); t.onerror = () => ko(t.error); });
   },
 };
 // L'animation lumineuse de l'allumage, celle de Felucca 1.1 (Leo Kuroshita, Hügelton Instruments, GPL-3.0 ;
@@ -6514,7 +6539,7 @@ function buildPanel(fw) {
     ficheNom.textContent = active.nom;
     const my = ++ficheSeq, id = active.id;
     ficheMeta.textContent = "";
-    if (id === "local") { ficheMessage("Pas de fiche pour ce firmware."); return; }
+    if (id === "local" || id.startsWith("mes-")) { ficheMessage("Pas de fiche pour ce firmware."); return; }
     if (!ficheDetails.open) return;
     const loadFiche = (key) => { if (!fiches.has(key)) fiches.set(key, fetch(`firmwares/fiches/${key}.json`).then((r) => { if (r.status === 404) return null; if (!r.ok) throw new Error(r.status); return r.json(); })); return fiches.get(key); };
     let x;
@@ -6540,7 +6565,7 @@ function buildPanel(fw) {
     const t = [];
     if (FM1_ID && seqLinked(e)) t.push("tempo lié");   // en Duo : son séquenceur suit l'autre FM-1
     if (e.beta) t.push("bêta");
-    if (e.id !== "fm1va" && !e.fichier && !e.natif) t.push("en ligne");   // (un natif n'a plus de paquet dans le dépôt)
+    if (e.id !== "fm1va" && !e.fichier && !e.natif && !e.mien) t.push("en ligne");   // (un natif n'a plus de paquet dans le dépôt)
     if (e.emulateur_fm1emu === "pas encore évalué") t.push("non évalué");
     if (e.emulateur_fm1emu === "ne démarre pas") t.push("ne démarre pas");
     return t;
@@ -6555,6 +6580,15 @@ function buildPanel(fw) {
     for (const t of tagsOf(e)) tags.append(span(t === "tempo lié" ? "fw-tag fw-lie" : "fw-tag", t));
     b.append(span("fw-n", e.nom), span("fw-a", e.auteur || ""), span("fw-d", e.description || ""), tags);
     b.addEventListener("click", () => pick(e));
+    if (e.mien) {                            // Mes firmwares : à la place de l'étoile, la croix qui le retire de la liste
+      const del = document.createElement("button");
+      del.type = "button"; del.className = "fw-del"; del.dataset.id = e.id;
+      del.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+      del.setAttribute("aria-label", `Retirer ${e.nom} de Mes firmwares`); del.title = "Retirer de Mes firmwares";
+      del.addEventListener("click", () => removeMine(e));
+      li.append(b, del);
+      return li;
+    }
     const star = document.createElement("button");
     star.type = "button"; star.className = "fw-star"; star.dataset.id = e.id;
     star.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.6l1.95 4 4.4.6-3.2 3.08.78 4.37L8 11.55l-3.93 2.1.78-4.37L1.65 6.2l4.4-.6z"/></svg>';
@@ -6562,6 +6596,21 @@ function buildPanel(fw) {
     star.addEventListener("click", () => toggleFav(e, star));
     li.append(b, star);
     return li;
+  }
+  // Mes firmwares : les fichiers ouverts, dans l'ordre d'ouverture (myPackages garde les paquets)
+  const MINE = "fm1.mes";
+  let mine = [], mineOpen = true;
+  const mineEntry = (x) => ({ id: x.id, nom: x.nom, auteur: "", description: "Ouvert depuis un fichier, gardé dans ce navigateur.", categories: [], mien: true });
+  // relue à chaque ouverture : l'autre FM-1 du Duo a pu la changer
+  function loadMine() {
+    try { const m = JSON.parse(localStorage.getItem(MINE) || "[]"); if (Array.isArray(m)) mine = m.filter((x) => x && typeof x.id === "string" && typeof x.nom === "string").map(mineEntry); } catch { /* celle de cette page */ }
+  }
+  function saveMine() { try { localStorage.setItem(MINE, JSON.stringify(mine.map((e) => ({ id: e.id, nom: e.nom })))); } catch { /* cette session */ } }
+  function removeMine(e) {
+    loadMine();
+    mine = mine.filter((x) => x.id !== e.id); saveMine();
+    myPackages.remove(e.id).catch(() => {});
+    renderSections(); renderResults();
   }
   // les favoris : une liste à soi, dans l'ordre où on les a marqués, gardée pour FM1-A comme pour FM1-B
   const FAV = "fm1.favoris";
@@ -6606,6 +6655,18 @@ function buildPanel(fw) {
       sec.append(head, ul);
       notes.push(sec);
     }
+    if (mine.length) {
+      const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
+      sec.className = "fw-sec"; sec.dataset.cat = "Mes firmwares";
+      head.type = "button"; head.className = "fw-sec-head"; head.dataset.cat = "Mes firmwares";
+      head.setAttribute("aria-expanded", mineOpen);
+      head.innerHTML = `<span>Mes firmwares</span><span class="count">${mine.length}</span><span class="notch" aria-hidden="true"></span>`;
+      ul.className = "fw-items"; ul.hidden = !mineOpen;
+      ul.append(...mine.map(row));
+      head.addEventListener("click", () => { mineOpen = !mineOpen; head.setAttribute("aria-expanded", mineOpen); ul.hidden = !mineOpen; });
+      sec.append(head, ul);
+      notes.push(sec);
+    }
     sectionsEl.replaceChildren(...notes, ...groups.flatMap((g, i) => {
       const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
       sec.className = "fw-sec"; sec.dataset.cat = g.categorie; sec.dataset.tier = g.optimise ? "optimise" : "emule";
@@ -6631,14 +6692,14 @@ function buildPanel(fw) {
     clear.hidden = !q;
     sectionsEl.hidden = !!q.trim(); resultsEl.hidden = !q.trim();
     if (!q.trim()) return;
-    const r = rankCatalogue(entries(), q), ul = document.createElement("ul");
+    const r = rankCatalogue([...entries(), ...mine], q), ul = document.createElement("ul");
     ul.className = "fw-items"; ul.append(...r.items.map(row));
     const note = document.createElement("p"); note.className = "fw-note";
     note.textContent = r.items.length ? "Résultats approchants" : "Aucun firmware ne correspond.";
     resultsEl.replaceChildren(...(r.approchants || !r.items.length ? [note] : []), ul);
   }
   function openSheet() {
-    loadFavs(); renderSections(); renderResults();
+    loadFavs(); loadMine(); renderSections(); renderResults();
     sheet.hidden = false; scrim.hidden = false; picker.setAttribute("aria-expanded", "true");
     const abs = getComputedStyle(sheet).position === "absolute", above = picker.getBoundingClientRect().top - 16;
     sheet.classList.toggle("up", abs && (FM1_ID || above >= 360));
@@ -6715,7 +6776,7 @@ function buildPanel(fw) {
   function failureText(e) {
     if (switchFailure === "core") return "Cœur d'émulation indisponible.";
     if (switchFailure === "fetch") return `${e.nom} : paquet injoignable.`;
-    if (e.id === "local") return "Ce fichier n'est pas un paquet FM-1.";
+    if (e.id === "local" || e.nouveau) return "Ce fichier n'est pas un paquet FM-1.";
     return `${e.nom} n'a pas démarré.`;
   }
   // en Duo, FM1-B prend FM-1+VA ou un firmware natif : un firmware émulé de plus serait trop lourd (et partagerait sa mémoire)
@@ -6748,28 +6809,52 @@ function buildPanel(fw) {
       return;
     }
     const my = ++pickSeq;
+    if (e.mien && !e.bytes) {                // Mes firmwares : son paquet, gardé dans ce navigateur
+      try { e.bytes = await myPackages.get(e.id); } catch { /* introuvable */ }
+      if (my !== pickSeq) return;
+      if (!e.bytes) { status.textContent = `${e.nom} : fichier introuvable dans ce navigateur.`; return; }
+    }
     status.textContent = `Démarrage de ${e.nom}…`;
     const ok = await useEngine(e).catch(() => false);
     if (my !== pickSeq) return;
     if (ok) {
+      delete e.nouveau;
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       status.textContent = current !== va && current.storageError ? `${e.nom} · Sauvegardes indisponibles dans ce navigateur.` : "";
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       renderSections();
-    } else status.textContent = failureText(e);
+    } else {
+      status.textContent = failureText(e);
+      if (e.nouveau) removeMine(e);          // un fichier qui ne démarre pas ne reste pas dans Mes firmwares
+    }
     showContext();
   }
   $("fw-file").addEventListener("change", async (ev) => {
     const f = ev.target.files[0];
     ev.target.value = "";
     if (!f) return;
-    pick({ id: "local", nom: f.name.replace(/\.fwsc$/i, ""), auteur: "", description: "", bytes: new Uint8Array(await f.arrayBuffer()) });
+    const nom = f.name.replace(/\.fwsc$/i, ""), bytes = new Uint8Array(await f.arrayBuffer());
+    // gardé dans Mes firmwares, sous un nom tiré de son contenu (le même fichier n'y entre qu'une fois) ;
+    // sans stockage (navigation privée…), il tourne pour cette session seulement
+    try {
+      const h = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+      const id = "mes-" + [...h.slice(0, 8)].map((b) => b.toString(16).padStart(2, "0")).join("");
+      await myPackages.put(id, bytes);
+      loadMine();
+      let e = mine.find((x) => x.id === id);
+      if (!e) { e = Object.assign(mineEntry({ id, nom }), { nouveau: true }); mine.push(e); saveMine(); }
+      e.bytes = bytes;
+      pick(e);
+    } catch {
+      pick({ id: "local", nom, auteur: "", description: "", bytes });
+    }
   });
-  // à l'allumage : le dernier firmware choisi redémarre
+  // à l'allumage : le dernier firmware choisi redémarre (un des miens aussi)
   async function restoreLast() {
     await catalogueReady;
     if (active.id === "fm1va") return;
-    const e = catalogue.find((x) => x.id === active.id);
+    loadMine();
+    const e = catalogue.find((x) => x.id === active.id) || mine.find((x) => x.id === active.id);
     if (e) await pick(e);
   }
   async function resetEmu() {

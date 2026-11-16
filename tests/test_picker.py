@@ -172,6 +172,39 @@ def test_open_local(page):
     assert page.evaluate("window.__catalogue.length") == n
 
 
+def test_open_local_kept_in_my_list(page, tmp_path):
+    """Un .fwsc ouvert reste dans la liste (Mes firmwares, ce navigateur) : il redémarre à l'allumage après un
+    rechargement, la croix l'en retire ; un fichier qui n'est pas un paquet n'y entre pas."""
+    power_on(page)
+    page.set_input_files("#fw-file", os.path.join(ROOT, "firmwares", "gator.fwsc"))
+    ready(page, "gator")
+    mine = page.evaluate("JSON.parse(localStorage.getItem('fm1.mes'))")
+    assert [m["nom"] for m in mine] == ["gator"] and mine[0]["id"].startswith("mes-")
+    page.set_input_files("#fw-file", os.path.join(ROOT, "firmwares", "gator.fwsc"))   # le même fichier : une seule fois
+    ready(page, "gator")
+    assert len(page.evaluate("JSON.parse(localStorage.getItem('fm1.mes'))")) == 1
+    page.reload()
+    assert page.inner_text("#fw-name") == "gator"
+    page.click("#go")
+    ready(page, "gator")                                                  # le dernier choisi redémarre, un des miens aussi
+    page.wait_for_timeout(3000)
+    assert lit_pixels(page) >= 2000
+    page.click("#fw-picker")
+    sec = '.fw-sec[data-cat="Mes firmwares"]'
+    assert page.inner_text(f"{sec} .count") == "1"
+    assert page.is_visible(f'{sec} .fw-item[data-id="{mine[0]["id"]}"]')
+    assert page.locator(f"{sec} .fw-star").count() == 0                   # pas d'étoile : la croix à sa place
+    page.click(f"{sec} .fw-del")
+    assert page.locator(sec).count() == 0
+    assert page.evaluate("JSON.parse(localStorage.getItem('fm1.mes'))") == []
+    page.keyboard.press("Escape")
+    bad = tmp_path / "rien.fwsc"
+    bad.write_bytes(b"pas un paquet FM-1" * 64)
+    page.set_input_files("#fw-file", str(bad))
+    wait_status(page, "Ce fichier n'est pas un paquet FM-1.")
+    assert page.evaluate("JSON.parse(localStorage.getItem('fm1.mes'))") == []
+
+
 def test_tag_no_boot(page):
     import json
     cat = json.load(open(os.path.join(ROOT, "firmwares", "catalogue.json")))
