@@ -39,7 +39,9 @@ jobs:
         run: cargo build --release -p fm1-web --target wasm32-unknown-unknown --target-dir target/wasm
       - name: Les calculs flottants en ligne contre l'exécuteur
         working-directory: fm1-emu
-        run: FM1_WASM=$PWD/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm node --test web/jit.test.mjs 2>&1 | tail -40
+        run: |
+          echo "=== cœur publié ==="; FM1_WASM=$PWD/../base.wasm node --test web/jit.test.mjs 2>&1 | grep -E "^\s+op |!==|^# (pass|fail)" || true
+          echo "=== cœur accéléré ==="; FM1_WASM=$PWD/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm node --test web/jit.test.mjs 2>&1 | grep -E "^\s+op |!==|^# (pass|fail)" || true
       - name: Son identique et vitesse, firmware par firmware
         working-directory: fm1-emu
         run: |
@@ -51,7 +53,7 @@ jobs:
               W=$([ $w = base ] && echo ../base.wasm || echo $NEW)
               FM1_WASM=$W FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/$f.$w.json node web/bench.mjs 100 8 /tmp/$f.$w.raw > /dev/null 2>&1 || echo "$f $w : échec"
             done
-            python3 - "$f" >> $GITHUB_STEP_SUMMARY <<'P'
+            python3 - "$f" | tee -a $GITHUB_STEP_SUMMARY <<'P'
           import json, sys, filecmp
           f = sys.argv[1]
           try:
