@@ -6200,9 +6200,10 @@ function buildPanel(fw) {
   let brI = 0, puI = 0;                                // ce qui respire, ce qui pulse : leur intensité à cette image
   // la lueur de fond d'un bouton éteint (le rétroéclairage : 0,39 à 0,74 selon le firmware) ne touche ni sa légende ni sa
   // couleur : seule une LED allumée (ou qui respire, ou qui pulse) les change ; un bouton éteint reste à l'encre, partout pareil
+  let glowAll = false;
   const AMBIENT = 0.027;                               // sa part du temps : vue 0,35, juste sous le seuil où la légende s'éclaire
   const show = (o, d, br, hue, live, button) => {
-    if (button && !br && d < 1) { hue = ""; if (d > AMBIENT) d = AMBIENT; }
+    if (button && !br && d < 1) { hue = ""; if (d > AMBIENT || (glowAll && d < AMBIENT)) d = AMBIENT; }   // (glowAll : un natif allumé sans lueur à lui l'a quand même)
     const I = br === 1 ? brI : br === 2 ? puI : ledSeen(d), v = I.toFixed(3);
     if (v !== o.v) { o.v = v; o.g.style.setProperty("--i", v); }
     // (on : la légende s'éclaire, avec son ombre lumineuse ; en dessous, seule la tache diffuse)
@@ -6216,6 +6217,7 @@ function buildPanel(fw) {
   };
   function lights() {
     const L = fw.ledDuty ? fw.ledDuty() : null, sweep = !L && fw.ledLevels ? fw.ledLevels() : null;
+    glowAll = !!(L && L.br && fw.on);
     const live = !!(L && L.live) || !!sweep;
     // ce qui respire (de l'éteint au haut, ~1,13 s) et ce qui pulse (DUELL, du haut au creux), en phase, comme sur l'appareil
     const t = performance.now(), ph = still.matches ? 0.5 : null, P = L && L.pulse;

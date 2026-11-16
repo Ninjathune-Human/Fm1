@@ -135,7 +135,7 @@ def test_felucca_layers(page):
     assert a != b                                                        # elle respire, image par image
 
 
-@pytest.mark.parametrize("fid", ["fm106", "dark1", "makohai"])
+@pytest.mark.parametrize("fid", ["fm106", "dark1", "makohai", "arctic", "hera", "modelar"])
 def test_idle_buttons_same_whatever_the_backlight(page, fid):
     """Le rétroéclairage des boutons éteints (vu 0,39 à 0,74, FM-106 : 0,58) ne change ni leur légende ni leur couleur : tous à
     l'encre, PLAY sans teinte ; seul un bouton allumé s'éclaire."""
@@ -145,4 +145,4 @@ def test_idle_buttons_same_whatever_the_backlight(page, fid):
     caps = page.evaluate("""() => [...document.querySelectorAll('#device .cap')].map((g) => [g.getAttribute('class'), +g.style.getPropertyValue('--i')])""")
     idle = [c for c in caps if "lit" not in c[0] and "breath" not in c[0]]
     assert len(idle) >= 10
-    assert all(i <= 0.351 and "hue-" not in cl for cl, i in idle), idle
+    assert all(0.34 <= i <= 0.351 and "hue-" not in cl for cl, i in idle), idle   # (la lueur de fond, la même pour tous, même sans)
