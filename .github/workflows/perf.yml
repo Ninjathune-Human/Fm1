@@ -53,7 +53,7 @@ jobs:
               W=$([ $w = base ] && echo ../base.wasm || echo $NEW)
               FM1_WASM=$W FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/$f.$w.json node web/bench.mjs 100 8 /tmp/$f.$w.raw > /dev/null 2>&1 || echo "$f $w : échec"
             done
-            python3 - "$f" | tee -a $GITHUB_STEP_SUMMARY <<'P'
+            python3 - "$f" <<'P' | tee -a $GITHUB_STEP_SUMMARY
           import json, sys, filecmp
           f = sys.argv[1]
           try:
