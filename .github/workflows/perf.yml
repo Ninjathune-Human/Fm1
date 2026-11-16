@@ -67,8 +67,17 @@ jobs:
       - name: Profil des appels d'aide (cœur publié)
         working-directory: fm1-emu
         run: |
-          for f in melodee dark1 clipper; do
+          for f in melodee dark1 clipper sloopdx; do
             FM1_PROFILE=1 FM1_WASM=../base.wasm FM1_FWSC=../firmwares/$f.fwsc FM1_BENCH_JSON=/tmp/p.json node web/bench.mjs 100 6 > /dev/null 2>&1
-            echo "### profil $f" >> $GITHUB_STEP_SUMMARY
-            python3 -c "import json; p=json.load(open('/tmp/p.json')).get('profile'); print('\`\`\`'); print(json.dumps(p)[:1800]); print('\`\`\`')" >> $GITHUB_STEP_SUMMARY
+            echo "### profil $f"
+            python3 - <<'P'
+          import json
+          p = json.load(open('/tmp/p.json')).get('profile')
+          c = p[0]
+          print({k: (v if not isinstance(v, (list, dict)) else '...') for k, v in c.items()} if isinstance(c, dict) else str(c)[:300])
+          for k, v in (c.items() if isinstance(c, dict) else []):
+              if isinstance(v, (list, dict)):
+                  items = sorted(v.items(), key=lambda kv: -(kv[1] if isinstance(kv[1], (int, float)) else 0))[:14] if isinstance(v, dict) else v[:14]
+                  print(k, items)
+          P
           done
