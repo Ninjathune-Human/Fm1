@@ -229,6 +229,9 @@ def test_every_native_reacts(page):
         page.wait_for_timeout(400)
         page.evaluate("window.__host.keyDown(12, 't')")
         page.wait_for_timeout(900 if granular else 500)
+        if i == "midimon":                  # un moniteur MIDI : son écran répond au MIDI reçu, pas au panneau
+            page.evaluate("window.__engine().midiIn(Uint8Array.from([0x90, 60, 110]))")
+            page.wait_for_timeout(500)
         level = rms(page)
         page.evaluate("window.__host.keyUp('t')")
         if page.evaluate(shot) == before and level <= (0.0002 if granular else 0.001):
