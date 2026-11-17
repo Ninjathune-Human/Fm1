@@ -9,15 +9,11 @@ await etape("natifs", async () => Object.keys(await (await fetch("natif/manifest
 await etape("module", async () => { await import("./runtime/persistence.js"); return "ok"; });
 await etape("worklet", async () => { await new OfflineAudioContext(2, 128, 48000).audioWorklet.addModule("runtime/worklet.js"); return "ok"; });
 await etape("absent", async () => (await fetch("absent.json")).status);
-// le MIDI de l'iPad : les entrées, et les notes du clavier virtuel lancé dans le simulateur (clavier-test.swift)
+// le MIDI de l'iPad, par l'app : la page obtient ses entrées (le simulateur n'en a pas ; la réception est
+// essayée sur le Mac, clavier-test.swift)
 await etape("midi", async () => {
   const a = await navigator.requestMIDIAccess({ sysex: true });
-  const clavier = [...a.inputs.values()].find((i) => i.name === "Clavier test");
-  if (!clavier) return "entrées : " + ([...a.inputs.values()].map((i) => i.name).join(", ") || "aucune");
-  return await new Promise((ok) => {
-    clavier.onmidimessage = (m) => ok("reçu " + [...m.data].join(" "));
-    setTimeout(() => ok("Clavier test, rien reçu"), 10000);
-  });
+  return "entrées : " + ([...a.inputs.values()].map((i) => i.name).join(", ") || "aucune");
 });
 // un firmware « en ligne » (thefirmwarehub.com), pour information : il dépend du réseau et de son serveur
 await etape("enLigne", async () => {
