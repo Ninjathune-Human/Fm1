@@ -24,7 +24,7 @@ concurrency:
 jobs:
   ipad:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     timeout-minutes: 40
     defaults:
       run:
@@ -68,7 +68,7 @@ jobs:
           codesign --force --sign - "$APP"
           xcrun simctl install "$UDID" "$APP"
           # le clavier virtuel, dans le simulateur (qui ne voit pas le MIDI du Mac)
-          xcrun --sdk iphonesimulator swiftc -O -target arm64-apple-ios15.0-simulator clavier-test.swift -o build/clavier-test > clavier.log 2>&1 \
+          xcrun --sdk iphonesimulator swiftc -O -target "$(uname -m)-apple-ios15.0-simulator" clavier-test.swift -o build/clavier-test > clavier.log 2>&1 \
             || echo "::warning title=clavier test::$(grep 'error:' clavier.log | head -3 | tr '\n' ' ')"
           xcrun simctl spawn "$UDID" "$PWD/build/clavier-test" > clavier.log 2>&1 & CLAVIER=$!
           sleep 3
