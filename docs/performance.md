@@ -53,3 +53,11 @@ Les autres restent émulés. Ceux qui pourraient passer en natif, à faire plus 
 - SIDOU : un cœur C (un 6502 et un SID émulés) testé depuis Rust, sans version navigateur ; toute une couche plateforme à écrire.
 
 Retouches faites aux worklets, et seulement celles-là : nom de processeur propre à chaque firmware, écran à 60 images par seconde, et un `TextDecoder` de secours (absent du fil audio de Chrome, il bloquait FUMI et ZEN-1).
+
+## Piste testée le 16 novembre 2026 : multiplications-accumulations en WebAssembly
+
+Les ops flottantes 7 et 8 (d = d ± a × b) passent par l'exécuteur dans le cœur au commit 60645a5 ; la branche `essai-perf` (`tools/fm1emu_perf.py`, banc `perf.yml`) les calcule en instructions f32 du bloc compilé.
+
+- Exactitude : le son de dix firmwares (Melodee, Clipper, SLOOPDX, DARK-1, FM1SID, zp12, NACHTFAHRT, Mutable, Scintilla, FMDj), 8 s à 100 MHz, est identique octet pour octet à celui du cœur publié ; l'auto-test `fop_selftest` ne signale que les écarts de charge utile NaN déjà présents dans le cœur publié (ops 0 et 2, interpréteur contre exécuteur), les ops 7 et 8 se comportent comme eux.
+- Vitesse : aucun gain mesurable (Melodee 1,59× avant, 1,57× après ; DARK-1 1,27× et 1,28×). Aucune op flottante n'apparaît parmi les appels d'aide comptés : la piste ne vaut rien sur ce cœur, elle n'est pas publiée.
+- Où va le temps (profil, 6 s émulées à 100 MHz, 500 millions d'instructions) : les appels d'aide comptés sont rares (au plus 0,7 million) ; les lectures du bus sont de 4 à 20 millions, dont 6,8 à 9,6 millions du seul compteur TIMER4 (`0x10804`) sur Melodee, DARK-1 et Clipper, et 2,5 à 3 millions de `0x50000` (GPIO) sur tous. Chaque lecture traverse l'appel d'aide, le bus de la machine, le décodage des régions, la lecture du périphérique (une division 64 bits, le dépistage des boucles d'attente et leur saut) : c'est la piste qui reste.
