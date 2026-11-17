@@ -24,7 +24,7 @@ concurrency:
 jobs:
   ipad:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: macos-latest
+    runs-on: macos-15-intel        # les Mac arm64 de GitHub, saturés, ne prenaient plus les tâches
     timeout-minutes: 40
     defaults:
       run:
