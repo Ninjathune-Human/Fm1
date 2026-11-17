@@ -81,12 +81,15 @@ static void lcd_blit(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const uint1
 #include "gfx.c"
 
 /* les réglages (un secteur) et la bibliothèque (quatre), comme platform.c, en mémoire : un seul bloc pour la page */
+#define PL_W_LO 0x000E5000u
+#define PL_W_HI 0x000E9000u
 #define LIB_SECTORS 4u
 #define LIB_MAX (0x1000u - 12u)
 static struct {
     uint8_t store[256 + 4];
     uint32_t lib_n[LIB_SECTORS], lib_magic[LIB_SECTORS];
     uint8_t lib[LIB_SECTORS][LIB_MAX];
+    uint8_t flash[PL_W_HI - PL_W_LO];            /* le journal de patchs, complémenté : à zéro = effacé (0xFF), gardé par la page */
 } keep;
 static int keep_dirty;
 static int settings_load(void *p, uint32_t n)
@@ -119,21 +122,27 @@ static int lib_save(uint32_t k, uint32_t magic, const void *p, uint32_t n)
     return 0;
 }
 
-/* le journal de patchs (patchlog.h) sur une mémoire NOR simulée : l'effacement met à 0xFF, l'écriture ne fait que baisser des bits */
-static uint8_t host_flash[0x100000], flash_ok = 1;
-#define PL_W_LO 0x000E5000u
-#define PL_W_HI 0x000E9000u
+/* le journal de patchs (patchlog.h) sur une mémoire NOR simulée, gardée par la page (keep.flash, octets complémentés) :
+ * l'effacement met à 0xFF, l'écriture ne fait que baisser des bits ; le reste de l'espace se lit effacé */
+static uint8_t flash_ok = 1;
 static uint32_t crc32(const uint8_t *p, uint32_t n)
 {
     uint32_t c = 0xFFFFFFFFu, k;
     while (n--) { c ^= *p++; for (k = 0; k < 8u; k++) c = c & 1u ? (c >> 1) ^ 0xEDB88320u : c >> 1; }
     return ~c;
 }
-static int st_read(uint32_t off, void *dst, uint32_t n) { if (off + n > sizeof host_flash) return -2; memcpy(dst, host_flash + off, n); return 0; }
+static int st_read(uint32_t off, void *dst, uint32_t n)
+{
+    uint8_t *d = dst;
+    for (uint32_t i = 0; i < n; i++)
+        d[i] = off + i >= PL_W_LO && off + i < PL_W_HI ? (uint8_t)~keep.flash[off + i - PL_W_LO] : 0xFFu;
+    return 0;
+}
 static int fl_erase4k(uint32_t off, uint32_t *took)
 {
     if (off < PL_W_LO || off + 0x1000u > PL_W_HI || (off & 0xFFFu)) return -1;
-    memset(host_flash + off, 0xFF, 0x1000);
+    memset(keep.flash + off - PL_W_LO, 0, 0x1000);
+    keep_dirty = 1;
     *took = 17000u;
     return 0;
 }
@@ -142,9 +151,11 @@ static int fl_write(uint32_t off, const uint8_t *s, uint32_t n)
     uint32_t i;
     if (off < PL_W_LO || off + n > PL_W_HI) return -1;
     for (i = 0; i < n; i++) {
-        if ((host_flash[off + i] & s[i]) != s[i]) return -1;
-        host_flash[off + i] &= s[i];
+        uint8_t cur = (uint8_t)~keep.flash[off + i - PL_W_LO];
+        if ((cur & s[i]) != s[i]) return -1;
+        keep.flash[off + i - PL_W_LO] = (uint8_t)~(cur & s[i]);
     }
+    keep_dirty = 1;
     return 0;
 }
 #include "patchlog.h"
@@ -175,7 +186,6 @@ int main(void)
 {
     uint32_t i;
     host_t0 = emscripten_get_now();
-    memset(host_flash, 0xFF, sizeof host_flash);
     fm1_in.frames = 80;
     for (i = 0; i < 11u; i++) fm1_in.raw[i] = (uint8_t)(0xA0u + i);
     app_main();
