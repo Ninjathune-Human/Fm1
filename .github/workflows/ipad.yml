@@ -17,8 +17,9 @@ permissions:
   contents: write
   actions: read
 
+# (une exécution Site annulée ou en échec déclenche une exécution ignorée : à part, elle n'annule pas une compilation)
 concurrency:
-  group: ipad-${{ github.ref }}
+  group: ipad-${{ github.ref }}-${{ (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') && 'compile' || 'ignore' }}
   cancel-in-progress: true
 
 jobs:
