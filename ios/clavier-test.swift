@@ -1,5 +1,5 @@
-// Un clavier MIDI virtuel sur le Mac de l'action iPad : la source « Clavier test » joue un do (note 60) toutes
-// les demi-secondes pendant deux minutes ; la vérification (diagnostic.js) regarde s'il arrive dans la page.
+// Un clavier MIDI virtuel dans le simulateur de l'action iPad : la source « Clavier test » joue un do (note 60)
+// toutes les demi-secondes pendant deux minutes ; la vérification (diagnostic.js) regarde s'il arrive dans la page.
 import CoreMIDI
 import Foundation
 
