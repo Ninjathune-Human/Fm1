@@ -24,25 +24,11 @@ jobs:
         with:
           node-version: '22'
       - run: rustup target add wasm32-unknown-unknown
-      - name: Patchs du site
-        run: |
-          python3 tools/fm1emu_vert.py fm1-emu fm1-emu/web/worklet.js
-          python3 tools/fm1emu_usb.py fm1-emu fm1-emu/web/worklet.js
-      - name: Cœur publié, avec les noms des fonctions
-        working-directory: fm1-emu
-        env:
-          CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
-          CARGO_PROFILE_RELEASE_STRIP: none
-          CARGO_PROFILE_RELEASE_DEBUG: 1
-          RUSTFLAGS: -Clink-arg=--export-table -Clink-arg=--growable-table
-        run: cargo build --release -p fm1-web --target wasm32-unknown-unknown --target-dir target/named 2>&1 | tail -2
-      - name: Profil du temps (node --cpu-prof)
+      - name: Coût de chaque firmware émulé (cœur publié)
         working-directory: fm1-emu
         run: |
-          W=$PWD/target/named/wasm32-unknown-unknown/release/fm1_web.wasm
-          for f in melodee dark1; do
-            rm -rf /tmp/prof; mkdir /tmp/prof
-            FM1_WASM=$W FM1_FWSC=../firmwares/$f.fwsc node --cpu-prof --cpu-prof-dir=/tmp/prof web/bench.mjs 100 8 > /tmp/bench.out 2>&1
-            echo "### temps $f"; grep -i "realtime\|x " /tmp/bench.out | head -2
-            python3 ../tools/prof_report.py /tmp/prof/*.cpuprofile
-          done
+          curl -fsSL -o ../base.wasm https://ninjathune-human.github.io/Fm1/runtime/fm1_web.wasm
+          while read id file; do
+            FM1_WASM=../base.wasm FM1_FWSC=../$file FM1_BENCH_JSON=/tmp/b.json timeout 120 node web/bench.mjs 100 6 > /dev/null 2>&1 || { echo "COUT $id échec"; continue; }
+            python3 -c "import json; j=json.load(open('/tmp/b.json')); print('COUT $id', round(j['steadyRealtime'],2), 'max', round(j['steadyRenderMs']['max']), 'ms')"
+          done < ../tools/emules.txt | sort -k3 -n
