@@ -34,13 +34,13 @@ jobs:
           CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
           CARGO_PROFILE_RELEASE_STRIP: none
           CARGO_PROFILE_RELEASE_DEBUG: 1
-          RUSTFLAGS: -Cllvm-args=-inline-threshold=2000 -Clink-arg=--export-table -Clink-arg=--growable-table
+          RUSTFLAGS: -Clink-arg=--export-table -Clink-arg=--growable-table
         run: cargo build --release -p fm1-web --target wasm32-unknown-unknown --target-dir target/named 2>&1 | tail -2
       - name: Profil du temps (node --cpu-prof)
         working-directory: fm1-emu
         run: |
           W=$PWD/target/named/wasm32-unknown-unknown/release/fm1_web.wasm
-          for f in melodee dark1 clipper sloopdx; do
+          for f in melodee dark1; do
             rm -rf /tmp/prof; mkdir /tmp/prof
             FM1_WASM=$W FM1_FWSC=../firmwares/$f.fwsc node --cpu-prof --cpu-prof-dir=/tmp/prof web/bench.mjs 100 8 > /tmp/bench.out 2>&1
             echo "### temps $f"; grep -i "realtime\|x " /tmp/bench.out | head -2

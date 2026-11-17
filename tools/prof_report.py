@@ -17,4 +17,4 @@ for i, t in own.items():
     else:
         mod["js:" + (url.rsplit("/", 1)[-1] or name)] += t
 print("modules :", {k: f"{v / tot * 100:.1f} %" for k, v in mod.most_common(6)})
-print("fonctions :", [(k[:70], f"{v / tot * 100:.1f} %") for k, v in fn.most_common(16)])
+print("fonctions :", [(k[:70], f"{v / tot * 100:.1f} %") for k, v in fn.most_common(30)])
