@@ -2,6 +2,7 @@
 // le schéma fm1://localhost. La page y est un contexte sécurisé (AudioWorklet, modules, WebAssembly) comme
 // sur GitHub Pages, et garde sa mémoire (localStorage, IndexedDB) dans l'app.
 import AVFoundation
+import CoreMIDI
 import UIKit
 import WebKit
 
@@ -40,7 +41,14 @@ final class FM1ViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         config.userContentController.addUserScript(WKUserScript(
             source: "Object.defineProperty(navigator, 'standalone', { value: true })",
             injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        // le Web MIDI de la page, sur le MIDI de l'iPad (midi.js, MIDIBridge)
+        let midi = MIDIBridge()
+        config.userContentController.addScriptMessageHandler(midi, contentWorld: .page, name: "fm1midi")
+        config.userContentController.addUserScript(WKUserScript(
+            source: try! String(contentsOf: Bundle.main.url(forResource: "midi", withExtension: "js")!, encoding: .utf8),
+            injectionTime: .atDocumentStart, forMainFrameOnly: false))
         let web = WKWebView(frame: .zero, configuration: config)
+        midi.web = web
         web.navigationDelegate = self
         web.uiDelegate = self
         web.isOpaque = false
@@ -105,6 +113,57 @@ final class FM1ViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
             let out = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("diagnostic.txt")
             try? text.write(to: out, atomically: true, encoding: .utf8)
         }
+    }
+}
+
+// le MIDI de l'iPad pour la page (midi.js) : chaque source CoreMIDI (un clavier USB) est une entrée ; ses octets
+// vont à __fm1midi.rx, la liste des appareils à __fm1midi.ports, dans la page principale
+final class MIDIBridge: NSObject, WKScriptMessageHandlerWithReply {
+    weak var web: WKWebView?
+    private var client = MIDIClientRef()
+    private var input = MIDIPortRef()
+    private var linked = Set<MIDIUniqueID>()
+
+    // « ouvrir », la première demande de la page : CoreMIDI s'ouvre ; la réponse est la liste des appareils
+    func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        if client == 0 {
+            MIDIClientCreateWithBlock("FM-1" as CFString, &client) { [weak self] _ in
+                DispatchQueue.main.async { self?.post() }      // un appareil branché ou débranché
+            }
+            MIDIInputPortCreateWithBlock(client, "FM-1" as CFString, &input) { [weak self] list, source in
+                let id = Int(bitPattern: source)                // l'identifiant de la source, donné à MIDIPortConnectSource
+                let offset = MemoryLayout<MIDIPacket>.offset(of: \MIDIPacket.data)!
+                var bytes = [UInt8]()
+                for packet in list.unsafeSequence() {
+                    bytes += UnsafeRawBufferPointer(start: UnsafeRawPointer(packet) + offset, count: Int(packet.pointee.length))
+                }
+                let js = "window.__fm1midi && __fm1midi.rx('\(id)', [\(bytes.map { String($0) }.joined(separator: ","))])"
+                DispatchQueue.main.async { self?.web?.evaluateJavaScript(js) }
+            }
+        }
+        replyHandler(ports(), nil)
+    }
+
+    // les sources présentes, [[id, nom]] ; une source nouvelle est reliée au port d'entrée
+    private func ports() -> [[String]] {
+        var list = [[String]](), here = Set<MIDIUniqueID>()
+        for i in 0..<MIDIGetNumberOfSources() {
+            let source = MIDIGetSource(i)
+            var id: MIDIUniqueID = 0
+            var name: Unmanaged<CFString>?
+            MIDIObjectGetIntegerProperty(source, kMIDIPropertyUniqueID, &id)
+            MIDIObjectGetStringProperty(source, kMIDIPropertyDisplayName, &name)
+            if !linked.contains(id) { MIDIPortConnectSource(input, source, UnsafeMutableRawPointer(bitPattern: Int(id))) }
+            here.insert(id)
+            list.append([String(id), (name?.takeRetainedValue() as String?) ?? "MIDI"])
+        }
+        linked = here
+        return list
+    }
+
+    private func post() {
+        guard let json = try? JSONSerialization.data(withJSONObject: ports()), let list = String(data: json, encoding: .utf8) else { return }
+        web?.evaluateJavaScript("window.__fm1midi && __fm1midi.ports(\(list))")
     }
 }
 
