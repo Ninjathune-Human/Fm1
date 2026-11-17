@@ -44,8 +44,8 @@ jobs:
         run: |
           RUN="${{ github.event.workflow_run.id }}"
           [ -n "$RUN" ] || RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow pages.yml --branch main --status success -L 1 --json databaseId -q '.[0].databaseId')
-          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n github-pages -D site \
-            || { echo "::error title=site::artefact du site introuvable (exécution $RUN, gardé un jour) : relancer Site"; exit 1; }
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n github-pages -D site 2> dl.log \
+            || { echo "::error title=site::artefact du site de l'exécution $RUN (gardé un jour, sinon relancer Site) : $(tr '\n' ' ' < dl.log)"; exit 1; }
           mkdir www && tar -xf site/artifact.tar -C www
           du -sh www
 
