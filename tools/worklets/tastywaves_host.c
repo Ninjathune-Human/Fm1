@@ -120,7 +120,7 @@ static int lib_save(uint32_t k, uint32_t magic, const void *p, uint32_t n)
 }
 
 /* le journal de patchs (patchlog.h) sur une mémoire NOR simulée : l'effacement met à 0xFF, l'écriture ne fait que baisser des bits */
-static uint8_t host_flash[0x100000];
+static uint8_t host_flash[0x100000], flash_ok = 1;
 #define PL_W_LO 0x000E5000u
 #define PL_W_HI 0x000E9000u
 static uint32_t crc32(const uint8_t *p, uint32_t n)
