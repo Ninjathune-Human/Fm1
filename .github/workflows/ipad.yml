@@ -100,6 +100,17 @@ jobs:
           gh release upload ipad FM1.ipa -R "$GITHUB_REPOSITORY" --clobber
           gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/ipad" -f sha="$SHA" -F force=true
 
+      # la capture et le diagnostic de la dernière vérification, lisibles sans accès aux artefacts
+      - name: Version ipad-verification
+        if: ${{ !cancelled() }}
+        run: |
+          gh release view ipad-verification -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create ipad-verification -R "$GITHUB_REPOSITORY" --target "$SHA" --prerelease --title "Vérification de l'app iPad" \
+              --notes "La dernière vérification de l'app dans le simulateur iPad (action iPad) : capture d'écran et diagnostic."
+          for f in capture.png diagnostic.txt; do
+            if [ -f "$f" ]; then gh release upload ipad-verification "$f" -R "$GITHUB_REPOSITORY" --clobber; fi
+          done
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

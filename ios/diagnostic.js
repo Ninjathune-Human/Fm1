@@ -11,7 +11,7 @@ await etape("worklet", async () => { await new OfflineAudioContext(2, 128, 48000
 await etape("absent", async () => (await fetch("absent.json")).status);
 // un firmware « en ligne » (thefirmwarehub.com), pour information : il dépend du réseau et de son serveur
 await etape("enLigne", async () => {
-  const e = (await (await fetch("firmwares/catalogue.json")).json()).firmwares.find((e) => e.paquet_en_ligne && !e.fichier);
+  const e = (await (await fetch("firmwares/catalogue.json")).json()).firmwares.find((e) => e.paquet_en_ligne && !e.fichier && !e.natif_seulement);
   return e.id + " " + (await octets(e.paquet_en_ligne)).byteLength;
 });
 return JSON.stringify(r);
