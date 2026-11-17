@@ -12,6 +12,9 @@ targets:
     platform: iOS
     sources:
       - FM1.swift
+      - MIDIEntrees.swift
+      - path: midi.js
+        buildPhase: resources
       - Assets.xcassets
       - path: www
         type: folder

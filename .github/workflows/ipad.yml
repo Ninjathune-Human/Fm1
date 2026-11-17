@@ -44,8 +44,8 @@ jobs:
         run: |
           RUN="${{ github.event.workflow_run.id }}"
           [ -n "$RUN" ] || RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow pages.yml --branch main --status success -L 1 --json databaseId -q '.[0].databaseId')
-          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n github-pages -D site \
-            || { echo "::error title=site::artefact du site introuvable (exécution $RUN, gardé un jour) : relancer Site"; exit 1; }
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n github-pages -D site 2> dl.log \
+            || { echo "::error title=site::artefact du site de l'exécution $RUN (gardé un jour, sinon relancer Site) : $(tr '\n' ' ' < dl.log)"; exit 1; }
           mkdir www && tar -xf site/artifact.tar -C www
           du -sh www
 
@@ -54,9 +54,16 @@ jobs:
           brew install xcodegen
           xcodegen generate
           xcodebuild -version
-          for sdk in iphonesimulator iphoneos; do
-            xcodebuild -project FM1.xcodeproj -target FM1 -configuration Release -sdk "$sdk" SYMROOT="$PWD/build" CODE_SIGNING_ALLOWED=NO -quiet build
+          for sdk in iphonesimulator iphoneos; do   # les erreurs en annotation (lisibles sans les journaux)
+            xcodebuild -project FM1.xcodeproj -target FM1 -configuration Release -sdk "$sdk" SYMROOT="$PWD/build" CODE_SIGNING_ALLOWED=NO -quiet build > build.log 2>&1 \
+              || { echo "::error title=compilation $sdk::$(grep -E 'error:' build.log | head -10 | awk '{ gsub(/%/, "%25"); printf "%s%%0A", $0 }')"; exit 1; }
           done
+
+      - name: MIDI, sur le Mac (MIDIEntrees et un clavier virtuel)
+        run: |
+          xcrun swiftc -parse-as-library MIDIEntrees.swift clavier-test.swift -o build/clavier-test > clavier.log 2>&1 \
+            || { echo "::error title=clavier test::$(grep 'error:' clavier.log | head -5 | tr '\n' ' ')"; exit 1; }
+          r=$(build/clavier-test) && echo "::notice title=clavier test::$r" || { echo "::error title=clavier test::$r"; exit 1; }
 
       - name: Vérification dans le simulateur
         run: |
@@ -81,6 +88,7 @@ jobs:
               print("::error title=simulateur::" + open("diagnostic.txt").read().replace("\n", " ")); raise SystemExit(1)
           attendu = {"securise": True, "page": "object", "compile": "ok", "module": "ok", "worklet": "ok", "absent": 404}
           faux = [k for k, v in attendu.items() if r.get(k) != v] + [k for k in ("coeur", "natifs") if not (isinstance(r.get(k), int) and r[k] > 0)]
+          faux += ["midi"] if str(r.get("midi")).startswith("échec") else []
           print(("::error" if faux else "::notice") + " title=simulateur::" + ", ".join(f"{k} = {v}" for k, v in r.items()))
           raise SystemExit(1 if faux else 0)
           EOF

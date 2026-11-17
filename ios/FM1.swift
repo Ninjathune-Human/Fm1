@@ -40,7 +40,14 @@ final class FM1ViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         config.userContentController.addUserScript(WKUserScript(
             source: "Object.defineProperty(navigator, 'standalone', { value: true })",
             injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        // le Web MIDI de la page, sur le MIDI de l'iPad (midi.js, MIDIBridge)
+        let midi = MIDIBridge()
+        config.userContentController.addScriptMessageHandler(midi, contentWorld: .page, name: "fm1midi")
+        config.userContentController.addUserScript(WKUserScript(
+            source: try! String(contentsOf: Bundle.main.url(forResource: "midi", withExtension: "js")!, encoding: .utf8),
+            injectionTime: .atDocumentStart, forMainFrameOnly: false))
         let web = WKWebView(frame: .zero, configuration: config)
+        midi.web = web
         web.navigationDelegate = self
         web.uiDelegate = self
         web.isOpaque = false
@@ -105,6 +112,31 @@ final class FM1ViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
             let out = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("diagnostic.txt")
             try? text.write(to: out, atomically: true, encoding: .utf8)
         }
+    }
+}
+
+// le MIDI de l'iPad pour la page (midi.js) : les octets des entrées (MIDIEntrees) vont à __fm1midi.rx, la liste
+// des appareils à __fm1midi.ports, dans la page principale
+final class MIDIBridge: NSObject, WKScriptMessageHandlerWithReply {
+    weak var web: WKWebView?
+    private var entrees: MIDIEntrees?
+
+    // « ouvrir », la première demande de la page : CoreMIDI s'ouvre ; la réponse est la liste des appareils
+    func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        if entrees == nil {
+            entrees = MIDIEntrees(
+                recu: { [weak self] id, bytes in
+                    let js = "window.__fm1midi && __fm1midi.rx('\(id)', [\(bytes.map { String($0) }.joined(separator: ","))])"
+                    DispatchQueue.main.async { self?.web?.evaluateJavaScript(js) }
+                },
+                change: { [weak self] in DispatchQueue.main.async { self?.post() } })   // un appareil branché ou débranché
+        }
+        replyHandler(entrees?.sources(), nil)
+    }
+
+    private func post() {
+        guard let json = try? JSONSerialization.data(withJSONObject: entrees?.sources() ?? []), let list = String(data: json, encoding: .utf8) else { return }
+        web?.evaluateJavaScript("window.__fm1midi && __fm1midi.ports(\(list))")
     }
 }
 
