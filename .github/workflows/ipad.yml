@@ -1,0 +1,111 @@
+# L'app iPad : le site publié, embarqué dans une WKWebView (ios/), compilé en FM1.ipa non signé pour Sideloadly
+# (qui le signe avec l'identifiant Apple de l'utilisateur). Vérifiée d'abord dans le simulateur iPad ; sur main,
+# jointe à la version « ipad », dont le tag suit le commit publié.
+name: iPad
+
+on:
+  workflow_run:                  # après chaque publication du site
+    workflows: [Site]
+    types: [completed]
+    branches: [main]
+  push:                          # une branche d'essai de l'app : compilée et vérifiée, pas publiée
+    branches-ignore: [main]
+    paths: [ios/**, .github/workflows/ipad.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: ipad-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ipad:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: macos-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+        working-directory: ios
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      BUNDLE: io.github.ninjathune-human.fm1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SHA }}
+
+      - name: Le site, tel que publié
+        run: |
+          RUN="${{ github.event.workflow_run.id }}"
+          [ -n "$RUN" ] || RUN=$(gh run list -R "$GITHUB_REPOSITORY" --workflow pages.yml --branch main --status success -L 1 --json databaseId -q '.[0].databaseId')
+          gh run download "$RUN" -R "$GITHUB_REPOSITORY" -n github-pages -D site \
+            || { echo "::error title=site::artefact du site introuvable (exécution $RUN, gardé un jour) : relancer Site"; exit 1; }
+          mkdir www && tar -xf site/artifact.tar -C www
+          du -sh www
+
+      - name: Compilation
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          xcodebuild -version
+          for sdk in iphonesimulator iphoneos; do
+            xcodebuild -project FM1.xcodeproj -target FM1 -configuration Release -sdk "$sdk" SYMROOT="$PWD/build" CODE_SIGNING_ALLOWED=NO -quiet build
+          done
+
+      - name: Vérification dans le simulateur
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for r in sorted(d, reverse=True) if '.iOS-' in r for x in d[r] if x['name'].startswith('iPad')))")
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b > /dev/null
+          APP=build/Release-iphonesimulator/FM1.app
+          codesign --force --sign - "$APP"
+          xcrun simctl install "$UDID" "$APP"
+          SIMCTL_CHILD_FM1_DIAGNOSTIC="$(cat diagnostic.js)" xcrun simctl launch "$UDID" "$BUNDLE"
+          OUT="$(xcrun simctl get_app_container "$UDID" "$BUNDLE" data)/Documents/diagnostic.txt"
+          for i in $(seq 120); do [ -s "$OUT" ] && break; sleep 1; done
+          sleep 5
+          xcrun simctl io "$UDID" screenshot capture.png
+          cp "$OUT" diagnostic.txt || echo "aucun diagnostic" > diagnostic.txt
+          cat diagnostic.txt; echo
+          python3 - <<'EOF'
+          import json
+          try:
+              r = json.load(open("diagnostic.txt"))
+          except ValueError:
+              print("::error title=simulateur::" + open("diagnostic.txt").read().replace("\n", " ")); raise SystemExit(1)
+          attendu = {"securise": True, "page": "object", "compile": "ok", "module": "ok", "worklet": "ok", "absent": 404}
+          faux = [k for k, v in attendu.items() if r.get(k) != v] + [k for k in ("coeur", "natifs") if not (isinstance(r.get(k), int) and r[k] > 0)]
+          print(("::error" if faux else "::notice") + " title=simulateur::" + ", ".join(f"{k} = {v}" for k, v in r.items()))
+          raise SystemExit(1 if faux else 0)
+          EOF
+
+      - name: FM1.ipa
+        run: |
+          mkdir Payload && cp -R build/Release-iphoneos/FM1.app Payload/
+          zip -qry FM1.ipa Payload
+          ls -la FM1.ipa
+
+      - name: Version ipad
+        if: github.ref == 'refs/heads/main'
+        run: |
+          gh release view ipad -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create ipad -R "$GITHUB_REPOSITORY" --target "$SHA" --latest=false --title "FM-1 pour iPad" \
+              --notes "FM1.ipa : l'émulateur FM-1 en app iPad, non signée, à installer avec Sideloadly (qui la signe avec votre identifiant Apple). Recompilée à chaque publication du site ; le tag ipad suit le commit publié."
+          gh release upload ipad FM1.ipa -R "$GITHUB_REPOSITORY" --clobber
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/ipad" -f sha="$SHA" -F force=true
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: ipad
+          path: |
+            ios/capture.png
+            ios/diagnostic.txt
+            ios/FM1.ipa
+          if-no-files-found: warn

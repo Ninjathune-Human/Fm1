@@ -6,6 +6,8 @@ FM-1 emulator with optimized open source firmwares, in the browser. · [Françai
 
 **Open: [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)** in a recent Chrome, Edge, Firefox or Safari, on a computer, iPad or iPhone (mouse, touch, pencil).
 
+**On iPad, as an app**: [FM1.ipa](https://github.com/Ninjathune-Human/Fm1/releases/download/ipad/FM1.ipa), the site built in, to install with [Sideloadly](https://sideloadly.io/) (with a free Apple ID, the signature lasts 7 days).
+
 ## Use
 
 - **Power on** starts the sound. **Firmware**, below the panel, opens the list (the search forgives typos). **Open a .fwsc…** runs a package from your computer; it is never uploaded, and it then stays in the list, under My firmwares, in this browser.

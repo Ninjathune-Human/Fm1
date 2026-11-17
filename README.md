@@ -6,6 +6,8 @@
 
 **Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**, dans Chrome, Edge, Firefox ou Safari récents, sur ordinateur, iPad et iPhone (souris, tactile, stylet).
 
+**Sur iPad, en app** : [FM1.ipa](https://github.com/Ninjathune-Human/Fm1/releases/download/ipad/FM1.ipa), le site embarqué, à installer avec [Sideloadly](https://sideloadly.io/) (avec un identifiant Apple gratuit, la signature dure 7 jours).
+
 ## Utilisation
 
 - **Allumer** démarre le son. Le contrôle **Firmware**, sous le panneau, ouvre la liste : la recherche tolère les fautes et l'ordre des mots, Entrée démarre le premier résultat. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur, sans l'envoyer nulle part ; il reste ensuite dans la liste, sous Mes firmwares, dans ce navigateur.
