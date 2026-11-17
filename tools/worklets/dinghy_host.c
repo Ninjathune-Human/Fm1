@@ -24,8 +24,10 @@
 #define HALF_FRAMES 256u
 
 static volatile uint32_t fm1_ms;
+#ifndef DH_APP_TICKS                            /* -DDH_APP_TICKS : l'appli définit elle-même fm1_ticks (OPN-1) */
 #define FM1_TICKS_PER_US 24u
 static uint32_t fm1_ticks(void) { return fm1_ms * 1000u * FM1_TICKS_PER_US; }   /* (pas de mesure du processeur) */
+#endif
 static struct { uint32_t notes, buttons; } fm1_in;
 static uint32_t host_edges, host_rel;
 static uint32_t fm1_input_edges(uint32_t *released)
