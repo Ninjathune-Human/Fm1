@@ -667,6 +667,27 @@
     "web/zp12link.js"
    ],
    "echantillons": "web/zp12link.js"
+  },
+  {
+   "id": "dinghy",
+   "depot": "zvenson/dinghy",
+   "commit": "ea1b6bf5973b11f9b4b806d08155602aaa0b505e",
+   "script": "build.sh",
+   "zig": "0.17.0",
+   "avant": "cp \"$HERE/tools/worklets/dinghy_host.c\" tests/host.c",
+   "construction": "\"$HERE/tools/worklets/asyncify.sh\" build/natif/dinghy.wasm -DDINGHY_HOST '-DAPP_VER=\"1.0\"' -Ifirmware/src -Ifirmware/gen firmware/src/dinghy.c",
+   "wasm": "build/natif/dinghy.wasm",
+   "worklet": "tools/worklets/dinghy.js",
+   "dialecte": "felucca"
+  },
+  {
+   "id": "midimon",
+   "depot": "ignis32/midimonitor_fm1",
+   "commit": "acde38e61c9678dfc7a1c3e73e1427e9874426d4",
+   "script": "build.sh",
+   "construction": "sh build.sh web && python3 \"$HERE/tools/worklets/fm1base_bundle.py\" app/build/emu natif-midimon",
+   "wasm": "app/build/emu/app.wasm",
+   "dialecte": "base"
   }
  ]
 }
