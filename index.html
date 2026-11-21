@@ -49,6 +49,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .device > svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .device canvas { position: absolute; left: 28.476%; top: 11.616%; width: 18.293%; height: 30.303%; background: #000; border-radius: 0.4%; }
 /* the screen's glass: a hard diagonal reflection and a polished rim, over the picture */
+.device .loading { position: absolute; left: 28.476%; top: 11.616%; width: 18.293%; height: 30.303%; display: grid; place-items: center; background: #000; color: #cfd2d6;
+  font: 500 clamp(0.6rem, 1.7vw, 1rem) var(--body); letter-spacing: 0.08em; text-transform: uppercase; border-radius: 0.4%; pointer-events: none; }
+.device .loading[hidden] { display: none; }
 .glass { position: absolute; left: 25.732%; top: 7.071%; width: 23.78%; height: 39.394%; border-radius: 12.82%; pointer-events: none;
   background:
     linear-gradient(141deg, rgb(255 255 255 / 0.17) 0%, rgb(255 255 255 / 0.075) 35%, rgb(255 255 255 / 0) 35.3%),
@@ -362,6 +365,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <div class="device" id="device" tabindex="-1" role="group" aria-label="FM-1">
         <svg id="panel-base" viewBox="0 0 1640 990" aria-hidden="true" focusable="false"></svg>
         <canvas id="screen" width="720" height="720" role="img" aria-label="L'écran du FM-1"></canvas>
+        <div class="loading" id="loading" role="status" aria-live="polite" hidden>Chargement…</div>
         <div class="glass"></div>
         <svg id="panel" viewBox="0 0 1640 990" aria-hidden="true" focusable="false"></svg>
         <div class="controls" id="controls" inert></div>
@@ -6404,7 +6408,7 @@ function buildPanel(fw) {
       device.focus({ preventScroll: true });
       document.addEventListener("visibilitychange", () => { if (!document.hidden && ac.state !== "running") ac.resume(); });
     } catch (err) {
-      go.disabled = false; go.lastChild.textContent = "Allumer";
+      go.disabled = false; go.lastChild.textContent = "Allumer"; $("loading").hidden = true;
       status.textContent = "Le son n'a pas pu démarrer : " + (err && err.message ? err.message : err) + ". Chrome, Edge, Firefox et Safari récents conviennent.";
     }
   }
@@ -6883,7 +6887,7 @@ function buildPanel(fw) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
       // choisir un firmware allume le FM-1 : le geste suffit au son ; sans geste (rien d'actif), il attend le bouton
-      if (navigator.userActivation?.isActive !== false && !$("start").hidden && !$("go").disabled) { switchOn(); return; }
+      if (navigator.userActivation?.isActive !== false && !$("start").hidden && !$("go").disabled) { $("loading").hidden = false; switchOn(); return; }
       status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
       return;
     }
@@ -6894,8 +6898,10 @@ function buildPanel(fw) {
       if (!e.bytes) { status.textContent = `${e.nom} : fichier introuvable dans ce navigateur.`; return; }
     }
     status.textContent = `Démarrage de ${e.nom}…`;
+    $("loading").hidden = false;                // l'écran dit « Chargement » jusqu'à ce que le firmware soit là
     const ok = await useEngine(e).catch(() => false);
     if (my !== pickSeq) return;
+    $("loading").hidden = true;
     if (ok) {
       delete e.nouveau;
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
