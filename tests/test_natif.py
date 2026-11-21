@@ -224,11 +224,12 @@ def test_every_native_reacts(page):
             mute.append((i, "démarrage")); continue
         page.wait_for_timeout(4000)        # après l'écran de démarrage (environ 3 s chez fmini et pigeon), qui ignore le panneau
         granular = i in ("echofield", "graine")     # des grains discrets qui montent doucement : tenus plus longtemps, seuil plus bas
+        percussif = i == "dungeontracker"           # une touche joue un échantillon de 0,2 s : mesuré tout de suite
         before = page.evaluate(shot)
         page.evaluate("window.__host.turn('SELECT', 3)")
         page.wait_for_timeout(400)
         page.evaluate("window.__host.keyDown(12, 't')")
-        page.wait_for_timeout(900 if granular else 500)
+        page.wait_for_timeout(900 if granular else 120 if percussif else 500)
         if i == "midimon":                  # un moniteur MIDI : son écran répond au MIDI reçu, pas au panneau
             page.evaluate("window.__engine().midiIn(Uint8Array.from([0x90, 60, 110]))")
             page.wait_for_timeout(500)

@@ -722,6 +722,66 @@
    "wasm": "build/natif/sloop3.wasm",
    "worklet": "tools/worklets/rfm1.js",
    "dialecte": "choralroot"
+  },
+  {
+   "id": "aurora",
+   "depot": "twochannels/AURORA",
+   "commit": "45b231a8efaa30b6c20cd8aade5c5e25bca40514",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/aurora.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/aurora-0.8.0.rfm1 && echo '5e45e1227193dbce465a196499e5eeaf9e31aa38bbde2e6312a5b202512b53af  build/natif/aurora.wasm' | sha256sum -c -",
+   "wasm": "build/natif/aurora.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "chimeravocal",
+   "depot": "shan-sherif/fm-1-chimera-vocal",
+   "commit": "5a9e5f7af4ae8ce954ff39735274afe5593b7796",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/chimeravocal.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/chimeravocal-0.8.0.rfm1 && echo '3c9caf0ec5391ad4bb5ae294da7356ebfbd79684bc16770a9822e5967b6c3afa  build/natif/chimeravocal.wasm' | sha256sum -c -",
+   "wasm": "build/natif/chimeravocal.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "dungeontracker",
+   "depot": "BourbonWX/Dungeon-Tracker",
+   "commit": "4e43c2f34899237f685a10999b00213644aef394",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/dungeontracker.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/dungeontracker-1.5.rfm1 && echo '5d8cd60fe8196b6bf28676ff586ebd5c31f4985e70fe225ea9abdef2decccfcd  build/natif/dungeontracker.wasm' | sha256sum -c -",
+   "wasm": "build/natif/dungeontracker.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "golf",
+   "depot": "barnierg76/golf-fm1",
+   "commit": "8396679b35176da55a3012ff6c7cea75223525ba",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/golf.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/golf-1.0.rfm1 && echo 'd6e96ac176cde899c7d406319afeae9a4c5f202e41ce5a3b0d400415e7acf05e  build/natif/golf.wasm' | sha256sum -c -",
+   "wasm": "build/natif/golf.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "patchwerk",
+   "depot": "MattKuebrich/patchwerk",
+   "commit": "6f91629dfae5cf40675f7355cfe46b0d42b8b224",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/patchwerk.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/patchwerk-1.0.3.rfm1 && echo '3aec66d8ac139c56e992a6f27fc8c36fb48788136a94efda3ca5a15d84b19ef3  build/natif/patchwerk.wasm' | sha256sum -c -",
+   "wasm": "build/natif/patchwerk.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "smileyface",
+   "depot": "pbarilla/smileyface",
+   "commit": "2b698855864c9313f216a44543d753f4e7713e1d",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/smileyface.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/smileyface-1.1.5.rfm1 && echo '6cf63557fecefbe1bd0a658269cbf457d612296ccbed6f64cb0c732cc406a275  build/natif/smileyface.wasm' | sha256sum -c -",
+   "wasm": "build/natif/smileyface.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
   }
  ]
 }

@@ -39,7 +39,7 @@
 </details>
 
 <details>
-<summary>Groovebox (46)</summary>
+<summary>Groovebox (47)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -48,6 +48,7 @@
 | Chipbox | Pasquale Barilla | GPL-3.0 | [8b3e67e](https://github.com/pbarilla/chipbox/tree/8b3e67e30443b2336c769af2481e1e997f1fa253) | fonctionne, natif |
 | DARK-1 | Polystellarflow | GPL-3.0 | [3f7cd63](https://github.com/sparky480v/Dark-1/tree/3f7cd6323a168c4880a82eacdcf453389a5347d0) | vérifié |
 | DUB-1 | sbegueria | GPL-3.0 | [e89138a](https://github.com/sbegueria/fm1-dub/tree/e89138a3de7d11f97c941ef467d166eb0763d160) | fonctionne, natif |
+| Dungeon Tracker | BourbonWX | GPL-3.0-only | [4e43c2f](https://github.com/BourbonWX/Dungeon-Tracker/tree/4e43c2f34899237f685a10999b00213644aef394) | non évalué, natif |
 | ESTAMPIE | Drew Robinson | GPL-3.0 | [57ea691](https://github.com/ocean/estampie/tree/57ea691aae13122cfb59b1f5a6518179ff029cd2) | vérifié, bêta, natif |
 | Felucca | Leo Kuroshita (Hügelton Instruments) | GPL-3.0 | [d7b1b7c](https://github.com/hugelton/Felucca/tree/d7b1b7c4099bba28854869ddb256b3d9f634cee8) | fonctionne, natif |
 | Felucca [Salt] | Chance Roth (ChanceTheMaker) | GPL-3.0 | [9490527](https://github.com/ChanceTheMaker/Felucca/tree/949052728758229ab5ab1816ccf9fa61fafc5803) | fonctionne, bêta |
@@ -93,7 +94,7 @@
 </details>
 
 <details>
-<summary>Synthé (51)</summary>
+<summary>Synthé (55)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -102,6 +103,7 @@
 | Arctic Scream | p0larpatch | GPL-3.0 | [e7d301f](https://github.com/PolarPatch/Arctic-scream-FM-1/tree/e7d301f0e0bbe8ecb918e2a6d979ef6cd2932694) | vérifié, natif |
 | Arcturus S6 | Zeptosecond DSP | GPL-3.0 | [7b591b6](https://github.com/zeptosecond-dsp/Arcturus-S6/tree/7b591b657db87343960a73407b6e1da5f0c09bda) | vérifié |
 | ARTIHIVE | KHAV | GPL-3.0 | [ed53f4b](https://github.com/KHAVld/ARTIHIVE/tree/ed53f4b0ee3b33884c8026a64f6c9ef278a0ba6b) | vérifié |
+| AURORA | twochannels | GPL-3.0-only | [45b231a](https://github.com/twochannels/AURORA/tree/45b231a8efaa30b6c20cd8aade5c5e25bca40514) | non évalué, natif |
 | Bunker Evolved | Kid Bunka | GPL-3.0 | [c9bb0b1](https://github.com/kidbee85-beep/bunker-evolved/tree/c9bb0b1ac4a7dbb420a3f452fc75b705981ab0f4) | fonctionne, natif |
 | Bytemania | lloyd (llozd) | GPL-3.0 | [139748d](https://github.com/llozd/bytemania/tree/139748d2181216af68afca26d251fb34c055f888) | fonctionne |
 | Caravel | BonszaiMusic | GPL-3.0 | [89bf631](https://github.com/bonszaimusic/caravel/tree/89bf631f01cda2a68f3a85cdb9e81dcbbf53088c) | vérifié, bêta, natif |
@@ -115,6 +117,7 @@
 | ETCH | SikkenWorks | GPL-3.0 | [57676c0](https://github.com/SikkenWorks/ETCH/tree/57676c0e321bc08e54682585509529a0b581749c) | fonctionne |
 | Evander's Music Box | Michail Tsakiroglou | GPL-3.0-or-later | [53c3234](https://github.com/MikeTsak/Evanders-Music-Box--FM-1-LARP-firmware/tree/53c32342efb4b06c7f40ae4758279c5c361c5535) | fonctionne |
 | FiMba-1 | jadamsowers | GPL-3.0 | [838aa1d](https://github.com/jadamsowers/fm1-fimba/tree/838aa1d233d934c8a388acaaa47358655d6bfffe) | fonctionne, bêta, natif |
+| FM-1 Chimera Vocal | Shan-Sherif | MPL-2.0 AND MIT | [5a9e5f7](https://github.com/shan-sherif/fm-1-chimera-vocal/tree/5a9e5f7af4ae8ce954ff39735274afe5593b7796) | non évalué, natif |
 | FM-1 SID | joakimeriksson | GPL-3.0 | [2260253](https://github.com/joakimeriksson/fm1-sid/tree/2260253df0c614e507cd7d346d9771f4d353a820) | fonctionne |
 | FM-106 | PatttF | GPL-3.0 | [b795c3d](https://github.com/PatttF/fm-106/tree/b795c3d9431c4cd552d5951f70b549eeff5c288d) | fonctionne, bêta, natif |
 | FMEL-1 | Antonio Altea | GPL-3.0 | [2d69b38](https://github.com/AntonioAltea/fmel-1/tree/2d69b3892a2eac2ed6f4eef1d82cf5d6de9c87a8) | fonctionne, natif |
@@ -123,6 +126,7 @@
 | Frodhes | Leonardo Mirabal | GPL-3.0 | [279a7af](https://github.com/leonardoMirabal/frodhes/tree/279a7aff4e65fa32f188e177393a640d9f635c80) | fonctionne, bêta, natif |
 | GATOR | ivanvoid | GPL-3.0 | [92f923e](https://github.com/npi3pak/fm1-gator/tree/92f923e0b9fe6101d5cd422cffa5946ce20d785a) | vérifié, bêta |
 | Golana | Gadlele | GPL-3.0 | [472914d](https://github.com/Gadlele/Golana/tree/472914d794fb879eb502f62d3380a3b674ab2547) | fonctionne, natif |
+| Golf | BARNIR | MPL-2.0 | [8396679](https://github.com/barnierg76/golf-fm1/tree/8396679b35176da55a3012ff6c7cea75223525ba) | non évalué, natif |
 | GRAINE | Omnipotard | MIT | [40a9a99](https://github.com/Omnipotard/Granular-FM1/tree/40a9a99abfbd03b3c837c98fdea2fab50c169ed3) | non évalué, bêta, natif |
 | J6 | JackieAlacrity2373 | MPL-2.0 | [36f033f](https://github.com/JackieAlacrity2373/fm1-j6/tree/36f033fe8f6fde178be957c073f9b3ad7e4d53ab) | vérifié |
 | K-WASUB | Omnipotard (Guizmoh) | GPL-3.0 | [69d1713](https://github.com/Guizmoh/K-WASUB_Firmware_for_FM1/tree/69d17131187ea9681ab2e0fb1c96e2c02248dfe7) | vérifié |
@@ -136,6 +140,7 @@
 | NOIZ DEMONS | SPIKE the Percussionist | GPL-3.0 | [4fe0f1a](https://github.com/SPIKE-the-Percussionist/noiz_demons/tree/4fe0f1afb4d97f56dfb763c176679fe6e059ecec) | fonctionne, natif |
 | OberVave | zvenson | GPL-3.0 | [4673c4a](https://github.com/zvenson/obervave/tree/4673c4a7579a9dd0260d08febe875ffac9608917) | fonctionne, natif |
 | OPN-1 | putchdev | GPL-3.0 | [960c103](https://github.com/putchdev/opn-1/tree/960c1038cb660788026c8136467e99597019a333) | fonctionne |
+| PATCHWERK | Matt Kuebrich | GPL-3.0-only | [6f91629](https://github.com/MattKuebrich/patchwerk/tree/6f91629dfae5cf40675f7355cfe46b0d42b8b224) | non évalué, natif |
 | Penumbra | Lunar Eclipse Forge | GPL-3.0 | [dcc00e1](https://github.com/MadMooneyham/Penumbra/tree/dcc00e18016dd352a4373fc7a3c69ce4f72a1dbf) | vérifié |
 | S1Vave | Andrew GG | GPL-3.0 | [e837018](https://github.com/AndrewGG88/S1Vave/tree/e8370184f85b05f7c50f7e9f65cb3f6b69642d30) | non évalué, natif |
 | Scintilla | Joakim Eriksson | GPL-3.0 | [c9465b4](https://github.com/joakimeriksson/scintilla-fm1/tree/c9465b4fa67d65d6d099ae679d6e8430058bd841) | vérifié, bêta |
@@ -167,7 +172,7 @@
 </details>
 
 <details>
-<summary>Boîte à rythmes (7)</summary>
+<summary>Boîte à rythmes (8)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -177,6 +182,7 @@
 | FOMAJAM | konsumer | GPL-3.0 | [ee10326](https://github.com/konsumer/fomajam/tree/ee103264944aba303fb3b478fce7b96183f566eb) | vérifié |
 | Hortator | DEADACTIVE | GPL-3.0 | [c8cca2c](https://github.com/deadactive/hortator/tree/c8cca2ce9a6a1ba5a055ef3bd4aadc9ef5237bb4) | vérifié |
 | PIGEON | The Shrimp Blimp | GPL-3.0 | [48f028f](https://github.com/TheShrimpBlimp/pigeon/tree/48f028f2ee7f6a0140dfef9d9426dc3237f2e466) | fonctionne, bêta, natif |
+| Smileyface | pbarilla | GPL-3.0-only | [2b69885](https://github.com/pbarilla/smileyface/tree/2b698855864c9313f216a44543d753f4e7713e1d) | non évalué, natif |
 | zp12 | zvenson | GPL-3.0 | [7b8b975](https://github.com/zvenson/zp12/tree/7b8b97586ef87854d1859aad907e5f10ca49898d) | fonctionne |
 
 </details>
