@@ -131,6 +131,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .midi-pop label { display: grid; gap: 4px; font: 600 0.75rem var(--body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .midi-pop select { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); }
 .midi-pop p { margin: 0; font-size: 0.8125rem; line-height: 1.35; color: var(--muted); }
+.cp-pop .cp-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.cp-pop .cp-row button, .cp-pop .cp-row .file { min-height: 36px; padding: 0 12px; font-size: 0.875rem; }
+.cp-pop input[type="text"] { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); min-width: 0; }
+.cp-pop .cp-del { color: #c0392b; }
+#cp-btn[aria-expanded="true"] { border-color: var(--accent); }
 /* Fichier MIDI (SLOOP) : l'aperçu dans la même bulle */
 .midi-pop h3 { margin: 0; font: 600 0.9375rem var(--body); color: var(--ink); overflow-wrap: anywhere; }
 .midi-pop ul { margin: 0; padding-left: 18px; font-size: 0.8125rem; line-height: 1.4; color: var(--ink); }
@@ -404,6 +409,23 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <label class="file" for="smf" title="Un fichier MIDI (.mid) dans une piste de SLOOP, comme « Import MIDI » de son éditeur : un aperçu d'abord"><input type="file" id="smf" accept=".mid,.midi,audio/midi,audio/x-midi,application/octet-stream">Fichier MIDI…</label>
           <div class="midi-pop" id="smf-pop" role="dialog" aria-label="Importer un fichier MIDI" hidden></div>
         </div>
+        <div class="midi" id="cp-box" hidden>
+          <button id="cp-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="cp-pop" title="Des copies nommées de la mémoire de ce firmware">Copies<span class="notch" aria-hidden="true"></span></button>
+          <div class="midi-pop cp-pop" id="cp-pop" role="dialog" aria-label="Copies du firmware" hidden>
+            <label>Copies<select id="cp-sel"></select></label>
+            <label>Nom<input type="text" id="cp-name" maxlength="60" autocomplete="off" placeholder="Ma copie"></label>
+            <div class="cp-row">
+              <button id="cp-save" type="button">Enregistrer</button>
+              <button id="cp-load" type="button">Charger</button>
+              <button id="cp-del" class="cp-del" type="button">Supprimer</button>
+            </div>
+            <div class="cp-row">
+              <button id="cp-exp" type="button">Exporter…</button>
+              <label class="file" for="cp-imp">Importer…<input id="cp-imp" type="file" accept=".json,application/json"></label>
+            </div>
+            <p id="cp-msg" role="status" aria-live="polite">Une copie garde la mémoire de ce firmware ; la charger le redémarre dessus.</p>
+          </div>
+        </div>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
       </div>
     </div>
@@ -416,6 +438,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         <dl>
           <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
           <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.</dd>
+          <dt>Copies</dt><dd>Le bouton Copies garde sous un nom la mémoire du firmware en cours (presets, patterns, projets), pour y revenir ou la passer dans un fichier. Charger une copie redémarre le firmware dessus. Disponible pour les firmwares natifs et émulés ; FM-1+VA a ses propres presets. La sauvegarde complète ci-dessous ne reprend pas les copies : exportez-les une à une.</dd>
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.</dd>
@@ -2276,9 +2299,9 @@ class EmuFirmware {
     try { record = await this.saveStore.load(hash); } catch (err) { this.storageError = err; }
     if (seq !== this.seq) return false;
     await this.flush(true).catch(() => {});
-    const sectors = opts.reset ? [] : record?.sectors || [];
+    const sectors = opts.reset ? [] : opts.sectors || record?.sectors || [];
     this.releaseAll();
-    const session = { seq, hash, key: "fm1." + entry.id, revision: record?.revision || 0, forceSave: !!opts.reset,
+    const session = { seq, hash, key: "fm1." + entry.id, revision: record?.revision || 0, forceSave: !!(opts.reset || opts.sectors),
       persisted: record?.sectors || [], record: { version: 1, hash, name: entry.nom, byo: entry.id === "local", device: "fm1",
         package: bytes, url: entry.fichier || entry.paquet_en_ligne || null, sectors, revision: record?.revision || 0 } };
     this.sessions.set(seq, session);
@@ -6809,6 +6832,7 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
+    $("cp-box").hidden = !((current.kind === "natif" || current.kind === "emu") && (current.kind === "natif" ? current.entry?.id : emu.entry?.id)); if ($("cp-box").hidden) window.__cpOpen?.(false);
     $("smf-box").hidden = !(current.kind === "emu" && current.entry?.id === "sloop");   // Fichier MIDI : SLOOP, pour l'instant
     if ($("smf-box").hidden) window.__smfClose?.();
     // sur l'iPad, l'app Fichiers directement : les sons par leurs extensions et application/octet-stream, sans
@@ -6925,6 +6949,119 @@ function buildPanel(fw) {
     const ok = await emu.boot(e, { reset: true });
     status.textContent = ok ? "" : `${e.nom} n'a pas redémarré.`;
   }
+
+  // Copies nommées : la mémoire du firmware actif (flash, banque, projets), gardée sous un nom dans ce navigateur,
+  // et exportable en fichier. Natifs et émulés ; FM-1+VA a ses presets.
+  const copies = {
+    db: null,
+    open() {
+      if (!this.db) this.db = new Promise((ok, ko) => {
+        const r = indexedDB.open("fm1-copies", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("copies");
+        r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+      });
+      return this.db;
+    },
+    async all(id) {
+      const db = await this.open();
+      const rows = await new Promise((ok, ko) => { const r = db.transaction("copies").objectStore("copies").getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      return rows.filter((c) => c.id === id && c.slot === (FM1_ID || "")).sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+    },
+    key: (id, nom) => (FM1_ID || "") + "\u0000" + id + "\u0000" + nom,
+    async put(c) {
+      const db = await this.open();
+      return new Promise((ok, ko) => { const t = db.transaction("copies", "readwrite"); t.objectStore("copies").put(c, this.key(c.id, c.nom)); t.oncomplete = ok; t.onerror = () => ko(t.error); });
+    },
+    async remove(id, nom) {
+      const db = await this.open();
+      return new Promise((ok, ko) => { const t = db.transaction("copies", "readwrite"); t.objectStore("copies").delete(this.key(id, nom)); t.oncomplete = ok; t.onerror = () => ko(t.error); });
+    },
+  };
+  const cpBox = $("cp-box"), cpBtn = $("cp-btn"), cpPop = $("cp-pop"), cpSel = $("cp-sel"), cpName = $("cp-name"), cpMsg = $("cp-msg");
+  const cpOpen = (on) => { cpPop.hidden = !on; cpBtn.setAttribute("aria-expanded", String(on)); if (on) cpFill(); };
+  const cpId = () => (current.kind === "natif" ? current.entry.id : current.kind === "emu" ? emu.entry?.id : null);
+  const cpSay = (t) => { cpMsg.textContent = t; };
+  async function cpFill(pick) {
+    const id = cpId(); cpSel.textContent = "";
+    if (!id) return;
+    let list = [];
+    try { list = await copies.all(id); } catch { cpSay("Copies indisponibles dans ce navigateur."); }
+    cpSel.append(new Option(list.length ? "Choisir une copie" : "Aucune copie", ""));
+    for (const c of list) cpSel.append(new Option(`${c.nom} · ${new Date(c.date).toLocaleDateString("fr-FR")}`, c.nom));
+    if (pick) cpSel.value = pick;
+    $("cp-load").disabled = $("cp-del").disabled = $("cp-exp").disabled = !cpSel.value;
+  }
+  async function cpSnapshot() {                    // la mémoire du firmware actif, telle qu'elle est maintenant
+    if (current.kind === "natif") {
+      const e = current.entry;
+      await current.pendingSave?.catch(() => {});
+      return { kind: "natif", flash: await nativeFlash.get(e.id), banque: await nativeFlash.get(e.id + "/banque"), data: await nativeFlash.get(e.id + "/data") };
+    }
+    await emu.flush(false);
+    return { kind: "emu", sectors: emu.running.record.sectors.map((x) => ({ at: x.at, data: x.data })) };
+  }
+  async function cpRestore(c) {
+    if (current.kind === "natif") {
+      const n = current, e = n.entry;
+      await nativeFlash.put(e.id, c.flash || {}); await nativeFlash.put(e.id + "/banque", c.banque || null); await nativeFlash.put(e.id + "/data", c.data || null);
+      await n.stop(); n.node = null; natives.delete(e.id); current = va; vaOut(true);
+      return useEngine(e).catch(() => false);
+    }
+    return emu.boot(emu.entry, { sectors: c.sectors });
+  }
+  async function cpSave() {
+    const id = cpId(), nom = cpName.value.trim();
+    if (!id || !nom) { cpSay("Donnez un nom à la copie."); return; }
+    if ([...cpSel.options].some((o) => o.value === nom) && !confirm(`Remplacer la copie « ${nom} » ?`)) return;
+    try { await copies.put({ id, slot: FM1_ID || "", nom, date: Date.now(), ...(await cpSnapshot()) }); await cpFill(nom); cpSay(`Copie « ${nom} » enregistrée.`); }
+    catch { cpSay("Copie impossible : mémoire du navigateur indisponible."); }
+  }
+  async function cpLoad() {
+    const id = cpId(), nom = cpSel.value; if (!id || !nom) return;
+    const c = (await copies.all(id)).find((x) => x.nom === nom); if (!c) return;
+    if (!confirm(`Charger « ${nom} » ? La mémoire actuelle de ${current.entry?.nom || emu.entry.nom} sera remplacée.`)) return;
+    cpSay("Chargement…");
+    const ok = await cpRestore(c);
+    cpOpen(false); showContext();
+    status.textContent = ok ? "" : `${(current.entry || emu.entry).nom} n'a pas redémarré.`;
+  }
+  async function cpDelete() {
+    const id = cpId(), nom = cpSel.value; if (!id || !nom || !confirm(`Supprimer la copie « ${nom} » ?`)) return;
+    await copies.remove(id, nom); await cpFill(); cpSay(`Copie « ${nom} » supprimée.`);
+  }
+  const b64 = (u8) => { let s = ""; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
+  const unb64 = (t) => Uint8Array.from(atob(t), (c) => c.charCodeAt(0));
+  const wrap = (v) => v instanceof Uint8Array ? { $u8: b64(v) } : ArrayBuffer.isView(v) ? { $u8: b64(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)), $t: v.constructor.name }
+    : Array.isArray(v) ? v.map(wrap) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, wrap(x)])) : v;
+  const unwrap = (v) => v && typeof v === "object" ? (v.$u8 !== undefined ? (v.$t && v.$t !== "Uint8Array" ? new (globalThis[v.$t] || Uint8Array)(unb64(v.$u8).buffer) : unb64(v.$u8))
+    : Array.isArray(v) ? v.map(unwrap) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, unwrap(x)]))) : v;
+  async function cpExport() {
+    const id = cpId(), nom = cpSel.value; if (!id || !nom) return;
+    const c = (await copies.all(id)).find((x) => x.nom === nom); if (!c) return;
+    const blob = new Blob([JSON.stringify({ format: "fm1-copie", version: 1, ...wrap(c) })], { type: "application/json" });
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `${id}-${nom.replace(/[^\w.-]+/g, "_")}.fm1copie.json` });
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+  async function cpImport(file) {
+    const id = cpId(); if (!id || !file) return;
+    try {
+      const r = unwrap(JSON.parse(await file.text()));
+      if (r.format !== "fm1-copie" || r.version !== 1 || typeof r.nom !== "string" || !r.nom || r.nom.length > 60) throw new Error("format");
+      if (r.id !== id) { cpSay(`Cette copie est celle de « ${r.id} » : choisissez ce firmware d'abord.`); return; }
+      if (r.kind !== current.kind) throw new Error("moteur");
+      await copies.put({ id, slot: FM1_ID || "", nom: r.nom, date: Date.now(), kind: r.kind, flash: r.flash, banque: r.banque, data: r.data, sectors: r.sectors });
+      await cpFill(r.nom); cpName.value = r.nom; cpSay(`Copie « ${r.nom} » importée.`);
+    } catch { cpSay("Fichier de copie illisible."); }
+  }
+  cpBtn.addEventListener("click", () => cpOpen(cpPop.hidden));
+  document.addEventListener("pointerdown", (e) => { if (!cpPop.hidden && !cpBox.contains(e.target)) cpOpen(false); });
+  cpBox.addEventListener("keydown", (e) => { if (e.key === "Escape" && !cpPop.hidden) { e.stopPropagation(); cpOpen(false); cpBtn.focus(); } });
+  cpSel.addEventListener("change", () => { cpName.value = cpSel.value; $("cp-load").disabled = $("cp-del").disabled = $("cp-exp").disabled = !cpSel.value; });
+  $("cp-save").addEventListener("click", cpSave); $("cp-load").addEventListener("click", cpLoad);
+  $("cp-del").addEventListener("click", cpDelete); $("cp-exp").addEventListener("click", cpExport);
+  $("cp-imp").addEventListener("change", (e) => { cpImport(e.target.files[0]); e.target.value = ""; });
+  window.__cpOpen = cpOpen;
+  window.__copies = { snapshot: cpSnapshot, save: cpSave, id: cpId };
 
   // pour les tests
   window.__host = fw;
