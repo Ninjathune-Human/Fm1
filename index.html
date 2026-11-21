@@ -6384,7 +6384,7 @@ function buildPanel(fw) {
 
   async function switchOn() {
     const go = $("go");
-    go.disabled = true; go.lastChild.textContent = "Démarrage…";
+    go.disabled = true; $("start").hidden = true; $("loading").hidden = false;                 // pas de pastille « Démarrage… » : « Chargement… » est sur l'écran
     try {
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch { /* older Safari */ }
       try { ac = new AudioContext({ sampleRate: 44100, latencyHint: "interactive" }); } catch { ac = new AudioContext({ latencyHint: "interactive" }); }
@@ -6404,11 +6404,11 @@ function buildPanel(fw) {
       $("controls").inert = false;
       $("power").setAttribute("aria-checked", "true");
       status.textContent = "";
-      restoreLast();
+      restoreLast().catch(() => {}).finally(() => { $("loading").hidden = true; });
       device.focus({ preventScroll: true });
       document.addEventListener("visibilitychange", () => { if (!document.hidden && ac.state !== "running") ac.resume(); });
     } catch (err) {
-      go.disabled = false; go.lastChild.textContent = "Allumer"; $("loading").hidden = true;
+      go.disabled = false; $("start").hidden = false; $("loading").hidden = true;
       status.textContent = "Le son n'a pas pu démarrer : " + (err && err.message ? err.message : err) + ". Chrome, Edge, Firefox et Safari récents conviennent.";
     }
   }
