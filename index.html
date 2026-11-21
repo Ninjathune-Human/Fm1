@@ -197,7 +197,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   background: none; cursor: pointer; text-align: left; font: 400 0.9375rem/1.25 var(--body); color: var(--ink); touch-action: manipulation; }
 .fw-thumb { position: relative; display: grid; place-items: center; aspect-ratio: 1; overflow: hidden; border-radius: 10px; margin-bottom: 3px;
   font: 600 1.375rem/1 var(--body); letter-spacing: 0.02em; color: rgb(255 255 255 / 0.85); box-shadow: 0 0 0 0.5px var(--rule); }
-.fw-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fw-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.fw-thumb img.ok { opacity: 1; }
+.fw-thumb img.fade { transition: opacity 160ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .fw-thumb img.fade { transition: none; } }
 .fw-n { font-weight: 600; overflow-wrap: anywhere; }
 .fw-item[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .fw-item[aria-current="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
@@ -6477,7 +6480,7 @@ function buildPanel(fw) {
       const n = natifs[e.id];
       if (n) Object.assign(e, { natif: "natif/" + e.id + "/", natif_wasm: n.wasm, natif_processeur: n.processeur, natif_dialecte: n.dialecte, natif_echantillons: n.echantillons, natif_midi: n.midi, natif_led: n.led, natif_horloge: n.horloge });
     }
-    catalogue = d.firmwares; renderSections();
+    catalogue = d.firmwares; renderSections(); preloadThumbs();
   }).catch(() => {});
   let coreError = null, switchFailure = null;
   async function loadWasm() {
@@ -6616,19 +6619,38 @@ function buildPanel(fw) {
   const hue = (id) => { let h = 5381; for (const ch of String(id)) h = (Math.imul(h, 33) + ch.codePointAt(0)) >>> 0; return h % 360; };
   const standIn = (id) => `linear-gradient(135deg, hsl(${hue(id)} 45% 42%), hsl(${hue(id)} 55% 22%))`;
   const initials = (nom) => { const w = String(nom).replace(/[^\p{L}\p{N} ]/gu, "").trim().split(/\s+/); return ((w[0] || "?")[0] + (w.length > 1 ? w[1][0] : (w[0] || "")[1] || "")).toUpperCase(); };
+  // les images sont chargées d'avance, au repos, pour être là quand une section s'ouvre ; une image déjà reçue s'affiche
+  // tout de suite, une autre apparaît en fondu (jamais une tuile qui se remplit à vue)
+  const warm = new Map();
+  const thumbUrl = (e) => { const rel = thumbMap && thumbMap[e.id]; return rel ? FWIMG + rel : e.vignette || ""; };
+  function preloadThumbs() {
+    if (!catalogue) return;
+    const todo = [...new Set([...catalogue.map(thumbUrl), ...catalogue.map((e) => e.vignette || "")])].filter((u) => u && !warm.has(u));
+    for (const u of todo) warm.set(u, null);
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 60));
+    const next = () => {
+      for (const u of todo.splice(0, 6)) { const i = new Image(); i.referrerPolicy = "no-referrer"; i.decoding = "async"; i.src = u; warm.set(u, i); i.decode?.().catch(() => {}); }
+      if (todo.length) idle(next);
+    };
+    idle(next);
+  }
   function paintThumb(thumb) {
     const rel = thumbMap && thumbMap[thumb.dataset.id];
     const want = rel ? FWIMG + rel : thumb.dataset.v || "";      // la capture de l'auteur, sinon l'écran d'accueil pris ici (firmwares/vignettes)
     if (!want) return;
     let img = thumb.querySelector("img");
     if (img && img.dataset.src === want) return;
-    if (!img) {
+    const fresh = !img;
+    if (fresh) {
       img = new Image();
-      img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.alt = ""; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.addEventListener("load", () => { img.classList.add("fade", "ok"); });
       img.addEventListener("error", () => { if (img.dataset.src !== thumb.dataset.v && thumb.dataset.v) { img.dataset.src = thumb.dataset.v; img.src = thumb.dataset.v; } else img.remove(); });
-      thumb.append(img);
     }
+    img.classList.remove("ok", "fade");
     img.dataset.src = want; img.src = want;
+    if (img.complete && img.naturalWidth) img.classList.add("ok");   // déjà là : sans fondu
+    if (fresh) thumb.append(img);
   }
   async function loadThumbs() {
     try { const c = JSON.parse(localStorage.getItem(FWIMG_KEY) || "null"); if (c && Date.now() - c.t < FWIMG_TTL && c.map) thumbMap = c.map; } catch { /* rien de gardé */ }
@@ -6643,6 +6665,7 @@ function buildPanel(fw) {
       } catch { return; }                           // hors ligne : les couleurs restent
     }
     for (const t of document.querySelectorAll(".fw-thumb")) paintThumb(t);
+    preloadThumbs();
   }
   loadThumbs();
   function row(e) {
