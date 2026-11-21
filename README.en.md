@@ -11,7 +11,7 @@ FM-1 emulator with optimized open source firmwares, in the browser. · [Françai
 ## Use
 
 - **Power on** starts the sound. **Firmware**, below the panel, opens the list (the search forgives typos). **Open a .fwsc…** runs a package from your computer; it is never uploaded, and it then stays in the list, under My firmwares, in this browser.
-- Each firmware keeps its presets and patterns in the browser. **Backup and restore** saves the whole FM-1 memory to a .json file. **FR / EN** switches the interface, the manual and the firmware notes.
+- Each firmware keeps its presets and patterns in the browser. The **Memory** button under the FM-1 keeps named copies of the current firmware and saves the whole FM-1 memory to a .json file; a single **Import…** recognises either. **FR / EN** switches the interface, the manual and the firmware notes.
 - **Duo** (`index.html?duo`): two FM-1s on one page. With **Linked tempo** they share one MIDI clock and one PLAY starts both.
 
 ## How it works

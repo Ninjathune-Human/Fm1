@@ -131,9 +131,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   display: grid; gap: 10px; padding: 14px; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); }
 .midi-pop::after { content: ""; position: absolute; right: 30px; bottom: -7px; width: 12px; height: 12px; background: var(--surface);
   border: 1px solid var(--rule); border-width: 0 1px 1px 0; transform: rotate(45deg); }
-.midi-pop label { display: grid; gap: 4px; font: 600 0.75rem var(--body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.midi-pop label:not(.file), .midi-pop .cp-h { display: grid; gap: 4px; font: 600 0.75rem var(--body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .midi-pop select { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); }
 .midi-pop p { margin: 0; font-size: 0.8125rem; line-height: 1.35; color: var(--muted); }
+/* Mémoire : les copies de ce firmware, puis les fichiers (une copie, une sauvegarde de tout, un seul Importer…) */
+.cp-pop .cp-part { display: grid; gap: 10px; }
+.cp-pop #cp-copies:not([hidden]) + .cp-part { border-top: 1px solid var(--rule); padding-top: 12px; }
+.cp-pop #cp-msg:empty { display: none; }
+#backup-export:disabled { opacity: 0.6; cursor: progress; }
 .cp-pop .cp-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .cp-pop .cp-row button, .cp-pop .cp-row .file { min-height: 36px; padding: 0 12px; font-size: 0.875rem; }
 .cp-pop input[type="text"] { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); min-width: 0; }
@@ -257,12 +262,6 @@ kbd { font: 500 0.8125rem var(--mono); color: var(--ink); background: var(--surf
 /* Raccourcis clavier : le clavier dessiné, sur toute la largeur quand le volet est ouvert */
 #aide-clavier[open], #aide-manuel[open], #aide-fiche[open] { grid-column: 1 / -1; }
 #aide-manuel .note, #aide-fiche .note { max-width: 52rem; }
-/* Sauvegarde et restauration : deux boutons, et le compte rendu dessous */
-.sauvegarde { display: flex; flex-wrap: wrap; gap: 10px; }
-.sauvegarde button { font: 500 0.9375rem var(--body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 0 16px; min-height: 40px; cursor: pointer; }
-.sauvegarde button:hover { border-color: var(--accent); }
-.sauvegarde button:disabled { opacity: 0.6; cursor: progress; }
-#backup-status:empty { display: none; }
 .clavier-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #clavier { display: block; width: 100%; min-width: 760px; height: auto; }
 #clavier rect { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
@@ -308,7 +307,7 @@ html.embed .swatch span { width: 26px; height: 26px; }
 .deck:is([data-fit="3"], [data-fit="4"], [data-fit="5"]) .swatches { gap: 0; }
 .deck:is([data-fit="3"], [data-fit="4"]) .swatch { width: 34px; }
 .deck:is([data-fit="4"], [data-fit="5"]) .bar { gap: 6px; }
-.deck:is([data-fit="4"], [data-fit="5"]) :is(#midi-btn, .file, #fw-picker) { padding-inline: 11px; }
+.deck:is([data-fit="4"], [data-fit="5"]) :is(#midi-btn, #cp-btn, .file, #fw-picker) { padding-inline: 11px; }
 .deck[data-fit="5"] { column-gap: 8px; } .deck[data-fit="5"] .swatch { width: 28px; }
 @media (max-width: 560px) { html.embed .deck { gap: 6px 8px; } html.embed .swatch { width: 28px; } html.embed .bar { gap: 8px; } }
 html.embed .duo-tabs { margin-left: auto; }                              /* FM1-A | FM1-B au milieu de la ligne, en paysage */
@@ -410,27 +409,33 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
             <p>Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.</p>
           </div>
         </div>
-        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">Importer…</span></label>
+        <label class="file" for="syx" title="Un fichier .syx de Yamaha DX7 (un son ou une banque de 32), pris dans Fichiers : sur l'iPad ou dans iCloud Drive"><input type="file" id="syx" accept=".syx,application/octet-stream,application/x-sysex"><span class="long">Importer un son DX7…</span><span class="short" aria-label="Importer un son DX7">DX7…</span></label>
         <label class="file" id="samples-box" for="samples" hidden title="Un son long devient la chanson, les sons courts les pads (16 au plus) ; ou une banque .kob."><input type="file" id="samples" accept=".kob,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,application/octet-stream" multiple>Échantillons…</label>
         <div class="midi" id="smf-box" hidden>
           <label class="file" for="smf" title="Un fichier MIDI (.mid) dans une piste de SLOOP, comme « Import MIDI » de son éditeur : un aperçu d'abord"><input type="file" id="smf" accept=".mid,.midi,audio/midi,audio/x-midi,application/octet-stream">Fichier MIDI…</label>
           <div class="midi-pop" id="smf-pop" role="dialog" aria-label="Importer un fichier MIDI" hidden></div>
         </div>
-        <div class="midi" id="cp-box" hidden>
-          <button id="cp-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="cp-pop" title="Des copies nommées de la mémoire de ce firmware">Copies<span class="notch" aria-hidden="true"></span></button>
-          <div class="midi-pop cp-pop" id="cp-pop" role="dialog" aria-label="Copies du firmware" hidden>
-            <label>Copies<select id="cp-sel"></select></label>
-            <label>Nom<input type="text" id="cp-name" maxlength="60" autocomplete="off" placeholder="Ma copie"></label>
-            <div class="cp-row">
-              <button id="cp-save" type="button">Enregistrer</button>
-              <button id="cp-load" type="button">Charger</button>
-              <button id="cp-del" class="cp-del" type="button">Supprimer</button>
+        <div class="midi" id="cp-box">
+          <button id="cp-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="cp-pop" title="Des copies de ce firmware, une sauvegarde de tout le FM-1">Mémoire<span class="notch" aria-hidden="true"></span></button>
+          <div class="midi-pop cp-pop" id="cp-pop" role="dialog" aria-label="Mémoire du FM-1" hidden>
+            <div class="cp-part" id="cp-copies" hidden>
+              <label>Copies<select id="cp-sel"></select></label>
+              <label>Nom<input type="text" id="cp-name" maxlength="60" autocomplete="off" placeholder="Ma copie"></label>
+              <div class="cp-row">
+                <button id="cp-save" type="button">Enregistrer</button>
+                <button id="cp-load" type="button">Charger</button>
+                <button id="cp-del" class="cp-del" type="button">Supprimer</button>
+              </div>
             </div>
-            <div class="cp-row">
-              <button id="cp-exp" type="button">Exporter…</button>
-              <label class="file" for="cp-imp">Importer…<input id="cp-imp" type="file" accept=".json,application/json"></label>
+            <div class="cp-part">
+              <span class="cp-h">Fichiers</span>
+              <div class="cp-row">
+                <button id="cp-exp" type="button" hidden>Exporter la copie…</button>
+                <button id="backup-export" type="button">Exporter une sauvegarde…</button>
+                <label class="file" for="cp-imp">Importer…<input id="cp-imp" type="file" accept=".json,application/json"></label>
+              </div>
             </div>
-            <p id="cp-msg" role="status" aria-live="polite">Une copie garde la mémoire de ce firmware ; la charger le redémarre dessus.</p>
+            <p id="cp-msg" role="status" aria-live="polite"></p>
           </div>
         </div>
         <button id="power" type="button" role="switch" aria-checked="false" aria-label="Marche / arrêt" title="Marche / arrêt. Éteindre efface les réglages du firmware actif."><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M4.4 3.9a5.5 5.5 0 1 0 7.2 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg><span class="track" aria-hidden="true"></span></button>
@@ -445,13 +450,13 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         <dl>
           <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Choisir un firmware dans la liste, FM-1 éteint, l'allume tout seul et le lance. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
           <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.</dd>
-          <dt>Copies</dt><dd>Le bouton Copies garde sous un nom la mémoire du firmware en cours (presets, patterns, projets), pour y revenir ou la passer dans un fichier. Charger une copie redémarre le firmware dessus. Disponible pour les firmwares natifs et émulés ; FM-1+VA a ses propres presets. La sauvegarde complète ci-dessous ne reprend pas les copies : exportez-les une à une.</dd>
+          <dt>Mémoire</dt><dd>Le bouton Mémoire, sous le FM-1. Copies : la mémoire du firmware en cours (presets, patterns, projets) gardée sous un nom, pour y revenir ; charger une copie redémarre le firmware dessus. Disponible pour les firmwares natifs et émulés ; FM-1+VA a ses propres presets. Fichiers : exporter la copie choisie, exporter une sauvegarde de tout le FM-1 (copies comprises), et un seul Importer… qui reconnaît l'une ou l'autre.</dd>
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif.</dd>
           <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
           <dt>Plein écran</dt><dd>Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.</dd>
-          <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Le volet Sauvegarde et restauration en fait une copie complète, dans un fichier.</dd>
+          <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Une sauvegarde, par le bouton Mémoire, garde le tout dans un fichier.</dd>
           <dt>Crédits et licences</dt><dd>FM-1+VA n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page. Les firmwares émulés tournent sur le cœur <a href="https://github.com/joakimeriksson/fm1-emu" target="_blank" rel="noopener">fm1-emu</a> de Joakim Eriksson, sous licence MIT. Chaque firmware garde sa licence, rappelée dans le volet de ses fonctions ; leurs textes sont dans le dossier <a href="https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences" target="_blank" rel="noopener">firmwares/licences</a> du dépôt.</dd>
         </dl>
       </div>
@@ -479,13 +484,8 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
     <details id="aide-sauvegarde">
       <summary>Sauvegarde et restauration</summary>
       <div class="note">
-        <p>Toute la mémoire du FM-1 dans ce navigateur, en un fichier : presets, patterns et réglages de FM-1+VA, du Solo et du Duo (FM1-A et FM1-B), projets des firmwares natifs, sauvegardes des firmwares émulés et paquets ouverts. À garder dans Fichiers ou iCloud Drive ; il contient aussi vos échantillons et vos firmwares importés.</p>
-        <p>Restaurer remplace tout ce que ce navigateur garde du FM-1 : éteindre le FM-1 et fermer ses autres onglets avant.</p>
-        <div class="sauvegarde">
-          <button id="backup-export" type="button">Exporter une sauvegarde…</button>
-          <label class="file" for="backup-import">Restaurer une sauvegarde…<input id="backup-import" type="file" accept=".json,application/json"></label>
-        </div>
-        <p id="backup-status" role="status" aria-live="polite"></p>
+        <p>Toute la mémoire du FM-1 dans ce navigateur, en un fichier : presets, patterns et réglages de FM-1+VA, du Solo et du Duo (FM1-A et FM1-B), projets des firmwares natifs, sauvegardes des firmwares émulés, copies et paquets ouverts. À garder dans Fichiers ou iCloud Drive ; il contient aussi vos échantillons et vos firmwares importés.</p>
+        <p>Exporter une sauvegarde et Importer… sont dans le bouton Mémoire, sous le FM-1. Restaurer remplace tout ce que ce navigateur garde du FM-1 : éteindre le FM-1 (les deux en Duo) et fermer ses autres onglets avant.</p>
       </div>
     </details>
   </section>
@@ -6859,7 +6859,7 @@ function buildPanel(fw) {
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
-    $("cp-box").hidden = !((current.kind === "natif" || current.kind === "emu") && (current.kind === "natif" ? current.entry?.id : emu.entry?.id)); if ($("cp-box").hidden) window.__cpOpen?.(false);
+    $("cp-copies").hidden = $("cp-exp").hidden = !((current.kind === "natif" || current.kind === "emu") && (current.kind === "natif" ? current.entry?.id : emu.entry?.id)); window.__cpRefresh?.();
     $("smf-box").hidden = !(current.kind === "emu" && current.entry?.id === "sloop");   // Fichier MIDI : SLOOP, pour l'instant
     if ($("smf-box").hidden) window.__smfClose?.();
     // sur l'iPad, l'app Fichiers directement : les sons par leurs extensions et application/octet-stream, sans
@@ -7009,9 +7009,16 @@ function buildPanel(fw) {
     },
   };
   const cpBox = $("cp-box"), cpBtn = $("cp-btn"), cpPop = $("cp-pop"), cpSel = $("cp-sel"), cpName = $("cp-name"), cpMsg = $("cp-msg");
-  const cpOpen = (on) => { cpPop.hidden = !on; cpBtn.setAttribute("aria-expanded", String(on)); if (on) cpFill(); };
   const cpId = () => (current.kind === "natif" ? current.entry.id : current.kind === "emu" ? emu.entry?.id : null);
   const cpSay = (t) => { cpMsg.textContent = t; };
+  const cpOpen = (on) => {
+    cpPop.hidden = !on; cpBtn.setAttribute("aria-expanded", String(on));
+    if (on) { cpSay(cpId() ? "Une copie garde la mémoire de ce firmware ; une sauvegarde, tout le FM-1. Importer… reconnaît l'une ou l'autre." : "Une sauvegarde garde tout le FM-1, copies comprises. Importer… reconnaît une sauvegarde ou une copie."); cpFill(); }
+    // la bulle reste dans l'écran (iPhone en portrait : le bouton passe à gauche de sa ligne)
+    cpPop.style.translate = "";
+    const left = on ? cpPop.getBoundingClientRect().left : 8;
+    if (left < 8) cpPop.style.translate = `${8 - left}px 0`;
+  };
   async function cpFill(pick) {
     const id = cpId(); cpSel.textContent = "";
     if (!id) return;
@@ -7073,11 +7080,11 @@ function buildPanel(fw) {
     const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `${id}-${nom.replace(/[^\w.-]+/g, "_")}.fm1copie.json` });
     document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }
-  async function cpImport(file) {
-    const id = cpId(); if (!id || !file) return;
+  async function cpImport(raw) {                   // une copie, lue par Importer… (backup.js reconnaît le fichier)
+    const id = cpId();
     try {
-      const r = unwrap(JSON.parse(await file.text()));
-      if (r.format !== "fm1-copie" || r.version !== 1 || typeof r.nom !== "string" || !r.nom || r.nom.length > 60) throw new Error("format");
+      const r = unwrap(raw);
+      if (r.format !== "fm1-copie" || r.version !== 1 || typeof r.id !== "string" || typeof r.nom !== "string" || !r.nom || r.nom.length > 60) throw new Error("format");
       if (r.id !== id) { cpSay(`Cette copie est celle de « ${r.id} » : choisissez ce firmware d'abord.`); return; }
       if (r.kind !== current.kind) throw new Error("moteur");
       await copies.put({ id, slot: FM1_ID || "", nom: r.nom, date: Date.now(), kind: r.kind, flash: r.flash, banque: r.banque, data: r.data, sectors: r.sectors });
@@ -7090,9 +7097,8 @@ function buildPanel(fw) {
   cpSel.addEventListener("change", () => { cpName.value = cpSel.value; $("cp-load").disabled = $("cp-del").disabled = $("cp-exp").disabled = !cpSel.value; });
   $("cp-save").addEventListener("click", cpSave); $("cp-load").addEventListener("click", cpLoad);
   $("cp-del").addEventListener("click", cpDelete); $("cp-exp").addEventListener("click", cpExport);
-  $("cp-imp").addEventListener("change", (e) => { cpImport(e.target.files[0]); e.target.value = ""; });
-  window.__cpOpen = cpOpen;
-  window.__copies = { snapshot: cpSnapshot, save: cpSave, id: cpId };
+  window.__cpRefresh = () => { if (!cpPop.hidden) cpFill(); };
+  window.__copies = { snapshot: cpSnapshot, save: cpSave, id: cpId, importer: cpImport };
 
   // pour les tests
   window.__host = fw;

@@ -10,6 +10,9 @@ const SCHEMAS = {
   "fm1-emulator": { version: 2, stores: ["packages", "states", "entries"] },
   "fm1-emulator-b": { version: 2, stores: ["packages", "states", "entries"] },   // celle de FM1-B dans le fork
 };
+// les copies du bouton Mémoire : un champ à part, hors de databases, dont le validateur du fork refuse toute base
+// inconnue (il ignore un champ de plus) ; une sauvegarde sans copies, d'avant ou du fork, les laisse telles quelles
+const COPIES = { name: "fm1-copies", version: 1, stores: ["copies"] };
 const APP_KEY = /^(fm1\.|fm1b\.|fm1va\.)/;
 const BIN = {
   Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array,
@@ -92,8 +95,7 @@ function decode(node, depth = 0) {
   }
   throw new Error("Valeur inconnue");
 }
-function openDB(name) {
-  const schema = SCHEMAS[name];
+function openDB(name, schema = SCHEMAS[name]) {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(name, schema.version);
     request.onupgradeneeded = () => {
@@ -141,7 +143,10 @@ export async function createBackup() {
       databases[name] = stores;
     } finally { db.close(); }
   }
-  const result = { format: FORMAT, version: VERSION, created: new Date().toISOString(), local, databases };
+  const db = await openDB(COPIES.name, COPIES);
+  let copies;
+  try { copies = await readStore(db, "copies"); } finally { db.close(); }
+  const result = { format: FORMAT, version: VERSION, created: new Date().toISOString(), local, databases, copies };
   if (JSON.stringify(result).length > MAX_JSON) throw new Error("Sauvegarde trop lourde pour un seul fichier");
   return result;
 }
@@ -183,25 +188,49 @@ function validate(data) {
     }
     databases[name] = stores;
   }
-  return { local, databases };
+  let copies = null;
+  if (Object.hasOwn(data, "copies")) {
+    if (!Array.isArray(data.copies) || data.copies.length > 10000) throw new Error("Copies illisibles");
+    const keys = new Set();
+    copies = data.copies.map(record => {
+      if (!Array.isArray(record) || record.length !== 2) throw new Error("Copies illisibles");
+      const key = decode(record[0]), value = decode(record[1]);
+      if (typeof key !== "string" || keys.has(key) || !value || typeof value !== "object") throw new Error("Copies illisibles");
+      keys.add(key);
+      return [key, value];
+    });
+  }
+  return { local, databases, copies };
 }
-const running = () => document.getElementById("power")?.getAttribute("aria-checked") === "true";
+// en Duo, chaque FM-1 est un cadre de la même page : les deux comptent, et c'est la page entière qui se recharge
+const frames = () => { try { return Array.from({ length: top.frames.length }, (_, i) => top.frames[i]); } catch { return []; } };
+const duo = () => frames().length > 0;
+const running = () => [window, ...frames()].some(w => {
+  try { return w.document.getElementById("power")?.getAttribute("aria-checked") === "true"; } catch { return false; }
+});
 export async function restoreBackup(backup) {
-  if (running()) throw new Error("Éteignez le FM-1 avant de restaurer");   // un firmware allumé réécrirait sa mémoire
-  const { local, databases } = validate(backup);   // tout est vérifié avant de toucher à quoi que ce soit
+  // un firmware allumé réécrirait sa mémoire
+  if (running()) throw new Error(duo() ? "Éteignez les deux FM-1 avant de restaurer" : "Éteignez le FM-1 avant de restaurer");
+  const { local, databases, copies } = validate(backup);   // tout est vérifié avant de toucher à quoi que ce soit
   // une base par transaction ; ce qui n'est pas dans la sauvegarde disparaît : c'est un instantané, pas une fusion
   for (const name of Object.keys(databases)) {
     const db = await openDB(name);
     try { await writeDB(db, databases[name]); }
     finally { db.close(); }
   }
+  if (copies) {
+    const db = await openDB(COPIES.name, COPIES);
+    try { await writeDB(db, { copies }); }
+    finally { db.close(); }
+  }
   for (const key of Object.keys(localStorage)) if (APP_KEY.test(key)) localStorage.removeItem(key);
   for (const [key, value] of local) localStorage.setItem(key, value);
 }
-// le volet Sauvegarde et restauration, sous le FM-1 (en Solo : le Duo vit dans la même mémoire, il y est compris)
+// le bouton Mémoire, sous le FM-1 : Exporter une sauvegarde, et le seul Importer…, qui reconnaît une copie ou une
+// sauvegarde (en Duo, chaque FM-1 a le sien : les deux vivent dans la même mémoire, une sauvegarde les comprend)
 const exportButton = document.getElementById("backup-export");
-const importInput = document.getElementById("backup-import");
-const status = document.getElementById("backup-status");
+const importInput = document.getElementById("cp-imp");
+const status = document.getElementById("cp-msg");
 const t = (fr) => (window.FM1LANG ? window.FM1LANG.text(fr) : fr);
 const failed = (what, e) => { status.textContent = t(what) + (window.FM1LANG?.get() === "en" ? ": " : " : ") + t(e.message); };
 if (exportButton && importInput && status) {
@@ -226,16 +255,18 @@ if (exportButton && importInput && status) {
     importInput.value = "";
     if (!file) return;
     if (file.size > MAX_JSON) { status.textContent = "Fichier trop lourd."; return; }
+    let data = null;
+    try { data = JSON.parse(await file.text()); } catch { /* ni l'une ni l'autre */ }
+    if (data?.format === "fm1-copie") { window.__copies?.importer(data); return; }
+    if (data?.format !== FORMAT) { status.textContent = "Ce fichier n'est ni une copie ni une sauvegarde du FM-1."; return; }
     try {
-      if (running()) throw new Error("Éteignez le FM-1 avant de restaurer");
-      let backup;
-      try { backup = JSON.parse(await file.text()); } catch { throw new Error("Ce fichier n'est pas une sauvegarde du FM-1"); }
-      validate(backup);
+      if (running()) throw new Error(duo() ? "Éteignez les deux FM-1 avant de restaurer" : "Éteignez le FM-1 avant de restaurer");
+      validate(data);
       if (!confirm(t("Restaurer cette sauvegarde ? Elle REMPLACE tous les presets, patterns, mémoires des firmwares natifs et émulés et réglages de ce navigateur. Fermez d'abord les autres onglets du FM-1."))) return;
       status.textContent = "Restauration…";
-      await restoreBackup(backup);
+      await restoreBackup(data);
       status.textContent = "Restauration terminée. La page se recharge…";
-      location.reload();
+      try { top.location.reload(); } catch { location.reload(); }
     } catch (e) { failed("Échec de la restauration", e); }
   });
 }

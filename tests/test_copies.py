@@ -41,6 +41,31 @@ def test_copies(page, fw, tmp_path):
     assert page.is_visible("#cp-btn")
 
 
-def test_copies_absentes_avec_fm1va(page):
+def test_memoire_avec_fm1va(page, tmp_path):
+    """FM-1+VA n'a pas de copies : le bouton Mémoire reste, avec la sauvegarde et Importer… seuls."""
     power_on(page)
-    assert not page.is_visible("#cp-btn")
+    assert page.inner_text("#cp-btn") == "Mémoire"
+    ouvre(page)
+    assert not page.is_visible("#cp-copies") and not page.is_visible("#cp-exp")
+    assert page.is_visible("#backup-export") and page.is_visible("label[for=cp-imp]")
+    # « Importer… » s'écrit comme les autres boutons, pas comme les intitulés en capitales
+    assert page.eval_on_selector("label[for=cp-imp]", "l => getComputedStyle(l).textTransform") == "none"
+    # une copie d'un autre firmware : il faut d'abord le choisir
+    f = tmp_path / "c.json"
+    f.write_text('{"format": "fm1-copie", "version": 1, "id": "sloop", "nom": "Essai", "kind": "emu", "sectors": []}')
+    page.set_input_files("#cp-imp", str(f))
+    page.wait_for_function("document.getElementById('cp-msg').textContent.includes('choisissez ce firmware')")
+    # ni une copie ni une sauvegarde
+    f.write_text('{"format": "autre"}')
+    page.set_input_files("#cp-imp", str(f))
+    page.wait_for_function("document.getElementById('cp-msg').textContent.includes('ni une copie ni une sauvegarde')")
+
+
+def test_memoire_meme_place_en_duo(page):
+    """Le bouton Mémoire est là en Solo comme dans chaque FM-1 du Duo, juste avant l'interrupteur."""
+    page.goto(page.base + "index.html")
+    assert page.eval_on_selector("#cp-box", "b => b.nextElementSibling.id") == "power"
+    assert page.is_visible("#cp-btn")
+    page.goto(page.base + "index.html?duo")
+    page.wait_for_function("window.__duo && window.__duo.frames.a.contentWindow.__fw")
+    assert page.frame(name="a").is_visible("#cp-btn")

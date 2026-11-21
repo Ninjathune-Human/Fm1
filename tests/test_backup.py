@@ -102,10 +102,16 @@ def test_invalid_backup_rejected_before_any_data_is_replaced(page):
     assert result == {"rejected": True, "preserved": True}
 
 
+def ouvre(page):
+    page.click("#cp-btn")
+    page.wait_for_selector("#cp-pop", state="visible")
+
+
 def test_backup_export_button_downloads_json(page):
     page.goto(page.base + "index.html")
     assert page.locator("#aide-sauvegarde").count() == 1
-    page.locator("#aide-sauvegarde summary").click()
+    assert page.locator("#aide-sauvegarde button, #aide-sauvegarde input").count() == 0   # le volet explique, Mémoire agit
+    ouvre(page)
     page.evaluate('localStorage.setItem("fm1va.global", "{\\"tempo\\":123}")')
     with page.expect_download() as event:
         page.locator("#backup-export").click()
@@ -117,6 +123,62 @@ def test_backup_export_button_downloads_json(page):
     assert data["format"] == "fm1-fork-backup"
     assert ["fm1va.global", '{"tempo":123}'] in data["local"]
     assert set(data["databases"]) == {"fm1-natif", "fm1-emulator", "fm1-emulator-b"}
+    assert data["copies"] == []                   # à part des bases : le fork ignore ce champ
+
+
+def copie(page, nom, slot=""):
+    """Une copie rangée comme le bouton Mémoire la range (clé : cadre du Duo, firmware, nom)."""
+    page.evaluate("""async ([nom, slot]) => {
+      const db = await new Promise((ok, ko) => { const r = indexedDB.open("fm1-copies", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("copies"); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      await new Promise((ok, ko) => { const t = db.transaction("copies", "readwrite");
+        t.objectStore("copies").put({ id: "sloop", slot, nom, date: 1, kind: "emu", sectors: [{ at: 0, data: new Uint8Array([7, 8]) }] },
+          slot + "\\u0000sloop\\u0000" + nom);
+        t.oncomplete = ok; t.onerror = () => ko(t.error); });
+      db.close();
+    }""", [nom, slot])
+
+
+def copies(page):
+    return page.evaluate("""async () => {
+      const db = await new Promise((ok, ko) => { const r = indexedDB.open("fm1-copies", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("copies"); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      const rows = await new Promise((ok, ko) => { const r = db.transaction("copies").objectStore("copies").getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      db.close();
+      return rows.map((c) => [c.slot, c.nom, [...c.sectors[0].data]]).sort();
+    }""")
+
+
+def test_copies_dans_la_sauvegarde(page):
+    """La sauvegarde reprend les copies (des deux FM-1 du Duo) ; la restaurer les remet telles quelles."""
+    page.goto(page.base + "index.html")
+    copie(page, "Avant")
+    copie(page, "De B", "b")
+    backup = page.evaluate("async () => JSON.parse(JSON.stringify(await (await import('./backup.js')).createBackup()))")
+    assert len(backup["copies"]) == 2
+    copie(page, "Après")
+    page.evaluate("async (b) => (await import('./backup.js')).restoreBackup(b)", backup)
+    assert copies(page) == [["", "Avant", [7, 8]], ["b", "De B", [7, 8]]]
+
+
+def test_sauvegarde_sans_copies_les_garde(page):
+    """Une sauvegarde d'avant, ou du fork, n'a pas de copies : la restaurer ne les touche pas."""
+    page.goto(page.base + "index.html")
+    copie(page, "Gardée")
+    backup = page.evaluate("async () => { const b = JSON.parse(JSON.stringify(await (await import('./backup.js')).createBackup())); delete b.copies; return b; }")
+    page.evaluate("async (b) => (await import('./backup.js')).restoreBackup(b)", backup)
+    assert copies(page) == [["", "Gardée", [7, 8]]]
+
+
+def test_restauration_bloquee_si_l_autre_fm1_du_duo_est_allume(page):
+    page.goto(page.base + "index.html?duo")
+    page.wait_for_function("window.__duo && window.__duo.frames.a.contentWindow.__fw && window.__duo.frames.b.contentWindow.__fw")
+    page.frame(name="b").evaluate("document.getElementById('power').setAttribute('aria-checked', 'true')")
+    result = page.frame(name="a").evaluate("""async () => {
+      const mod = await import("./backup.js");
+      try { await mod.restoreBackup(await mod.createBackup()); return "restaurée"; } catch (e) { return e.message; }
+    }""")
+    assert result == "Éteignez les deux FM-1 avant de restaurer"
 
 
 def test_restore_blocked_when_synth_running(page):
@@ -194,16 +256,21 @@ def test_volet_en_anglais(page):
     page.goto(page.base + "index.html")
     page.click(".mast .lang [data-l=en]")
     page.wait_for_function("document.querySelector('#aide-sauvegarde summary').textContent === 'Backup and restore'")
+    assert "in the Memory button" in page.text_content("#aide-sauvegarde")
+    assert page.inner_text("#cp-btn") == "Memory"
+    ouvre(page)
     assert page.text_content("#backup-export") == "Export a backup…"
-    assert "Restore a backup…" in page.text_content(".sauvegarde .file")
+    assert page.text_content("#cp-exp") == "Export the copy…"
+    assert "Import…" in page.text_content("label[for=cp-imp]")
+    assert page.text_content("#cp-msg").startswith("A backup keeps the whole FM-1")
     # un compte rendu écrit en français par backup.js passe en anglais
-    page.evaluate("document.getElementById('backup-status').textContent = 'Fichier trop lourd.'")
-    page.wait_for_function("document.getElementById('backup-status').textContent === 'File too large.'")
+    page.evaluate("document.getElementById('cp-msg').textContent = 'Fichier trop lourd.'")
+    page.wait_for_function("document.getElementById('cp-msg').textContent === 'File too large.'")
 
 
-def test_restauration_par_le_volet(page):
+def test_restauration_par_importer(page):
     page.goto(page.base + "index.html")
-    page.locator("#aide-sauvegarde summary").click()
+    ouvre(page)
     page.evaluate('localStorage.setItem("fm1va.global", "avant")')
     with page.expect_download() as event:
         page.locator("#backup-export").click()
@@ -211,5 +278,5 @@ def test_restauration_par_le_volet(page):
     page.evaluate('localStorage.setItem("fm1va.global", "après")')
     page.once("dialog", lambda d: d.accept())
     with page.expect_navigation():
-        page.set_input_files("#backup-import", path)
+        page.set_input_files("#cp-imp", path)
     assert page.evaluate('localStorage.getItem("fm1va.global")') == "avant"
