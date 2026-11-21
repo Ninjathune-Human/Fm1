@@ -229,11 +229,14 @@ def test_every_native_reacts(page):
         page.evaluate("window.__host.turn('SELECT', 3)")
         page.wait_for_timeout(400)
         page.evaluate("window.__host.keyDown(12, 't')")
-        page.wait_for_timeout(900 if granular else 120 if percussif else 500)
+        page.wait_for_timeout(900 if granular else 60 if percussif else 500)
         if i == "midimon":                  # un moniteur MIDI : son écran répond au MIDI reçu, pas au panneau
             page.evaluate("window.__engine().midiIn(Uint8Array.from([0x90, 60, 110]))")
             page.wait_for_timeout(500)
         level = rms(page)
+        if percussif:                       # le coup passe vite, et plus lentement encore sur un exécuteur chargé : le plus fort d'une demi-seconde
+            for _ in range(8):
+                page.wait_for_timeout(60); level = max(level, rms(page))
         page.evaluate("window.__host.keyUp('t')")
         if page.evaluate(shot) == before and level <= (0.0002 if granular else 0.001):
             mute.append((i, "aucune réaction"))
