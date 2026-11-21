@@ -3158,6 +3158,30 @@
    "provenance_paquet": "release download/v0.3/spellbox-0.3.fwsc",
    "horloge_midi": false,
    "tempo_lie": false
+  },
+  {
+   "id": "sloop3",
+   "nom": "SLOOP 3",
+   "version": "3.4.0",
+   "auteur": "isod89",
+   "categories": [
+    "Groovebox"
+   ],
+   "licence": "GPL-3.0",
+   "beta": false,
+   "fichier": null,
+   "sha256": "d815e3aaf5b4a926917f6c0420ab63b6b1ef9f87720636a7971ef5e7134f4758",
+   "taille": 833525,
+   "depot": "https://github.com/isod89/sloop3-fm1",
+   "commit_source": "2228313f3abe0ad6c8f28ef0cd9b9d8167c01330",
+   "source_c": null,
+   "description": "SLOOP 2.8.5's pages, gestures and way of saving, on a new engine: a live groovebox of tracks, layers and a step sequencer.",
+   "emulateur_fm1emu": "pas encore évalué",
+   "paquet_en_ligne": null,
+   "provenance_paquet": "natif seulement ; module .rfm1 (WebAssembly, ABI 6) publié par RemoteFM1FW, sha256 vérifié à la construction",
+   "natif_seulement": true,
+   "horloge_midi": false,
+   "tempo_lie": false
   }
  ]
 }

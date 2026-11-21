@@ -712,6 +712,16 @@
    "wasm": "build/natif/tastywaves.wasm",
    "worklet": "tools/worklets/dinghy.js",
    "dialecte": "felucca"
+  },
+  {
+   "id": "sloop3",
+   "depot": "isod89/sloop3-fm1",
+   "commit": "2228313f3abe0ad6c8f28ef0cd9b9d8167c01330",
+   "script": "Makefile",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/sloop3.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/sloop3-3.4.0.rfm1 && echo 'd815e3aaf5b4a926917f6c0420ab63b6b1ef9f87720636a7971ef5e7134f4758  build/natif/sloop3.wasm' | sha256sum -c -",
+   "wasm": "build/natif/sloop3.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
   }
  ]
 }

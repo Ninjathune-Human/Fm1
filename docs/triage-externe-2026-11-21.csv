@@ -1,0 +1,54 @@
+firmware,auteur,licence,depot,commit_construit,restriction_a_lire
+AMENITY 2.1.1,Presethead,GPL-3.0-only,ejtb76/amenity,https://github.com/ejtb76/amenity/tree/f60470cb90ddf7fcdc7240d4c21d86c29675ec67,
+AURORA 0.8.0,twochannels,GPL-3.0-only,twochannels/AURORA,https://github.com/twochannels/AURORA/tree/45b231a8efaa30b6c20cd8aade5c5e25bca40514,
+FM-1 Chimera Vocal 0.8.0,Shan-Sherif,MPL-2.0 AND MIT,shan-sherif/fm-1-chimera-vocal,https://github.com/shan-sherif/fm-1-chimera-vocal/tree/5a9e5f7af4ae8ce954ff39735274afe5593b7796,
+CONDUCTOR 1.0,MammothCheese,GPL-3.0-only,MammothCheese/conductor,https://github.com/MammothCheese/conductor/tree/a74fb5ac43fc9f7ce4fac21c7066492396ad3636,
+cursed os 0.18.5,"cursedsound, juanjiant-bit (JIANT), Leo Kuroshita (Hügelton Instruments) (Felucca)",GPL-3.0-only,cursedsound-music/CS_FM1,https://github.com/cursedsound-music/CS_FM1/tree/93dec8ecda3a04c111e8faec33cd561182b695c9,
+CULTBOX 1.2,beatcult,GPL-3.0-only,beatcult/CULTBOX,https://github.com/beatcult/CULTBOX/tree/c35e403955b166b62b3ea09831087ec8595c5795,oui
+DABKE 0.18,STUDIOMORPHIK (wissamsader),MPL-2.0,wissamsader/dabke,https://github.com/wissamsader/dabke/tree/b7ba61ba425cd42bd0dd20bed3d9e81f5390563a,
+Drumlab 0.1.3-beta,Pasquale Barilla,GPL-3.0-only,pbarilla/drumlab,https://github.com/pbarilla/drumlab/tree/011bde0d24a38abebfa57e089134f8f8fd2bb732,
+DUBWISE 0.4.2,DocRuzzy (SpIllt Beats),GPL-3.0-only,DocRuzzy/dubwise-fm,https://github.com/DocRuzzy/dubwise-fm/tree/99c758934550ad15c93b6c98aa4935ec0f5e73e5,
+Dungeon Tracker 1.5,BourbonWX,GPL-3.0-only,BourbonWX/Dungeon-Tracker,https://github.com/BourbonWX/Dungeon-Tracker/tree/4e43c2f34899237f685a10999b00213644aef394,
+DX747 0.1,Esben von Buchwald,GPL-3.0-only,esbenvb/fm1-dx747,https://github.com/esbenvb/fm1-dx747/tree/bbae5d4a2222830ac5c9265a41f83dbde6982694,oui
+Elasticat 0.6.97 ‡,Quixotic7,GPL-3.0-only,Quixotic7/elasticatfm1,https://github.com/Quixotic7/elasticatfm1/tree/8b33de6a9f80b256a4adc42404c4d99ab3c5d9de,
+EVILGENIUS 0.1.3,Michael P Jones (Quixotic7),MPL-2.0,Quixotic7/evilgenius,https://github.com/Quixotic7/evilgenius/tree/4441c86417db88ae6eb3d601fe149457157b0d6f,oui
+FMav-1 0.5.1,"wootrop & gpix, zvenson",GPL-3.0-only,wootr0p/fmav1,https://github.com/wootr0p/fmav1/tree/04c9865b064712820abf1285de409ece53699989,
+FM-KICK 0.5.1,David Amo,MPL-2.0,davidamomusic/fm-kick,https://github.com/davidamomusic/fm-kick/tree/c4a8a5fe2650d8a91b3e567c82f92f8ba20907d0,
+FMLARYNX 0.4.2,Presethead,GPL-3.0-only,ejtb76/FMLarynx,https://github.com/ejtb76/FMLarynx/tree/0a1ef67d2ec60f19e0f568473b2caa9c13b29a39,
+GR!MM 2.0.2,Saulo Filho,GPL-3.0-only,saulofilho/glitch,https://github.com/saulofilho/glitch/tree/e79166477d7bdd973cdcf46fa38a52cea33c2501,
+Golf 1.0,BARNIR,MPL-2.0,barnierg76/golf-fm1,https://github.com/barnierg76/golf-fm1/tree/8396679b35176da55a3012ff6c7cea75223525ba,
+h1 0.2.1,Jake Handy,MIT,jakehandy/h1,https://github.com/jakehandy/h1/tree/5b697e5c230a5fae45a914d86545e03929c4d032,
+HADAL-1 1.0.1,Polystellarflow,MPL-2.0,sparky480v/hadal-1,https://github.com/sparky480v/hadal-1/tree/7909c72d5dfe78f1cc67defc86b5c44cc950466b,
+HAWK CHUA 2.1.7,"plieuwski, Leo Kuroshita (Hügelton Instruments)",GPL-3.0-only,Plieuw/hawk-chua,https://github.com/Plieuw/hawk-chua/tree/73d0c80517e028cce6e02d200a8f8fbfbfd8af76,
+JamesOS 1.0b,Aaron Grando,GPL-3.0-only,aarongrando/JamesOS,https://github.com/aarongrando/JamesOS/tree/c630fe1012ece956c7f3d7b8f18908916d9f48ec,
+KRIS JANGLE 0.15,w33tSnx,MPL-2.0,doohinkus/kris-jangle,https://github.com/doohinkus/kris-jangle/tree/63c26f744499ca5168500722cbc2dc807dd21c99,
+LOAF BREAKER 0.9.68,"FLEXOR, Laurens Profittlich (CHOPPAH)",MPL-2.0,FLEXOR-R/loaf-breaker,https://github.com/FLEXOR-R/loaf-breaker/tree/f372ee0e6031a99df0e159b2bc47386353708b58,oui
+Mighty Arp 1.5,Nick Culbertson,MPL-2.0,NickCulbertson/FM1-Mighty-Arp,https://github.com/NickCulbertson/FM1-Mighty-Arp/tree/1283d872b3fd3e88b701b9f53fa9cd4db4c24162,
+Modular Koi 0.1,Bungle Society,GPL-3.0-only,bunglesociety/modular-koi,https://github.com/bunglesociety/modular-koi/tree/d27a62e9850344468be8a767a1cbc9930051b579,
+MORSE 0.6,Da-Wei Lee (daviddwlee84),GPL-3.0-or-later,daviddwlee84/fm1-morse,https://github.com/daviddwlee84/fm1-morse/tree/60f76cf488b2b405b507d31b6adf3a61c2f36a67,
+M-PYRE 1.0.3,History Of Sky,GPL-3.0-only,HistoryOfSky/m-pyre,https://github.com/HistoryOfSky/m-pyre/tree/f50926b251c49a67df882cc8d33d1044005cf9d8,oui
+M-Vsynth2 1.3,"Kris (bk40-home), zvenson",GPL-3.0-only,bk40-home/M-Vsynth2,https://github.com/bk40-home/M-Vsynth2/tree/642038d298624061d703ed418ae307beaeb0559e,
+ObsSynth 0.2.0,"Orian Beltrame, DEADACTIVE, Leo Kuroshita (Hügelton Instruments)",GPL-3.0-only,orianbsilva/obssynth-fm1,https://github.com/orianbsilva/obssynth-fm1/tree/f7aea06381fe6f57fa5b533dac04fefdee47e582,
+OrGigs 1.0.2,Bobo (orgelbobo),GPL-3.0-only,orgelbobo/orgigs,https://github.com/orgelbobo/orgigs/tree/b2773e3fd1ca7a6aa4df8a49b6816ed5e8826047,
+PATCHWERK 1.0.3,Matt Kuebrich,GPL-3.0-only,MattKuebrich/patchwerk,https://github.com/MattKuebrich/patchwerk/tree/6f91629dfae5cf40675f7355cfe46b0d42b8b224,
+POND 0.1.2,superxor,MPL-2.0,superxor/amb-pond,https://github.com/superxor/amb-pond/tree/957fa034d9b8316ac65e433af6e4e70afcc2cf72,
+Quantum GammaWave 4.1.0,"Guillel51, Frederic Valente (Pocket GammaWave), juanjiant-bit (JIANT), Leo Kuroshita (Hügelton Instruments) (Felucca)",GPL-3.0-only,Guillel51/Quantum-GammaWave,https://github.com/Guillel51/Quantum-GammaWave/tree/671ac35b583becaccd8b26b0ad4c72d04909b69e,
+QUARTZ 0.6,f0nski,GPL-3.0-or-later,F0nski/quartz,https://github.com/F0nski/quartz/tree/457c069e9e7e4140f67704295d26c5cf2c00a56b,
+RemoteFM1 0.3.6,Quixotic7,MPL-2.0,Quixotic7/RemoteFM1,https://github.com/Quixotic7/RemoteFM1/tree/747f57007e12825a3605a0c54406e350e76bb2cb,
+Rhythmer 0.1.0-beta.2,Jazzy Rhythmer,GPL-3.0-only,JazzyRhythmer/Rhythmer,https://github.com/JazzyRhythmer/Rhythmer/tree/fe65b26f5f99408ca1cd905b9da9cfc79b626a2e,oui
+Ripple 0.6.1 ‡,Charles Vestal,MPL-2.0,charlesvestal/fm1-ripple,https://github.com/charlesvestal/fm1-ripple/tree/a710e437f280f9c44c6ceb0ce59dbb76790adecb,
+Ruido 0.7.1,Miguel Hernández Domenech,GPL-3.0-only,miguelhd/ruido,https://github.com/miguelhd/ruido/tree/963e91203f4dece98e9a6944c52dac5ed92bb417,oui
+RUPTURE 1.93,"Joppe Sikken (SikkenWorks), Leo Kuroshita (Hügelton Instruments)",GPL-3.0-only,SikkenWorks/RUPTURE,https://github.com/SikkenWorks/RUPTURE/tree/29c64f16a45c9143ec0a47babccda8baaeca2e8c,
+SAMSARA 1.0.0,"Tomorrow's Man, from AMB-1 by Charles Vestal",MPL-2.0,tomorrowsman/fm1-samsara,https://github.com/tomorrowsman/fm1-samsara/tree/f88dab1ada9eea67814f60525856d91406d383ea,
+SiDJ 1.5.1,Thomas Jansson (tubesockor),GPL-3.0-only,thomasj/fm1-sidj,https://github.com/thomasj/fm1-sidj/tree/c9544f238109617fd22fdea913e48e6aa504c632,
+SLOOP 3 3.4.0,isod89,GPL-3.0-only,isod89/sloop3-fm1,https://github.com/isod89/sloop3-fm1/tree/2228313f3abe0ad6c8f28ef0cd9b9d8167c01330,
+Smileyface 1.1.5,pbarilla,GPL-3.0-only,pbarilla/smileyface,https://github.com/pbarilla/smileyface/tree/2b698855864c9313f216a44543d753f4e7713e1d,
+Speak37 1.0,genkigenki,GPL-3.0-only,genkigenki/Speak37,https://github.com/genkigenki/Speak37/tree/a617d60fca316bd8c72ac9041579367f6633c0ab,
+Stallion 1.1,Eberon Limited (John Gorman),GPL-3.0-only,EberonLtd/stallion-fm1,https://github.com/EberonLtd/stallion-fm1/tree/20292d1e17546636cc0ccab847361cac5a2cbef9,
+SY1 0.4.0,fenderberg,MIT,fenderberg/fm1-sy1,https://github.com/fenderberg/fm1-sy1/tree/430a473f93f851bfbb6d06f1c2d8454dc40ac590,
+Tekstuur 2.0,BARNIR,MPL-2.0,barnierg76/tekstuur-fm1,https://github.com/barnierg76/tekstuur-fm1/tree/a9fa86ca1c331554b6869393b0baf1550b470d12,
+TRAPSTATION OS 1.1.0.2,"Schlensog Audio Lab, Blair (blairysbeatlab), Leo Kuroshita (Hügelton Instruments)",GPL-3.0-only,sog-maker/trapstation-os,https://github.com/sog-maker/trapstation-os/tree/52353fafc0994301e77ed2aeff9c665249c7b920,
+FM1-TRAX 0.9.5,jartificer,GPL-3.0-only,jartificer/fm1-trax,https://github.com/jartificer/fm1-trax/tree/bb26ad00ccc45f82d62a567aba2b97f8b74e5545,
+VESPER 2.0.2,Fat Cat Studios,GPL-3.0-only,fatcatstudios-hub/vesper-fm1,https://github.com/fatcatstudios-hub/vesper-fm1/tree/faf036f78a84bdf2822c50893f9d0bce3048dd33,oui
+Viscera 2.6.0,De-Pattern,GPL-3.0-only,De-Pattern/viscera,https://github.com/De-Pattern/viscera/tree/bb13e0c3f7c1e3db1d39a5ee165f5125b0afbeea,
+Yehnah 0.1.0,"Mello-D, juanjiant-bit (JIANT), Leo Kuroshita (Hügelton Instruments) (Felucca)",GPL-3.0-only,Mello-D/yehnah,https://github.com/Mello-D/yehnah/tree/e8b59f68bba36660c85e0cfc36df042664361ea3,oui

@@ -39,7 +39,7 @@
 </details>
 
 <details>
-<summary>Groovebox (45)</summary>
+<summary>Groovebox (46)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -79,6 +79,7 @@
 | Ravel | De-Pattern | GPL-3.0 | [1ee0b2a](https://github.com/De-Pattern/Ravel_FM1/tree/1ee0b2ab2535d539e120219e27ecda6cd74887e5) | vérifié, natif |
 | Skiff | illuminus5 | GPL-3.0 | [0ea3682](https://github.com/illuminus5/skiff/tree/0ea36820a548dadcb67d9ed29e03e80b32cf6034) | fonctionne, natif |
 | SLOOP | isod89 | GPL-3.0 | [bac9c05](https://github.com/isod89/sloop-fm1/tree/bac9c05ea7627449405aa10e48da21d75b6c8c56) | vérifié |
+| SLOOP 3 | isod89 | GPL-3.0 | [2228313](https://github.com/isod89/sloop3-fm1/tree/2228313f3abe0ad6c8f28ef0cd9b9d8167c01330) | non évalué, natif |
 | SLOOP DX7 Banks | majnikool | GPL-3.0 | [c741193](https://github.com/majnikool/sloop-fm1/tree/c741193ba46b20994d70526f92cf160006be513b) | fonctionne, bêta |
 | sloopDX | zvenson | GPL-3.0 | [9870b84](https://github.com/zvenson/dxsloop/tree/9870b846e77a123aafc84786b4bedfd1d53ac0f7) | fonctionne |
 | SPAMPY | Spampy-Droid | GPL-3.0 | [2890828](https://github.com/Spampy-Droid/SPAMPY-0.0-r949/tree/2890828d80fea234b28244ef482b9532f77ef8c7) | vérifié, bêta |
