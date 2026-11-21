@@ -1,6 +1,5 @@
 {
  "exact": {
-  "Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.": "Power on, on the FM-1, starts the sound and the chosen firmware; the switch under the FM-1 does too. Powering off with the switch resets the active firmware to factory settings (its presets, patterns and settings are erased), then reloads the page.",
   "Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.": "The Firmware button opens the list: first the optimised ones (FM-1+VA and the firmwares compiled for the browser), then the emulated ones, which run the original package on an emulated chip and ask more of the device. Search reads the name, the author and the description. Opening a .fwsc loads a package of your own, which then stays in the list, under My firmwares (in this browser; the cross removes it). A firmware that stops is restarted with Restart.",
   "Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.": "Some firmwares add a button under the FM-1: Import a DX7 sound with FM-1+VA, Samples with Pigeon and zp12, MIDI file with SLOOP: a .mid file into one of its tracks, like its editor's Import MIDI, after a preview of what changes on the way. Their functions panel explains it.",
   "Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.": "The six FM-1 colourways, as swatches under the FM-1. With FM-1+VA, the screen takes the matching theme.",
@@ -52,6 +51,8 @@
   "Marche / arrêt. Éteindre efface les réglages du firmware actif.": "Power. Turning off erases the settings of the active firmware.",
   "Mode d'emploi": "How to use",
   "Manuel d'utilisation": "User manual",
+  "Copies": "Copies",
+  "Le bouton Copies garde sous un nom la mémoire du firmware en cours (presets, patterns, projets), pour y revenir ou la passer dans un fichier. Charger une copie redémarre le firmware dessus. Disponible pour les firmwares natifs et émulés ; FM-1+VA a ses propres presets. La sauvegarde complète ci-dessous ne reprend pas les copies : exportez-les une à une.": "The Copies button keeps the memory of the current firmware (presets, patterns, projects) under a name, to come back to it or to move it into a file. Loading a copy restarts the firmware on it. Available for native and emulated firmwares; FM-1+VA has its own presets. The full backup below does not include copies: export them one by one.",
   "Boutons propres à un firmware": "Firmware-specific buttons",
   "Ce que le navigateur garde": "What the browser keeps",
   "Crédits et licences": "Credits and licences",
@@ -251,7 +252,23 @@
   "SLOOP : pas de réponse.": "SLOOP: no answer.",
   "SLOOP : il ne s'est pas présenté sur l'USB.": "SLOOP: it did not show up on USB.",
   "SLOOP : DIV ou LEN introuvables.": "SLOOP: DIV or LEN not found.",
-  "SLOOP : le cœur d'émulation de cette page n'a pas l'USB.": "SLOOP: this page's emulation core has no USB."
+  "SLOOP : le cœur d'émulation de cette page n'a pas l'USB.": "SLOOP: this page's emulation core has no USB.",
+  "Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Choisir un firmware dans la liste, FM-1 éteint, l'allume tout seul et le lance. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.": "Power on, on the FM-1, starts the sound and the chosen firmware; the switch under the FM-1 does too. Choosing a firmware in the list while the FM-1 is off turns it on by itself and starts it. Powering off with the switch resets the active firmware to factory settings (its presets, patterns and settings are erased), then reloads the page.",
+  "Nom": "Name",
+  "Enregistrer": "Save",
+  "Charger": "Load",
+  "Supprimer": "Delete",
+  "Exporter…": "Export…",
+  "Ma copie": "My copy",
+  "Choisir une copie": "Choose a copy",
+  "Aucune copie": "No copy",
+  "Des copies nommées de la mémoire de ce firmware": "Named copies of this firmware's memory",
+  "Copies du firmware": "Firmware copies",
+  "Une copie garde la mémoire de ce firmware ; la charger le redémarre dessus.": "A copy keeps this firmware's memory; loading it restarts the firmware on it.",
+  "Donnez un nom à la copie.": "Give the copy a name.",
+  "Fichier de copie illisible.": "Unreadable copy file.",
+  "Copies indisponibles dans ce navigateur.": "Copies unavailable in this browser.",
+  "Chargement…": "Loading…"
  },
  "patterns": [
   [

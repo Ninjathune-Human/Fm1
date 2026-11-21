@@ -436,7 +436,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
       <summary>Manuel d'utilisation</summary>
       <div class="note">
         <dl>
-          <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
+          <dt>Allumer</dt><dd>Allumer, sur le FM-1, lance le son et le firmware choisi ; l'interrupteur sous le FM-1 aussi. Choisir un firmware dans la liste, FM-1 éteint, l'allume tout seul et le lance. Éteindre par l'interrupteur remet le firmware actif en réglages d'usine (ses presets, patterns et réglages sont effacés), puis recharge la page.</dd>
           <dt>Firmwares</dt><dd>Le bouton Firmware ouvre la liste : d'abord les optimisés (FM-1+VA et les firmwares compilés pour le navigateur), puis les émulés, qui font tourner le paquet d'origine sur une puce émulée et demandent plus à l'appareil. La recherche lit le nom, l'auteur et la description. Ouvrir un .fwsc charge un paquet à soi, qui reste ensuite dans la liste, sous Mes firmwares (dans ce navigateur ; la croix l'en retire). Un firmware qui s'arrête se relance par Redémarrer.</dd>
           <dt>Copies</dt><dd>Le bouton Copies garde sous un nom la mémoire du firmware en cours (presets, patterns, projets), pour y revenir ou la passer dans un fichier. Charger une copie redémarre le firmware dessus. Disponible pour les firmwares natifs et émulés ; FM-1+VA a ses propres presets. La sauvegarde complète ci-dessous ne reprend pas les copies : exportez-les une à une.</dd>
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
@@ -6882,6 +6882,8 @@ function buildPanel(fw) {
     if (!ac) {
       active = { id: e.id, nom: e.nom }; nameEl.textContent = e.nom; showFiche();
       if (e.id !== "local") try { localStorage.setItem(SKEY(LAST), JSON.stringify(active)); } catch { /* cette session */ }
+      // choisir un firmware allume le FM-1 : le geste suffit au son ; sans geste (rien d'actif), il attend le bouton
+      if (navigator.userActivation?.isActive !== false && !$("start").hidden && !$("go").disabled) { switchOn(); return; }
       status.textContent = `Allumez le FM-1 pour démarrer ${e.nom}.`;
       return;
     }

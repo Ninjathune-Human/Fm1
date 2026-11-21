@@ -16,7 +16,7 @@ def test_titres(page):
 def test_manuel_rubriques(page):
     page.goto(page.base + "index.html")
     assert page.eval_on_selector_all("#aide-manuel dt", "d => d.map(x => x.textContent)") == [
-        "Allumer", "Firmwares", "Boutons propres à un firmware", "Coloris", "Solo et Duo", "MIDI", "Plein écran",
+        "Allumer", "Firmwares", "Copies", "Boutons propres à un firmware", "Coloris", "Solo et Duo", "MIDI", "Plein écran",
         "Ce que le navigateur garde", "Crédits et licences"]
 
 
