@@ -3374,6 +3374,30 @@
    "natif_seulement": true,
    "horloge_midi": false,
    "tempo_lie": false
+  },
+  {
+   "id": "speak37",
+   "nom": "Speak37",
+   "version": "1.0",
+   "auteur": "genkigenki",
+   "categories": [
+    "Autre"
+   ],
+   "licence": "GPL-3.0-only",
+   "beta": false,
+   "fichier": null,
+   "sha256": "3ed8f87e60b2b1b00bd5a0efc4dedccf8eee58dfd545f2fbcbeb34c0ff6a11b7",
+   "taille": 813851,
+   "depot": "https://github.com/genkigenki/Speak37",
+   "commit_source": "a617d60fca316bd8c72ac9041579367f6633c0ab",
+   "source_c": null,
+   "description": "The talking synth, its FM-1 build: every key speaks the next word of a sentence at its pitch and chords speak in harmony.",
+   "emulateur_fm1emu": "pas encore évalué",
+   "paquet_en_ligne": null,
+   "provenance_paquet": "natif seulement ; module .rfm1 (WebAssembly, ABI 6) publié par RemoteFM1FW, sha256 vérifié à la construction",
+   "natif_seulement": true,
+   "horloge_midi": false,
+   "tempo_lie": false
   }
  ]
 }

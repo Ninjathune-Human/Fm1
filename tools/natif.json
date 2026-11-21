@@ -802,6 +802,16 @@
    "wasm": "build/natif/evilgenius.wasm",
    "worklet": "tools/worklets/rfm1.js",
    "dialecte": "choralroot"
+  },
+  {
+   "id": "speak37",
+   "depot": "genkigenki/Speak37",
+   "commit": "a617d60fca316bd8c72ac9041579367f6633c0ab",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/speak37.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/speak37-1.0.rfm1 && echo '3ed8f87e60b2b1b00bd5a0efc4dedccf8eee58dfd545f2fbcbeb34c0ff6a11b7  build/natif/speak37.wasm' | sha256sum -c -",
+   "wasm": "build/natif/speak37.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
   }
  ]
 }

@@ -204,7 +204,7 @@
 </details>
 
 <details>
-<summary>Autre (16)</summary>
+<summary>Autre (17)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -223,6 +223,7 @@
 | No Man Sky FM | Hericdk | GPL-3.0 | [32e7f4c](https://github.com/hericdk/nomanskyFM/tree/32e7f4c14a5e9f468d7fde69c91d78b3e0424f61) | fonctionne, bêta |
 | PurpleMonkey | Quixotic7 | GPL-3.0 | [8c9bba1](https://github.com/Quixotic7/PurpleMonkeyFM1/tree/8c9bba141fea1a12ab1b65d429a0d226b7e0b451) | fonctionne, bêta, natif |
 | Rainbow Mode | joshbartlettband-web | GPL-3.0 | [0baf362](https://github.com/joshbartlettband-web/felucca-rainbow/tree/0baf362731c65398ad963229a3fe5500c75c6e3e) | fonctionne, natif |
+| Speak37 | genkigenki | GPL-3.0-only | [a617d60](https://github.com/genkigenki/Speak37/tree/a617d60fca316bd8c72ac9041579367f6633c0ab) | non évalué, natif |
 | Tuna | delirioux | GPL-3.0 | [6f9a6dd](https://github.com/delirioux/tuna/tree/6f9a6dd0d1fa43a8eb457dfca0eb50cf6ec22662) | fonctionne, natif |
 
 </details>
