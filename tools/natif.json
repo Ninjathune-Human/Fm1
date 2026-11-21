@@ -782,6 +782,26 @@
    "wasm": "build/natif/smileyface.wasm",
    "worklet": "tools/worklets/rfm1.js",
    "dialecte": "choralroot"
+  },
+  {
+   "id": "ruido",
+   "depot": "miguelhd/ruido",
+   "commit": "963e91203f4dece98e9a6944c52dac5ed92bb417",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/ruido.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/ruido-0.7.1.rfm1 && echo 'bdb6ea7efbd8f1e35a3db0c65d24c313a1d1c76be9001dfb5ec3e1877a1e6d1b  build/natif/ruido.wasm' | sha256sum -c -",
+   "wasm": "build/natif/ruido.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
+  },
+  {
+   "id": "evilgenius",
+   "depot": "Quixotic7/evilgenius",
+   "commit": "4441c86417db88ae6eb3d601fe149457157b0d6f",
+   "script": "README.md",
+   "construction": "mkdir -p build/natif && curl -fsSL -o build/natif/evilgenius.wasm https://github.com/Quixotic7/RemoteFM1FW/releases/download/current/evilgenius-0.1.3.rfm1 && echo '632c5a7d7742ea4c630da498efc36ec4ea108dc521fa8a1ff5bc38100c615a68  build/natif/evilgenius.wasm' | sha256sum -c -",
+   "wasm": "build/natif/evilgenius.wasm",
+   "worklet": "tools/worklets/rfm1.js",
+   "dialecte": "choralroot"
   }
  ]
 }

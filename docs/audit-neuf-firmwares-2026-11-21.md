@@ -11,8 +11,8 @@ Essai en banc (Node) : démarrage, écran dessiné, son par MIDI et par les touc
 | Golf (BARNIR) | 1.0 | MPL-2.0 | tables d'ondes dont des tables Surge XT (GPL-3.0), Mutable Instruments (MIT), TABELLEN.md | ajouté, natif ; le tout se redistribue sous GPL-3.0 |
 | PATCHWERK (Matt Kuebrich) | 1.0.3 | GPL-3.0-only | ymfm (BSD-3), MAME uPD933 (BSD-3), codec SEA (MIT) | ajouté, natif |
 | Smileyface (pbarilla) | 1.1.5 | GPL-3.0-only | police Terminus (OFL-1.1) | ajouté, natif |
-| Ruido (M. Hernández Domenech) | 0.7.1 | GPL-3.0-only | tables de police de l'affichage tirées de Helvetica Neue, non licenciée (†) | **retenu en attente d'accord** |
-| EVILGENIUS (Quixotic7) | 0.1.3 | MPL-2.0 | voix SAM (Software Automatic Mouth), sans licence (†) | **retenu en attente d'accord** |
+| Ruido (M. Hernández Domenech) | 0.7.1 | GPL-3.0-only | tables de police de l'affichage tirées de Helvetica Neue, non licenciée (†) | ajouté, natif, sur accord de l'utilisateur (21 novembre) ; contenu non licencié à retirer si l'auteur le demande |
+| EVILGENIUS (Quixotic7) | 0.1.3 | MPL-2.0 | voix SAM (Software Automatic Mouth), sans licence (†) | ajouté, natif, sur accord de l'utilisateur (21 novembre) ; contenu non licencié à retirer si l'auteur le demande |
 | LOAF BREAKER (FLEXOR) | 0.9.69 | MPL-2.0 | sons sous droits : boucles Cyberworm (libres de redevance), extraits de disques dont les droits restent à leurs ayants droit ; 83 Mo de breaks ; pas de `.rfm1` publié | **non ajouté** |
 
 Chaque `.rfm1` embarque aussi le code de liaison de FM1VST (GPL-3.0) et le runtime Emscripten (MIT, musl), jusqu'aux

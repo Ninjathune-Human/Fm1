@@ -39,7 +39,7 @@
 </details>
 
 <details>
-<summary>Groovebox (47)</summary>
+<summary>Groovebox (48)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -50,6 +50,7 @@
 | DUB-1 | sbegueria | GPL-3.0 | [e89138a](https://github.com/sbegueria/fm1-dub/tree/e89138a3de7d11f97c941ef467d166eb0763d160) | fonctionne, natif |
 | Dungeon Tracker | BourbonWX | GPL-3.0-only | [4e43c2f](https://github.com/BourbonWX/Dungeon-Tracker/tree/4e43c2f34899237f685a10999b00213644aef394) | non évalué, natif |
 | ESTAMPIE | Drew Robinson | GPL-3.0 | [57ea691](https://github.com/ocean/estampie/tree/57ea691aae13122cfb59b1f5a6518179ff029cd2) | vérifié, bêta, natif |
+| EVILGENIUS | Michael P Jones (Quixotic7) | MPL-2.0 | [4441c86](https://github.com/Quixotic7/evilgenius/tree/4441c86417db88ae6eb3d601fe149457157b0d6f) | non évalué, natif |
 | Felucca | Leo Kuroshita (Hügelton Instruments) | GPL-3.0 | [d7b1b7c](https://github.com/hugelton/Felucca/tree/d7b1b7c4099bba28854869ddb256b3d9f634cee8) | fonctionne, natif |
 | Felucca [Salt] | Chance Roth (ChanceTheMaker) | GPL-3.0 | [9490527](https://github.com/ChanceTheMaker/Felucca/tree/949052728758229ab5ab1816ccf9fa61fafc5803) | fonctionne, bêta |
 | FIZZ | Quixotic7 | MPL-2.0 | [01b5a98](https://github.com/Quixotic7/FIZZ/tree/01b5a98414d87ffce45d62997b4cd9d6bdd7364d) | vérifié, bêta |
@@ -94,7 +95,7 @@
 </details>
 
 <details>
-<summary>Synthé (55)</summary>
+<summary>Synthé (56)</summary>
 
 | Firmware | Auteur | Licence | Source | État |
 |---|---|---|---|---|
@@ -142,6 +143,7 @@
 | OPN-1 | putchdev | GPL-3.0 | [960c103](https://github.com/putchdev/opn-1/tree/960c1038cb660788026c8136467e99597019a333) | fonctionne |
 | PATCHWERK | Matt Kuebrich | GPL-3.0-only | [6f91629](https://github.com/MattKuebrich/patchwerk/tree/6f91629dfae5cf40675f7355cfe46b0d42b8b224) | non évalué, natif |
 | Penumbra | Lunar Eclipse Forge | GPL-3.0 | [dcc00e1](https://github.com/MadMooneyham/Penumbra/tree/dcc00e18016dd352a4373fc7a3c69ce4f72a1dbf) | vérifié |
+| Ruido | Miguel Hernández Domenech | GPL-3.0-only | [963e912](https://github.com/miguelhd/ruido/tree/963e91203f4dece98e9a6944c52dac5ed92bb417) | non évalué, natif |
 | S1Vave | Andrew GG | GPL-3.0 | [e837018](https://github.com/AndrewGG88/S1Vave/tree/e8370184f85b05f7c50f7e9f65cb3f6b69642d30) | non évalué, natif |
 | Scintilla | Joakim Eriksson | GPL-3.0 | [c9465b4](https://github.com/joakimeriksson/scintilla-fm1/tree/c9465b4fa67d65d6d099ae679d6e8430058bd841) | vérifié, bêta |
 | Shine On | zvenson | GPL-3.0 | [91979ae](https://github.com/zvenson/shineon/tree/91979ae74af5e8a90ade4ddcb1d6ef331e6b91a8) | fonctionne, natif |
