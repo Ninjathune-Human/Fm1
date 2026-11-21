@@ -6520,7 +6520,7 @@ function buildPanel(fw) {
     return false;
   }
   // ---- le sélecteur
-  const VA_ENTRY = { id: "fm1va", nom: "FM-1+VA", auteur: "Réimplémentation d'après Baud Girl", categories: ["FM-1+VA"],
+  const VA_ENTRY = { id: "fm1va", nom: "FM-1+VA", vignette: "firmwares/vignettes/fm1va.png", auteur: "Réimplémentation d'après Baud Girl", categories: ["FM-1+VA"],
     description: "Le firmware de Baud Girl réécrit d'après son manuel : FM six opérateurs, Virtual Analog et 8-Bit.", beta: false, fichier: null };
   const entries = () => [VA_ENTRY, ...catalogue];
   const box = $("fw-box"), picker = $("fw-picker"), sheet = $("fw-sheet"), scrim = $("fw-scrim"), search = $("fw-search"), clear = $("fw-clear");
@@ -6591,12 +6591,17 @@ function buildPanel(fw) {
   const initials = (nom) => { const w = String(nom).replace(/[^\p{L}\p{N} ]/gu, "").trim().split(/\s+/); return ((w[0] || "?")[0] + (w.length > 1 ? w[1][0] : (w[0] || "")[1] || "")).toUpperCase(); };
   function paintThumb(thumb) {
     const rel = thumbMap && thumbMap[thumb.dataset.id];
-    if (!rel || thumb.querySelector("img")) return;
-    const img = new Image();
-    img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
-    img.addEventListener("error", () => img.remove());
-    img.src = FWIMG + rel;
-    thumb.append(img);
+    const want = rel ? FWIMG + rel : thumb.dataset.v || "";      // la capture de l'auteur, sinon l'écran d'accueil pris ici (firmwares/vignettes)
+    if (!want) return;
+    let img = thumb.querySelector("img");
+    if (img && img.dataset.src === want) return;
+    if (!img) {
+      img = new Image();
+      img.alt = ""; img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.addEventListener("error", () => { if (img.dataset.src !== thumb.dataset.v && thumb.dataset.v) { img.dataset.src = thumb.dataset.v; img.src = thumb.dataset.v; } else img.remove(); });
+      thumb.append(img);
+    }
+    img.dataset.src = want; img.src = want;
   }
   async function loadThumbs() {
     try { const c = JSON.parse(localStorage.getItem(FWIMG_KEY) || "null"); if (c && Date.now() - c.t < FWIMG_TTL && c.map) thumbMap = c.map; } catch { /* rien de gardé */ }
@@ -6622,7 +6627,7 @@ function buildPanel(fw) {
     const tags = span("fw-tags", "");
     for (const t of tagsOf(e)) tags.append(span(t === "tempo lié" ? "fw-tag fw-lie" : "fw-tag", t));
     const thumb = span("fw-thumb", initials(e.nom));
-    thumb.dataset.id = e.id; thumb.setAttribute("aria-hidden", "true");
+    thumb.dataset.id = e.id; thumb.dataset.v = e.vignette || ""; thumb.setAttribute("aria-hidden", "true");
     thumb.style.background = standIn(e.id);
     b.title = e.description || e.nom;
     b.append(thumb, span("fw-n", e.nom), span("fw-a", e.auteur || ""), span("fw-d", e.description || ""), tags);
