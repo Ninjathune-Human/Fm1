@@ -797,7 +797,7 @@ for (const [name, c] of Object.entries(panel.caps)) bindPress(c.g, "cap", name);
 for (const p of panel.pads) bindPress(p.g, "pad", p.i);
 function bindPress(g, kind, id) {
   const downs = new Set();
-  g.addEventListener("pointerdown", (e) => { e.preventDefault(); g.setPointerCapture(e.pointerId); if (!downs.size) press(g, kind, id, true); downs.add(e.pointerId); });
+  g.addEventListener("pointerdown", (e) => { e.preventDefault(); try { g.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ } if (!downs.size) press(g, kind, id, true); downs.add(e.pointerId); });
   const up = (e) => { if (!downs.delete(e.pointerId)) return; if (!downs.size) press(g, kind, id, false); };
   g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up);
   g.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && !e.repeat) { e.preventDefault(); press(g, kind, id, true); } });
@@ -813,7 +813,7 @@ function turn(k, n, v) {
 }
 for (const k of Object.values(panel.knobs)) {
   let drag = null, wheel = 0;
-  k.g.addEventListener("pointerdown", (e) => { e.preventDefault(); k.g.setPointerCapture(e.pointerId); drag = { y: e.clientY, x: e.clientX, pitch: PITCH[e.pointerType] || 8 }; k.enc.reset(); });
+  k.g.addEventListener("pointerdown", (e) => { e.preventDefault(); try { k.g.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ } drag = { y: e.clientY, x: e.clientX, pitch: PITCH[e.pointerType] || 8 }; k.enc.reset(); });
   k.g.addEventListener("pointermove", (e) => {
     if (!drag) return;
     const px = (drag.y - e.clientY) + (e.clientX - drag.x) * 0.6;
@@ -867,7 +867,11 @@ class SampleEngine {
     this.node = new AudioWorkletNode(this.ac, "sample", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
     this.an = this.ac.createAnalyser(); this.an.fftSize = 2048;
     this.node.connect(this.an); this.an.connect(this.ac.destination);
-    this.node.port.onmessage = ({ data: m }) => { if (m.t === "pos") this.pos = m; };
+    this.node.port.onmessage = ({ data: m }) => {
+      if (m.t !== "pos") return;
+      this.pos = m; this.posAt = performance.now();
+      if (m.playing) this.greenAt = performance.timeOrigin + performance.now();   // (le Duo : qui joue)
+    };
     await this.ac.resume().catch(() => {});
     this.on = true;
     this.send({ t: "master", v: this.master });
@@ -900,6 +904,44 @@ S.hooks.knob.push((name, n) => {
   return eng.setMaster(was + n / 64) !== was;
 });
 panel.knobs.MASTER.angle = -135 + 270 * eng.master; panel.knobs.MASTER.draw();
+
+// ---------------------------------------------------------------- le tempo : l'horloge du Duo quand il est lié, le sien sinon
+// Le Duo lit ce module comme un moteur de firmware : on, name, entry, midiIn, playLight, greenAt.
+eng.entry = { id: "sample", nom: t("name"), natif_horloge: true, demarre: true };
+eng.greenAt = 0; eng.posAt = performance.now();
+S.clock = makeClock();
+const duoLinked = () => { try { return !!(FM1_ID && parent.__duo && parent.__duo.linked); } catch { return false; } };
+let ownBpm = Math.max(40, Math.min(240, Number(keep("bpm")) || 120));
+Object.defineProperty(S, "bpm", {
+  get: () => ownBpm,
+  set: (v) => { ownBpm = Math.max(40, Math.min(240, Math.round(v))); keep("bpm", String(ownBpm)); if (!duoLinked()) eng.send({ t: "bpm", bpm: ownBpm }); },
+});
+eng.midiIn = (bytes) => {
+  for (const b of bytes) {
+    if (b !== 0xfa && b !== 0xf8 && b !== 0xfc) continue;
+    const now = performance.now();
+    S.clock.feed(b, now);
+    if (b === 0xfa) { eng.playing = true; eng.send({ t: "play", on: true, from: 0 }); }
+    else if (b === 0xfc) eng.play(false);
+    else if (S.clock.running && S.clock.bpm) eng.send({ t: "sync", beats: S.clock.beats(now), bpm: S.clock.bpm });
+  }
+  if (S.onMidi) S.onMidi(bytes);
+};
+eng.playLight = () => (eng.playing ? "green" : "off");
+// la boucle, en temps : la longueur, et la position extrapolée depuis le dernier message du worklet
+S.loopLength = () => { const s = eng.sample; return !s ? 4 : s.bars ? s.bars * 4 : ((s.ch[0].length / s.rate) * eng.pos.bpm) / 60; };
+S.loopBeats = () => {
+  const L = S.loopLength(), p = eng.pos.loop + (eng.playing ? ((performance.now() - eng.posAt) * eng.pos.bpm) / 60000 : 0);
+  return ((p % L) + L) % L;
+};
+// PLAY : lié, il lance et arrête les deux par la page du Duo ; seul, il joue à son tempo
+S.hooks.cap.push((name, down) => {
+  if (name !== "PLAY" || !down || !eng.on) return;
+  if (duoLinked()) { try { parent.__duoPlay(); } catch { /* hors du Duo */ } return; }
+  if (eng.playing) eng.play(false);
+  else { eng.send({ t: "bpm", bpm: ownBpm }); eng.play(true); }
+});
+S.hooks.power.push((on) => { if (on) eng.send({ t: "bpm", bpm: ownBpm }); });
 </script>
 </body>
 </html>

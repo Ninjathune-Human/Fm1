@@ -171,3 +171,69 @@ def test_allow_micro(page):
     for k in ("a", "b"):
         assert "microphone" in page.get_attribute(f"iframe[name={k}]", "allow")
 
+
+
+# ---------------------------------------------------------------- l'horloge du tempo lié
+def duo_ready(page, bpm=None):
+    """Le Duo, FM1-A (FM-1+VA) et le module allumés, un sample dans le module ; le tempo lié si bpm."""
+    a, b = open_duo_with(page, "sample")
+    a.evaluate("document.getElementById('go').click()")
+    a.wait_for_function("window.__fw.on && !window.__fw.splash", timeout=20000)
+    b.evaluate("document.getElementById('go').click()")
+    b.wait_for_function("window.__sample.on")
+    load_tone(b)
+    if bpm:
+        page.click(".duo-link")
+        page.fill(".duo-bpm input", str(bpm))
+        page.dispatch_event(".duo-bpm input", "change")
+        page.wait_for_function("window.__duo.linked")
+    return a, b
+
+
+def tap(fr, sel):
+    fr.dispatch_event(sel, "pointerdown", {"pointerId": 7, "isPrimary": True})
+    fr.dispatch_event(sel, "pointerup", {"pointerId": 7, "isPrimary": True})
+
+
+def test_play_lance_les_deux(page):
+    a, b = duo_ready(page, 150)
+    tap(b, "[data-label='PLAY']")
+    page.wait_for_function("window.__duo.playing && window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+    assert b.evaluate("window.__engine().playLight()") == "green"
+    tap(b, "[data-label='PLAY']")
+    page.wait_for_function("!window.__duo.playing && !window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+
+
+def test_boucle_en_phase(page):
+    a, b = duo_ready(page, 240)
+    tap(b, "[data-label='PLAY']")
+    page.wait_for_function("window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+    page.wait_for_timeout(8 * 4 * 250)                                  # 8 mesures à 240
+    err = b.evaluate("""() => { const S = window.__sample, L = S.loopLength(), c = S.clock.beats(performance.now()) % L, l = S.loopBeats();
+      let d = Math.abs(c - l); return Math.min(d, L - d); }""")
+    assert err < 0.05, err
+
+
+def test_tempo_change_et_delie(page):
+    a, b = duo_ready(page, 120)
+    tap(b, "[data-label='PLAY']")
+    page.wait_for_function("window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+    page.fill(".duo-bpm input", "180")
+    page.dispatch_event(".duo-bpm input", "change")
+    page.wait_for_timeout(700)
+    assert abs(b.evaluate("window.__engine().pos.bpm") - 180) <= 2
+    page.click(".duo-link")                                             # délié : le Duo arrête les deux, comme pour deux FM-1
+    page.wait_for_function("!window.__duo.linked && !window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+    tap(b, "[data-label='PLAY']")                                       # puis le module joue seul, à son tempo
+    page.wait_for_timeout(500)
+    assert b.evaluate("window.__engine().playing") is True
+    assert abs(b.evaluate("window.__engine().pos.bpm") - b.evaluate("window.__sample.bpm")) < 0.5
+
+
+def test_seul_avec_son_tempo(page):
+    on_with(page)
+    page.evaluate("window.__sample.bpm = 96")
+    tap(page, "[data-label='PLAY']")
+    page.wait_for_timeout(400)
+    assert page.evaluate("window.__engine().playing") is True
+    assert abs(page.evaluate("window.__engine().pos.bpm") - 96) < 0.5
