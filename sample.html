@@ -828,7 +828,7 @@ async function switchOn() {
   $("go").disabled = true;
   try { for (const f of S.hooks.power) await f(true); }
   catch (err) { $("status").textContent = String(err && err.message || err); $("go").disabled = false; return; }
-  S.on = true; S.page = "edit";
+  S.on = true; S.page = "edit"; S.col = null;
   $("start").hidden = true; $("go").disabled = false;
   $("power").setAttribute("aria-checked", "true");
   drawScreen();
@@ -1068,7 +1068,7 @@ async function addSample(s) {
   S.samples.push(s);
   await S.save(s);
   S.select(S.samples.length - 1);
-  S.page = "edit"; drawScreen();
+  S.page = "edit"; S.col = null; drawScreen();                // un sample neuf : retour hors menu
   return s;
 }
 
@@ -1148,7 +1148,7 @@ S.capture = async (source = S.capt.source, opts = {}) => {
       if (source === "mic") S.micError = err && err.name === "NotAllowedError" ? "Microphone refused" : "No microphone";
       setNote(source === "mic" ? S.micError : "No tab sound");
       cleanup.forEach((f) => f());
-      S.page = "capture"; drawScreen();                       // la page Capture reste : on peut choisir une autre source
+      S.page = "capture"; S.col = 0; drawScreen();            // la page Capture reste : on peut choisir une autre source
       throw err;
     }
     cleanup.push(() => stream.getTracks().forEach((tr) => tr.stop()));
@@ -1188,6 +1188,7 @@ S.capture = async (source = S.capt.source, opts = {}) => {
       if (pad != null && S.samples[S.cur]) {                   // REC avec un pad tenu : le son va sur ce pad seul
         const s = S.samples[S.cur];
         s.pads[pad] = { ch, rate, name };
+        S.page = "edit"; S.col = null;
         eng.send({ t: "padbuf", i: pad, ch, rate });
         S.save(s).then(() => resolve(s));
         return;
@@ -1202,7 +1203,7 @@ S.capture = async (source = S.capt.source, opts = {}) => {
     const abort = () => { if (done) return; done = true; clearInterval(watch); cleanup.forEach((f) => f()); S.recording = null; resolve(null); };
     S.recording = { source, pad, at, started: () => blocks.length > 0, stopping: false, abort,
       stop: () => { S.recording.stopping = true; try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
-    S.page = "capture"; drawScreen();
+    S.page = "capture"; S.col = 0; drawScreen();
     node.port.postMessage({ t: "arm", thresh, max, from });
     watch = setInterval(() => { if (!alive()) finish(); }, 100);  // la source partie (FM1-A éteint) : ce qui a été capté reste
   });
@@ -1297,7 +1298,23 @@ S.hooks.knob.push((name, n, v) => {
 });
 S.hooks.cap.push((name, down) => {
   if (!down || !S.on) return;
-  if (name === "EDIT") { S.page = "edit"; S.col = null; drawScreen(); }
+  // EDIT fait défiler les menus : Édition, Capture, puis hors menu (Envoi : retour hors menu)
+  if (name === "EDIT") {
+    if (S.page === "edit" && S.col == null) S.col = 0;
+    else if (S.page === "edit") { S.page = "capture"; S.col = 0; }
+    else { S.page = "edit"; S.col = null; }
+    drawScreen();
+  }
+});
+// MACRO : dans un menu, il choisit la colonne (le tempo en dernier sur Édition) ; hors menu, il règle sa cible
+const LAST_COL = { edit: 4, capture: 3, send: 1 };
+S.hooks.knob.push((name, n) => {
+  if (name !== "MACRO") return;
+  if (S.col == null) return S.macroTurn ? S.macroTurn(n) : false;
+  const was = S.col;
+  S.col = clamp(S.col + n, 0, LAST_COL[S.page]);
+  drawScreen();
+  return S.col !== was;
 });
 
 // ---------------------------------------------------------------- le dessin
@@ -1716,7 +1733,7 @@ S.send = async (target) => {
 };
 S.hooks.cap.push((name, down) => {
   if (name !== "SEND" || !down || !S.on) return;
-  if (S.page !== "send") { S.page = "send"; S.col = null; S.sendArmed = false; setNote(""); return; }
+  if (S.page !== "send") { S.page = "send"; S.col = 0; S.sendArmed = false; setNote(""); return; }
   const list = S.targets();
   if (!list.includes(S.target)) S.target = list[0];
   if ((S.target === "pigeon" || S.target === "erase") && !S.sendArmed) { S.sendArmed = true; drawScreen(); return; }

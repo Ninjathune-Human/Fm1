@@ -372,13 +372,39 @@ def with_sample(page, tmp_path, seconds=4):
 
 def test_pages(page, tmp_path):
     with_sample(page, tmp_path)
-    for cap, want in (("SEND", "send"), ("EDIT", "edit"), ("REC", "capture")):
-        tap(page, f"[data-label='{cap}']")
-        page.wait_for_function(f"window.__sample.page === '{want}'")
-        page.wait_for_timeout(100)
-        assert lcd_lit(page) > 300, want
-    tap(page, "[data-label='REC']")                                     # (l'arrêt de la capture armée)
+    st = lambda: page.evaluate("[window.__sample.page, window.__sample.col]")
+    assert st() == ["edit", None]
+    for want in (["edit", 0], ["capture", 0], ["edit", None]):
+        tap(page, "[data-label='EDIT']"); assert st() == want
+    tap(page, "[data-label='SEND']"); assert st() == ["send", 0]
+    tap(page, "[data-label='EDIT']"); assert st() == ["edit", None]
+    tap(page, "[data-label='REC']"); page.wait_for_function("window.__sample.page === 'capture'")
+    assert st() == ["capture", 0]
+    tap(page, "[data-label='REC']")
 
+
+def test_macro_choisit_la_colonne(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-label='EDIT']")
+    page.evaluate("window.__sample.turn('MACRO', 9, 0)")
+    assert page.evaluate("window.__sample.col") == 4                       # le tempo, en dernier
+    tap(page, "[data-label='SEND']"); page.evaluate("window.__sample.turn('MACRO', 9, 0)")
+    assert page.evaluate("window.__sample.col") == 1
+
+
+def test_select_regle_la_colonne(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-label='EDIT']")                                       # START
+    page.evaluate("window.__sample.turn('SELECT', 3, 0)")
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].start") == 3
+
+
+def test_cible_par_select(page, tmp_path):
+    with_sample(page, tmp_path)
+    send_key(page)
+    first = page.evaluate("window.__sample.target")
+    page.evaluate("window.__sample.turn('SELECT', 1, 0)")
+    assert page.evaluate("window.__sample.target") != first
 
 def test_select_sans_colonne(page, tmp_path):
     with_sample(page, tmp_path, 1)
