@@ -1312,6 +1312,56 @@ function editColumn(n) {                               // Capture et Envoi : la 
 S.marks = { sample: () => false, slice: () => false, sound: () => false };
 S.validate = { sample: () => {}, slice: () => {}, sound: () => {} };
 S.inMenu = () => S.page !== "edit";
+// TRANCHE et SON : on entend le réglage tout de suite ; SEL l'enregistre ; quitter la page, ou choisir une autre tranche
+// au pad, sans SEL le défait (la tranche revient comme avant, au moteur aussi)
+S.pending = null;
+S.holdSlice = () => { const s = curSample(); S.pending = s ? { k: S.slice, before: { ...s.cols[S.slice] } } : null; };
+S.revert = () => {
+  const p = S.pending, s = curSample();
+  S.pending = null;
+  if (!p || !s || !s.cols[p.k]) return;
+  s.cols[p.k] = { ...p.before };
+  eng.send({ t: "slice", i: p.k, ...s.cols[p.k] });
+};
+let page = S.page;                                     // chaque changement de page passe ici
+Object.defineProperty(S, "page", {
+  get: () => page,
+  set: (v) => {
+    if (v === page) return;
+    if (page === "slice" || page === "sound") S.revert();
+    page = v;
+    if (v === "slice" || v === "sound") S.holdSlice();
+  },
+});
+S.marks.slice = (which, n, v) => {                     // SELECT : le début (la fin ne bouge pas) ; MACRO : la fin
+  const s = curSample(), k = S.slice, c = s.cols[k], r = s.rate, x = s.ch[0], N = x.length;
+  const sl = s.slices[k], full = s.slices[k + 1] - sl, min = 0.01 * r, near = 0.005 * r, step = (stepOf(n, v) / 1000) * r;
+  let sa = sl + (c.start / 1000) * r, se = sa + (c.len / 1000) * r;
+  if (which === 0) {
+    const t = clamp(snapZero(x, sa + step, Math.sign(n), near), Math.max(0, sl - full), se - min);
+    if (t === sa) return false;
+    sa = t;
+  } else {
+    const t = clamp(snapZero(x, se + step, Math.sign(n), near), sa + min, Math.min(N, sl + 4 * full));
+    if (t === se) return false;
+    se = t;
+  }
+  c.start = ((sa - sl) * 1000) / r; c.len = ((se - sa) * 1000) / r;
+  eng.send({ t: "slice", i: k, ...c });
+  return true;
+};
+S.marks.sound = (which, n) => {                        // SELECT : la hauteur ; MACRO : le volume
+  const s = curSample(), c = s.cols[S.slice], key = which === 0 ? "pitch" : "gain", was = c[key];
+  c[key] = which === 0 ? clamp(c.pitch + n, -24, 24) : clamp(c.gain + n, 0, 100);
+  if (c[key] === was) return false;
+  eng.send({ t: "slice", i: S.slice, ...c });
+  return true;
+};
+S.validate.slice = S.validate.sound = () => {
+  const s = curSample();
+  S.save(s);
+  if (S.pending) S.pending.before = { ...s.cols[S.pending.k] };
+};
 const mark = (which, n, v) => { const r = curSample() ? S.marks[S.page](which, n, v) : false; drawScreen(); return r; };
 S.hooks.knob.push((name, n, v) => {
   if (name !== "SELECT") return;
@@ -1641,7 +1691,8 @@ S.hooks.pad.push((i, down) => {
   if (down) {
     if (S.recording && !S.recording.stopping && S.recording.pad === i) return;   // (REC + pad : ce pad attend son son)
     eng.send({ t: "pad", i, on: true });
-    S.slice = i;
+    if (S.pending && S.pending.k !== i) { S.revert(); S.slice = i; S.holdSlice(); }   // une autre tranche : l'édition non validée est défaite
+    else S.slice = i;
     rollAt.set(i, setTimeout(() => { if (S.recording && S.recording.pad === i) return; rollAt.set(i, -1); eng.send({ t: "roll", i, on: true }); }, 250));
   } else {
     const r = rollAt.get(i);

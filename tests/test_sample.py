@@ -965,3 +965,76 @@ def test_import_coupe_dans_les_creux(page, tmp_path):
     sl, rate = page.evaluate("[Array.from(window.__sample.samples[window.__sample.cur].slices), window.__sample.samples[window.__sample.cur].rate]")
     for i in range(1, 16):                                      # (en secondes : l'import peut rééchantillonner)
         assert 0.025 - 0.001 <= sl[i] / rate - i * 0.25 <= 0.05 + 0.001, i
+
+
+def to_menu(page, name):
+    order = ["sample", "slice", "sound", "capture"]
+    for _ in range(order.index(name) + 1): tap(page, "[data-label='EDIT']")
+
+
+COLS = "window.__sample.samples[window.__sample.cur].cols"
+
+
+def test_tranche_debut_garde_la_fin(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    c0 = page.evaluate(f"({{ ...{COLS}[4] }})")
+    page.evaluate("window.__sample.turn('SELECT', 20, 0)")
+    c1 = page.evaluate(f"({{ ...{COLS}[4] }})")
+    assert c1["start"] > c0["start"] and abs((c1["start"] + c1["len"]) - (c0["start"] + c0["len"])) < 1e-6
+
+
+def test_tranche_fin(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    c0 = page.evaluate(f"({{ ...{COLS}[4] }})")
+    page.evaluate("window.__sample.turn('MACRO', -20, 0)")
+    c1 = page.evaluate(f"({{ ...{COLS}[4] }})")
+    assert c1["start"] == c0["start"] and c1["len"] < c0["len"]
+
+
+def test_tranche_au_passage_a_zero(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    page.evaluate("window.__sample.turn('SELECT', 7, 0)")
+    assert page.evaluate("""(() => { const s = window.__sample.samples[window.__sample.cur], c = s.cols[4];
+      const j = Math.round(s.slices[4] + c.start * s.rate / 1000), x = s.ch[0]; return x[j - 1] * x[j] <= 0; })()""")
+
+
+def test_un_cran_bouge_toujours(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    starts = []
+    for _ in range(5):
+        page.evaluate("window.__sample.turn('SELECT', 1, 0)"); starts.append(page.evaluate(f"{COLS}[4].start"))
+    assert all(b > a for a, b in zip(starts, starts[1:]))
+
+
+def test_sel_valide_la_tranche(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    page.evaluate("window.__sample.turn('SELECT', 20, 0)"); tap(page, "[data-label='SEL']")
+    kept = page.evaluate(f"{COLS}[4].start")
+    page.wait_for_timeout(300)
+    page.reload(); page.wait_for_selector("#panel [data-label='REC']"); power_sample(page)
+    page.wait_for_function("window.__sample.samples.length > 0")
+    assert abs(page.evaluate(f"{COLS}[4].start") - kept) < 1e-6
+
+
+def test_sans_sel_la_tranche_revient(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    c0 = page.evaluate(f"({{ ...{COLS}[4] }})"); spy_sent(page)
+    page.evaluate("window.__sample.turn('SELECT', 20, 0)")
+    tap(page, "[data-label='EDIT']")                                       # vers SON, sans SEL
+    assert page.evaluate(f"({{ ...{COLS}[4] }})") == c0
+    assert page.evaluate("window.__sent.filter((m) => m.t === 'slice' && m.i === 4).pop().start") == c0["start"]
+
+
+def test_un_autre_pad_defait(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    c0 = page.evaluate(f"({{ ...{COLS}[4] }})")
+    page.evaluate("window.__sample.turn('MACRO', -20, 0)"); tap(page, "[data-pad='5']")
+    assert page.evaluate(f"({{ ...{COLS}[4] }})") == c0
+
+
+def test_son(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='2']"); to_menu(page, "sound")
+    page.evaluate("window.__sample.turn('SELECT', 3, 0); window.__sample.turn('MACRO', -10, 0)")
+    assert page.evaluate(f"[{COLS}[2].pitch, {COLS}[2].gain]") == [3, 90]
+    tap(page, "[data-label='SEL']"); tap(page, "[data-label='EDIT']")      # validé, puis Capture
+    assert page.evaluate(f"[{COLS}[2].pitch, {COLS}[2].gain]") == [3, 90]
