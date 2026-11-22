@@ -426,3 +426,147 @@ def test_puces(page, tmp_path):
         x = page.evaluate("window.__sample.chipX('FILE')")
         page.mouse.click(*lcd_point(page, x, 68))                       # (un vrai clic : le navigateur n'ouvre la fenêtre qu'à un geste)
     assert fc.value is not None
+
+
+# ---------------------------------------------------------------- platine, zone XY et pads
+import math
+
+PX, PY = 1336, 272                                       # le centre de la platine (unités du FM-1)
+XYR = (914, 572, 652, 341)                               # l'intérieur de la zone XY
+
+
+def dev_point(page, ux, uy):
+    r = page.evaluate("(() => { const b = document.getElementById('panel').getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; })()")
+    return r[0] + ux / 1640 * r[2], r[1] + uy / 990 * r[3]
+
+
+def ptr(page, sel, kind, ux, uy, pid=1, **extra):
+    cx, cy = dev_point(page, ux, uy)
+    page.dispatch_event(sel, kind, {"pointerId": pid, "clientX": cx, "clientY": cy, "isPrimary": pid == 1, "pointerType": extra.pop("pointerType", "touch"), **extra})
+
+
+def on_platter(deg, r=150):
+    a = math.radians(deg - 90)
+    return PX + r * math.cos(a), PY + r * math.sin(a)
+
+
+def xy_at(nx, ny):
+    """Un point de la zone XY : x depuis la gauche, y depuis le bas, de 0 à 1."""
+    return XYR[0] + nx * XYR[2], XYR[1] + (1 - ny) * XYR[3]
+
+
+def spy_sent(page):
+    page.evaluate("window.__sent = []; (() => { const e = window.__engine(), s = e.send.bind(e); e.send = (m, t) => { window.__sent.push(m); return s(m, t); }; })()")
+
+
+def playing_loop(page, tmp_path):
+    with_sample(page, tmp_path, 4)
+    page.evaluate("window.__engine().play(true)")
+    page.wait_for_timeout(300)
+
+
+def test_scratch(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#platter", "pointerdown", *on_platter(0))
+    p0 = page.evaluate("window.__sample.touch.pos")
+    for d in range(10, 91, 10):
+        ptr(page, "#platter", "pointermove", *on_platter(d)); page.wait_for_timeout(20)
+    p1 = page.evaluate("window.__sample.touch.pos")
+    ptr(page, "#platter", "pointerup", *on_platter(90))
+    assert abs((p1 - p0) - 0.45) < 0.05, (p0, p1)
+
+
+def test_main_posee(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#platter", "pointerdown", *on_platter(30))
+    page.wait_for_timeout(150)
+    a = page.evaluate("window.__engine().pos.beats")
+    page.wait_for_timeout(300)
+    b = page.evaluate("window.__engine().pos.beats")
+    ptr(page, "#platter", "pointerup", *on_platter(30))
+    assert abs(b - a) < 0.02, (a, b)
+
+
+def test_relache_en_phase(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#platter", "pointerdown", *on_platter(30))
+    page.wait_for_timeout(400)
+    ptr(page, "#platter", "pointerup", *on_platter(30))
+    page.wait_for_timeout(500)
+    beats, loop = page.evaluate("[window.__engine().pos.beats, window.__engine().pos.loop]")
+    assert abs(beats - loop) < 0.05, (beats, loop)
+
+
+def test_lancer_en_arriere(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#platter", "pointerdown", *on_platter(90))
+    for d in (70, 40, 10):
+        ptr(page, "#platter", "pointermove", *on_platter(d)); page.wait_for_timeout(15)
+    ptr(page, "#platter", "pointerup", *on_platter(10))
+    assert page.evaluate("window.__sample.touch.reverse") is True
+
+
+def test_cut_deuxieme_doigt(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#platter", "pointerdown", *on_platter(0), pid=1)
+    ptr(page, "#platter", "pointerdown", *on_platter(180), pid=2)
+    assert page.evaluate("window.__sample.touch.cut") is True
+    ptr(page, "#platter", "pointerup", *on_platter(180), pid=2)
+    assert page.evaluate("window.__sample.touch.cut") is False
+    assert page.evaluate("window.__sample.touch.platter") == 1
+    ptr(page, "#platter", "pointerup", *on_platter(0), pid=1)
+
+
+def test_xy_filtre_et_retour(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#xy", "pointerdown", *xy_at(0.1, 0.8))
+    f = page.evaluate("window.__sample.touch.filter")
+    assert abs(f["x"] - 0.1) < 0.02 and abs(f["y"] - 0.8) < 0.02, f
+    ptr(page, "#xy", "pointerup", *xy_at(0.1, 0.8))
+    page.wait_for_timeout(300)
+    assert abs(page.evaluate("window.__sample.touch.filter.x") - 0.5) < 0.01
+
+
+def test_xy_echo(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#xy", "pointerdown", *xy_at(0.25, 0.5), pid=1)
+    ptr(page, "#xy", "pointerdown", *xy_at(0.75, 0.5), pid=2)
+    assert abs(page.evaluate("window.__sample.touch.echo.amount") - 0.5) < 0.05
+    ptr(page, "#xy", "pointerup", *xy_at(0.75, 0.5), pid=2); ptr(page, "#xy", "pointerup", *xy_at(0.25, 0.5), pid=1)
+
+
+def test_stylet(page, tmp_path):
+    playing_loop(page, tmp_path)
+    ptr(page, "#xy", "pointerdown", *xy_at(0.1, 0.5), pointerType="pen", pressure=0.3)
+    assert abs(page.evaluate("window.__sample.touch.filter.x") - 0.38) < 0.02
+    ptr(page, "#xy", "pointermove", *xy_at(0.1, 0.5), pointerType="pen", pressure=0.9)
+    assert abs(page.evaluate("window.__sample.touch.filter.x") - 0.14) < 0.02
+    ptr(page, "#xy", "pointerup", *xy_at(0.1, 0.5), pointerType="pen", pressure=0)
+
+
+def test_pad_et_roll(page, tmp_path):
+    with_sample(page, tmp_path)
+    spy_sent(page)
+    tap(page, "[data-pad='4']")
+    sent = page.evaluate("window.__sent.filter((m) => m.t === 'pad')")
+    assert sent[0] == {"t": "pad", "i": 4, "on": True} and sent[-1] == {"t": "pad", "i": 4, "on": False}
+    page.dispatch_event("[data-pad='4']", "pointerdown", {"pointerId": 5, "isPrimary": True})
+    page.wait_for_timeout(400)
+    assert page.evaluate("window.__sent.some((m) => m.t === 'roll' && m.i === 4 && m.on)")
+    page.dispatch_event("[data-pad='4']", "pointerup", {"pointerId": 5, "isPrimary": True})
+    assert page.evaluate("window.__sent.filter((m) => m.t === 'roll').pop().on") is False
+
+
+def test_clavier_et_midi(page, tmp_path):
+    with_sample(page, tmp_path)
+    spy_sent(page)
+    page.keyboard.press("Space")
+    page.wait_for_timeout(100)
+    assert page.evaluate("window.__engine().playing") is True
+    page.evaluate("window.__sample.capt.thresh = null")
+    page.keyboard.press("KeyR")
+    page.wait_for_function("!!window.__sample.recording")
+    page.keyboard.press("KeyR")
+    page.evaluate("window.__engine().midiIn(Uint8Array.of(0x90, 36, 100)); window.__engine().midiIn(Uint8Array.of(0x80, 36, 0))")
+    pads = page.evaluate("window.__sent.filter((m) => m.t === 'pad' && m.i === 0).map((m) => m.on)")
+    assert pads == [True, False]

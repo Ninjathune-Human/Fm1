@@ -1166,7 +1166,7 @@ S.capture = async (source = S.capt.source, opts = {}) => {
       if (m.t === "data") { blocks.push(...m.blocks); return; }
       if (m.t === "done") finish();
     };
-    S.recording = { source, pad, started: () => blocks.length > 0, stop: () => { try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
+    S.recording = { source, pad, started: () => blocks.length > 0, stopping: false, stop: () => { S.recording.stopping = true; try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
     S.page = "capture"; drawScreen();
     node.port.postMessage({ t: "arm", thresh, max });
     watch = setInterval(() => { if (!alive()) finish(); }, 100);  // la source partie (FM1-A éteint) : ce qui a été capté reste
@@ -1447,6 +1447,159 @@ const lift = (e) => {
   if (!touches.size) S.pinch = null;
 };
 screen.addEventListener("pointerup", lift); screen.addEventListener("pointercancel", lift);
+</script>
+<script id="sample-gestures">
+// Module sample et scratch : les gestes de la platine, de la zone XY et des pads, le clavier et les notes MIDI.
+"use strict";
+S.touch = { platter: 0, xy: 0, cut: false, reverse: false, pos: 0, filter: { x: 0.5, y: 0 }, echo: { amount: 0, feedback: 0 }, points: [] };
+const devXY = (e) => { const r = panel.svg.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * VW, ((e.clientY - r.top) / r.height) * VH]; };
+const spb = () => { const s = eng.sample; return s ? s.ch[0].length / s.rate / S.loopLength() : 0; };   // secondes du sample par temps
+
+// ---------------------------------------------------------------- la platine : un doigt scratche, deux coupent
+const plat = new Map();                               // pointerId → { a (angle cumulé), last, hist }
+let scratchFrom = 0, revTimer = 0;
+const angleOf = (x, y) => Math.atan2(y - panel.center.platter[1], x - panel.center.platter[0]);
+function platterDown(e) {
+  if (!eng.on || !eng.sample) return;
+  e.preventDefault();
+  try { panel.platter.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ }
+  const [x, y] = devXY(e);
+  plat.set(e.pointerId, { last: angleOf(x, y), turned: 0, hist: [[e.timeStamp, 0]] });
+  S.touch.platter = plat.size;
+  if (plat.size === 1) {                               // la main sur le disque : il s'arrête sous elle
+    clearTimeout(revTimer);
+    if (S.touch.reverse) { S.touch.reverse = false; eng.send({ t: "reverse", on: false }); }
+    scratchFrom = eng.pos.beats * spb();
+    S.touch.pos = scratchFrom;
+    eng.send({ t: "scratch", pos: scratchFrom });
+  } else if (plat.size === 2) { S.touch.cut = true; eng.send({ t: "cut", on: true }); }
+}
+function platterMove(e) {
+  const p = plat.get(e.pointerId);
+  if (!p || [...plat.keys()][0] !== e.pointerId) return;   // seul le premier doigt scratche
+  const [x, y] = devXY(e), a = angleOf(x, y);
+  let d = a - p.last;
+  if (d > Math.PI) d -= 2 * Math.PI; else if (d < -Math.PI) d += 2 * Math.PI;
+  p.last = a; p.turned += d;
+  p.hist.push([e.timeStamp, p.turned]); if (p.hist.length > 8) p.hist.shift();
+  S.touch.pos = scratchFrom + (p.turned / (2 * Math.PI)) * TURN_SECONDS;
+  eng.send({ t: "scratch", pos: S.touch.pos });
+}
+function platterUp(e) {
+  const p = plat.get(e.pointerId);
+  if (!p) return;
+  const first = [...plat.keys()][0] === e.pointerId;
+  plat.delete(e.pointerId);
+  S.touch.platter = plat.size;
+  if (S.touch.cut && plat.size < 2) { S.touch.cut = false; eng.send({ t: "cut", on: false }); }
+  if (first && plat.size) {                            // le premier levé, l'autre reste : il prend le scratch
+    const [id, q] = [...plat.entries()][0];
+    plat.delete(id); plat.set(id, { ...q, turned: 0, hist: [[e.timeStamp, 0]] }); scratchFrom = S.touch.pos;
+    return;
+  }
+  if (plat.size) return;
+  // le dernier doigt levé : lancé en arrière, le disque tourne à l'envers un moment ; sinon le moteur le relance
+  const h = p.hist, [t0, a0] = h[0], [t1, a1] = h[h.length - 1], w = t1 > t0 ? ((a1 - a0) / (t1 - t0)) * 1000 : 0;
+  eng.send({ t: "scratch", pos: null });
+  if (w < -8) {
+    S.touch.reverse = true; eng.send({ t: "reverse", on: true });
+    revTimer = setTimeout(() => { S.touch.reverse = false; eng.send({ t: "reverse", on: false }); }, Math.min(2000, (-w / 12) * 1000));
+  }
+}
+panel.platter.addEventListener("pointerdown", platterDown);
+panel.platter.addEventListener("pointermove", platterMove);
+panel.platter.addEventListener("pointerup", platterUp);
+panel.platter.addEventListener("pointercancel", platterUp);
+
+// ---------------------------------------------------------------- la zone XY : un doigt filtre, deux font l'écho
+const xyp = new Map();                                // pointerId → { x, y, p }
+let xyRamp = 0;
+function xyNorm(e) {
+  const [x, y] = devXY(e), [rx, ry, rw, rh] = panel.center.xy;
+  return { x: clamp((x - rx) / rw, 0, 1), y: clamp(1 - (y - ry) / rh, 0, 1), p: e.pointerType === "pen" ? (e.pressure || 0) : 1 };
+}
+function xyApply() {
+  const pts = [...xyp.values()];
+  S.touch.xy = pts.length; S.touch.points = pts.map((q) => ({ x: q.x, y: q.y }));
+  if (pts.length === 1) {
+    const q = pts[0];
+    S.touch.filter = { x: 0.5 + (q.x - 0.5) * q.p, y: q.y * q.p };
+    eng.send({ t: "filter", ...S.touch.filter });
+  } else if (pts.length >= 2) {
+    const [a, b] = pts, k = Math.min(a.p, b.p);
+    S.touch.echo = { amount: clamp(Math.hypot(a.x - b.x, a.y - b.y) * k, 0, 1), feedback: clamp(((a.y + b.y) / 2) * 0.9 * k, 0, 0.9) };
+    eng.send({ t: "echo", ...S.touch.echo });
+  }
+}
+function xyRelease() {                                // doigts levés : retour à zéro en 250 ms
+  const f0 = { ...S.touch.filter }, e0 = { ...S.touch.echo }, t0 = performance.now();
+  cancelAnimationFrame(xyRamp);
+  const step = () => {
+    const u = Math.min(1, (performance.now() - t0) / 250), k = 1 - u;
+    S.touch.filter = { x: 0.5 + (f0.x - 0.5) * k, y: f0.y * k }; S.touch.echo = { amount: e0.amount * k, feedback: e0.feedback * k };
+    eng.send({ t: "filter", ...S.touch.filter }); eng.send({ t: "echo", ...S.touch.echo });
+    if (u < 1 && !xyp.size) xyRamp = requestAnimationFrame(step);
+  };
+  step();
+}
+panel.xy.addEventListener("pointerdown", (e) => {
+  if (!eng.on) return;
+  e.preventDefault();
+  try { panel.xy.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ }
+  cancelAnimationFrame(xyRamp);
+  xyp.set(e.pointerId, xyNorm(e)); xyApply();
+});
+panel.xy.addEventListener("pointermove", (e) => { if (xyp.has(e.pointerId)) { xyp.set(e.pointerId, xyNorm(e)); xyApply(); } });
+const xyUp = (e) => {
+  if (!xyp.delete(e.pointerId)) return;
+  if (xyp.size === 1) { S.touch.echo = { amount: 0, feedback: 0 }; eng.send({ t: "echo", amount: 0, feedback: 0 }); xyApply(); }
+  else if (!xyp.size) { S.touch.xy = 0; S.touch.points = []; xyRelease(); }
+};
+panel.xy.addEventListener("pointerup", xyUp); panel.xy.addEventListener("pointercancel", xyUp);
+
+// ---------------------------------------------------------------- les pads : taper joue la tranche, tenir la répète
+const rollAt = new Map();
+S.hooks.pad.push((i, down) => {
+  if (!eng.on) return;
+  if (down) {
+    if (S.recording && !S.recording.stopping && S.recording.pad === i) return;   // (REC + pad : ce pad attend son son)
+    eng.send({ t: "pad", i, on: true });
+    S.slice = i;
+    rollAt.set(i, setTimeout(() => { if (S.recording && S.recording.pad === i) return; rollAt.set(i, -1); eng.send({ t: "roll", i, on: true }); }, 250));
+  } else {
+    const r = rollAt.get(i);
+    rollAt.delete(i);
+    if (r === -1) eng.send({ t: "roll", i, on: false }); else clearTimeout(r);
+    eng.send({ t: "pad", i, on: false });
+  }
+});
+
+// ---------------------------------------------------------------- le clavier de l'ordinateur et les notes MIDI
+const PAD_KEYS = ["KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma"];
+const keyCap = { Space: "PLAY", KeyR: "REC", KeyE: "EDIT" };
+function pressKey(code, down) {
+  const pad = PAD_KEYS.indexOf(code);
+  if (pad >= 0) { panel.pads[pad].g.classList.toggle("held", down); fire("pad", pad, down); return true; }
+  const cap = keyCap[code];
+  if (cap) { panel.caps[cap].g.classList.toggle("held", down); fire("cap", cap, down); return true; }
+  return false;
+}
+addEventListener("keydown", (e) => {
+  if (e.repeat || e.altKey || e.metaKey || e.ctrlKey || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.target.closest && e.target.closest("[data-knob]")) return;
+  if (pressKey(e.code, true)) e.preventDefault();
+});
+addEventListener("keyup", (e) => { if (pressKey(e.code, false)) e.preventDefault(); });
+S.onMidi = (bytes) => {
+  for (let i = 0; i < bytes.length; i++) {
+    const st = bytes[i] & 0xf0, note = bytes[i + 1], vel = bytes[i + 2];
+    if ((st === 0x90 || st === 0x80) && i + 2 < bytes.length && note >= 36 && note <= 51) {
+      const down = st === 0x90 && vel > 0;
+      panel.pads[note - 36].g.classList.toggle("held", down); fire("pad", note - 36, down);
+      i += 2;
+    }
+  }
+};
 </script>
 </body>
 </html>
