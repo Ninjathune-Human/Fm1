@@ -10,7 +10,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const file = join(ROOT, "sample.html");
 const html = existsSync(file) ? readFileSync(file, "utf8") : "";
 const m = html.match(/<script id="sample-lib">([\s\S]*?)<\/script>/);
-const lib = m ? vm.runInNewContext(m[1] + "\n;({ TURN_SECONDS, MAX_SECONDS, BARS, fitBars, sliceBounds, encodeWav, makeClock, rollSeconds })") : {};
+const lib = m ? vm.runInNewContext(m[1] + "\n;({ TURN_SECONDS, MAX_SECONDS, BARS, fitBars, sliceBounds, encodeWav, makeClock, rollSeconds, snapZero, smartBounds })") : {};
 const plain = (x) => JSON.parse(JSON.stringify(x));   // objets du contexte vm vers ce contexte
 
 test("le bloc sample-lib existe", () => assert.ok(m, "bloc <script id=\"sample-lib\"> absent"));
@@ -49,3 +49,28 @@ test("makeClock : tempo et phase à 64 mesures", () => {
 });
 
 test("rollSeconds", () => assert.equal(lib.rollSeconds(120), 0.125));
+
+test("snapZero : dans le sens du geste, sinon le plus proche", () => {
+  const rate = 8000, x = Float32Array.from({ length: 800 }, (_, i) => Math.sin(2 * Math.PI * 100 * i / rate + 0.1));
+  const zc = (j) => x[j - 1] * x[j] <= 0;
+  const f = lib.snapZero(x, 10, 1, 100); assert.ok(f >= 10 && zc(f));
+  for (let j = 10; j < f; j++) assert.ok(!zc(j));
+  const b = lib.snapZero(x, 60, -1, 100); assert.ok(b <= 60 && zc(b));
+  assert.equal(lib.snapZero(new Float32Array(100).fill(0.5), 50, 1, 20), 50);
+});
+
+test("smartBounds : les coupes tombent dans les creux proches", () => {
+  const rate = 8000, unit = 1000, N = 16 * unit, x = new Float32Array(N);
+  for (let i = 0; i < N; i++) { const p = i % unit; x[i] = p >= 100 && p < 200 ? 0 : 0.8 * Math.sin(2 * Math.PI * 220 * i / rate); }
+  const b = lib.smartBounds(x, rate);
+  assert.equal(b.length, 17); assert.equal(b[0], 0); assert.equal(b[16], N);
+  for (let i = 1; i < 16; i++) { const p = b[i] - i * unit; assert.ok(p >= 100 && p <= 200, `coupe ${i} à ${p}`); }
+});
+
+test("smartBounds : silence et sinus continu, près de la place régulière", () => {
+  const rate = 8000, N = 16000;
+  assert.deepEqual([...lib.smartBounds(new Float32Array(N), rate)], [...lib.sliceBounds(N)]);
+  const s = Float32Array.from({ length: N }, (_, i) => Math.sin(2 * Math.PI * 220 * i / rate));
+  const b = lib.smartBounds(s, rate);
+  for (let i = 1; i < 16; i++) { assert.ok(b[i] > b[i - 1]); assert.ok(Math.abs(b[i] - i * 1000) <= 250 + 40); }
+});

@@ -167,6 +167,34 @@ function sliceBounds(frames, n = 16) {
   for (let i = 0; i <= n; i++) b[i] = Math.round((frames * i) / n);
   return b;
 }
+// le passage à zéro de l'onde le plus proche de i (x[j-1] et x[j] de signes opposés, ou x[j] nul) : dans le sens du
+// geste (dir), ou des deux côtés (dir 0, égalité vers l'avant), à r trames au plus ; aucun : i
+function snapZero(x, i, dir, r) {
+  const lo = 1, hi = x.length - 1, at = (j) => j >= lo && j <= hi && (x[j] === 0 || (x[j - 1] < 0) !== (x[j] < 0));
+  i = Math.max(lo, Math.min(hi, Math.round(i)));
+  for (let d = 0; d <= r; d++) {
+    if (dir >= 0 && at(i + d)) return i + d;
+    if (dir <= 0 && at(i - d)) return i - d;
+  }
+  return i;
+}
+// le découpage : chaque limite régulière glisse vers le creux de volume le plus proche (énergie par blocs de 5 ms,
+// à un quart de tranche au plus), puis se cale sur un passage à zéro
+function smartBounds(x, rate, n = 16) {
+  const N = x.length, b = sliceBounds(N, n), w = Math.max(1, Math.round(rate * 0.005)), reach = Math.floor(N / (4 * n));
+  const energy = (a) => { let e = 0; for (let j = a; j < Math.min(N, a + w); j++) e += x[j] * x[j]; return e; };
+  for (let i = 1; i < n; i++) {
+    const c = b[i];
+    let best = c, bestE = Infinity, bestD = Infinity;
+    for (let a = Math.max(0, Math.floor((c - reach) / w) * w); a < Math.min(N, c + reach); a += w) {
+      const e = energy(a), pos = c >= a && c < a + w ? c : a + (w >> 1), d = Math.abs(pos - c);
+      if (e < bestE - 1e-12 || (Math.abs(e - bestE) <= 1e-12 && d < bestD)) { best = pos; bestE = e; bestD = d; }
+    }
+    b[i] = snapZero(x, best, 0, w);
+  }
+  for (let i = 1; i < n; i++) if (b[i] <= b[i - 1]) b[i] = b[i - 1] + 1;   // (strictement croissantes)
+  return b;
+}
 
 // un fichier .wav, PCM 16 bits, canaux entrelacés
 function encodeWav(channels, sampleRate) {
@@ -1060,7 +1088,7 @@ function makeSample(ch, rate, name) {
   const max = Math.round(MAX_SECONDS * rate);
   if (ch[0].length > max) { ch = ch.map((c) => c.slice(0, max)); setNote(`Cut to ${MAX_SECONDS} s`); }
   else setNote("");
-  const bpm = duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm, f = fitBars(ch[0].length / rate, bpm), slices = sliceBounds(ch[0].length);
+  const bpm = duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm, f = fitBars(ch[0].length / rate, bpm), slices = smartBounds(ch[0], rate);
   const cols = Array.from({ length: 16 }, (_, i) => ({ start: 0, len: Math.round(((slices[i + 1] - slices[i]) / rate) * 1000), pitch: 0, gain: 100 }));
   return { id: newId(), name, rate, ch, bars: f.bars, fit: f.rate, slices, pads: new Array(16).fill(null), cols };
 }

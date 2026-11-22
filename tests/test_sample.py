@@ -943,3 +943,22 @@ def test_assign_appui_court_verrouille(page, tmp_path):
     assert page.evaluate("window.__sample.assigning") is False
     tap(page, "[data-label='ASSIGN']"); tap(page, "[data-label='EDIT']")   # une autre touche la ferme aussi
     assert page.evaluate("[window.__sample.assigning, window.__sample.col]") == [False, 0]
+
+
+def wav_gaps(path, rate=44100):
+    """Seize notes d'un quart de seconde, chacune avec un silence placé juste après la limite régulière."""
+    import math, struct, wave
+    unit = rate // 4
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+        w.writeframes(b"".join(struct.pack("<h", 0 if unit // 10 <= i % unit < unit // 5 else int(12000 * math.sin(2 * math.pi * 220 * i / rate))) for i in range(16 * unit)))
+    return str(path), unit
+
+
+def test_import_coupe_dans_les_creux(page, tmp_path):
+    open_sample(page); power_sample(page)
+    path, unit = wav_gaps(tmp_path / "g.wav")
+    import_wav(page, path)
+    sl, rate = page.evaluate("[Array.from(window.__sample.samples[window.__sample.cur].slices), window.__sample.samples[window.__sample.cur].rate]")
+    for i in range(1, 16):                                      # (en secondes : l'import peut rééchantillonner)
+        assert 0.025 - 0.001 <= sl[i] / rate - i * 0.25 <= 0.05 + 0.001, i
