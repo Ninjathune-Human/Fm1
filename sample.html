@@ -24,9 +24,13 @@ main { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
 .mark { font: 600 clamp(2rem, 5vw, 2.75rem)/1.05 var(--display); letter-spacing: -0.025em; margin: 0; }
 .mark span { color: var(--accent); }
 .mast .seg { margin-left: auto; }
+[hidden]:not([hidden=until-found i]) { display: none !important; }
 .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .seg button { min-height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: none; font: 500 0.9375rem var(--body); color: var(--muted); cursor: pointer; }
-.seg button[aria-checked="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
+.seg button { display: inline-flex; align-items: center; gap: 8px; }
+.seg button[aria-checked="true"], .seg button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / 0.15); }
+.seg .beat { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); }
+.seg .beat.on { background: var(--accent); }
 .frame { min-width: 0; padding-block: 8px 28px; }
 .device { position: relative; isolation: isolate; width: 100%; aspect-ratio: 1640 / 990; user-select: none; -webkit-user-select: none;
   -webkit-touch-callout: none; touch-action: none; --led: #a3d6c7; }
@@ -105,6 +109,7 @@ html.embed .mast { display: none; }
 html.embed .frame { flex: none; padding: 4px 0 8px; }
 html.embed .device { width: min(100%, calc((100dvh - 80px) * 1640 / 990)); margin: 0 auto; }
 html.embed .deck { width: min(100%, calc((100dvh - 80px) * 1640 / 990)); margin: 0 auto; gap: 6px 12px; }
+html.embed .duo-tabs { margin-left: auto; }   /* FM1-A | FM1-B au milieu de la ligne, comme sous un FM-1 */
 html.embed .swatches { gap: 0; }
 html.embed .swatch { width: 38px; height: 44px; }
 html.embed .swatch span { width: 26px; height: 26px; }
@@ -248,7 +253,7 @@ class SampleProc extends AudioWorkletProcessor {
   msg(m) {
     switch (m.t) {
       case "load": this.ch = m.ch; this.rate = m.rate; this.frames = m.ch[0].length; this.slices = m.slices; this.bars = m.bars; this.head = 0; this.loop = 0; this.voices = []; break;
-      case "play": this.playing = m.on; if (m.on && m.from != null) this.loop = m.from; break;
+      case "play": this.playing = m.on; if (m.on && m.from != null) this.loop = m.from; if (m.on && !this.bars) this.head = 0; break;
       case "sync": {                                   // l'horloge : la boucle se cale sur le temps reçu
         this.bpm = m.bpm || this.bpm;
         const L = this.loopBeats(), want = ((m.beats % L) + L) % L, d = want - this.loop, dd = d - L * Math.round(d / L);
@@ -273,7 +278,7 @@ class SampleProc extends AudioWorkletProcessor {
     }
   }
   dur() { return this.frames / this.rate; }
-  loopBeats() { return this.bars ? this.bars * 4 : Math.max(0.25, (this.dur() * this.bpm) / 60); }
+  loopBeats() { return this.bars ? this.bars * 4 : Math.max(1e-3, (this.dur() * this.bpm) / 60); }
   secPerBeat() { return this.dur() / this.loopBeats(); }   // secondes du sample par temps de boucle
   // une tranche, jouée une fois (pad) ou pendant une répétition (roll)
   trigger(i, maxSec) {
@@ -294,30 +299,33 @@ class SampleProc extends AudioWorkletProcessor {
     if (this.voices.length > 12) this.voices.shift();
   }
   read(buf, c, p) {                                    // interpolation cubique (Catmull-Rom), hors du sample : silence
-    const x = buf[Math.min(c, buf.length - 1)], n = x.length, i = Math.floor(p), f = p - i;
-    const at = (k) => (k >= 0 && k < n ? x[k] : 0);
-    const a = at(i - 1), b = at(i), cc = at(i + 1), d = at(i + 2);
+    const x = buf[c < buf.length ? c : buf.length - 1], n = x.length, i = Math.floor(p), f = p - i;
+    const a = i - 1 >= 0 && i - 1 < n ? x[i - 1] : 0, b = i >= 0 && i < n ? x[i] : 0;
+    const cc = i + 1 >= 0 && i + 1 < n ? x[i + 1] : 0, d = i + 2 >= 0 && i + 2 < n ? x[i + 2] : 0;
     return b + 0.5 * f * (cc - a + f * (2 * a - 5 * b + 4 * cc - d + f * (3 * (b - cc) + d - a)));
+  }
+  svf(x, st, f, q, low) {                              // un pas du filtre à variable d'état (passe-bas ou passe-haut)
+    const hp = x - st[0] - q * st[1]; st[1] += f * hp; st[0] += f * st[1];
+    return low ? st[0] : hp;
   }
   process(_, outputs) {
     const out = outputs[0], L = out[0], R = out[1] || out[0], n = L.length, sr = sampleRate;
-    const dt = 1 / sr, beatsPerSec = this.bpm / 60, has = !!this.ch;
+    const dt = 1 / sr, beatsPerSec = this.bpm / 60, has = !!this.ch, oneShot = has && !this.bars;
     // le roll : une répétition à chaque double croche
     if (this.roll && has) {
       while (this.roll.next <= currentFrame + n) { this.trigger(this.roll.i, rollSeconds(this.bpm)); this.roll.next += rollSeconds(this.bpm) * sr; }
     }
-    // la tête qui sonne : sa vitesse visée dépend du mode
-    const spb = has ? this.secPerBeat() : 0, D = has ? this.dur() : 1;
-    const loopHead = () => this.loop * spb;
+    // la tête qui sonne : sa vitesse visée dépend du mode ; un sample sans boucle se joue à sa vitesse, une fois
+    const spb = has ? this.secPerBeat() : 0, D = has ? this.dur() : 1, nominal = oneShot ? 1 : beatsPerSec * spb;
     let targetVel;
     if (this.mode === "scratch") {
-      const tgt = this.target, from = this.head;
-      let d = tgt - from;
+      let d = this.target - this.head;
       if (has) d -= D * Math.round(d / D);
       targetVel = (d / (n * dt)) * 0.35;               // la main mène la tête, avec un peu d'inertie
-    } else if (this.mode === "reverse") targetVel = -beatsPerSec * spb;
-    else targetVel = this.playing ? beatsPerSec * spb : 0;
+    } else if (this.mode === "reverse") targetVel = -nominal;
+    else targetVel = this.playing ? nominal : 0;
     const k = this.mode === "scratch" ? 0.5 : 1 - Math.exp(-(n * dt) / 0.06);   // le moteur : ~200 ms pour reprendre sa vitesse
+    let ended = false;
     for (let i = 0; i < n; i++) {
       // les rampes douces
       this.cut += (this.cutTo - this.cut) * 0.02;
@@ -325,32 +333,39 @@ class SampleProc extends AudioWorkletProcessor {
       this.fx += (this.fxTo - this.fx) * 0.002; this.fy += (this.fyTo - this.fy) * 0.002;
       this.echoAmt += (this.echoTo[0] - this.echoAmt) * 0.002; this.echoFb += (this.echoTo[1] - this.echoFb) * 0.002;
       if (i === 0) this.vel += (targetVel - this.vel) * k;
-      if (this.playing && has) { this.loop += beatsPerSec * dt; const lb = this.loopBeats(); if (this.loop >= lb) this.loop -= lb; }
+      if (this.playing && has && !oneShot) { this.loop += beatsPerSec * dt; const lb = this.loopBeats(); if (this.loop >= lb) this.loop -= lb; }
       let l = 0, r = 0;
       if (has && (this.playing || this.mode !== "loop")) {
         this.head += this.vel * dt;
-        if (this.head >= D) this.head -= D; else if (this.head < 0) this.head += D;
+        if (this.head >= D) {
+          if (oneShot && this.mode === "loop") { this.playing = false; this.head = 0; this.vel = 0; ended = true; }
+          else this.head -= D;
+        } else if (this.head < 0) this.head += D;
+        if (oneShot) this.loop = this.head / spb;
         const p = this.head * this.rate;
-        l = this.read(this.ch, 0, p); r = this.ch.length > 1 ? this.read(this.ch, 1, p) : l;
+        if (this.playing || this.mode !== "loop") { l = this.read(this.ch, 0, p); r = this.ch.length > 1 ? this.read(this.ch, 1, p) : l; }
         // relâchée : quand le moteur a repris sa vitesse, la tête rejoint la boucle (lecture « slip »)
-        if (this.mode === "spin" && Math.abs(this.vel - beatsPerSec * spb) < 0.02 * beatsPerSec * spb + 1e-6) { this.head = loopHead(); this.mode = "loop"; }
+        if (this.mode === "spin" && this.playing && Math.abs(this.vel - nominal) < 0.02 * nominal + 1e-6) { if (!oneShot) this.head = this.loop * spb; this.mode = "loop"; }
         else if (this.mode === "spin" && !this.playing && Math.abs(this.vel) < 1e-3) this.mode = "loop";
-        if (this.mode === "loop" && this.playing) this.head += (loopHead() - this.head) * (Math.abs(loopHead() - this.head) < D / 2 ? 0.001 : 1);
+        if (this.mode === "loop" && this.playing && !oneShot) {
+          const lh = this.loop * spb;
+          this.head += (lh - this.head) * (Math.abs(lh - this.head) < D / 2 ? 0.001 : 1);
+        }
       }
-      for (const v of this.voices) {
-        if (v.at >= v.end) continue;
-        const fade = Math.min(1, v.age / 64, (v.end - v.at) / (v.speed * 128));
-        const s = this.read(v.buf, 0, v.at) * v.gain * fade;
-        l += s; r += v.buf.length > 1 ? this.read(v.buf, 1, v.at) * v.gain * fade : s;
-        v.at += v.speed; v.age++;
+      for (let v = 0; v < this.voices.length; v++) {
+        const vo = this.voices[v];
+        if (vo.at >= vo.end) continue;
+        const fade = Math.min(1, vo.age / 64, (vo.end - vo.at) / (vo.speed * 128));
+        const sl = this.read(vo.buf, 0, vo.at) * vo.gain * fade;
+        l += sl; r += vo.buf.length > 1 ? this.read(vo.buf, 1, vo.at) * vo.gain * fade : sl;
+        vo.at += vo.speed; vo.age++;
       }
       // le filtre : passe-bas à gauche, neutre au milieu, passe-haut à droite, la résonance en y
       if (Math.abs(this.fx - 0.5) > 0.002) {
-        const lowSide = this.fx < 0.5, u = lowSide ? this.fx / 0.5 : (this.fx - 0.5) / 0.5;
-        const fc = lowSide ? 80 * Math.pow(20000 / 80, u) : 20 * Math.pow(8000 / 20, u);
+        const low = this.fx < 0.5, u = low ? this.fx / 0.5 : (this.fx - 0.5) / 0.5;
+        const fc = low ? 80 * Math.pow(20000 / 80, u) : 20 * Math.pow(8000 / 20, u);
         const f = 2 * Math.sin((Math.PI * Math.min(fc, sr / 6)) / sr), q = 1 / (0.7 + this.fy * 11);
-        const fl = (x, st) => { const hp = x - st[0] - q * st[1]; st[1] += f * hp; st[0] += f * st[1]; return lowSide ? st[0] : hp; };
-        l = fl(l, this.lp[0]); r = fl(r, this.lp[1]);
+        l = this.svf(l, this.lp[0], f, q, low); r = this.svf(r, this.lp[1], f, q, low);
       }
       // l'écho : au huitième pointé du tempo
       if (this.echoAmt > 0.001 || this.echoFb > 0.001) {
@@ -363,7 +378,10 @@ class SampleProc extends AudioWorkletProcessor {
       const g = this.master * (1 - this.cut);
       L[i] = l * g; if (R !== L) R[i] = r * g;
     }
-    this.voices = this.voices.filter((v) => v.at < v.end);
+    let w = 0;                                          // les voix finies sortent, sans nouveau tableau
+    for (let v = 0; v < this.voices.length; v++) if (this.voices[v].at < this.voices[v].end) this.voices[w++] = this.voices[v];
+    this.voices.length = w;
+    if (ended) this.port.postMessage({ t: "ended" });
     // ce que les lumières et l'écran montrent, environ 60 fois par seconde
     if (currentFrame - this.sent >= sr / 60) {
       this.sent = currentFrame;
@@ -384,7 +402,7 @@ class SampleRec extends AudioWorkletProcessor {
     super();
     this.state = "idle"; this.thresh = null; this.max = 0; this.got = 0; this.buf = []; this.since = 0; this.lvl = 0;
     this.port.onmessage = ({ data: m }) => {
-      if (m.t === "arm") { this.state = "armed"; this.thresh = m.thresh; this.max = m.max; this.got = 0; this.buf = []; }
+      if (m.t === "arm") { this.state = "armed"; this.thresh = m.thresh; this.max = m.max; this.got = 0; this.buf = []; this.from = m.from == null ? null : m.from; }
       else if (m.t === "stop") this.finish();
     };
   }
@@ -399,7 +417,8 @@ class SampleRec extends AudioWorkletProcessor {
     const db = peak > 0 ? 20 * Math.log10(peak) : -Infinity;
     this.lvl = Math.max(db, this.lvl - 1);
     if ((this.since += n) >= sampleRate / 30) { this.since = 0; this.port.postMessage({ t: "level", db: this.lvl }); }
-    if (this.state === "armed" && (this.thresh == null || db > this.thresh)) this.state = "rec";
+    if (this.state === "armed" && this.from != null) { if (currentFrame + n > this.from) { this.state = "rec"; this.from = null; } }
+    else if (this.state === "armed" && (this.thresh == null || db > this.thresh)) this.state = "rec";
     if (this.state === "rec") {
       const take = Math.min(n, this.max - this.got);
       this.buf.push(inp.slice(0, 2).map((c) => c.slice(0, take)));
@@ -905,6 +924,7 @@ class SampleEngine {
     this.an = this.ac.createAnalyser(); this.an.fftSize = 2048;
     this.node.connect(this.an); this.an.connect(this.ac.destination);
     this.node.port.onmessage = ({ data: m }) => {
+      if (m.t === "ended") { this.playing = false; return; }
       if (m.t !== "pos") return;
       this.pos = m; this.posAt = performance.now();
       if (m.playing) this.greenAt = performance.timeOrigin + performance.now();   // (le Duo : qui joue)
@@ -1060,10 +1080,11 @@ function fm1A() {
     return e && e.on && out && w.__ac && w.__ac.state !== "closed" ? { w, eng: e, out, ac: w.__ac } : null;
   } catch { return null; }
 }
+S.fm1A = fm1A;
 const md = () => navigator.mediaDevices || null;
 S.sources = () => ({
   mic: S.micError || !!(md() && md().getUserMedia),
-  fm1: !!fm1A(),
+  fm1: !!S.fm1A(),
   file: true,
   tab: !!(md() && md().getDisplayMedia),
 });
@@ -1094,10 +1115,10 @@ S.importFile = async (file) => {
 
 // ---------------------------------------------------------------- l'enregistrement
 const REC_SRC = () => $("sample-rec-worklet").textContent;
-async function recNode(ctx, W) {
+async function recNode(ctx, W, nc = 2) {
   if (!ctx.__sampleRec) ctx.__sampleRec = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([REC_SRC()], { type: "text/javascript" })));
   await ctx.__sampleRec;
-  const node = new W.AudioWorkletNode(ctx, "sample-rec", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], channelCount: 2, channelCountMode: "explicit" });
+  const node = new W.AudioWorkletNode(ctx, "sample-rec", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], channelCount: nc, channelCountMode: "explicit" });
   const mute = ctx.createGain(); mute.gain.value = 0;
   node.connect(mute).connect(ctx.destination);         // (Safari ne fait tourner qu'un nœud relié à la sortie)
   return { node, mute };
@@ -1112,10 +1133,12 @@ function joinBlocks(blocks) {
 S.capture = async (source = S.capt.source, opts = {}) => {
   if (!eng.on) throw new Error("Switch the module on");
   if (S.recording) throw new Error("Already recording");
-  let ctx, W, src, alive = () => true;
+  let ctx, W, src, nc = 2, alive = () => true;
   const cleanup = [];
   if (source === "mic" || source === "tab") {
     ctx = eng.ac; W = window;
+    const AS = navigator.audioSession;
+    if (source === "mic" && AS) { try { AS.type = "play-and-record"; } catch { /* Safari d'avant */ } cleanup.push(() => { try { AS.type = "playback"; } catch { /* */ } }); }
     let stream;
     try {
       stream = source === "mic"
@@ -1124,27 +1147,34 @@ S.capture = async (source = S.capt.source, opts = {}) => {
     } catch (err) {
       if (source === "mic") S.micError = err && err.name === "NotAllowedError" ? "Microphone refused" : "No microphone";
       setNote(source === "mic" ? S.micError : "No tab sound");
+      cleanup.forEach((f) => f());
       throw err;
     }
     cleanup.push(() => stream.getTracks().forEach((tr) => tr.stop()));
     if (!stream.getAudioTracks().length) { cleanup.forEach((f) => f()); setNote("No sound shared"); throw new Error("no audio track"); }
     src = ctx.createMediaStreamSource(stream);
+    if (stream.getAudioTracks()[0].getSettings().channelCount === 1) nc = 1;   // un micro mono reste mono (Chromium le passe en stéréo)
   } else if (source === "fm1") {
-    const A = fm1A();
+    const A = S.fm1A();
     if (!A) { setNote("FM1-A is off"); throw new Error("FM1-A is off"); }
     ctx = A.ac; W = A.w; src = A.out;
     alive = () => { try { return A.w.__engine && A.w.__engine() === A.eng && A.eng.on && ctx.state !== "closed"; } catch { return false; } };
   } else throw new Error("unknown source " + source);
   const gain = ctx.createGain(); gain.gain.value = Math.pow(10, (S.capt.input || 0) / 20);
   src.connect(gain);
-  const { node, mute } = await recNode(ctx, W);
+  const { node, mute } = await recNode(ctx, W, nc);
   gain.connect(node);
   cleanup.push(() => { for (const f of [() => src.disconnect(gain), () => gain.disconnect(), () => node.disconnect(), () => mute.disconnect()]) try { f(); } catch { /* déjà défait */ } });
   const rate = ctx.sampleRate;
   let seconds = opts.seconds;
   if (!seconds && duoLinked() && S.clock.bpm) seconds = (S.capt.length * 4 * 60) / S.clock.bpm;
   const max = Math.round(Math.min(seconds || MAX_SECONDS, MAX_SECONDS) * rate);
-  const thresh = opts.thresh !== undefined ? opts.thresh : S.capt.thresh;
+  let thresh = opts.thresh !== undefined ? opts.thresh : S.capt.thresh, at = null, from = null;
+  if (duoLinked() && S.clock.running && S.clock.bpm) {        // lié : il part sur le temps qui suit, sans attendre de seuil
+    const nowB = S.clock.beats(performance.now());
+    at = Math.floor(nowB) + 1; thresh = null;
+    from = Math.round((ctx.currentTime + ((at - nowB) * 60) / S.clock.bpm) * rate);
+  }
   const pad = opts.pad != null ? opts.pad : null;
   return new Promise((resolve) => {
     const blocks = [];
@@ -1168,18 +1198,22 @@ S.capture = async (source = S.capt.source, opts = {}) => {
       if (m.t === "data") { blocks.push(...m.blocks); return; }
       if (m.t === "done") finish();
     };
-    S.recording = { source, pad, started: () => blocks.length > 0, stopping: false, stop: () => { S.recording.stopping = true; try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
+    const abort = () => { if (done) return; done = true; clearInterval(watch); cleanup.forEach((f) => f()); S.recording = null; resolve(null); };
+    S.recording = { source, pad, at, started: () => blocks.length > 0, stopping: false, abort,
+      stop: () => { S.recording.stopping = true; try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
     S.page = "capture"; drawScreen();
-    node.port.postMessage({ t: "arm", thresh, max });
+    node.port.postMessage({ t: "arm", thresh, max, from });
     watch = setInterval(() => { if (!alive()) finish(); }, 100);  // la source partie (FM1-A éteint) : ce qui a été capté reste
   });
 };
 
-// REC : arme, puis arrête ; avec un pad tenu, la capture va sur ce pad
+S.hooks.power.push((on) => { if (!on && S.recording) S.recording.abort(); });   // éteint pendant une capture : le micro se ferme
+// REC : arme, puis arrête ; avec un pad tenu, la capture va sur ce pad (qui se tait le temps de la capture)
 S.hooks.pad.push((i, down) => { if (down) S.heldPad = i; else if (S.heldPad === i) S.heldPad = null; });
 S.hooks.cap.push((name, down) => {
   if (name !== "REC" || !down || !eng.on) return;
   if (S.recording) { S.recording.stop(); return; }
+  if (S.heldPad != null && S.stopRoll) S.stopRoll(S.heldPad);
   S.capture(S.capt.source, { pad: S.heldPad }).catch(() => {});
 });
 </script>
@@ -1358,10 +1392,19 @@ function drawCapture(T) {
   txt(S.note || (rec ? "REC again to stop" : "REC to record"), 10, 226, 600, 18, T.fg);
   battery(T);
 }
+const TARGET_LABEL = { pigeon: "PIGEON", zp12: "ZP12", file: "FILE", erase: "ERASE" };
+S.targetChipX = (label) => { let x = 10; for (const k of S.targets()) { const w = TARGET_LABEL[k].length * 8 + 18; if (TARGET_LABEL[k] === label) return x + w / 2; x += w + 6; } return -1; };
 function drawSend(T) {
   header(T);
   const s = curSample();
-  txt(S.sendLine ? S.sendLine() : "", 10, 70, 500, 13, S.sendArmed ? "#ffffff" : T.mute);
+  let cx = 10;
+  for (const k of S.targets()) {
+    const lab = TARGET_LABEL[k], w = lab.length * 8 + 18, on = S.target === k;
+    sctx.beginPath(); sctx.roundRect ? sctx.roundRect(cx, 60, w, 16, 8) : sctx.rect(cx, 60, w, 16);
+    if (on) { sctx.fillStyle = T.acc; sctx.fill(); } else { sctx.strokeStyle = T.mute; sctx.lineWidth = 1; sctx.stroke(); }
+    txt(lab, cx + w / 2, 72, 600, 11, on ? T.bg : T.mute, "center");
+    cx += w + 6;
+  }
   if (s) {
     sctx.strokeStyle = T.acc; sctx.globalAlpha = 0.5; sctx.lineWidth = 1; sctx.strokeRect(10.5, 82.5, 120, 112); sctx.globalAlpha = 1;
     txt("SONG", 18, 98, 600, 11, T.mute);
@@ -1376,7 +1419,7 @@ function drawSend(T) {
       txt(String(k + 1).padStart(2, "0"), x + 5, y + ch / 2 + 4, 600, 11, k === S.slice ? "#ffffff" : T.mute);
     }
   }
-  txt(S.note || "SEND to send", 10, 226, 600, 18, "#ffffff");
+  txt(S.note || (S.sendLine ? S.sendLine() : "SEND to send"), 10, 226, 600, S.sendArmed ? 15 : 18, "#ffffff");
   battery(T);
 }
 S.draw = (ctx, T) => (S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
@@ -1398,7 +1441,12 @@ screen.addEventListener("pointerdown", (e) => {
     S.pinch = { d0: Math.abs(p.x - q.x) || 1, span: S.zoom.to - S.zoom.from, mid: fx((p.x + q.x) / 2) };
     return;
   }
-  if (y < 54) { S.col = Math.min(3, Math.floor(x / 110)); t.mode = "done"; drawScreen(); return; }
+  if (y < 54) { S.col = Math.min(3, Math.floor(x / 110)); t.mode = "value"; t.y0 = y; drawScreen(); return; }
+  if (S.page === "send" && y >= 58 && y < 78) {
+    let cx = 10;
+    for (const k of S.targets()) { const w = TARGET_LABEL[k].length * 8 + 18; if (x >= cx && x < cx + w) { S.target = k; S.sendArmed = false; break; } cx += w + 6; }
+    t.mode = "done"; drawScreen(); return;
+  }
   if (S.page === "edit" && y >= 58 && y < 78 && x > LW - 90) { S.col = 4; t.mode = "done"; drawScreen(); return; }
   if (S.page === "capture" && y >= 58 && y < 78) {
     let cx = 10;
@@ -1410,11 +1458,14 @@ screen.addEventListener("pointerdown", (e) => {
     t.mode = "done"; drawScreen(); return;
   }
   if (S.page === "edit" && s && y >= Y0 - 8 && y < Y0 + H0 + 4) {
-    const n = s.ch[0].length;
-    for (let k = 0; k < 16; k++) {                             // près d'une limite : la poignée du début de cette tranche
-      const bx = sx((s.slices[k] + (s.cols[k].start / 1000) * s.rate) / n);
-      if (Math.abs(x - bx) < 6) { t.mode = "handle"; t.k = k; S.slice = k; S.col = 0; return; }
+    const n = s.ch[0].length;                                 // la poignée la plus proche : un début de tranche, ou la fin de la tranche choisie
+    let best = null;
+    for (let k = 0; k < 16; k++) {
+      const st = (s.slices[k] + (s.cols[k].start / 1000) * s.rate) / n, d = Math.abs(x - sx(st));
+      if (d < 6 && (!best || d < best.d)) best = { d, k, end: false };
+      if (k === S.slice) { const de = Math.abs(x - sx(st + ((s.cols[k].len / 1000) * s.rate) / n)); if (de < 6 && (!best || de < best.d)) best = { d: de, k, end: true }; }
     }
+    if (best) { t.mode = best.end ? "end" : "handle"; t.k = best.k; S.slice = best.k; S.col = best.end ? 1 : 0; return; }
   }
 });
 screen.addEventListener("pointermove", (e) => {
@@ -1428,6 +1479,15 @@ screen.addEventListener("pointermove", (e) => {
     from = clamp(from, 0, 1 - span);
     S.zoom = { from, to: from + span };
     drawScreen();
+  } else if (t.mode === "value") {
+    const steps = Math.trunc((t.y0 - y) / 6);                  // vers le haut : plus ; six pixels par pas
+    if (steps) { t.y0 -= steps * 6; editColumn(steps, 0); drawScreen(); }
+  } else if (t.mode === "end" && s) {
+    const c = s.cols[t.k], full = ((s.slices[t.k + 1] - s.slices[t.k]) / s.rate) * 1000;
+    const ms = ((x - t.x0) / W0) * (S.zoom.to - S.zoom.from) * (s.ch[0].length / s.rate) * 1000;
+    t.x0 = x;
+    c.len = Math.round(clamp(c.len + ms, 10, 4 * full));
+    eng.send({ t: "slice", i: t.k, ...c }); S.saveSoon(s); drawScreen();
   } else if (t.mode === "handle" && s) {
     const c = s.cols[t.k], full = ((s.slices[t.k + 1] - s.slices[t.k]) / s.rate) * 1000;
     const ms = ((x - t.x0) / W0) * (S.zoom.to - S.zoom.from) * (s.ch[0].length / s.rate) * 1000;
@@ -1560,6 +1620,7 @@ panel.xy.addEventListener("pointerup", xyUp); panel.xy.addEventListener("pointer
 
 // ---------------------------------------------------------------- les pads : taper joue la tranche, tenir la répète
 const rollAt = new Map();
+S.stopRoll = (i) => { const r = rollAt.get(i); if (r === -1) eng.send({ t: "roll", i, on: false }); else if (r) clearTimeout(r); rollAt.set(i, -2); };
 S.hooks.pad.push((i, down) => {
   if (!eng.on) return;
   if (down) {
@@ -1570,7 +1631,7 @@ S.hooks.pad.push((i, down) => {
   } else {
     const r = rollAt.get(i);
     rollAt.delete(i);
-    if (r === -1) eng.send({ t: "roll", i, on: false }); else clearTimeout(r);
+    if (r === -1) eng.send({ t: "roll", i, on: false }); else if (r !== -2) clearTimeout(r);
     eng.send({ t: "pad", i, on: false });
   }
 });
@@ -1665,7 +1726,7 @@ function lights() {
 "use strict";
 S.sendArmed = false;
 function fm1ATarget() {
-  const A = fm1A(), id = A && A.eng.entry && A.eng.entry.id;
+  const A = S.fm1A(), id = A && A.eng.entry && A.eng.entry.id;
   return id === "pigeon" || id === "zp12" ? id : null;
 }
 S.targets = () => { const t = fm1ATarget(); return t ? [t, "file", "erase"] : ["file", "erase"]; };
@@ -1679,15 +1740,31 @@ S.sendLine = () => {
     default: return "";
   }
 };
-// une tranche (ou le son propre d'un pad), en .wav ; au plus `max` secondes
-function sliceWav(s, k, max) {
-  const own = s.pads[k];
-  let ch, rate = s.rate;
-  if (own) { ch = own.ch; rate = own.rate; }
-  else ch = s.ch.map((c) => c.subarray(s.slices[k], s.slices[k + 1]));
-  if (max) ch = ch.map((c) => c.subarray(0, Math.min(c.length, Math.floor(max * rate))));
-  return encodeWav(ch, rate);
+// une tranche telle que les pads la jouent (début, longueur, hauteur, gain), ou le son propre d'un pad, en .wav ;
+// au plus `max` secondes
+function sliceChannels(s, k) {
+  const c = s.cols[k], own = s.pads[k], rate = own ? own.rate : s.rate;
+  let src;
+  if (own) src = own.ch;
+  else {
+    const a = Math.max(0, s.slices[k] + Math.round((c.start / 1000) * rate));
+    const e = Math.min(s.ch[0].length, c.len ? a + Math.round((c.len / 1000) * rate) : s.slices[k + 1]);
+    src = s.ch.map((x) => x.subarray(a, Math.max(a, e)));
+  }
+  const ratio = Math.pow(2, (c.pitch || 0) / 12), g = (c.gain == null ? 100 : c.gain) / 100, n = Math.max(1, Math.floor(src[0].length / ratio));
+  return { rate, ch: src.map((x) => { const y = new Float32Array(n); for (let i = 0; i < n; i++) { const p = i * ratio, i0 = Math.floor(p), f = p - i0; y[i] = ((x[i0] || 0) * (1 - f) + (x[i0 + 1] || 0) * f) * g; } return y; }) };
 }
+S.sliceWav = (s, k, max) => {
+  const { rate, ch } = sliceChannels(s, k);
+  return encodeWav(max ? ch.map((x) => x.subarray(0, Math.min(x.length, Math.floor(max * rate)))) : ch, rate);
+};
+// Pigeon : la chanson d'abord (au moins 2,05 s : Pigeon prend pour chanson ce qui dure 2 s), puis les seize pads (moins de 2 s)
+S.pigeonFiles = (s) => {
+  const min = Math.ceil(2.05 * s.rate), song = s.ch[0].length >= min ? s.ch : s.ch.map((x) => { const y = new Float32Array(min); y.set(x); return y; });
+  const files = [{ bytes: encodeWav(song, s.rate), name: `${s.id}.wav` }];
+  for (let k = 0; k < 16; k++) files.push({ bytes: S.sliceWav(s, k, 1.9), name: `${s.id}-${String(k + 1).padStart(2, "0")}.wav` });
+  return files;
+};
 S.send = async (target) => {
   const s = curSample();
   if (!s) { setNote("No sample"); return S.note; }
@@ -1701,17 +1778,18 @@ S.send = async (target) => {
     return S.note;
   }
   if (target === "erase") { const id = s.id; await S.erase(s); setNote(`${id} erased`); return S.note; }
-  const A = fm1A();
+  const A = S.fm1A();
   if (!A || fm1ATarget() !== target) { setNote("FM1-A can't take samples"); return S.note; }
-  const F = A.w.File, mk = (bytes, name) => new F([bytes], name, { type: "audio/wav" });
-  let files;
-  if (target === "pigeon") {                         // la chanson d'abord, puis les seize pads (moins de 2 s chacun)
-    files = [mk(encodeWav(s.ch, s.rate), `${s.id}.wav`)];
-    for (let k = 0; k < 16; k++) files.push(mk(sliceWav(s, k, 1.9), `${s.id}-${String(k + 1).padStart(2, "0")}.wav`));
-  } else files = Array.from({ length: 16 }, (_, k) => mk(sliceWav(s, k), `${s.id}-${String(k + 1).padStart(2, "0")}.wav`));
+  const F = A.w.File, mk = (f) => new F([f.bytes], f.name, { type: "audio/wav" });
+  const list = target === "pigeon" ? S.pigeonFiles(s)
+    : Array.from({ length: 16 }, (_, k) => ({ bytes: S.sliceWav(s, k), name: `${s.id}-${String(k + 1).padStart(2, "0")}.wav` }));
   setNote("Sending…");
-  try { const r = await A.w.__takeSamples(files); setNote(target === "pigeon" ? "Sent to Pigeon" : "Sent to zp12"); return r; }
-  catch (err) { setNote("Not sent: " + ((err && err.message) || err)); return S.note; }
+  try {
+    const r = await A.w.__takeSamples(list.map(mk));         // la réponse de FM1-A, telle que sa ligne d'état l'affiche
+    const text = (r && r.text) || "";
+    setNote(text || (r && r.ok === false ? "Not sent" : "Sent"));
+    return text;
+  } catch (err) { setNote("Not sent: " + ((err && err.message) || err)); return S.note; }
 };
 S.hooks.cap.push((name, down) => {
   if (name !== "SEND" || !down || !S.on) return;

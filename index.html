@@ -7158,9 +7158,10 @@ function buildPanel(fw) {
     if (!files.length) return;
     const rom = current.entry?.id === "fmdj";
     status.textContent = rom ? "ROM : vérification…" : "Préparation des échantillons…";
+    let ok = true;
     try { status.textContent = await current.takeSamples(files, ac); }
-    catch (err) { status.textContent = (rom ? "ROM : " : "Échantillons : ") + (err && err.message ? err.message : err); }
-    return status.textContent;
+    catch (err) { ok = false; status.textContent = (rom ? "ROM : " : "Échantillons : ") + (err && err.message ? err.message : err); }
+    return { ok, text: status.textContent };
   }
   window.__takeSamples = takeSamples;                 // le module sample du Duo envoie ses sons par ici
   $("samples").addEventListener("change", (e) => { const f = [...e.target.files]; e.target.value = ""; takeSamples(f); });

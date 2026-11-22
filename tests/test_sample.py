@@ -714,3 +714,143 @@ def test_erase(page, tmp_path):
     page.wait_for_selector("#panel [data-label='REC']")
     page.wait_for_timeout(300)
     assert page.evaluate("window.__sample.samples.length") == 0
+
+
+def test_onglets_caches_en_portrait(page):
+    """Duo empilé (portrait) : sous le module, comme sous un FM-1, pas d'onglets FM1-A | FM1-B."""
+    a, b = open_duo_with(page, "sample", 820, 1180)
+    page.wait_for_function("document.querySelector('.duo-stage').dataset.layout === 'stack'")
+    b.wait_for_selector(".duo-tabs", state="attached")
+    assert b.evaluate("getComputedStyle(document.querySelector('.duo-tabs')).display") == "none"
+
+
+# ---------------------------------------------------------------- corrections après la relecture
+def wav_info(page, expr):
+    """[images, canaux, crête] d'un .wav (Uint8Array) rendu par la page."""
+    return page.evaluate(f"""(() => {{ const w = {expr}, d = new DataView(w.buffer, w.byteOffset), nc = d.getUint16(22, true), n = d.getUint32(40, true) / 2;
+      let pk = 0; for (let i = 0; i < n; i++) pk = Math.max(pk, Math.abs(d.getInt16(44 + 2 * i, true)) / 32768); return [n / nc, nc, pk]; }})()""")
+
+
+def test_one_shot_joue_une_fois(page, tmp_path):
+    with_sample(page, tmp_path, 0.5)
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].bars") is None
+    page.evaluate("window.__engine().play(true)")
+    page.wait_for_timeout(1500)
+    assert rms_out(page) < 0.001
+    assert page.evaluate("window.__engine().playing") is False
+
+
+def test_rec_lie_sur_un_temps(page):
+    a, b = duo_ready(page, 120)
+    tap(b, "[data-label='PLAY']")
+    page.wait_for_function("window.__duo.frames.b.contentWindow.__engine().playing", timeout=5000)
+    page.wait_for_timeout(700)
+    b.evaluate("window.__sample.capt.thresh = null")
+    pressed = b.evaluate("window.__sample.clock.beats(performance.now())")
+    tap(b, "[data-label='REC']")
+    b.wait_for_function("!!window.__sample.recording")
+    at = b.evaluate("window.__sample.recording.at")
+    assert at is not None and at == int(at) and at > pressed, (pressed, at)
+    tap(b, "[data-label='REC']")
+
+
+def test_envoi_echec_affiche(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("""window.__sample.fm1A = () => ({ w: { File, __takeSamples: async () => ({ ok: false, text: 'Échantillons : délai dépassé' }) },
+      eng: { entry: { id: 'pigeon' } } })""")
+    r = page.evaluate("window.__sample.send('pigeon')")
+    assert "délai dépassé" in r
+    assert "Sent" not in page.evaluate("window.__sample.note") and "délai dépassé" in page.evaluate("window.__sample.note")
+
+
+def test_tranches_envoyees_avec_reglages(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("Object.assign(window.__sample.samples[window.__sample.cur].cols[0], { start: 0, len: 100, pitch: 0, gain: 50 })")
+    frames, nc, pk = wav_info(page, "window.__sample.sliceWav(window.__sample.samples[window.__sample.cur], 0)")
+    rate = page.evaluate("window.__sample.samples[window.__sample.cur].rate")
+    assert abs(frames - 0.1 * rate) <= 2, frames
+    assert abs(pk - 0.5 * 12000 / 32768) < 0.02, pk
+
+
+def test_pigeon_chanson_courte(page, tmp_path):
+    with_sample(page, tmp_path, 1.5)
+    n = page.evaluate("window.__sample.pigeonFiles(window.__sample.samples[window.__sample.cur]).length")
+    assert n == 17
+    frames, nc, pk = wav_info(page, "window.__sample.pigeonFiles(window.__sample.samples[window.__sample.cur])[0].bytes")
+    rate = page.evaluate("window.__sample.samples[window.__sample.cur].rate")
+    assert frames / rate >= 2.05
+
+
+def test_eteindre_pendant_capture(page):
+    page.add_init_script("""window.__streams = []; const g = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+      navigator.mediaDevices.getUserMedia = async (c) => { const s = await g(c); window.__streams.push(s); return s; };""")
+    open_sample(page); power_sample(page)
+    page.evaluate("window.__sample.capt.thresh = null")
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!!window.__sample.recording")
+    page.click("#power")
+    page.wait_for_function("!window.__sample.on")
+    assert page.evaluate("window.__sample.recording") is None
+    assert page.evaluate("window.__streams.every((s) => s.getTracks().every((t) => t.readyState === 'ended'))") is True
+
+
+def test_glisser_une_valeur(page, tmp_path):
+    with_sample(page, tmp_path)
+    lcd_touch(page, 385, 40); lcd_touch(page, 385, 80, kind="pointermove"); lcd_touch(page, 385, 80, kind="pointerup")
+    assert page.evaluate("window.__sample.col") == 3
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].gain") < 100
+
+
+def test_poignee_de_fin(page, tmp_path):
+    with_sample(page, tmp_path)
+    before = page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len")
+    x = 10 + 420 * 1 / 16 - 1                                            # la fin de la tranche 1, juste avant la limite suivante
+    page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len -= 60")
+    xe = 10 + 420 * ((before - 60) / 1000 / 4)
+    lcd_touch(page, xe, 120); lcd_touch(page, xe - 10, 120, kind="pointermove"); lcd_touch(page, xe - 10, 120, kind="pointerup")
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len") < before - 60
+
+
+def test_puce_de_cible(page, tmp_path):
+    with_sample(page, tmp_path)
+    send_key(page)
+    page.evaluate("window.__sample.target = 'erase'")
+    x = page.evaluate("window.__sample.targetChipX('FILE')")
+    lcd_touch(page, x, 68); lcd_touch(page, x, 68, kind="pointerup")
+    assert page.evaluate("window.__sample.target") == "file"
+
+
+def test_micro_mono_reste_mono(page):
+    page.add_init_script("""navigator.mediaDevices.getUserMedia = async () => { const c = new AudioContext(), o = c.createOscillator(), d = c.createMediaStreamDestination();
+      d.channelCount = 1; d.channelCountMode = 'explicit'; o.connect(d); o.start(); return d.stream; };""")
+    open_sample(page); power_sample(page)
+    page.evaluate("window.__sample.capt.thresh = null")
+    assert page.evaluate("window.__sample.capture('mic', { seconds: 0.5 }).then((s) => s.ch.length)") == 1
+
+
+def test_session_audio_pendant_le_micro(page):
+    page.add_init_script("Object.defineProperty(navigator, 'audioSession', { value: { type: 'auto' }, configurable: true })")
+    open_sample(page); power_sample(page)
+    assert page.evaluate("navigator.audioSession.type") == "playback"
+    page.evaluate("window.__sample.capt.thresh = null")
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!!window.__sample.recording")
+    assert page.evaluate("navigator.audioSession.type") == "play-and-record"
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!window.__sample.recording")
+    assert page.evaluate("navigator.audioSession.type") == "playback"
+
+
+def test_rec_pad_coupe_le_roll(page, tmp_path):
+    with_sample(page, tmp_path)
+    spy_sent(page)
+    page.evaluate("window.__sample.capt.thresh = null")
+    page.dispatch_event("[data-pad='3']", "pointerdown", {"pointerId": 3, "isPrimary": True})
+    page.wait_for_timeout(400)
+    assert page.evaluate("window.__sent.some((m) => m.t === 'roll' && m.i === 3 && m.on)")
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!!window.__sample.recording")
+    last = page.evaluate("window.__sent.filter((m) => m.t === 'roll' && m.i === 3).pop()")
+    assert last["on"] is False
+    tap(page, "[data-label='REC']")
+    page.dispatch_event("[data-pad='3']", "pointerup", {"pointerId": 3, "isPrimary": True})
