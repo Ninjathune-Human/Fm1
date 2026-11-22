@@ -27,15 +27,15 @@
 
 ## Review Focus
 
-1. Micro refusé ou absent : la puce MIC grisée et la raison à l'écran, les autres sources intactes (Tâche 6, `test_mic_refuse`).
-2. FM1-A éteint, ou changé de firmware, pendant une capture depuis le FM-1 : la capture s'arrête proprement, rien ne plante (Tâche 6, `test_capture_fm1_interrompue`).
-3. Fichier très court (0,05 s) ou très long (10 min) : le court se joue en une fois sans boucle, le long est coupé à 16 s avec un message (Tâche 6, `test_fichier_court_et_long`).
-4. FM1-A n'est ni Pigeon ni zp12, ou il est éteint : seules FILE et ERASE sont proposées (Tâche 10, `test_cibles_selon_fm1a`).
-5. Tempo changé, ou délié, pendant la lecture : la boucle suit le nouveau tempo dans le temps qui suit, déliée elle repart sur son propre tempo sans s'emballer (Tâche 5, `test_tempo_change_et_delie`).
+1. Micro refusé ou absent : la puce MIC grisée et la raison à l'écran, les autres sources intactes (Task 6, `test_mic_refuse`).
+2. FM1-A éteint, ou changé de firmware, pendant une capture depuis le FM-1 : la capture s'arrête proprement, rien ne plante (Task 6, `test_capture_fm1_interrompue`).
+3. Fichier très court (0,05 s) ou très long (10 min) : le court se joue en une fois sans boucle, le long est coupé à 16 s avec un message (Task 6, `test_fichier_court_et_long`).
+4. FM1-A n'est ni Pigeon ni zp12, ou il est éteint : seules FILE et ERASE sont proposées (Task 10, `test_cibles_selon_fm1a`).
+5. Tempo changé, ou délié, pendant la lecture : la boucle suit le nouveau tempo dans le temps qui suit, déliée elle repart sur son propre tempo sans s'emballer (Task 5, `test_tempo_change_et_delie`).
 
 ---
 
-### Tâche 1 : la bibliothèque pure `sample-lib`
+### Task 1: la bibliothèque pure `sample-lib`
 
 **Files :**
 - Create : `sample.html` (le seul bloc `<script id="sample-lib">` pour l'instant, dans une page minimale)
@@ -97,7 +97,7 @@ Expected : PASS (5 tests)
 
 ---
 
-### Tâche 2 : le panneau, l'écran éteint et la ligne du dessous
+### Task 2: le panneau, l'écran éteint et la ligne du dessous
 
 **Files :**
 - Modify : `sample.html`
@@ -143,7 +143,7 @@ def test_allumer(page):
 
 - [ ] **Step 2 : vérifier qu'ils échouent** : Run : `python -m pytest -q tests/test_sample.py` ; Expected : FAIL
 
-- [ ] **Step 3 : dessiner le panneau** d'après `panel({ kind: "module2" })` de la maquette, avec les matières et le coloris de `buildPanel()` ; sans animation CSS : les lumières viennent de `--i` (Tâche 9). Molettes : `Encoder` et `Haptics` recopiés, MASTER règle le volume (Tâche 3), SELECT est branché à la Tâche 7. La ligne `.deck` reprend les classes d'`index.html` pour que la page du Duo y place ses onglets.
+- [ ] **Step 3 : dessiner le panneau** d'après `panel({ kind: "module2" })` de la maquette, avec les matières et le coloris de `buildPanel()` ; sans animation CSS : les lumières viennent de `--i` (Task 9). Molettes : `Encoder` et `Haptics` recopiés, MASTER règle le volume (Task 3), SELECT est branché à la Tâche 7. La ligne `.deck` reprend les classes d'`index.html` pour que la page du Duo y place ses onglets.
 
 - [ ] **Step 4 : vérifier qu'ils passent** : Run : `python -m pytest -q tests/test_sample.py` ; Expected : PASS
 
@@ -151,7 +151,7 @@ def test_allumer(page):
 
 ---
 
-### Tâche 3 : le moteur audio
+### Task 3: le moteur audio
 
 **Files :**
 - Modify : `sample.html` (bloc `<script type="text/worklet" id="sample-worklet">`, processeur `"sample"`, et sa classe de page `SampleEngine`)
@@ -185,7 +185,7 @@ def test_roll(page): ...                    # roll i 0 à 120 BPM pendant 1 s �
 
 ---
 
-### Tâche 4 : le cadre B du Duo et la section « Modules »
+### Task 4: le cadre B du Duo et la section « Modules »
 
 **Files :**
 - Modify : `index.html` (le Duo, l. 7391-7600 : `src` du cadre B, `allow`, `__duo.useB` ; la liste des firmwares, `renderSections()` l. 6761 : section « Modules » en tête quand `FM1_ID === "b"` et dans le Duo ; au chargement, `?choisir` ouvre la liste par `openSheet()`)
@@ -219,14 +219,14 @@ def test_allow_micro(page): ...                # les deux iframes ont microphone
 
 ---
 
-### Tâche 5 : l'horloge du tempo lié
+### Task 5: l'horloge du tempo lié
 
 **Files :**
 - Modify : `sample.html`
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : `makeClock` (Tâche 1), `SampleEngine` (Tâche 3), `__duo` (Tâche 4)
+- Consumes : `makeClock` (Task 1), `SampleEngine` (Task 3), `__duo` (Task 4)
 - Produces, sur `window.__engine()` : `name = "Module sample"`, `entry = { id: "sample", nom: "Module sample", natif_horloge: true, demarre: true }`, `midiIn(bytes: Uint8Array)`, `playLight() -> "green"|"off"`, `greenAt: number` (`performance.timeOrigin + performance.now()` au dernier vert) ; `window.__sample.loopBeats() -> number` ; `window.__sample.bpm` (tempo propre, 120 par défaut, gardé sous `fm1.sample.bpm`)
 
 - [ ] **Step 1 : écrire les tests**
@@ -246,14 +246,14 @@ def test_seul_avec_son_tempo(page): ...        # sample.html seul : PLAY joue à
 
 ---
 
-### Tâche 6 : la capture et la mémoire des samples
+### Task 6: la capture et la mémoire des samples
 
 **Files :**
 - Modify : `sample.html` (sources, REC, base `fm1-samples`, prise sur FM1-A : un petit worklet `"sample-tap"` ajouté au contexte `window.__ac` de FM1-A, relié à `__engine().an`, ses blocs envoyés par `MessageChannel`)
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : `fitBars`, `sliceBounds`, `MAX_SECONDS` (Tâche 1), `SampleEngine.load` (Tâche 3), l'horloge (Tâche 5)
+- Consumes : `fitBars`, `sliceBounds`, `MAX_SECONDS` (Task 1), `SampleEngine.load` (Task 3), l'horloge (Task 5)
 - Produces :
   - `Sample = { id: "S01"…, name: string, rate: number, ch: Float32Array[], bars: number|null, fit: number, slices: Int32Array(17), pads: (null|{ ch: Float32Array[], rate: number, name: string })[16], cols: { start: number, len: number, pitch: number, gain: number }[16] }` : start et len en millisecondes (start depuis la limite de la tranche), pitch en demi-tons (-24..24), gain 0..100 (défaut 0, longueur de la tranche, 0, 100) ; un cran de SELECT = 1 ms, 1 demi-ton ou 1
   - `window.__sample.capture(source: "mic"|"fm1"|"tab", opts?: { seconds?: number, pad?: number }) -> Promise<Sample>` ; `window.__sample.importFile(file: File) -> Promise<Sample>` ; `window.__sample.samples: Sample[]` ; `window.__sample.cur: number` ; `window.__sample.sources() -> { mic: boolean|string, fm1: boolean, file: true, tab: boolean }` (une chaîne : la raison du refus)
@@ -277,15 +277,15 @@ def test_tab_selon_navigateur(page): ...       # getDisplayMedia absent (script 
 
 ---
 
-### Tâche 7 : l'écran et ses gestes
+### Task 7: l'écran et ses gestes
 
 **Files :**
 - Modify : `sample.html`
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : `Sample`, `__sample` (Tâches 5, 6)
-- Produces : `window.__sample.page`, `window.__sample.col: number|null`, `window.__sample.zoom: { from: number, to: number }` (fraction du sample) ; EDIT → `edit`, SEND → `send` (Tâche 10 fait le second appui), REC → `capture` (Tâche 6)
+- Consumes : `Sample`, `__sample` (Tasks 5, 6)
+- Produces : `window.__sample.page`, `window.__sample.col: number|null`, `window.__sample.zoom: { from: number, to: number }` (fraction du sample) ; EDIT → `edit`, SEND → `send` (Tâche 10 fait le second appui), REC → `capture` (Task 6)
 
 - [ ] **Step 1 : écrire les tests**
 
@@ -303,14 +303,14 @@ def test_puces(page): ...                      # page capture, toucher la puce F
 
 ---
 
-### Tâche 8 : platine, zone XY et pads
+### Task 8: platine, zone XY et pads
 
 **Files :**
 - Modify : `sample.html`
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : messages du worklet (Tâche 3), `TURN_SECONDS`, `rollSeconds` (Tâche 1)
+- Consumes : messages du worklet (Task 3), `TURN_SECONDS`, `rollSeconds` (Task 1)
 - Produces : `window.__sample.touch = { platter: number, xy: number, cut: boolean, reverse: boolean }` (nombre de pointeurs posés, états)
 
 - [ ] **Step 1 : écrire les tests** (pointeurs simulés par `page.dispatch_event` sur `#platter`, `#xy`, `.key[data-pad]`, avec `pointerId`, `pressure`, `pointerType`)
@@ -332,14 +332,14 @@ def test_clavier_et_midi(page): ...            # Espace → PLAY ; R → REC ; m
 
 ---
 
-### Tâche 9 : les lumières
+### Task 9: les lumières
 
 **Files :**
 - Modify : `sample.html`
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : `pos` (Tâche 3), `touch` (Tâche 8)
+- Consumes : `pos` (Task 3), `touch` (Task 8)
 - Produces : la variable `--i` (0..1) sur `.key[data-pad]`, `.cap`, et les 32 LED `#platter .led[data-i]` ; classes de teinte `hue-green` (PLAY), `hue-red` (REC)
 
 - [ ] **Step 1 : écrire les tests**
@@ -356,7 +356,7 @@ def test_point_xy(page): ...                   # un doigt dans #xy → un point 
 
 ---
 
-### Tâche 10 : l'envoi
+### Task 10: l'envoi
 
 **Files :**
 - Modify : `index.html` (une ligne après la définition de `takeSamples`, l. 7142 : `window.__takeSamples = takeSamples;`, et `takeSamples` rend le texte d'état)
@@ -365,7 +365,7 @@ def test_point_xy(page): ...                   # un doigt dans #xy → un point 
 - Modify : `tests/test_sample.py`
 
 **Interfaces :**
-- Consumes : `encodeWav` (Tâche 1), `Sample` (Tâche 6), `parent.__duo.frames.a.contentWindow.__takeSamples(files: File[]) -> Promise<string>`
+- Consumes : `encodeWav` (Task 1), `Sample` (Task 6), `parent.__duo.frames.a.contentWindow.__takeSamples(files: File[]) -> Promise<string>`
 - Produces : `window.__sample.targets() -> ("pigeon"|"zp12"|"file"|"erase")[]` ; `window.__sample.send(target) -> Promise<string>` (le texte affiché)
 
 - [ ] **Step 1 : écrire les tests**
@@ -382,7 +382,7 @@ def test_erase(page): ...                      # cible erase, confirmée → le 
 
 ---
 
-### Tâche 11 : la sauvegarde
+### Task 11: la sauvegarde
 
 **Files :**
 - Modify : `backup.js` (comme `COPIES` : `SAMPLES = { name: "fm1-samples", version: 1, stores: ["samples"] }` ; `createBackup` ajoute `samples` ; `restoreBackup` ne les écrit que si le champ existe)
@@ -399,7 +399,7 @@ def test_sauvegarde_sans_samples_les_garde(page): ...  # champ samples absent �
 
 ---
 
-### Tâche 12 : publication et documentation
+### Task 12: publication et documentation
 
 **Files :**
 - Modify : `.github/workflows/pages.yml` (l. 130 : `cp index.html engine.js backup.js sample.html _site/`)
