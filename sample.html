@@ -271,6 +271,8 @@ class SampleProc extends AudioWorkletProcessor {
     this.vel = 1;                                     // sa vitesse, en secondes du sample par seconde (1 : normale)
     this.mode = "loop";                               // loop, scratch, spin (relâchée : le moteur relance), fling (lancée)
     this.target = null; this.lastTarget = null; this.slip = 0;
+    this.grab = 0; this.handPos = 0; this.handVel = 0; this.handT = 0; this.handIn = 0;   // la main : sa saisie, sa position, sa vitesse, sa date (horloge audio), l'arrivée de son message
+    this.xfLeft = 0; this.xfLen = 1; this.xfHead = 0; this.xfVel = 0;   // le fondu d'un saut de la tête (6 ms)
     this.voices = [];                                 // les pads et les répétitions : { buf, rate, at, end, speed, gain, age }
     this.roll = null;                                 // { i, next }
     this.cut = 0; this.cutTo = 0; this.master = 0.8; this.masterTo = 0.8;
@@ -294,11 +296,16 @@ class SampleProc extends AudioWorkletProcessor {
       case "bpm": this.bpm = m.bpm; break;
       case "pad": if (m.on) this.trigger(m.i, null); break;
       case "roll": this.roll = m.on ? { i: m.i, next: currentFrame } : null; break;
-      case "scratch":
-        if (m.pos == null) { if (this.mode === "scratch") this.mode = "spin"; this.target = null; }
-        else { this.mode = "scratch"; this.target = m.pos; }
+      case "scratch":                                 // grab : la main saisit le disque là où il est ; delta (+ vel) : elle le mène
+        if (m.grab) { this.mode = "scratch"; this.grab = this.handPos = this.target = this.head; this.handVel = 0; this.handT = this.handIn = currentTime; }
+        else if (m.delta != null) {
+          this.mode = "scratch"; this.handPos = this.grab + m.delta; this.handVel = m.vel || 0; this.handIn = currentTime;
+          this.handT = m.at != null ? Math.min(currentTime, Math.max(m.at, currentTime - 0.08)) : currentTime;
+        }
+        else if (m.pos == null) this.release();
+        else { this.mode = "scratch"; this.handPos = this.target = m.pos; this.handVel = 0; this.handT = this.handIn = currentTime; }
         break;
-      case "fling": this.vel = m.vel; this.mode = "fling"; break;   // lancée en arrière : elle part à la vitesse de la main
+      case "fling": this.target = null; this.vel = m.vel; this.mode = "fling"; break;   // lancée en arrière : elle part à la vitesse de la main
       case "cut": this.cutTo = m.on ? 1 : 0; break;
       case "filter": this.fxTo = m.x; this.fyTo = m.y; break;
       case "echo": this.echoTo = [m.amount, m.feedback]; break;
@@ -311,6 +318,17 @@ class SampleProc extends AudioWorkletProcessor {
   dur() { return this.frames / this.rate; }
   loopBeats() { return this.bars ? this.bars * 4 : Math.max(1e-3, (this.dur() * this.bpm) / 60); }
   secPerBeat() { return this.dur() / this.loopBeats(); }   // secondes du sample par temps de boucle
+  // la main se lève : en lecture, la tête rejoint aussitôt sa place dans la boucle ; sinon (arrêt, sample joué une fois)
+  // le moteur la relance ou la laisse s'arrêter
+  release() {
+    this.target = null;
+    if (this.mode !== "scratch") return;
+    if (this.playing && this.ch && this.bars) { this.slipTo(); this.mode = "loop"; } else this.mode = "spin";
+  }
+  slipTo() {                                          // la tête saute à sa place dans la boucle, en fondu enchaîné
+    this.xfHead = this.head; this.xfVel = this.vel; this.xfLen = this.xfLeft = Math.max(1, Math.round(0.006 * sampleRate));
+    this.head = this.loop * this.secPerBeat(); this.vel = (this.bpm / 60) * this.secPerBeat();
+  }
   // une tranche, jouée une fois (pad) ou pendant une répétition (roll)
   trigger(i, maxSec) {
     const own = this.padBuf[i];
@@ -350,9 +368,13 @@ class SampleProc extends AudioWorkletProcessor {
     const spb = has ? this.secPerBeat() : 0, D = has ? this.dur() : 1, nominal = oneShot ? 1 : beatsPerSec * spb;
     let targetVel;
     if (this.mode === "scratch") {
+      // la main est datée sur l'horloge audio : la cible est là où sera la main quand ce bloc s'entendra, sur sa lancée
+      // (80 ms au plus, la latence de sortie comprise) ; une main dont rien n'arrive depuis 50 ms est immobile
+      const hv = currentTime - this.handIn < 0.05 ? this.handVel : 0;
+      this.target = this.handPos + hv * Math.min(Math.max(currentTime - this.handT, 0), 0.08);
       let d = this.target - this.head;
       if (has) d -= D * Math.round(d / D);
-      targetVel = (d / (n * dt)) * 0.35;               // la main mène la tête, avec un peu d'inertie
+      targetVel = hv + d / 0.015;                      // la tête suit la vitesse de la main, et rattrape son retard en ~15 ms
     } else targetVel = this.playing ? nominal : 0;
     // le moteur : ~200 ms pour reprendre sa vitesse ; lancée en arrière, c'est l'inertie du disque qui freine, plus lentement
     const k = this.mode === "scratch" ? 0.5 : 1 - Math.exp(-(n * dt) / (this.mode === "fling" ? 0.45 : 0.06));
@@ -379,8 +401,14 @@ class SampleProc extends AudioWorkletProcessor {
         if (oneShot) this.loop = this.head / spb;
         const p = this.head * this.rate;
         if (this.playing || this.mode !== "loop") { l = this.read(this.ch, 0, p); r = this.ch.length > 1 ? this.read(this.ch, 1, p) : l; }
+        if (this.xfLeft > 0) {                         // le saut de la tête : l'ancienne place s'efface en 6 ms
+          const u = this.xfLeft / this.xfLen, q = this.xfHead * this.rate;
+          const ol = this.read(this.ch, 0, q), or = this.ch.length > 1 ? this.read(this.ch, 1, q) : ol;
+          l = l * (1 - u) + ol * u; r = r * (1 - u) + or * u;
+          this.xfHead += this.xfVel * dt; this.xfLeft--;
+        }
         // relâchée : quand le moteur a repris sa vitesse, la tête rejoint la boucle (lecture « slip »)
-        if (this.mode === "spin" && this.playing && Math.abs(this.vel - nominal) < 0.02 * nominal + 1e-6) { if (!oneShot) this.head = this.loop * spb; this.mode = "loop"; }
+        if (this.mode === "spin" && this.playing && Math.abs(this.vel - nominal) < 0.02 * nominal + 1e-6) { if (!oneShot) this.slipTo(); this.mode = "loop"; }
         else if (this.mode === "spin" && !this.playing && Math.abs(this.vel) < 1e-3) this.mode = "loop";
         if (this.mode === "loop" && this.playing && !oneShot) {
           const lh = this.loop * spb;
@@ -1642,7 +1670,6 @@ S.macroTurn = (n) => {
   return b[key] !== was;
 };
 const devXY = (e) => { const r = panel.svg.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * VW, ((e.clientY - r.top) / r.height) * VH]; };
-const spb = () => { const s = eng.sample; return s ? s.ch[0].length / s.rate / S.loopLength() : 0; };   // secondes du sample par temps
 
 // ---------------------------------------------------------------- la platine : un doigt scratche, deux coupent
 const plat = new Map();                               // pointerId → { a (angle cumulé), last, hist }
@@ -1653,24 +1680,50 @@ function platterDown(e) {
   e.preventDefault();
   try { panel.platter.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ }
   const [x, y] = devXY(e);
-  plat.set(e.pointerId, { last: angleOf(x, y), turned: 0, hist: [[e.timeStamp, 0]] });
+  plat.set(e.pointerId, { last: angleOf(x, y), turned: 0, hist: [[e.timeStamp, 0]], at: e.timeStamp, vel: 0 });
   S.touch.platter = plat.size;
   if (plat.size === 1) {                               // la main sur le disque : il s'arrête sous elle
-    scratchFrom = eng.pos.beats * spb();
-    S.touch.pos = scratchFrom;
-    eng.send({ t: "scratch", pos: scratchFrom });
+    scratchFrom = 0; S.touch.pos = 0;                 // (le moteur saisit le disque là où il est vraiment)
+    eng.send({ t: "scratch", grab: true });
+    cancelAnimationFrame(still); still = requestAnimationFrame(watchStill);
   } else if (plat.size === 2) { S.touch.cut = true; eng.send({ t: "cut", on: true }); }
+}
+// l'instant d'un événement sur l'horloge audio (getOutputTimestamp quand le navigateur l'a, sinon l'heure du contexte)
+function audioTime(ts) {
+  const ac = eng.ac, o = ac && ac.getOutputTimestamp ? ac.getOutputTimestamp() : null;
+  return o && o.performanceTime ? o.contextTime + (ts - o.performanceTime) / 1000 : ac ? ac.currentTime : 0;
+}
+// la vitesse de la main sur ses 24 dernières ms (au moins son point précédent), en secondes du sample par seconde
+function handVel(h) {
+  const [t1, a1] = h[h.length - 1];
+  let k = h.length - 1;
+  if (k > 0) k--;
+  while (k > 0 && t1 - h[k - 1][0] <= 24) k--;
+  const [t0, a0] = h[k];
+  return t1 - t0 >= 4 ? ((a1 - a0) / (t1 - t0)) * 1000 / (2 * Math.PI) * TURN_SECONDS : 0;
+}
+// la main posée mais immobile n'envoie plus rien : à chaque image, une main muette depuis 25 ms est dite arrêtée
+let still = 0;
+function watchStill() {
+  if (!plat.size) return;
+  const p = plat.get([...plat.keys()][0]);
+  if (p && p.vel && performance.now() - p.at > 25) { p.vel = 0; eng.send({ t: "scratch", delta: S.touch.pos, vel: 0, at: audioTime(performance.now()) }); }
+  still = requestAnimationFrame(watchStill);
 }
 function platterMove(e) {
   const p = plat.get(e.pointerId);
   if (!p || [...plat.keys()][0] !== e.pointerId) return;   // seul le premier doigt scratche
-  const [x, y] = devXY(e), a = angleOf(x, y);
-  let d = a - p.last;
-  if (d > Math.PI) d -= 2 * Math.PI; else if (d < -Math.PI) d += 2 * Math.PI;
-  p.last = a; p.turned += d;
-  p.hist.push([e.timeStamp, p.turned]); if (p.hist.length > 8) p.hist.shift();
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];   // (tous les points de la main, pas un par image)
+  for (const c of evs.length ? evs : [e]) {
+    const [x, y] = devXY(c), a = angleOf(x, y);
+    let d = a - p.last;
+    if (d > Math.PI) d -= 2 * Math.PI; else if (d < -Math.PI) d += 2 * Math.PI;
+    p.last = a; p.turned += d;
+    p.hist.push([c.timeStamp, p.turned]); if (p.hist.length > 12) p.hist.shift();
+  }
   S.touch.pos = scratchFrom + (p.turned / (2 * Math.PI)) * TURN_SECONDS;
-  eng.send({ t: "scratch", pos: S.touch.pos });
+  p.at = e.timeStamp; p.vel = handVel(p.hist);
+  eng.send({ t: "scratch", delta: S.touch.pos, vel: p.vel, at: audioTime(e.timeStamp) });
 }
 function platterUp(e) {
   const p = plat.get(e.pointerId);
@@ -1681,15 +1734,15 @@ function platterUp(e) {
   if (S.touch.cut && plat.size < 2) { S.touch.cut = false; eng.send({ t: "cut", on: false }); }
   if (first && plat.size) {                            // le premier levé, l'autre reste : il prend le scratch
     const [id, q] = [...plat.entries()][0];
-    plat.delete(id); plat.set(id, { ...q, turned: 0, hist: [[e.timeStamp, 0]] }); scratchFrom = S.touch.pos;
+    plat.delete(id); plat.set(id, { ...q, turned: 0, hist: [[e.timeStamp, 0]], at: e.timeStamp, vel: 0 }); scratchFrom = S.touch.pos;
     return;
   }
   if (plat.size) return;
   // le dernier doigt levé : lancé en arrière, le disque part à la vitesse de la main, ralentit de lui-même, puis le moteur le
   // remet dans le bon sens (à l'arrêt, il s'arrête) ; sinon le moteur le relance aussitôt
   const h = p.hist, [t0, a0] = h[0], [t1, a1] = h[h.length - 1], w = t1 > t0 ? ((a1 - a0) / (t1 - t0)) * 1000 : 0;
-  eng.send({ t: "scratch", pos: null });
-  if (w < -8) eng.send({ t: "fling", vel: Math.max(-6, (w / (2 * Math.PI)) * TURN_SECONDS) });
+  if (w < -8) eng.send({ t: "fling", vel: Math.max(-6, (w / (2 * Math.PI)) * TURN_SECONDS) });   // (le lancer vaut relâcher)
+  else eng.send({ t: "scratch", pos: null });
 }
 panel.platter.addEventListener("pointerdown", platterDown);
 panel.platter.addEventListener("pointermove", platterMove);

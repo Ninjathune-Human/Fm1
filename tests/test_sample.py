@@ -1118,3 +1118,47 @@ def test_sel_dit_ce_qu_il_fait(page, tmp_path):
     assert page.evaluate("window.__sample.unsaved()") is True
     tap(page, "[data-label='SEL']")
     assert page.evaluate("[window.__sample.unsaved(), window.__sample.note]") == [False, "Saved"]
+
+
+def test_relache_reprend_aussitot(page, tmp_path):
+    playing_loop(page, tmp_path)
+    page.wait_for_timeout(300)
+    normal = page.evaluate("window.__engine().pos.vel")
+    ptr(page, "#platter", "pointerdown", *on_platter(30))
+    page.wait_for_timeout(300)                                             # la main tient le disque, la boucle avance dessous
+    ptr(page, "#platter", "pointerup", *on_platter(30))
+    page.wait_for_timeout(40)                                              # (un message de position, à peine)
+    beats, loop, vel, L = page.evaluate("[window.__engine().pos.beats, window.__engine().pos.loop, window.__engine().pos.vel, window.__sample.loopLength()]")
+    d = (beats - loop) % L
+    assert min(d, L - d) < 0.02, (beats, loop)                             # au bon endroit tout de suite
+    assert abs(vel - normal) < 0.05 * normal                               # et à la bonne vitesse
+
+
+def test_saisie_sans_recul(page, tmp_path):
+    playing_loop(page, tmp_path)
+    page.wait_for_timeout(300)
+    # l'écran voit une position vieille de 150 ms : la main doit saisir le disque là où il est vraiment
+    page.evaluate("""(() => { const e = window.__engine(), old = { ...e.pos }; window.__frozen = old;
+      Object.defineProperty(e, 'pos', { get: () => ({ ...old }), set: (v) => { window.__live = v; }, configurable: true }); })()""")
+    page.wait_for_timeout(150)
+    ptr(page, "#platter", "pointerdown", *on_platter(30))
+    page.wait_for_timeout(120)
+    assert page.evaluate("window.__live.beats - window.__frozen.beats") > 0.2
+
+
+def test_scratch_suit_la_vitesse_de_la_main(page, tmp_path):
+    playing_loop(page, tmp_path)
+    page.wait_for_timeout(200)
+    # une main régulière : 250 °/s (un point toutes les 16 ms environ), et la vitesse du son relevée au même rythme
+    vs = page.evaluate("""new Promise((done) => {
+      const svg = document.getElementById('panel'), pl = document.getElementById('platter'), r = svg.getBoundingClientRect();
+      const at = (deg) => { const a = (deg - 90) * Math.PI / 180; return [r.left + (1370 + 150 * Math.cos(a)) / 1640 * r.width, r.top + (272 + 150 * Math.sin(a)) / 990 * r.height]; };
+      const ev = (type, deg) => { const [x, y] = at(deg); pl.dispatchEvent(new PointerEvent(type, { pointerId: 3, clientX: x, clientY: y, isPrimary: true, pointerType: 'touch', bubbles: true })); };
+      let deg = 0, out = []; const t0 = performance.now(); ev('pointerdown', 0);
+      const id = setInterval(() => { deg = 250 * (performance.now() - t0) / 1000; ev('pointermove', deg); if (deg > 60) out.push(window.__engine().pos.vel);
+        if (deg >= 240) { clearInterval(id); ev('pointerup', deg); done(out); } }, 16);
+    })""")
+    import statistics
+    m = sum(vs) / len(vs)
+    assert abs(m - 1.25) < 0.1, m                                           # 250 °/s : 1,25 s du sample par seconde
+    assert statistics.pstdev(vs) / m < 0.15, (min(vs), max(vs))             # sans à-coups (un relevé isolé ne compte pas)
