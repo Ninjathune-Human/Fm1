@@ -269,7 +269,7 @@ class SampleProc extends AudioWorkletProcessor {
     this.loop = 0;                                    // la boucle, en temps (elle avance toujours, même sous un scratch)
     this.head = 0;                                    // la tête qui sonne, en secondes du sample
     this.vel = 1;                                     // sa vitesse, en secondes du sample par seconde (1 : normale)
-    this.mode = "loop";                               // loop, scratch, spin (relâchée : le moteur relance), reverse
+    this.mode = "loop";                               // loop, scratch, spin (relâchée : le moteur relance), fling (lancée)
     this.target = null; this.lastTarget = null; this.slip = 0;
     this.voices = [];                                 // les pads et les répétitions : { buf, rate, at, end, speed, gain, age }
     this.roll = null;                                 // { i, next }
@@ -298,7 +298,7 @@ class SampleProc extends AudioWorkletProcessor {
         if (m.pos == null) { if (this.mode === "scratch") this.mode = "spin"; this.target = null; }
         else { this.mode = "scratch"; this.target = m.pos; }
         break;
-      case "reverse": if (m.on) this.mode = "reverse"; else if (this.mode === "reverse") this.mode = "spin"; break;
+      case "fling": this.vel = m.vel; this.mode = "fling"; break;   // lancée en arrière : elle part à la vitesse de la main
       case "cut": this.cutTo = m.on ? 1 : 0; break;
       case "filter": this.fxTo = m.x; this.fyTo = m.y; break;
       case "echo": this.echoTo = [m.amount, m.feedback]; break;
@@ -353,9 +353,9 @@ class SampleProc extends AudioWorkletProcessor {
       let d = this.target - this.head;
       if (has) d -= D * Math.round(d / D);
       targetVel = (d / (n * dt)) * 0.35;               // la main mène la tête, avec un peu d'inertie
-    } else if (this.mode === "reverse") targetVel = -nominal;
-    else targetVel = this.playing ? nominal : 0;
-    const k = this.mode === "scratch" ? 0.5 : 1 - Math.exp(-(n * dt) / 0.06);   // le moteur : ~200 ms pour reprendre sa vitesse
+    } else targetVel = this.playing ? nominal : 0;
+    // le moteur : ~200 ms pour reprendre sa vitesse ; lancée en arrière, c'est l'inertie du disque qui freine, plus lentement
+    const k = this.mode === "scratch" ? 0.5 : 1 - Math.exp(-(n * dt) / (this.mode === "fling" ? 0.45 : 0.06));
     let ended = false;
     for (let i = 0; i < n; i++) {
       // les rampes douces
@@ -363,7 +363,11 @@ class SampleProc extends AudioWorkletProcessor {
       this.master += (this.masterTo - this.master) * 0.002;
       this.fx += (this.fxTo - this.fx) * 0.002; this.fy += (this.fyTo - this.fy) * 0.002;
       this.echoAmt += (this.echoTo[0] - this.echoAmt) * 0.002; this.echoFb += (this.echoTo[1] - this.echoFb) * 0.002;
-      if (i === 0) this.vel += (targetVel - this.vel) * k;
+      if (i === 0) {
+        this.vel += (targetVel - this.vel) * k;
+        if (this.mode === "fling" && this.vel >= 0) this.mode = "spin";                   // repartie dans le bon sens : le moteur reprend
+        else if (this.mode === "fling" && !this.playing && Math.abs(this.vel) < 0.02) { this.mode = "loop"; this.vel = 0; }   // à l'arrêt : elle s'arrête (sous 2 %, on n'entend plus rien)
+      }
       if (this.playing && has && !oneShot) { this.loop += beatsPerSec * dt; const lb = this.loopBeats(); if (this.loop >= lb) this.loop -= lb; }
       let l = 0, r = 0;
       if (has && (this.playing || this.mode !== "loop")) {
@@ -417,7 +421,7 @@ class SampleProc extends AudioWorkletProcessor {
     if (currentFrame - this.sent >= sr / 60) {
       this.sent = currentFrame;
       const beats = has ? this.head / spb : 0, sl = has ? this.sliceAt(this.head * this.rate) : -1;
-      this.port.postMessage({ t: "pos", beats, loop: this.loop, slice: sl, disc: (this.head / TURN_SECONDS) * 2 * Math.PI, bpm: this.bpm, playing: this.playing });
+      this.port.postMessage({ t: "pos", beats, loop: this.loop, slice: sl, disc: (this.head / TURN_SECONDS) * 2 * Math.PI, bpm: this.bpm, playing: this.playing, vel: this.mode === "loop" && !this.playing ? 0 : this.vel });
     }
     return true;
   }
@@ -1621,7 +1625,7 @@ S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapt
 <script id="sample-gestures">
 // Module sample et scratch : les gestes de la platine, de la zone XY et des pads, le clavier et les notes MIDI.
 "use strict";
-S.touch = { platter: 0, xy: 0, cut: false, reverse: false, pos: 0, filter: { x: 0.5, y: 0 }, echo: { amount: 0, feedback: 0 }, points: [] };
+S.touch = { platter: 0, xy: 0, cut: false, pos: 0, filter: { x: 0.5, y: 0 }, echo: { amount: 0, feedback: 0 }, points: [] };
 // MACRO hors menu : il règle sa cible (gardée), et la zone XY revient à ses valeurs au lever des doigts
 S.MACRO_TARGETS = ["FILTER", "RES", "ECHO", "FEEDBACK", "TEMPO"];
 S.macro = { target: S.MACRO_TARGETS.includes(keep("macro")) ? keep("macro") : "FILTER", base: { x: 0.5, y: 0, amount: 0, feedback: 0 } };
@@ -1642,7 +1646,7 @@ const spb = () => { const s = eng.sample; return s ? s.ch[0].length / s.rate / S
 
 // ---------------------------------------------------------------- la platine : un doigt scratche, deux coupent
 const plat = new Map();                               // pointerId → { a (angle cumulé), last, hist }
-let scratchFrom = 0, revTimer = 0;
+let scratchFrom = 0;
 const angleOf = (x, y) => Math.atan2(y - panel.center.platter[1], x - panel.center.platter[0]);
 function platterDown(e) {
   if (!eng.on || !eng.sample) return;
@@ -1652,8 +1656,6 @@ function platterDown(e) {
   plat.set(e.pointerId, { last: angleOf(x, y), turned: 0, hist: [[e.timeStamp, 0]] });
   S.touch.platter = plat.size;
   if (plat.size === 1) {                               // la main sur le disque : il s'arrête sous elle
-    clearTimeout(revTimer);
-    if (S.touch.reverse) { S.touch.reverse = false; eng.send({ t: "reverse", on: false }); }
     scratchFrom = eng.pos.beats * spb();
     S.touch.pos = scratchFrom;
     eng.send({ t: "scratch", pos: scratchFrom });
@@ -1683,13 +1685,11 @@ function platterUp(e) {
     return;
   }
   if (plat.size) return;
-  // le dernier doigt levé : lancé en arrière, le disque tourne à l'envers un moment ; sinon le moteur le relance
+  // le dernier doigt levé : lancé en arrière, le disque part à la vitesse de la main, ralentit de lui-même, puis le moteur le
+  // remet dans le bon sens (à l'arrêt, il s'arrête) ; sinon le moteur le relance aussitôt
   const h = p.hist, [t0, a0] = h[0], [t1, a1] = h[h.length - 1], w = t1 > t0 ? ((a1 - a0) / (t1 - t0)) * 1000 : 0;
   eng.send({ t: "scratch", pos: null });
-  if (w < -8) {
-    S.touch.reverse = true; eng.send({ t: "reverse", on: true });
-    revTimer = setTimeout(() => { S.touch.reverse = false; eng.send({ t: "reverse", on: false }); }, Math.min(2000, (-w / 12) * 1000));
-  }
+  if (w < -8) eng.send({ t: "fling", vel: Math.max(-6, (w / (2 * Math.PI)) * TURN_SECONDS) });
 }
 panel.platter.addEventListener("pointerdown", platterDown);
 panel.platter.addEventListener("pointermove", platterMove);

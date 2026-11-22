@@ -474,14 +474,41 @@ def test_relache_en_phase(page, tmp_path):
     assert abs(beats - loop) < 0.05, (beats, loop)
 
 
-def test_lancer_en_arriere(page, tmp_path):
-    playing_loop(page, tmp_path)
+def flick_back(page):
     ptr(page, "#platter", "pointerdown", *on_platter(90))
     for d in (70, 40, 10):
         ptr(page, "#platter", "pointermove", *on_platter(d)); page.wait_for_timeout(15)
     ptr(page, "#platter", "pointerup", *on_platter(10))
-    assert page.evaluate("window.__sample.touch.reverse") is True
 
+
+def vels(page, n=60, every=50):
+    out = []
+    for _ in range(n):
+        out.append(page.evaluate("window.__engine().pos.vel")); page.wait_for_timeout(every)
+    return out
+
+
+def test_lancer_en_arriere(page, tmp_path):
+    playing_loop(page, tmp_path)
+    page.wait_for_timeout(300)
+    normal = page.evaluate("window.__engine().pos.vel")
+    assert normal > 0
+    flick_back(page)
+    v = vels(page)
+    v = v[v.index(min(v)):]                                                # (dès que le lancer a pris : la vitesse la plus en arrière)
+    back = [x for x in v if x < 0]
+    assert len(back) >= 4                                                  # il part en arrière, un moment
+    assert all(b >= a - 1e-9 for a, b in zip(back, back[1:]))             # et ralentit de lui-même (inertie)
+    assert abs(v[-1] - normal) < 0.05 * normal                             # puis reprend le sens et la vitesse normale
+
+
+def test_lancer_en_arriere_a_l_arret(page, tmp_path):
+    with_sample(page, tmp_path, 4)
+    page.evaluate("window.__engine().play(false)")
+    flick_back(page)
+    v = vels(page, 60)
+    v = v[v.index(min(v)):]                                                # (dès que le lancer a pris : la vitesse la plus en arrière)
+    assert abs(v[-1]) < 1e-3 and max(v) <= 1e-3                            # il ralentit puis s'arrête, sans repartir
 
 def test_cut_deuxieme_doigt(page, tmp_path):
     playing_loop(page, tmp_path)
