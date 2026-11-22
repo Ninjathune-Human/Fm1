@@ -127,7 +127,7 @@ jobs:
       - name: Assemblage du site
         run: |
           mkdir -p _site/runtime
-          cp index.html engine.js backup.js _site/
+          cp index.html engine.js backup.js sample.html _site/
           for d in firmwares assets; do [ -d "$d" ] && cp -r "$d" _site/; done
           cp fm1-emu/target/wasm/wasm32-unknown-unknown/release/fm1_web.wasm _site/runtime/
           cp fm1-emu/web/worklet.js fm1-emu/web/persistence.js _site/runtime/

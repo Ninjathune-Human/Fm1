@@ -14,6 +14,7 @@
 - Chaque firmware garde ses presets et ses patterns dans le navigateur. L'interrupteur **marche / arrêt** éteint le FM-1 ; l'éteindre efface les sauvegardes du seul firmware actif.
 - Le bouton **Mémoire**, sous le FM-1 : des copies nommées du firmware en cours, et une sauvegarde de toute la mémoire du FM-1 dans un fichier .json, au format du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1) (une sauvegarde passe d'un site à l'autre) ; un seul **Importer…** reconnaît l'une ou l'autre. Sous le panneau : le manuel, les raccourcis clavier, les fonctions du firmware chargé et **Sauvegarde et restauration**. **FR / EN** traduit l'interface, le manuel et les fiches.
 - **Duo** (`index.html?duo`) : deux FM-1 dans la page, chacun avec son firmware et sa mémoire. Avec **Tempo lié**, la page leur donne la même horloge MIDI au BPM choisi et un PLAY lance les deux ; seuls se choisissent alors les firmwares vérifiés en Duo. L'horloge vient du fork de Jake Pawlik.
+- **Module sample** (dans le Duo, en tête de la liste de FM1-B) : capter un son (micro, FM-1 voisin, fichier, onglet sur PC), le découper en 16 tranches jouées aux pads, le déformer à la platine et dans la zone XY, puis l'envoyer à Pigeon ou à zp12 dans FM1-A, ou l'enregistrer en .wav ; il suit le tempo lié.
 - **Fichier MIDI** : avec SLOOP, un fichier .mid entre dans une piste, comme par « Import MIDI » de [son éditeur web](https://github.com/isod89/sloop-fm1), dont la page parle le protocole.
 
 ## Comment ça marche
