@@ -280,3 +280,46 @@ def test_restauration_par_importer(page):
     with page.expect_navigation():
         page.set_input_files("#cp-imp", path)
     assert page.evaluate('localStorage.getItem("fm1va.global")') == "avant"
+
+
+def sample(page, sid):
+    """Un sample du module sample, rangé comme le module le range (clé : son id)."""
+    page.evaluate("""async (sid) => {
+      const db = await new Promise((ok, ko) => { const r = indexedDB.open("fm1-samples", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("samples"); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      await new Promise((ok, ko) => { const t = db.transaction("samples", "readwrite");
+        t.objectStore("samples").put({ id: sid, name: "T", rate: 44100, ch: [Float32Array.of(0.25, -0.5)], bars: null, fit: 1,
+          slices: new Int32Array(17), pads: new Array(16).fill(null), cols: [] }, sid);
+        t.oncomplete = ok; t.onerror = () => ko(t.error); });
+      db.close();
+    }""", sid)
+
+
+def samples(page):
+    return page.evaluate("""async () => {
+      const db = await new Promise((ok, ko) => { const r = indexedDB.open("fm1-samples", 1);
+        r.onupgradeneeded = () => r.result.createObjectStore("samples"); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      const rows = await new Promise((ok, ko) => { const r = db.transaction("samples").objectStore("samples").getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+      db.close();
+      return rows.map((s) => [s.id, s.ch[0] instanceof Float32Array, [...s.ch[0]]]).sort();
+    }""")
+
+
+def test_samples_dans_la_sauvegarde(page):
+    """La sauvegarde reprend les samples du module ; la restaurer les remet tels quels (Float32Array compris)."""
+    page.goto(page.base + "index.html")
+    sample(page, "S01"); sample(page, "S02")
+    backup = page.evaluate("async () => JSON.parse(JSON.stringify(await (await import('./backup.js')).createBackup()))")
+    assert len(backup["samples"]) == 2
+    sample(page, "S03")
+    page.evaluate("async (b) => (await import('./backup.js')).restoreBackup(b)", backup)
+    assert samples(page) == [["S01", True, [0.25, -0.5]], ["S02", True, [0.25, -0.5]]]
+
+
+def test_sauvegarde_sans_samples_les_garde(page):
+    """Une sauvegarde d'avant, ou du fork, n'a pas de samples : la restaurer ne les touche pas."""
+    page.goto(page.base + "index.html")
+    sample(page, "S01")
+    backup = page.evaluate("async () => { const b = JSON.parse(JSON.stringify(await (await import('./backup.js')).createBackup())); delete b.samples; return b; }")
+    page.evaluate("async (b) => (await import('./backup.js')).restoreBackup(b)", backup)
+    assert samples(page) == [["S01", True, [0.25, -0.5]]]

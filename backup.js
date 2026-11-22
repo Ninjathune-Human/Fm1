@@ -13,6 +13,8 @@ const SCHEMAS = {
 // les copies du bouton Mémoire : un champ à part, hors de databases, dont le validateur du fork refuse toute base
 // inconnue (il ignore un champ de plus) ; une sauvegarde sans copies, d'avant ou du fork, les laisse telles quelles
 const COPIES = { name: "fm1-copies", version: 1, stores: ["copies"] };
+// les samples du module sample (sample.html), à part de même : le fork ne connaît pas cette base
+const SAMPLES = { name: "fm1-samples", version: 1, stores: ["samples"] };
 const APP_KEY = /^(fm1\.|fm1b\.|fm1va\.)/;
 const BIN = {
   Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array,
@@ -146,7 +148,10 @@ export async function createBackup() {
   const db = await openDB(COPIES.name, COPIES);
   let copies;
   try { copies = await readStore(db, "copies"); } finally { db.close(); }
-  const result = { format: FORMAT, version: VERSION, created: new Date().toISOString(), local, databases, copies };
+  const sdb = await openDB(SAMPLES.name, SAMPLES);
+  let samples;
+  try { samples = await readStore(sdb, "samples"); } finally { sdb.close(); }
+  const result = { format: FORMAT, version: VERSION, created: new Date().toISOString(), local, databases, copies, samples };
   if (JSON.stringify(result).length > MAX_JSON) throw new Error("Sauvegarde trop lourde pour un seul fichier");
   return result;
 }
@@ -188,19 +193,20 @@ function validate(data) {
     }
     databases[name] = stores;
   }
-  let copies = null;
-  if (Object.hasOwn(data, "copies")) {
-    if (!Array.isArray(data.copies) || data.copies.length > 10000) throw new Error("Copies illisibles");
+  // un champ à part (copies, samples) : absent, ce qu'il range reste tel quel
+  const side = (field, message) => {
+    if (!Object.hasOwn(data, field)) return null;
+    if (!Array.isArray(data[field]) || data[field].length > 10000) throw new Error(message);
     const keys = new Set();
-    copies = data.copies.map(record => {
-      if (!Array.isArray(record) || record.length !== 2) throw new Error("Copies illisibles");
+    return data[field].map(record => {
+      if (!Array.isArray(record) || record.length !== 2) throw new Error(message);
       const key = decode(record[0]), value = decode(record[1]);
-      if (typeof key !== "string" || keys.has(key) || !value || typeof value !== "object") throw new Error("Copies illisibles");
+      if (typeof key !== "string" || keys.has(key) || !value || typeof value !== "object") throw new Error(message);
       keys.add(key);
       return [key, value];
     });
-  }
-  return { local, databases, copies };
+  };
+  return { local, databases, copies: side("copies", "Copies illisibles"), samples: side("samples", "Samples illisibles") };
 }
 // en Duo, chaque FM-1 est un cadre de la même page : les deux comptent, et c'est la page entière qui se recharge
 const frames = () => { try { return Array.from({ length: top.frames.length }, (_, i) => top.frames[i]); } catch { return []; } };
@@ -211,7 +217,7 @@ const running = () => [window, ...frames()].some(w => {
 export async function restoreBackup(backup) {
   // un firmware allumé réécrirait sa mémoire
   if (running()) throw new Error(duo() ? "Éteignez les deux FM-1 avant de restaurer" : "Éteignez le FM-1 avant de restaurer");
-  const { local, databases, copies } = validate(backup);   // tout est vérifié avant de toucher à quoi que ce soit
+  const { local, databases, copies, samples } = validate(backup);   // tout est vérifié avant de toucher à quoi que ce soit
   // une base par transaction ; ce qui n'est pas dans la sauvegarde disparaît : c'est un instantané, pas une fusion
   for (const name of Object.keys(databases)) {
     const db = await openDB(name);
@@ -221,6 +227,11 @@ export async function restoreBackup(backup) {
   if (copies) {
     const db = await openDB(COPIES.name, COPIES);
     try { await writeDB(db, { copies }); }
+    finally { db.close(); }
+  }
+  if (samples) {
+    const db = await openDB(SAMPLES.name, SAMPLES);
+    try { await writeDB(db, { samples }); }
     finally { db.close(); }
   }
   for (const key of Object.keys(localStorage)) if (APP_KEY.test(key)) localStorage.removeItem(key);
