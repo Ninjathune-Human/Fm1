@@ -1148,6 +1148,7 @@ S.capture = async (source = S.capt.source, opts = {}) => {
       if (source === "mic") S.micError = err && err.name === "NotAllowedError" ? "Microphone refused" : "No microphone";
       setNote(source === "mic" ? S.micError : "No tab sound");
       cleanup.forEach((f) => f());
+      S.page = "capture"; drawScreen();                       // la page Capture reste : on peut choisir une autre source
       throw err;
     }
     cleanup.push(() => stream.getTracks().forEach((tr) => tr.stop()));

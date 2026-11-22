@@ -854,3 +854,14 @@ def test_rec_pad_coupe_le_roll(page, tmp_path):
     assert last["on"] is False
     tap(page, "[data-label='REC']")
     page.dispatch_event("[data-pad='3']", "pointerup", {"pointerId": 3, "isPrimary": True})
+
+
+def test_micro_refuse_montre_les_sources(page):
+    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
+    open_sample(page); power_sample(page)
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("window.__sample.page === 'capture'")             # REC refusé : la page Capture reste, avec ses sources
+    with page.expect_file_chooser() as fc:
+        x = page.evaluate("window.__sample.chipX('FILE')")
+        page.mouse.click(*lcd_point(page, x, 68))
+    assert fc.value is not None
