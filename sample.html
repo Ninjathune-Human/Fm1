@@ -219,6 +219,162 @@ function makeClock() {
 // la durée d'une répétition (roll) en doubles croches
 function rollSeconds(bpm) { return 60 / bpm / 4; }
 </script>
+<script type="text/worklet" id="sample-worklet">
+// Le son du module : un AudioWorklet. Il reçoit le texte de sample-lib devant le sien (TURN_SECONDS, rollSeconds…).
+// Une boucle calée sur le tempo, la tête qui sonne (scratch, lecture à l'envers, retour en phase), les pads et le roll,
+// la coupure, le filtre, l'écho, le volume.
+class SampleProc extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.ch = null; this.rate = sampleRate; this.frames = 0; this.slices = null; this.bars = null;
+    this.cols = Array.from({ length: 16 }, () => ({ start: 0, len: 0, pitch: 0, gain: 100 }));
+    this.padBuf = new Array(16).fill(null);
+    this.bpm = 120; this.playing = false;
+    this.loop = 0;                                    // la boucle, en temps (elle avance toujours, même sous un scratch)
+    this.head = 0;                                    // la tête qui sonne, en secondes du sample
+    this.vel = 1;                                     // sa vitesse, en secondes du sample par seconde (1 : normale)
+    this.mode = "loop";                               // loop, scratch, spin (relâchée : le moteur relance), reverse
+    this.target = null; this.lastTarget = null; this.slip = 0;
+    this.voices = [];                                 // les pads et les répétitions : { buf, rate, at, end, speed, gain, age }
+    this.roll = null;                                 // { i, next }
+    this.cut = 0; this.cutTo = 0; this.master = 0.8; this.masterTo = 0.8;
+    this.fx = 0.5; this.fy = 0; this.fxTo = 0.5; this.fyTo = 0;
+    this.lp = [[0, 0], [0, 0]];                       // le filtre à variable d'état, par canal
+    this.echoAmt = 0; this.echoFb = 0; this.echoTo = [0, 0];
+    this.dl = [new Float32Array(sampleRate * 2), new Float32Array(sampleRate * 2)]; this.dw = 0;
+    this.sent = 0;
+    this.port.onmessage = ({ data: m }) => this.msg(m);
+  }
+  msg(m) {
+    switch (m.t) {
+      case "load": this.ch = m.ch; this.rate = m.rate; this.frames = m.ch[0].length; this.slices = m.slices; this.bars = m.bars; this.head = 0; this.loop = 0; this.voices = []; break;
+      case "play": this.playing = m.on; if (m.on && m.from != null) this.loop = m.from; break;
+      case "sync": {                                   // l'horloge : la boucle se cale sur le temps reçu
+        this.bpm = m.bpm || this.bpm;
+        const L = this.loopBeats(), want = ((m.beats % L) + L) % L, d = want - this.loop, dd = d - L * Math.round(d / L);
+        if (Math.abs(dd) > 0.25) this.loop = want; else this.loop += dd * 0.5;
+        break;
+      }
+      case "bpm": this.bpm = m.bpm; break;
+      case "pad": if (m.on) this.trigger(m.i, null); break;
+      case "roll": this.roll = m.on ? { i: m.i, next: currentFrame } : null; break;
+      case "scratch":
+        if (m.pos == null) { if (this.mode === "scratch") this.mode = "spin"; this.target = null; }
+        else { this.mode = "scratch"; this.target = m.pos; }
+        break;
+      case "reverse": if (m.on) this.mode = "reverse"; else if (this.mode === "reverse") this.mode = "spin"; break;
+      case "cut": this.cutTo = m.on ? 1 : 0; break;
+      case "filter": this.fxTo = m.x; this.fyTo = m.y; break;
+      case "echo": this.echoTo = [m.amount, m.feedback]; break;
+      case "master": this.masterTo = m.v; break;
+      case "slice": this.cols[m.i] = { start: m.start, len: m.len, pitch: m.pitch, gain: m.gain }; break;
+      case "padbuf": this.padBuf[m.i] = m.ch ? { ch: m.ch, rate: m.rate } : null; break;
+    }
+  }
+  dur() { return this.frames / this.rate; }
+  loopBeats() { return this.bars ? this.bars * 4 : Math.max(0.25, (this.dur() * this.bpm) / 60); }
+  secPerBeat() { return this.dur() / this.loopBeats(); }   // secondes du sample par temps de boucle
+  // une tranche, jouée une fois (pad) ou pendant une répétition (roll)
+  trigger(i, maxSec) {
+    const own = this.padBuf[i];
+    if (!own && !this.ch) return;
+    const c = this.cols[i], pitch = Math.pow(2, c.pitch / 12);
+    let buf, rate, at, end;
+    if (own) { buf = own.ch; rate = own.rate; at = 0; end = own.ch[0].length; }
+    else {
+      buf = this.ch; rate = this.rate;
+      at = this.slices[i] + Math.round((c.start / 1000) * rate);
+      end = c.len ? at + Math.round((c.len / 1000) * rate) : this.slices[i + 1];
+    }
+    at = Math.max(0, at); end = Math.min(buf[0].length, end);
+    const speed = (rate / sampleRate) * pitch;
+    if (maxSec) end = Math.min(end, at + maxSec * rate * pitch);
+    this.voices.push({ buf, at, end, speed, gain: c.gain / 100, age: 0 });
+    if (this.voices.length > 12) this.voices.shift();
+  }
+  read(buf, c, p) {                                    // interpolation cubique (Catmull-Rom), hors du sample : silence
+    const x = buf[Math.min(c, buf.length - 1)], n = x.length, i = Math.floor(p), f = p - i;
+    const at = (k) => (k >= 0 && k < n ? x[k] : 0);
+    const a = at(i - 1), b = at(i), cc = at(i + 1), d = at(i + 2);
+    return b + 0.5 * f * (cc - a + f * (2 * a - 5 * b + 4 * cc - d + f * (3 * (b - cc) + d - a)));
+  }
+  process(_, outputs) {
+    const out = outputs[0], L = out[0], R = out[1] || out[0], n = L.length, sr = sampleRate;
+    const dt = 1 / sr, beatsPerSec = this.bpm / 60, has = !!this.ch;
+    // le roll : une répétition à chaque double croche
+    if (this.roll && has) {
+      while (this.roll.next <= currentFrame + n) { this.trigger(this.roll.i, rollSeconds(this.bpm)); this.roll.next += rollSeconds(this.bpm) * sr; }
+    }
+    // la tête qui sonne : sa vitesse visée dépend du mode
+    const spb = has ? this.secPerBeat() : 0, D = has ? this.dur() : 1;
+    const loopHead = () => this.loop * spb;
+    let targetVel;
+    if (this.mode === "scratch") {
+      const tgt = this.target, from = this.head;
+      let d = tgt - from;
+      if (has) d -= D * Math.round(d / D);
+      targetVel = (d / (n * dt)) * 0.35;               // la main mène la tête, avec un peu d'inertie
+    } else if (this.mode === "reverse") targetVel = -beatsPerSec * spb;
+    else targetVel = this.playing ? beatsPerSec * spb : 0;
+    const k = this.mode === "scratch" ? 0.5 : 1 - Math.exp(-(n * dt) / 0.06);   // le moteur : ~200 ms pour reprendre sa vitesse
+    for (let i = 0; i < n; i++) {
+      // les rampes douces
+      this.cut += (this.cutTo - this.cut) * 0.02;
+      this.master += (this.masterTo - this.master) * 0.002;
+      this.fx += (this.fxTo - this.fx) * 0.002; this.fy += (this.fyTo - this.fy) * 0.002;
+      this.echoAmt += (this.echoTo[0] - this.echoAmt) * 0.002; this.echoFb += (this.echoTo[1] - this.echoFb) * 0.002;
+      if (i === 0) this.vel += (targetVel - this.vel) * k;
+      if (this.playing && has) { this.loop += beatsPerSec * dt; const lb = this.loopBeats(); if (this.loop >= lb) this.loop -= lb; }
+      let l = 0, r = 0;
+      if (has && (this.playing || this.mode !== "loop")) {
+        this.head += this.vel * dt;
+        if (this.head >= D) this.head -= D; else if (this.head < 0) this.head += D;
+        const p = this.head * this.rate;
+        l = this.read(this.ch, 0, p); r = this.ch.length > 1 ? this.read(this.ch, 1, p) : l;
+        // relâchée : quand le moteur a repris sa vitesse, la tête rejoint la boucle (lecture « slip »)
+        if (this.mode === "spin" && Math.abs(this.vel - beatsPerSec * spb) < 0.02 * beatsPerSec * spb + 1e-6) { this.head = loopHead(); this.mode = "loop"; }
+        else if (this.mode === "spin" && !this.playing && Math.abs(this.vel) < 1e-3) this.mode = "loop";
+        if (this.mode === "loop" && this.playing) this.head += (loopHead() - this.head) * (Math.abs(loopHead() - this.head) < D / 2 ? 0.001 : 1);
+      }
+      for (const v of this.voices) {
+        if (v.at >= v.end) continue;
+        const fade = Math.min(1, v.age / 64, (v.end - v.at) / (v.speed * 128));
+        const s = this.read(v.buf, 0, v.at) * v.gain * fade;
+        l += s; r += v.buf.length > 1 ? this.read(v.buf, 1, v.at) * v.gain * fade : s;
+        v.at += v.speed; v.age++;
+      }
+      // le filtre : passe-bas à gauche, neutre au milieu, passe-haut à droite, la résonance en y
+      if (Math.abs(this.fx - 0.5) > 0.002) {
+        const lowSide = this.fx < 0.5, u = lowSide ? this.fx / 0.5 : (this.fx - 0.5) / 0.5;
+        const fc = lowSide ? 80 * Math.pow(20000 / 80, u) : 20 * Math.pow(8000 / 20, u);
+        const f = 2 * Math.sin((Math.PI * Math.min(fc, sr / 6)) / sr), q = 1 / (0.7 + this.fy * 11);
+        const fl = (x, st) => { const hp = x - st[0] - q * st[1]; st[1] += f * hp; st[0] += f * st[1]; return lowSide ? st[0] : hp; };
+        l = fl(l, this.lp[0]); r = fl(r, this.lp[1]);
+      }
+      // l'écho : au huitième pointé du tempo
+      if (this.echoAmt > 0.001 || this.echoFb > 0.001) {
+        const len = this.dl[0].length, dly = Math.min(len - 1, Math.round(sr * 0.75 * (60 / this.bpm))), ri = (this.dw - dly + len) % len;
+        const el = this.dl[0][ri], er = this.dl[1][ri];
+        this.dl[0][this.dw] = l + el * this.echoFb * 0.9; this.dl[1][this.dw] = r + er * this.echoFb * 0.9;
+        l += el * this.echoAmt; r += er * this.echoAmt;
+      } else { this.dl[0][this.dw] = 0; this.dl[1][this.dw] = 0; }
+      this.dw = (this.dw + 1) % this.dl[0].length;
+      const g = this.master * (1 - this.cut);
+      L[i] = l * g; if (R !== L) R[i] = r * g;
+    }
+    this.voices = this.voices.filter((v) => v.at < v.end);
+    // ce que les lumières et l'écran montrent, environ 60 fois par seconde
+    if (currentFrame - this.sent >= sr / 60) {
+      this.sent = currentFrame;
+      const beats = has ? this.head / spb : 0, sl = has ? this.sliceAt(this.head * this.rate) : -1;
+      this.port.postMessage({ t: "pos", beats, loop: this.loop, slice: sl, disc: (this.head / TURN_SECONDS) * 2 * Math.PI, bpm: this.bpm, playing: this.playing });
+    }
+    return true;
+  }
+  sliceAt(f) { const s = this.slices; for (let i = 0; i < 16; i++) if (f < s[i + 1]) return i; return 15; }
+}
+registerProcessor("sample", SampleProc);
+</script>
 <script id="sample-panel">
 // Module sample et scratch : le panneau, dessiné comme celui du FM-1. Le dessin (matières, molettes, touches, plaques,
 // écran, impression en points) reprend buildPanel() d'index.html, lui-même adapté de la page de l'émulateur DUB-1
@@ -577,7 +733,7 @@ const S = window.__sample = {
   on: false, page: "edit", skin: "mint", T: THEMES[4],
   hooks: { cap: [], pad: [], knob: [], power: [] },   // ce que les tâches suivantes branchent sur les commandes
 };
-const fire = (kind, ...a) => { let r; for (const f of S.hooks[kind]) r = f(...a); return r; };
+const fire = (kind, ...a) => { let r; for (const f of S.hooks[kind]) { const x = f(...a); if (x !== undefined) r = x; } return r; };
 
 // ---------------------------------------------------------------- les coloris
 const sw = $("swatches");
@@ -691,6 +847,58 @@ $("fw-picker").addEventListener("click", () => { if (S.onPicker) S.onPicker(); e
 chooseSkin(SKINS[keep("skin")] ? keep("skin") : "mint");
 const fontsReady = document.fonts && document.fonts.load ? document.fonts.load('600 16px "Barlow Semi Condensed"').catch(() => {}) : Promise.resolve();
 fontsReady.finally(drawScreen);
+</script>
+<script id="sample-engine">
+// Module sample et scratch : le moteur côté page (son contexte audio, son worklet, ce qu'il renvoie).
+"use strict";
+class SampleEngine {
+  constructor() {
+    this.on = false; this.playing = false; this.name = t("name");
+    this.pos = { beats: 0, loop: 0, slice: -1, disc: 0, bpm: 120, playing: false };
+    this.master = 0.8;
+  }
+  async start() {
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch { /* Safari d'avant */ }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    this.ac = new AC({ latencyHint: "interactive" });
+    const src = $("sample-lib").textContent + "\n" + $("sample-worklet").textContent;
+    await this.ac.audioWorklet.addModule(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+    this.node = new AudioWorkletNode(this.ac, "sample", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
+    this.an = this.ac.createAnalyser(); this.an.fftSize = 2048;
+    this.node.connect(this.an); this.an.connect(this.ac.destination);
+    this.node.port.onmessage = ({ data: m }) => { if (m.t === "pos") this.pos = m; };
+    await this.ac.resume().catch(() => {});
+    this.on = true;
+    this.send({ t: "master", v: this.master });
+    if (this.sample) this.load(this.sample);
+  }
+  async stop() {
+    this.on = false; this.playing = false;
+    try { await this.ac.close(); } catch { /* déjà fermé */ }
+    this.ac = this.node = this.an = null;
+  }
+  send(m, transfer) { if (this.node) this.node.port.postMessage(m, transfer || []); }
+  // un sample : { ch: Float32Array[], rate, slices?, bars? } ; sans découpe, seize parts ; sans mesures, celles qui
+  // demandent le moins de changement de vitesse au tempo du moment
+  load(s) {
+    const frames = s.ch[0].length;
+    if (!s.slices) s.slices = sliceBounds(frames);
+    if (s.bars === undefined) s.bars = fitBars(frames / s.rate, this.pos.bpm || 120).bars;
+    this.sample = s;
+    this.send({ t: "load", ch: s.ch.map((c) => c.slice()), rate: s.rate, slices: s.slices.slice(), bars: s.bars });
+  }
+  play(on) { this.playing = on; this.send({ t: "play", on }); }
+  setMaster(v) { this.master = Math.max(0, Math.min(1, v)); this.send({ t: "master", v: this.master }); return this.master; }
+}
+const eng = new SampleEngine();
+window.__engine = () => eng;
+S.hooks.power.push((on) => (on ? eng.start() : eng.stop()));
+S.hooks.knob.push((name, n) => {
+  if (name !== "MASTER") return;
+  const was = eng.master;
+  return eng.setMaster(was + n / 64) !== was;
+});
+panel.knobs.MASTER.angle = -135 + 270 * eng.master; panel.knobs.MASTER.draw();
 </script>
 </body>
 </html>
