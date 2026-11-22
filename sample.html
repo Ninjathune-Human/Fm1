@@ -1084,13 +1084,14 @@ function newId() {
   const n = S.samples.reduce((m, s) => Math.max(m, parseInt(s.id.slice(1), 10) || 0), 0) + 1;
   return "S" + String(n).padStart(2, "0");
 }
+// des réglages de tranche neufs : de bout en bout, sans hauteur, plein volume
+const freshCols = (slices, rate) => Array.from({ length: 16 }, (_, i) => ({ start: 0, len: Math.round(((slices[i + 1] - slices[i]) / rate) * 1000), pitch: 0, gain: 100 }));
 function makeSample(ch, rate, name) {
   const max = Math.round(MAX_SECONDS * rate);
   if (ch[0].length > max) { ch = ch.map((c) => c.slice(0, max)); setNote(`Cut to ${MAX_SECONDS} s`); }
   else setNote("");
   const bpm = duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm, f = fitBars(ch[0].length / rate, bpm), slices = smartBounds(ch[0], rate);
-  const cols = Array.from({ length: 16 }, (_, i) => ({ start: 0, len: Math.round(((slices[i + 1] - slices[i]) / rate) * 1000), pitch: 0, gain: 100 }));
-  return { id: newId(), name, rate, ch, bars: f.bars, fit: f.rate, slices, pads: new Array(16).fill(null), cols };
+  return { id: newId(), name, rate, ch, bars: f.bars, fit: f.rate, slices, pads: new Array(16).fill(null), cols: freshCols(slices, rate) };
 }
 async function addSample(s) {
   S.samples.push(s);
@@ -1329,8 +1330,10 @@ Object.defineProperty(S, "page", {
   set: (v) => {
     if (v === page) return;
     if (page === "slice" || page === "sound") S.revert();
+    if (page === "sample") S.trim = null;
     page = v;
     if (v === "slice" || v === "sound") S.holdSlice();
+    if (v === "sample") { const s = curSample(); S.trim = s ? { a: 0, b: s.ch[0].length } : null; }
   },
 });
 S.marks.slice = (which, n, v) => {                     // SELECT : le début (la fin ne bouge pas) ; MACRO : la fin
@@ -1356,6 +1359,33 @@ S.marks.sound = (which, n) => {                        // SELECT : la hauteur ; 
   if (c[key] === was) return false;
   eng.send({ t: "slice", i: S.slice, ...c });
   return true;
+};
+// SAMPLE : SELECT et MACRO encadrent la partie gardée (un deux-centième du sample par cran) ; SEL rogne le sample, le
+// redécoupe, remet ses tranches à neuf (les sons propres des pads restent) et le recharge ; quitter sans SEL ne change rien
+S.trim = null;
+S.marks.sample = (which, n, v) => {
+  const s = curSample(), x = s.ch[0], N = x.length, r = s.rate, near = 0.005 * r, min = Math.round(0.1 * r);
+  const t = S.trim || (S.trim = { a: 0, b: N }), step = (stepOf(n, v) * N) / 200;
+  if (which === 0) {
+    const to = t.a + step, p = to <= 0 ? 0 : clamp(snapZero(x, to, Math.sign(n), near), 0, Math.max(0, t.b - min));
+    if (p === t.a) return false;
+    t.a = p;
+  } else {
+    const to = t.b + step, p = to >= N ? N : clamp(snapZero(x, to, Math.sign(n), near), Math.min(N, t.a + min), N);
+    if (p === t.b) return false;
+    t.b = p;
+  }
+  return true;
+};
+S.validate.sample = () => {
+  const s = curSample(), t = S.trim, N = s.ch[0].length;
+  if (!t || (t.a === 0 && t.b === N)) return;
+  s.ch = s.ch.map((c) => c.slice(t.a, t.b));
+  s.slices = smartBounds(s.ch[0], s.rate);
+  const f = fitBars(s.ch[0].length / s.rate, duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm);
+  s.bars = f.bars; s.fit = f.rate; s.cols = freshCols(s.slices, s.rate);
+  S.save(s); S.select(S.cur);
+  S.trim = { a: 0, b: s.ch[0].length };
 };
 S.validate.slice = S.validate.sound = () => {
   const s = curSample();
@@ -1482,6 +1512,19 @@ function drawEdit(T) {
   txt(s.id + " " + s.name, 10, 226, 600, 18, T.fg);
   battery(T);
 }
+function drawSample(T) {
+  const s = curSample();
+  header(T);
+  if (!s) { txt("NO SAMPLE", LW / 2, 130, 600, 22, T.fg, "center"); txt("REC to capture", LW / 2, 152, 500, 13, T.mute, "center"); battery(T); return; }
+  const n = s.ch[0].length, t = S.trim || { a: 0, b: n }, a = t.a / n, b = t.b / n;
+  S.zoom = { from: 0, to: 1 };
+  txt(S.note || "SEL to trim", 10, 70, 500, 13, T.mute);
+  wave(s, X0, Y0, W0, H0, 0, 1, (f) => (f >= a && f < b ? "#ffffff" : T.mute));
+  sctx.globalAlpha = 0.55; sctx.fillStyle = T.bg; sctx.fillRect(X0, Y0, sx(a) - X0, H0); sctx.fillRect(sx(b), Y0, X0 + W0 - sx(b), H0); sctx.globalAlpha = 1;
+  for (const f of [a, b]) { const x = sx(f); sctx.fillStyle = "#ffffff"; sctx.beginPath(); sctx.moveTo(x - 5, Y0 - 1); sctx.lineTo(x + 5, Y0 - 1); sctx.lineTo(x, Y0 + 6); sctx.fill(); sctx.fillRect(x - 0.75, Y0, 1.5, H0); }
+  txt(s.id + " " + s.name, 10, 226, 600, 18, T.fg);
+  battery(T);
+}
 const chips = () => SOURCES.filter((k) => k !== "tab" || S.sources().tab);
 function drawCapture(T) {
   header(T);
@@ -1554,7 +1597,7 @@ function drawAssign(T) {
   txt("Turn MACRO, SEL to close", 10, 226, 600, 18, T.fg);
   battery(T);
 }
-S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);   // (SAMPLE, TRANCHE, SON : la page Édition)
+S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : S.page === "sample" ? drawSample : drawEdit)(T);   // (TRANCHE, SON : la page Édition)
 (function frame() { if (S.on) drawScreen(); requestAnimationFrame(frame); })();
 
 </script>

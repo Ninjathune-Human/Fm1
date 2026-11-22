@@ -1038,3 +1038,37 @@ def test_son(page, tmp_path):
     assert page.evaluate(f"[{COLS}[2].pitch, {COLS}[2].gain]") == [3, 90]
     tap(page, "[data-label='SEL']"); tap(page, "[data-label='EDIT']")      # validé, puis Capture
     assert page.evaluate(f"[{COLS}[2].pitch, {COLS}[2].gain]") == [3, 90]
+
+
+CUR = "window.__sample.samples[window.__sample.cur]"
+
+
+def test_rogner(page, tmp_path):
+    with_sample(page, tmp_path, 4); to_menu(page, "sample")
+    n0 = page.evaluate(f"{CUR}.ch[0].length")
+    page.evaluate("window.__sample.turn('SELECT', 20, 0); window.__sample.turn('MACRO', -40, 0)")
+    a, b = page.evaluate("[window.__sample.trim.a, window.__sample.trim.b]")
+    assert 0 < a < b < n0
+    tap(page, "[data-label='SEL']")
+    assert page.evaluate(f"{CUR}.ch[0].length") == b - a
+    assert page.evaluate(f"[{CUR}.slices.length, {CUR}.slices[16]]") == [17, b - a]
+    assert page.evaluate(f"{CUR}.cols.every((c) => c.start === 0 && c.pitch === 0 && c.gain === 100)")
+    assert page.evaluate("window.__engine().sample.ch[0].length") == b - a
+    page.wait_for_timeout(300)
+    page.reload(); page.wait_for_selector("#panel [data-label='REC']"); power_sample(page)
+    page.wait_for_function("window.__sample.samples.length > 0")
+    assert page.evaluate(f"{CUR}.ch[0].length") == b - a
+
+
+def test_rogner_sans_sel(page, tmp_path):
+    with_sample(page, tmp_path, 4); to_menu(page, "sample")
+    n0 = page.evaluate(f"{CUR}.ch[0].length")
+    page.evaluate("window.__sample.turn('SELECT', 20, 0)"); tap(page, "[data-label='EDIT']")
+    assert page.evaluate(f"{CUR}.ch[0].length") == n0 and page.evaluate("window.__sample.trim") is None
+
+
+def test_rogner_bornes(page, tmp_path):
+    with_sample(page, tmp_path, 4); to_menu(page, "sample")
+    page.evaluate("window.__sample.turn('SELECT', 900, 0)")
+    a, b, rate = page.evaluate(f"[window.__sample.trim.a, window.__sample.trim.b, {CUR}.rate]")
+    assert b - a >= 0.1 * rate - 1
