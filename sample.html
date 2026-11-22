@@ -718,7 +718,7 @@ function buildPanel(svg) {
   knob(135, 147, "MASTER", true, 40); knob(308, 147, "SELECT", false); knob(481, 147, "MACRO", false);
   plate(95, 262, 382, 228, 34);
   button(156, 319, 100, 80, "FILE"); button(286, 319, 100, 80, "EDIT"); button(416, 319, 100, 80, "SEND");
-  button(156, 425, 100, 80, "ASSIGN"); button(286, 425, 100, 80, "PLAY", "STOP"); button(416, 425, 100, 80, "REC");
+  button(156, 425, 100, 80, "SEL"); button(286, 425, 100, 80, "PLAY", "STOP"); button(416, 425, 100, 80, "REC");
   plate(62, 560, 810, 365, 50);
   dot(448, 741);
   for (let j = 0; j < 16; j++) key(j, 123 + 93 * (j % 8), j < 8 ? 659 : 825, j < 8 ? 150 : 152, j < 8 ? 621 : 787, 43);
@@ -1249,7 +1249,7 @@ S.hooks.cap.push((name, down) => {
 });
 </script>
 <script id="sample-screen">
-// Module sample et scratch : l'écran (pages Capture, Édition, Envoi), SELECT, MACRO, EDIT, ASSIGN et SEND.
+// Module sample et scratch : l'écran (pages Édition, SAMPLE, TRANCHE, SON, Capture, Envoi), SELECT, MACRO, EDIT, SEL et SEND.
 // Le dessin suit celui de FM-1+VA : en-tête à quatre colonnes, ligne d'état, nom en bas à gauche, pile en bas à droite.
 "use strict";
 S.col = null; S.slice = 0; S.zoom = { from: 0, to: 1 }; S.target = null; S.levels = [];
@@ -1270,6 +1270,12 @@ function columns() {
       ["LENGTH", c.length + (c.length > 1 ? " BARS" : " BAR"), null],
     ];
   }
+  if (S.page === "sample") {                           // le sample entier : la partie gardée
+    const n = s ? s.ch[0].length : 0, r = s ? s.rate : 1, t = S.trim || { a: 0, b: n }, len = (t.b - t.a) / r;
+    const f = s ? fitBars(len, duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) : { bars: null };
+    return [["START", fmtMs((t.a / r) * 1000), n ? t.a / n : 0], ["END", fmtMs((t.b / r) * 1000), n ? t.b / n : 1],
+      ["LENGTH", fmtMs(len * 1000), null], ["LOOP", f.bars ? f.bars + (f.bars > 1 ? " BARS" : " BAR") : "ONE SHOT", null]];
+  }
   if (S.page === "send") {
     const targets = S.targets ? S.targets() : ["file", "erase"];
     if (!targets.includes(S.target)) S.target = targets[0];
@@ -1287,9 +1293,7 @@ function columns() {
 }
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 function stepOf(n, v) { return n * Math.max(1, Math.round((v || 0) * (v || 0) / 60)); }   // accélération : lent, un pas par cran
-function editColumn(n, v) {
-  const s = curSample(), k = stepOf(n, v);
-  if (S.col === 4) { const was = S.bpm; S.bpm = S.bpm + n; return S.bpm !== was; }
+function editColumn(n) {                               // Capture et Envoi : la colonne choisie par MACRO
   if (S.page === "capture") {
     const c = S.capt;
     if (S.col === 0) { const avail = S.sources(), list = SOURCES.filter((x) => avail[x] === true); const i = list.indexOf(c.source); c.source = list[clamp(i + n, 0, list.length - 1)] || c.source; return true; }
@@ -1301,62 +1305,62 @@ function editColumn(n, v) {
   if (S.page === "send") {
     if (S.col === 0 && S.targets) { const list = S.targets(), i = list.indexOf(S.target); S.target = list[clamp(i + n, 0, list.length - 1)]; return true; }
     if (S.col === 1) { S.select(clamp(S.cur + n, 0, S.samples.length - 1)); return true; }
-    return false;
   }
-  if (!s) return false;
-  const c = s.cols[S.slice], full = ((s.slices[S.slice + 1] - s.slices[S.slice]) / s.rate) * 1000;
-  if (S.col === 0) c.start = Math.round(clamp(c.start + k, -full, full));
-  else if (S.col === 1) c.len = Math.round(clamp(c.len + k, 10, 4 * full));
-  else if (S.col === 2) c.pitch = clamp(c.pitch + n, -24, 24);
-  else if (S.col === 3) c.gain = clamp(c.gain + n, 0, 100);
-  eng.send({ t: "slice", i: S.slice, ...c });
-  S.saveSoon(s);
-  return true;
+  return false;
 }
-let saveTimer = 0;
-S.saveSoon = (s) => { clearTimeout(saveTimer); saveTimer = setTimeout(() => S.save(s), 400); };
+// SAMPLE, TRANCHE, SON : SELECT règle le début (SON : la hauteur), MACRO la fin (SON : le volume) ; SEL valide
+S.marks = { sample: () => false, slice: () => false, sound: () => false };
+S.validate = { sample: () => {}, slice: () => {}, sound: () => {} };
+S.inMenu = () => S.page !== "edit";
+const mark = (which, n, v) => { const r = curSample() ? S.marks[S.page](which, n, v) : false; drawScreen(); return r; };
 S.hooks.knob.push((name, n, v) => {
   if (name !== "SELECT") return;
-  if (S.col == null) {
-    if (S.page === "edit" && S.samples.length) { const was = S.cur; S.select(clamp(S.cur + n, 0, S.samples.length - 1)); return S.cur !== was; }
-    return false;
+  if (S.marks[S.page]) return mark(0, n, v);
+  if (S.page === "edit") {                             // hors menu : le sample suivant
+    if (!S.samples.length) return false;
+    const was = S.cur; S.select(clamp(S.cur + n, 0, S.samples.length - 1)); return S.cur !== was;
   }
-  const r = editColumn(n, v);
+  const r = editColumn(n);
   drawScreen();
   return r;
 });
 S.hooks.cap.push((name, down) => {
   if (!down || !S.on) return;
-  // EDIT fait défiler les menus : Édition, Capture, puis hors menu (Envoi : retour hors menu)
+  // EDIT fait défiler les menus : SAMPLE, TRANCHE, SON, CAPTURE, puis hors menu (Envoi : retour hors menu)
   if (name === "EDIT") {
-    if (S.page === "edit" && S.col == null) S.col = 0;
-    else if (S.page === "edit") { S.page = "capture"; S.col = 0; }
-    else { S.page = "edit"; S.col = null; }
+    const i = MENUS.indexOf(S.page);
+    S.page = i < 0 ? "edit" : MENUS[(i + 1) % MENUS.length];
+    S.col = S.page === "capture" ? 0 : null;
     drawScreen();
   }
 });
-// MACRO : dans un menu, il choisit la colonne (le tempo en dernier sur Édition) ; hors menu, il règle sa cible
-const LAST_COL = { edit: 4, capture: 3, send: 1 };
-// ASSIGN : tenu en tournant MACRO, la liste se ferme au relâcher ; un appui court la laisse ouverte (une souris seule ne
-// peut pas tenir ASSIGN et tourner MACRO), un second appui ou une autre touche la ferme
+const MENUS = ["edit", "sample", "slice", "sound", "capture"];
+// MACRO : dans Capture et Envoi, il choisit la colonne ; dans SAMPLE, TRANCHE, SON, il règle la fin (ou le volume) ;
+// hors menu, il règle sa cible
+const LAST_COL = { capture: 3, send: 1 };
+// SEL : dans SAMPLE, TRANCHE, SON, un appui valide. Hors menu, c'est l'assignation de MACRO : tenu en tournant MACRO,
+// la liste se ferme au relâcher ; un appui court la laisse ouverte (une souris seule ne peut pas tenir SEL et tourner
+// MACRO), un second appui ou une autre touche la ferme
 S.assigning = false;
 let assignWas = false, assignTurned = false;
 S.hooks.cap.push((name, down) => {
-  if (name !== "ASSIGN") { if (down && S.assigning) { S.assigning = false; drawScreen(); } return; }
+  if (name !== "SEL") { if (down && S.assigning) { S.assigning = false; drawScreen(); } return; }
+  if (S.page !== "edit") { if (down && S.on && S.validate[S.page] && curSample()) { S.validate[S.page](); drawScreen(); } return; }
   if (down) { assignWas = S.assigning; assignTurned = false; S.assigning = S.on; }
   else if (assignWas || assignTurned) S.assigning = false;
   drawScreen();
 });
-S.hooks.knob.push((name, n) => {
+S.hooks.knob.push((name, n, v) => {
   if (name !== "MACRO") return;
-  if (S.assigning) {                                   // ASSIGN tenu : MACRO choisit sa cible, qui est gardée
+  if (S.assigning) {                                   // SEL ouvert : MACRO choisit sa cible, qui est gardée
     const L = S.MACRO_TARGETS, i = L.indexOf(S.macro.target), j = clamp(i + n, 0, L.length - 1);
     assignTurned = true;
     if (j === i) return false;
     S.macro.target = L[j]; keep("macro", L[j]); drawScreen();
     return true;
   }
-  if (S.col == null) return S.macroTurn(n);
+  if (S.marks[S.page]) return mark(1, n, v);
+  if (S.page === "edit") return S.macroTurn(n);
   const was = S.col;
   S.col = clamp(S.col + n, 0, LAST_COL[S.page]);
   drawScreen();
@@ -1365,10 +1369,12 @@ S.hooks.knob.push((name, n) => {
 
 // ---------------------------------------------------------------- le dessin
 function txt(s, x, y, w, size, fill, align = "left") { lcdText(s, x, y, w, size, fill, align); }
+const ACTIVE = { sample: [0, 1], slice: [0, 1], sound: [2, 3] };
+const activeCols = () => ACTIVE[S.page] || (S.col == null ? [] : [S.col]);
 function header(T) {
   const cols = columns();
   cols.forEach(([lab, val, bar], k) => {
-    const x = k * 110, act = k === S.col;
+    const x = k * 110, act = activeCols().includes(k);
     txt(lab, x + 55, 14, 600, 11, act ? "#ffffff" : T.mute, "center");
     if (bar != null) {
       sctx.globalAlpha = 0.2; sctx.fillStyle = T.fg; sctx.fillRect(x + 10, 20, 90, 4); sctx.globalAlpha = 1;
@@ -1393,9 +1399,9 @@ function wave(s, x0, y0, w, h, from, to, colorAt) {
     sctx.fillStyle = colorAt((i0 + i1) / 2 / n); sctx.fillRect(x0 + i * 1.6, mid - hh, 1, hh * 2);
   }
 }
-// START ou LENGTH réglés : la tranche au milieu de l'écran, en grand (une demi-largeur de marge de chaque côté) ; sinon tout le sample
+// TRANCHE ou SON : la tranche au milieu de l'écran, en grand (une demi-largeur de marge de chaque côté) ; sinon tout le sample
 function sliceZoom(s) {
-  if (S.col !== 0 && S.col !== 1) return { from: 0, to: 1 };
+  if (S.page !== "slice" && S.page !== "sound") return { from: 0, to: 1 };
   const n = s.ch[0].length, c = s.cols[S.slice], a = (s.slices[S.slice] + (c.start / 1000) * s.rate) / n, w = Math.max(1 / n, ((c.len / 1000) * s.rate) / n);
   const from = clamp(a - w / 2, 0, 1);
   return { from, to: Math.max(clamp(a + w * 1.5, 0, 1), from + 1 / n) };
@@ -1407,7 +1413,7 @@ function drawEdit(T) {
   if (!s) { txt("NO SAMPLE", LW / 2, 130, 600, 22, T.fg, "center"); txt("REC to capture", LW / 2, 152, 500, 13, T.mute, "center"); battery(T); return; }
   S.zoom = sliceZoom(s);
   txt(S.note || `Slice ${String(S.slice + 1).padStart(2, "0")} / 16  ·  ${s.bars ? s.bars + (s.bars > 1 ? " bars" : " bar") : "one shot"}`, 10, 70, 500, 13, T.mute);
-  txt(Math.round(duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) + " BPM", LW - 10, 70, 600, 13, S.col === 4 ? "#ffffff" : T.acc, "right");
+  txt(Math.round(duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) + " BPM", LW - 10, 70, 600, 13, T.acc, "right");
   sctx.save(); sctx.beginPath(); sctx.rect(X0, Y0 - 8, W0, H0 + 8); sctx.clip();
   const n = s.ch[0].length, a = s.slices[S.slice] / n, b = s.slices[S.slice + 1] / n;
   sctx.globalAlpha = 0.14; sctx.fillStyle = T.acc; sctx.fillRect(sx(a), Y0, sx(b) - sx(a), H0); sctx.globalAlpha = 1;
@@ -1491,14 +1497,14 @@ function drawSend(T) {
   txt(S.note || (S.sendLine ? S.sendLine() : "SEND to send"), 10, 226, 600, S.sendArmed ? 15 : 18, "#ffffff");
   battery(T);
 }
-// ASSIGN tenu : la liste des cibles de MACRO, la cible en blanc
+// SEL ouvert, hors menu : la liste des cibles de MACRO, la cible en blanc
 function drawAssign(T) {
   txt("MACRO", 10, 30, 600, 18, T.fg);
   S.MACRO_TARGETS.forEach((k, i) => { const on = k === S.macro.target; txt(k, 10, 70 + i * 28, 600, on ? 22 : 18, on ? "#ffffff" : T.mute); });
-  txt("Turn MACRO, ASSIGN to close", 10, 226, 600, 18, T.fg);
+  txt("Turn MACRO, SEL to close", 10, 226, 600, 18, T.fg);
   battery(T);
 }
-S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
+S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);   // (SAMPLE, TRANCHE, SON : la page Édition)
 (function frame() { if (S.on) drawScreen(); requestAnimationFrame(frame); })();
 
 </script>

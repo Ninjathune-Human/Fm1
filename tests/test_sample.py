@@ -15,6 +15,7 @@ def test_panneau(page):
     open_sample(page)
     assert page.locator("#panel .cap").count() == 6
     assert page.locator("#panel [data-knob]").count() == 3
+    assert page.locator("#panel [data-label='SEL']").count() == 1 and page.locator("#panel [data-label='ASSIGN']").count() == 0
     assert page.locator("#panel .key[data-pad]").count() == 16
     assert page.is_visible("#platter") and page.is_visible("#xy")
     # l'image LCD de 440 x 240, tracée trois fois plus fine (comme l'écran du FM-1, 240 sur 720)
@@ -26,10 +27,10 @@ def test_panneau(page):
 def test_disposition_du_croquis(page):
     open_sample(page)
     box = lambda sel: page.locator(sel).bounding_box()
-    c = {n: box(f"[data-label='{n}']") for n in ("FILE", "EDIT", "SEND", "ASSIGN", "PLAY", "REC")}
+    c = {n: box(f"[data-label='{n}']") for n in ("FILE", "EDIT", "SEND", "SEL", "PLAY", "REC")}
     assert c["FILE"]["x"] < c["EDIT"]["x"] < c["SEND"]["x"]
-    assert c["ASSIGN"]["x"] < c["PLAY"]["x"] < c["REC"]["x"]
-    assert abs(c["FILE"]["y"] - c["SEND"]["y"]) < 2 and c["ASSIGN"]["y"] > c["FILE"]["y"] + 40
+    assert c["SEL"]["x"] < c["PLAY"]["x"] < c["REC"]["x"]
+    assert abs(c["FILE"]["y"] - c["SEND"]["y"]) < 2 and c["SEL"]["y"] > c["FILE"]["y"] + 40
     m, s, scr, pl = box("[data-knob='MACRO']"), box("[data-knob='SELECT']"), box("#screen"), box("#platter")
     assert m["x"] > s["x"] + s["width"] and m["x"] + m["width"] < scr["x"]
     assert scr["x"] + scr["width"] < pl["x"]
@@ -372,31 +373,21 @@ def with_sample(page, tmp_path, seconds=4):
 
 def test_pages(page, tmp_path):
     with_sample(page, tmp_path)
-    st = lambda: page.evaluate("[window.__sample.page, window.__sample.col]")
-    assert st() == ["edit", None]
-    for want in (["edit", 0], ["capture", 0], ["edit", None]):
-        tap(page, "[data-label='EDIT']"); assert st() == want
-    tap(page, "[data-label='SEND']"); assert st() == ["send", 0]
-    tap(page, "[data-label='EDIT']"); assert st() == ["edit", None]
-    tap(page, "[data-label='REC']"); page.wait_for_function("window.__sample.page === 'capture'")
-    assert st() == ["capture", 0]
-    tap(page, "[data-label='REC']")
+    pg = lambda: page.evaluate("[window.__sample.page, window.__sample.col]")
+    assert pg() == ["edit", None]
+    for want in (["sample", None], ["slice", None], ["sound", None], ["capture", 0], ["edit", None]):
+        tap(page, "[data-label='EDIT']"); assert pg() == want
+    tap(page, "[data-label='SEND']"); assert pg() == ["send", 0]
+    tap(page, "[data-label='EDIT']"); assert pg() == ["edit", None]
 
 
 def test_macro_choisit_la_colonne(page, tmp_path):
     with_sample(page, tmp_path)
-    tap(page, "[data-label='EDIT']")
+    for _ in range(4): tap(page, "[data-label='EDIT']")                    # Capture
     page.evaluate("window.__sample.turn('MACRO', 9, 0)")
-    assert page.evaluate("window.__sample.col") == 4                       # le tempo, en dernier
+    assert page.evaluate("window.__sample.col") == 3
     tap(page, "[data-label='SEND']"); page.evaluate("window.__sample.turn('MACRO', 9, 0)")
     assert page.evaluate("window.__sample.col") == 1
-
-
-def test_select_regle_la_colonne(page, tmp_path):
-    with_sample(page, tmp_path)
-    tap(page, "[data-label='EDIT']")                                       # START
-    page.evaluate("window.__sample.turn('SELECT', 3, 0)")
-    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].start") == 3
 
 
 def test_cible_par_select(page, tmp_path):
@@ -835,11 +826,12 @@ def test_pad_choisit_la_tranche(page, tmp_path):
 
 def test_zoom_suit_la_tranche(page, tmp_path):
     with_sample(page, tmp_path)
-    page.evaluate("window.__sample.slice = 4; window.__sample.col = 0")
+    page.evaluate("window.__sample.slice = 4"); tap(page, "[data-label='EDIT']"); tap(page, "[data-label='EDIT']")   # TRANCHE
     page.wait_for_timeout(50)
     z = page.evaluate("window.__sample.zoom")
     assert 0 < z["to"] - z["from"] < 0.5 and z["from"] < 4 / 16 < z["to"]
-    page.evaluate("window.__sample.col = 2"); page.wait_for_timeout(50)
+    for _ in range(3): tap(page, "[data-label='EDIT']")                    # hors menu
+    page.wait_for_timeout(50)
     assert page.evaluate("window.__sample.zoom") == {"from": 0, "to": 1}
 
 
@@ -854,14 +846,12 @@ def test_macro_filtre_hors_menu(page, tmp_path):
     assert page.evaluate("window.__sent.some((m) => m.t === 'filter' && Math.abs(m.x - 0.75) < 1e-9)")
 
 
-def test_assign_choisit_la_cible(page, tmp_path):
+def test_sel_choisit_la_cible(page, tmp_path):
     with_sample(page, tmp_path)
-    tap(page, "[data-label='EDIT']")                                       # dans un menu
-    hold(page, "[data-label='ASSIGN']", True)
-    assert page.evaluate("window.__sample.assigning") is True
+    hold(page, "[data-label='SEL']", True)
     page.evaluate("window.__sample.turn('MACRO', 1, 0)")
-    hold(page, "[data-label='ASSIGN']", False)
-    assert page.evaluate("[window.__sample.macro.target, window.__sample.col]") == ["RES", 0]
+    hold(page, "[data-label='SEL']", False)
+    assert page.evaluate("[window.__sample.macro.target, window.__sample.assigning]") == ["RES", False]
     page.reload(); page.wait_for_selector("#panel [data-label='REC']")
     assert page.evaluate("window.__sample.macro.target") == "RES"
 
@@ -933,16 +923,29 @@ def test_micro_refuse_montre_les_sources(page):
     assert page.evaluate("window.__sample.col") == 0
 
 
-def test_assign_appui_court_verrouille(page, tmp_path):
+def test_sel_appui_court_verrouille(page, tmp_path):
     with_sample(page, tmp_path)
-    tap(page, "[data-label='ASSIGN']")                                     # un appui court : la liste reste (une souris seule)
-    assert page.evaluate("window.__sample.assigning") is True
-    page.evaluate("window.__sample.turn('MACRO', 2, 0)")
-    assert page.evaluate("window.__sample.macro.target") == "ECHO"
-    tap(page, "[data-label='ASSIGN']")                                     # un second appui la ferme
+    tap(page, "[data-label='SEL']"); assert page.evaluate("window.__sample.assigning") is True
+    page.evaluate("window.__sample.turn('MACRO', 2, 0)"); assert page.evaluate("window.__sample.macro.target") == "ECHO"
+    tap(page, "[data-label='SEL']"); assert page.evaluate("window.__sample.assigning") is False
+    tap(page, "[data-label='SEL']"); tap(page, "[data-label='EDIT']")
+    assert page.evaluate("[window.__sample.assigning, window.__sample.page]") == [False, "sample"]
+
+
+def test_sel_dans_un_menu_ne_choisit_pas_la_cible(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-label='EDIT']")                                       # SAMPLE
+    tap(page, "[data-label='SEL']")
     assert page.evaluate("window.__sample.assigning") is False
-    tap(page, "[data-label='ASSIGN']"); tap(page, "[data-label='EDIT']")   # une autre touche la ferme aussi
-    assert page.evaluate("[window.__sample.assigning, window.__sample.col]") == [False, 0]
+
+
+def test_menus_sans_sample(page):
+    open_sample(page); power_sample(page)
+    for _ in range(3):
+        tap(page, "[data-label='EDIT']")
+        page.evaluate("window.__sample.turn('SELECT', 2, 0); window.__sample.turn('MACRO', -2, 0)")
+        tap(page, "[data-label='SEL']")
+    assert page.evaluate("window.__sample.page") == "sound"
 
 
 def wav_gaps(path, rate=44100):
