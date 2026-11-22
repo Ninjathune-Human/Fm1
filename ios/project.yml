@@ -10,6 +10,7 @@ targets:
   FM1:
     type: application
     platform: iOS
+    scheme: {}                   # le schéma FM1, que demande l'archive pour TestFlight
     sources:
       - FM1.swift
       - MIDIEntrees.swift
