@@ -1181,5 +1181,272 @@ S.hooks.cap.push((name, down) => {
   S.capture(S.capt.source, { pad: S.heldPad }).catch(() => {});
 });
 </script>
+<script id="sample-screen">
+// Module sample et scratch : l'écran tactile (pages Capture, Édition, Envoi), ses touchers, SELECT, EDIT et SEND.
+// Le dessin suit celui de FM-1+VA : en-tête à quatre colonnes, ligne d'état, nom en bas à gauche, pile en bas à droite.
+"use strict";
+S.col = null; S.slice = 0; S.zoom = { from: 0, to: 1 }; S.target = null; S.levels = [];
+const LW = 440, X0 = 10, W0 = 420, Y0 = 80, H0 = 112;
+const fmtMs = (ms) => (Math.abs(ms) >= 1000 ? (ms / 1000).toFixed(2) + "s" : Math.round(ms) + "ms");
+const curSample = () => S.samples[S.cur] || null;
+
+// ---------------------------------------------------------------- ce que montrent les colonnes, et ce que SELECT y change
+const SOURCES = ["mic", "fm1", "file", "tab"], SRC_LABEL = { mic: "MIC", fm1: "FM-1", file: "FILE", tab: "TAB" };
+function columns() {
+  const s = curSample();
+  if (S.page === "capture") {
+    const c = S.capt;
+    return [
+      ["SOURCE", SRC_LABEL[c.source], null],
+      ["INPUT", (c.input > 0 ? "+" : "") + c.input, (c.input + 24) / 48],
+      ["THRESH", c.thresh == null ? "OFF" : String(c.thresh), c.thresh == null ? 0 : (c.thresh + 60) / 60],
+      ["LENGTH", c.length + (c.length > 1 ? " BARS" : " BAR"), null],
+    ];
+  }
+  if (S.page === "send") {
+    const targets = S.targets ? S.targets() : ["file", "erase"];
+    if (!targets.includes(S.target)) S.target = targets[0];
+    const kb = s ? Math.round((s.ch[0].length * s.ch.length * 2) / 1024) : 0;
+    return [["TO", S.target.toUpperCase(), null], ["SONG", s ? s.id : "--", null], ["PADS", "1-16", null], ["SIZE", kb + "K", Math.min(1, kb / 500)]];
+  }
+  const c = s ? s.cols[S.slice] : { start: 0, len: 0, pitch: 0, gain: 100 };
+  const full = s ? ((s.slices[S.slice + 1] - s.slices[S.slice]) / s.rate) * 1000 : 1;
+  return [
+    ["START", (c.start > 0 ? "+" : "") + fmtMs(c.start), Math.max(0, Math.min(1, 0.5 + c.start / (2 * full)))],
+    ["LENGTH", fmtMs(c.len), Math.max(0, Math.min(1, c.len / full))],
+    ["PITCH", (c.pitch > 0 ? "+" : "") + c.pitch, (c.pitch + 24) / 48],
+    ["GAIN", String(c.gain), c.gain / 100],
+  ];
+}
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function stepOf(n, v) { return n * Math.max(1, Math.round((v || 0) * (v || 0) / 60)); }   // accélération : lent, un pas par cran
+function editColumn(n, v) {
+  const s = curSample(), k = stepOf(n, v);
+  if (S.col === 4) { const was = S.bpm; S.bpm = S.bpm + n; return S.bpm !== was; }
+  if (S.page === "capture") {
+    const c = S.capt;
+    if (S.col === 0) { const avail = S.sources(), list = SOURCES.filter((x) => avail[x] === true); const i = list.indexOf(c.source); c.source = list[clamp(i + n, 0, list.length - 1)] || c.source; return true; }
+    if (S.col === 1) { const was = c.input; c.input = clamp(c.input + n, -24, 24); return c.input !== was; }
+    if (S.col === 2) { const was = c.thresh; const t0 = c.thresh == null ? -61 : c.thresh, t1 = clamp(t0 + n, -61, 0); c.thresh = t1 < -60 ? null : t1; return c.thresh !== was; }
+    if (S.col === 3) { const L = [1, 2, 4, 8], i = L.indexOf(c.length); c.length = L[clamp(i + n, 0, 3)]; return true; }
+    return false;
+  }
+  if (S.page === "send") {
+    if (S.col === 0 && S.targets) { const list = S.targets(), i = list.indexOf(S.target); S.target = list[clamp(i + n, 0, list.length - 1)]; return true; }
+    if (S.col === 1) { S.select(clamp(S.cur + n, 0, S.samples.length - 1)); return true; }
+    return false;
+  }
+  if (!s) return false;
+  const c = s.cols[S.slice], full = ((s.slices[S.slice + 1] - s.slices[S.slice]) / s.rate) * 1000;
+  if (S.col === 0) c.start = Math.round(clamp(c.start + k, -full, full));
+  else if (S.col === 1) c.len = Math.round(clamp(c.len + k, 10, 4 * full));
+  else if (S.col === 2) c.pitch = clamp(c.pitch + n, -24, 24);
+  else if (S.col === 3) c.gain = clamp(c.gain + n, 0, 100);
+  eng.send({ t: "slice", i: S.slice, ...c });
+  S.saveSoon(s);
+  return true;
+}
+let saveTimer = 0;
+S.saveSoon = (s) => { clearTimeout(saveTimer); saveTimer = setTimeout(() => S.save(s), 400); };
+S.hooks.knob.push((name, n, v) => {
+  if (name !== "SELECT") return;
+  if (S.col == null) {
+    if (S.page === "edit" && S.samples.length) { const was = S.cur; S.select(clamp(S.cur + n, 0, S.samples.length - 1)); return S.cur !== was; }
+    return false;
+  }
+  const r = editColumn(n, v);
+  drawScreen();
+  return r;
+});
+S.hooks.cap.push((name, down) => {
+  if (!down || !S.on) return;
+  if (name === "EDIT") { S.page = "edit"; S.col = null; drawScreen(); }
+  else if (name === "SEND" && S.page !== "send") { S.page = "send"; S.col = null; S.sendArmed = false; drawScreen(); }
+});
+
+// ---------------------------------------------------------------- le dessin
+function txt(s, x, y, w, size, fill, align = "left") { lcdText(s, x, y, w, size, fill, align); }
+function header(T) {
+  const cols = columns();
+  cols.forEach(([lab, val, bar], k) => {
+    const x = k * 110, act = k === S.col;
+    txt(lab, x + 55, 14, 600, 11, act ? "#ffffff" : T.mute, "center");
+    if (bar != null) {
+      sctx.globalAlpha = 0.2; sctx.fillStyle = T.fg; sctx.fillRect(x + 10, 20, 90, 4); sctx.globalAlpha = 1;
+      sctx.fillStyle = act ? "#ffffff" : T.acc; sctx.fillRect(x + 10, 20, 90 * clamp(bar, 0, 1), 4);
+      txt(val, x + 55, 45, 600, 20, act ? "#ffffff" : T.fg, "center");
+    } else txt(val, x + 55, 42, 600, 15, act ? "#ffffff" : T.fg, "center");
+  });
+  sctx.globalAlpha = 0.3; sctx.fillStyle = T.mute; sctx.fillRect(0, 54, LW, 1); sctx.globalAlpha = 1;
+}
+function battery(T) {
+  sctx.strokeStyle = T.mute; sctx.lineWidth = 1.4; sctx.strokeRect(LW - 36, 214, 24, 12); sctx.fillStyle = T.mute; sctx.fillRect(LW - 11.5, 218, 2, 4);
+  for (let i = 0; i < 3; i++) sctx.fillRect(LW - 33 + i * 7, 217, 5, 6);
+}
+// la forme d'onde d'une partie du sample (de, à : fractions), en barres miroir
+function wave(s, x0, y0, w, h, from, to, colorAt) {
+  const x = s.ch[0], n = x.length, a = Math.floor(from * n), b = Math.ceil(to * n), cols = Math.max(1, Math.floor(w / 1.6)), mid = y0 + h / 2;
+  for (let i = 0; i < cols; i++) {
+    const i0 = a + Math.floor(((b - a) * i) / cols), i1 = a + Math.floor(((b - a) * (i + 1)) / cols);
+    let pk = 0;
+    for (let j = i0; j < i1; j += Math.max(1, ((i1 - i0) / 64) | 0)) { const v = Math.abs(x[j]); if (v > pk) pk = v; }
+    const hh = Math.max(1, Math.min(1, pk) * (h / 2 - 2));
+    sctx.fillStyle = colorAt((i0 + i1) / 2 / n); sctx.fillRect(x0 + i * 1.6, mid - hh, 1, hh * 2);
+  }
+}
+const sx = (f) => X0 + (W0 * (f - S.zoom.from)) / (S.zoom.to - S.zoom.from);   // une fraction du sample vers l'écran
+const fx = (x) => S.zoom.from + ((x - X0) / W0) * (S.zoom.to - S.zoom.from);
+function drawEdit(T) {
+  const s = curSample();
+  header(T);
+  if (!s) { txt("NO SAMPLE", LW / 2, 130, 600, 22, T.fg, "center"); txt("REC to capture", LW / 2, 152, 500, 13, T.mute, "center"); battery(T); return; }
+  txt(S.note || `Slice ${String(S.slice + 1).padStart(2, "0")} / 16  ·  ${s.bars ? s.bars + (s.bars > 1 ? " bars" : " bar") : "one shot"}`, 10, 70, 500, 13, T.mute);
+  txt(Math.round(duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) + " BPM", LW - 10, 70, 600, 13, S.col === 4 ? "#ffffff" : T.acc, "right");
+  sctx.save(); sctx.beginPath(); sctx.rect(X0, Y0 - 8, W0, H0 + 8); sctx.clip();
+  const n = s.ch[0].length, a = s.slices[S.slice] / n, b = s.slices[S.slice + 1] / n;
+  sctx.globalAlpha = 0.14; sctx.fillStyle = T.acc; sctx.fillRect(sx(a), Y0, sx(b) - sx(a), H0); sctx.globalAlpha = 1;
+  wave(s, X0, Y0, W0, H0, S.zoom.from, S.zoom.to, (f) => (f >= a && f < b ? "#ffffff" : T.acc));
+  for (let k = 0; k <= 16; k++) { const x = sx(s.slices[k] / n); sctx.globalAlpha = k % 4 ? 0.22 : 0.45; sctx.fillStyle = T.mute; sctx.fillRect(x - 0.5, Y0, 1, H0); }
+  sctx.globalAlpha = 1;
+  const c = s.cols[S.slice], st = a + (c.start / 1000) * s.rate / n, en = st + (c.len / 1000) * s.rate / n;
+  for (const f of [st, en]) { const x = sx(f); sctx.fillStyle = "#ffffff"; sctx.beginPath(); sctx.moveTo(x - 5, Y0 - 1); sctx.lineTo(x + 5, Y0 - 1); sctx.lineTo(x, Y0 + 6); sctx.fill(); sctx.fillRect(x - 0.75, Y0, 1.5, H0); }
+  if (eng.on && (eng.playing || eng.pos.slice >= 0)) {                   // la tête de lecture
+    const L = S.loopLength(), f = ((eng.pos.beats % L) + L) % L / L, x = sx(f);
+    sctx.fillStyle = "#ffffff"; sctx.fillRect(x - 0.8, Y0 - 2, 1.6, H0 + 4); sctx.globalAlpha = 0.12; sctx.fillRect(x - 4, Y0 - 2, 8, H0 + 4); sctx.globalAlpha = 1;
+  }
+  sctx.restore();
+  sctx.globalAlpha = 0.3; sctx.fillStyle = T.mute; sctx.fillRect(X0, 200, W0, 3); sctx.globalAlpha = 1;
+  sctx.fillStyle = T.acc; sctx.fillRect(X0 + W0 * S.zoom.from, 200, Math.max(2, W0 * (S.zoom.to - S.zoom.from)), 3);
+  txt(s.id + " " + s.name, 10, 226, 600, 18, T.fg);
+  battery(T);
+}
+const chips = () => SOURCES.filter((k) => k !== "tab" || S.sources().tab);
+S.chipX = (label) => { let x = 10; for (const k of chips()) { const w = SRC_LABEL[k].length * 8 + 18; if (SRC_LABEL[k] === label) return x + w / 2; x += w + 6; } return -1; };
+function drawCapture(T) {
+  header(T);
+  const av = S.sources();
+  let x = 10;
+  for (const k of chips()) {
+    const lab = SRC_LABEL[k], w = lab.length * 8 + 18, on = S.capt.source === k, ok = av[k] === true;
+    sctx.globalAlpha = ok ? 1 : 0.35;
+    sctx.beginPath(); sctx.roundRect ? sctx.roundRect(x, 60, w, 16, 8) : sctx.rect(x, 60, w, 16);
+    if (on) { sctx.fillStyle = T.acc; sctx.fill(); } else { sctx.strokeStyle = T.mute; sctx.lineWidth = 1; sctx.stroke(); }
+    txt(lab, x + w / 2, 72, 600, 11, on ? T.bg : T.mute, "center");
+    sctx.globalAlpha = 1; x += w + 6;
+  }
+  const rec = S.recording, armed = rec && !rec.started();
+  if (rec) {
+    const blink = !armed || Math.floor(performance.now() / 400) % 2;
+    if (blink) { sctx.fillStyle = "#ff5246"; sctx.beginPath(); sctx.arc(LW - 92, 68, 4.5, 0, 2 * Math.PI); sctx.fill(); }
+    txt(armed ? "ARMED" : "REC", LW - 10, 72, 600, 13, "#ffffff", "right");
+  } else if (typeof av.mic === "string" && S.capt.source === "mic") txt(av.mic, LW - 10, 72, 600, 13, "#ff5246", "right");
+  // le niveau d'entrée : son histoire, qui défile, et le vumètre en segments avec le seuil
+  const MX = LW - 30, h = 108;
+  S.levels.push(S.level); if (S.levels.length > 240) S.levels.shift();
+  const w = MX - 20;
+  S.levels.forEach((db, i) => {
+    const v = Math.max(0, Math.min(1, (db + 60) / 60)), hh = Math.max(1, v * (h / 2 - 2));
+    sctx.fillStyle = rec && !armed ? T.acc : T.mute; sctx.fillRect(X0 + (w * i) / 240, 84 + h / 2 - hh, 1, hh * 2);
+  });
+  for (let i = 0; i < 18; i++) {
+    const y = 84 + h - (i + 1) * 6, on = (S.level + 60) / 60 > i / 18;
+    sctx.globalAlpha = on ? 1 : 0.16; sctx.fillStyle = i >= 15 ? "#ff5246" : i >= 12 ? "#ffd77a" : T.acc; sctx.fillRect(MX, y, 18, 4);
+  }
+  sctx.globalAlpha = 1;
+  if (S.capt.thresh != null) { sctx.fillStyle = "#ffffff"; sctx.fillRect(MX - 3, 84 + h - ((S.capt.thresh + 60) / 60) * 108, 24, 1.4); }
+  txt(S.note || (rec ? "REC again to stop" : "REC to record"), 10, 226, 600, 18, T.fg);
+  battery(T);
+}
+function drawSend(T) {
+  header(T);
+  const s = curSample();
+  txt(S.sendLine ? S.sendLine() : "", 10, 70, 500, 13, S.sendArmed ? "#ffffff" : T.mute);
+  if (s) {
+    sctx.strokeStyle = T.acc; sctx.globalAlpha = 0.5; sctx.lineWidth = 1; sctx.strokeRect(10.5, 82.5, 120, 112); sctx.globalAlpha = 1;
+    txt("SONG", 18, 98, 600, 11, T.mute);
+    wave(s, 16, 106, 108, 56, 0, 1, () => T.acc);
+    txt(s.id + " " + s.name, 18, 182, 600, 13, T.fg);
+    const GX = 142, GW = LW - GX - 10, cw = (GW - 15) / 4, ch = (112 - 15) / 4, n = s.ch[0].length;
+    for (let k = 0; k < 16; k++) {
+      const x = GX + (k % 4) * (cw + 5), y = 82 + (k >> 2) * (ch + 5), own = s.pads[k];
+      sctx.globalAlpha = k === S.slice ? 0.3 : 0.12; sctx.fillStyle = T.acc; sctx.fillRect(x, y, cw, ch); sctx.globalAlpha = 1;
+      if (own) wave({ ch: own.ch }, x + 22, y + 3, cw - 26, ch - 6, 0, 1, () => "#ffffff");
+      else wave(s, x + 22, y + 3, cw - 26, ch - 6, s.slices[k] / n, s.slices[k + 1] / n, () => (k === S.slice ? "#ffffff" : T.acc));
+      txt(String(k + 1).padStart(2, "0"), x + 5, y + ch / 2 + 4, 600, 11, k === S.slice ? "#ffffff" : T.mute);
+    }
+  }
+  txt(S.note || "SEND to send", 10, 226, 600, 18, "#ffffff");
+  battery(T);
+}
+S.draw = (ctx, T) => (S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
+(function frame() { if (S.on) drawScreen(); requestAnimationFrame(frame); })();
+
+// ---------------------------------------------------------------- les touchers
+const touches = new Map();
+const lcdXY = (e) => { const r = screen.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * LW, ((e.clientY - r.top) / r.height) * 240]; };
+screen.addEventListener("pointerdown", (e) => {
+  if (!S.on) return;
+  e.preventDefault();
+  try { screen.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ }
+  const [x, y] = lcdXY(e), s = curSample();
+  const t = { x, y, x0: x, mode: "tap" };
+  touches.set(e.pointerId, t);
+  if (touches.size === 2 && S.page === "edit" && s) {          // deux doigts : le pincement
+    const [p, q] = [...touches.values()];
+    for (const u of [p, q]) u.mode = "pinch";
+    S.pinch = { d0: Math.abs(p.x - q.x) || 1, span: S.zoom.to - S.zoom.from, mid: fx((p.x + q.x) / 2) };
+    return;
+  }
+  if (y < 54) { S.col = Math.min(3, Math.floor(x / 110)); t.mode = "done"; drawScreen(); return; }
+  if (S.page === "edit" && y >= 58 && y < 78 && x > LW - 90) { S.col = 4; t.mode = "done"; drawScreen(); return; }
+  if (S.page === "capture" && y >= 58 && y < 78) {
+    let cx = 10;
+    for (const k of chips()) {
+      const w = SRC_LABEL[k].length * 8 + 18;
+      if (x >= cx && x < cx + w) { if (k === "file") S.chooseFile(); else if (S.sources()[k] === true) S.capt.source = k; break; }
+      cx += w + 6;
+    }
+    t.mode = "done"; drawScreen(); return;
+  }
+  if (S.page === "edit" && s && y >= Y0 - 8 && y < Y0 + H0 + 4) {
+    const n = s.ch[0].length;
+    for (let k = 0; k < 16; k++) {                             // près d'une limite : la poignée du début de cette tranche
+      const bx = sx((s.slices[k] + (s.cols[k].start / 1000) * s.rate) / n);
+      if (Math.abs(x - bx) < 6) { t.mode = "handle"; t.k = k; S.slice = k; S.col = 0; return; }
+    }
+  }
+});
+screen.addEventListener("pointermove", (e) => {
+  const t = touches.get(e.pointerId);
+  if (!t) return;
+  const [x, y] = lcdXY(e), s = curSample();
+  t.x = x; t.y = y;
+  if (t.mode === "pinch" && S.pinch && touches.size === 2) {
+    const [p, q] = [...touches.values()], span = clamp(S.pinch.span * (S.pinch.d0 / (Math.abs(p.x - q.x) || 1)), 1 / 64, 1);
+    let from = S.pinch.mid - span / 2;
+    from = clamp(from, 0, 1 - span);
+    S.zoom = { from, to: from + span };
+    drawScreen();
+  } else if (t.mode === "handle" && s) {
+    const c = s.cols[t.k], full = ((s.slices[t.k + 1] - s.slices[t.k]) / s.rate) * 1000;
+    const ms = ((x - t.x0) / W0) * (S.zoom.to - S.zoom.from) * (s.ch[0].length / s.rate) * 1000;
+    t.x0 = x;
+    c.start = Math.round(clamp(c.start + ms, -full, full));
+    eng.send({ t: "slice", i: t.k, ...c }); S.saveSoon(s); drawScreen();
+  }
+});
+const lift = (e) => {
+  const t = touches.get(e.pointerId);
+  if (!t) return;
+  touches.delete(e.pointerId);
+  if (t.mode === "tap" && S.page === "edit" && curSample() && t.y >= Y0 && t.y < Y0 + H0) {   // un toucher : la tranche dessous
+    const s = curSample(), f = fx(t.x), fr = f * s.ch[0].length;
+    for (let k = 0; k < 16; k++) if (fr >= s.slices[k] && fr < s.slices[k + 1]) { S.slice = k; break; }
+    drawScreen();
+  }
+  if (!touches.size) S.pinch = null;
+};
+screen.addEventListener("pointerup", lift); screen.addEventListener("pointercancel", lift);
+</script>
 </body>
 </html>

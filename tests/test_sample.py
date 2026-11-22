@@ -345,3 +345,84 @@ def test_tab_selon_navigateur(page):
     page.add_init_script("delete MediaDevices.prototype.getDisplayMedia")
     open_sample(page)
     assert page.evaluate("window.__sample.sources().tab") is False
+
+
+# ---------------------------------------------------------------- l'écran tactile
+def lcd_point(page, x, y):
+    """Un point de l'image LCD (440 x 240), en coordonnées de la page."""
+    r = page.evaluate("(() => { const b = document.getElementById('screen').getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; })()")
+    return r[0] + x / 440 * r[2], r[1] + y / 240 * r[3]
+
+
+def lcd_touch(page, x, y, pid=1, kind="pointerdown"):
+    cx, cy = lcd_point(page, x, y)
+    page.dispatch_event("#screen", kind, {"pointerId": pid, "clientX": cx, "clientY": cy, "isPrimary": pid == 1, "pointerType": "touch"})
+
+
+def lcd_lit(page):
+    return page.evaluate("""(() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+      let n = 0; for (let i = 0; i < d.length; i += 16) if (d[i] + d[i + 1] + d[i + 2] > 120) n++; return n; })()""")
+
+
+def with_sample(page, tmp_path, seconds=4):
+    open_sample(page); power_sample(page)
+    import_wav(page, wav(tmp_path / f"s{seconds}.wav", seconds))
+
+
+def test_pages(page, tmp_path):
+    with_sample(page, tmp_path)
+    for cap, want in (("SEND", "send"), ("EDIT", "edit"), ("REC", "capture")):
+        tap(page, f"[data-label='{cap}']")
+        page.wait_for_function(f"window.__sample.page === '{want}'")
+        page.wait_for_timeout(100)
+        assert lcd_lit(page) > 300, want
+    tap(page, "[data-label='REC']")                                     # (l'arrêt de la capture armée)
+
+
+def test_colonne_et_select(page, tmp_path):
+    with_sample(page, tmp_path)
+    lcd_touch(page, 55, 30); lcd_touch(page, 55, 30, kind="pointerup")
+    assert page.evaluate("window.__sample.col") == 0
+    page.evaluate("window.__sample.turn('SELECT', 3, 0)")
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].start") == 3
+
+
+def test_select_sans_colonne(page, tmp_path):
+    with_sample(page, tmp_path, 1)
+    import_wav(page, wav(tmp_path / "b.wav", 2))
+    page.evaluate("window.__sample.select(0); window.__sample.col = null")
+    page.evaluate("window.__sample.turn('SELECT', 1, 0)")
+    assert page.evaluate("window.__sample.cur") == 1
+
+
+def test_poignee(page, tmp_path):
+    with_sample(page, tmp_path)
+    x = 10 + 420 * 4 / 16
+    lcd_touch(page, x, 120); lcd_touch(page, x + 20, 120, kind="pointermove"); lcd_touch(page, x + 20, 120, kind="pointerup")
+    assert page.evaluate("window.__sample.slice") == 4
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[4].start") > 0
+
+
+def test_pincer(page, tmp_path):
+    with_sample(page, tmp_path)
+    lcd_touch(page, 200, 120, 1); lcd_touch(page, 240, 120, 2)
+    lcd_touch(page, 120, 120, 1, "pointermove"); lcd_touch(page, 320, 120, 2, "pointermove")
+    lcd_touch(page, 120, 120, 1, "pointerup"); lcd_touch(page, 320, 120, 2, "pointerup")
+    z = page.evaluate("window.__sample.zoom")
+    assert z["to"] - z["from"] < 1
+
+
+def test_tranche_touchee(page, tmp_path):
+    with_sample(page, tmp_path)
+    x = 10 + 420 * 8.5 / 16
+    lcd_touch(page, x, 150); lcd_touch(page, x, 150, kind="pointerup")
+    assert page.evaluate("window.__sample.slice") == 8
+
+
+def test_puces(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.page = 'capture'")
+    with page.expect_file_chooser() as fc:
+        x = page.evaluate("window.__sample.chipX('FILE')")
+        page.mouse.click(*lcd_point(page, x, 68))                       # (un vrai clic : le navigateur n'ouvre la fenêtre qu'à un geste)
+    assert fc.value is not None
