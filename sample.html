@@ -178,21 +178,24 @@ function snapZero(x, i, dir, r) {
   }
   return i;
 }
-// le découpage : chaque limite régulière glisse vers le creux de volume le plus proche (énergie par blocs de 5 ms,
-// à un quart de tranche au plus), puis se cale sur un passage à zéro
+// le découpage : chaque limite régulière glisse vers le creux de volume le plus proche (énergie par blocs de 5 ms, à un
+// quart de tranche au plus), s'il est franc (au plus un quart de l'énergie à la place régulière), puis se cale sur un
+// passage à zéro, sans quitter ce quart de tranche
 function smartBounds(x, rate, n = 16) {
   const N = x.length, b = sliceBounds(N, n), w = Math.max(1, Math.round(rate * 0.005)), reach = Math.floor(N / (4 * n));
   const energy = (a) => { let e = 0; for (let j = a; j < Math.min(N, a + w); j++) e += x[j] * x[j]; return e; };
   for (let i = 1; i < n; i++) {
-    const c = b[i];
-    let best = c, bestE = Infinity, bestD = Infinity;
-    for (let a = Math.max(0, Math.floor((c - reach) / w) * w); a < Math.min(N, c + reach); a += w) {
+    const c = b[i], home = energy(Math.floor(c / w) * w), lo = c - reach, hi = c + reach;
+    let best = c, bestE = home, bestD = 0;
+    for (let a = Math.max(0, Math.floor(lo / w) * w); a < Math.min(N, hi); a += w) {
       const e = energy(a), pos = c >= a && c < a + w ? c : a + (w >> 1), d = Math.abs(pos - c);
+      if (e > home * 0.25) continue;
       if (e < bestE - 1e-12 || (Math.abs(e - bestE) <= 1e-12 && d < bestD)) { best = pos; bestE = e; bestD = d; }
     }
-    b[i] = snapZero(x, best, 0, w);
+    best = Math.max(lo, Math.min(hi, best));
+    b[i] = Math.max(lo, Math.min(hi, snapZero(x, best, 0, Math.max(1, Math.min(w, reach)))));
   }
-  for (let i = 1; i < n; i++) if (b[i] <= b[i - 1]) b[i] = b[i - 1] + 1;   // (strictement croissantes)
+  for (let i = 1; i < n; i++) if (b[i] <= b[i - 1]) b[i] = Math.min(N, b[i - 1] + 1);   // (strictement croissantes)
   return b;
 }
 
@@ -1066,8 +1069,12 @@ S.ready = sreq("readonly", (st) => st.getAll()).then((list) => {
 
 // le sample choisi : dans le moteur, avec ses réglages de tranches et ses sons de pads
 S.select = (i) => {
+  const next = S.samples[Math.max(0, i)];
+  if (S.pending && S.pending.s !== next && S.revert) S.revert();   // un autre sample : l'édition non validée est défaite
   S.cur = Math.max(0, i);
   const s = S.samples[S.cur];
+  if (s && S.pending === null && (S.page === "slice" || S.page === "sound")) S.holdSlice();
+  if (S.page === "sample") S.trim = s ? { a: 0, b: s.ch[0].length } : null;
   if (s) keep("cur", s.id);
   if (!s && eng.sample) { eng.play(false); eng.sample = null; eng.send({ t: "unload" }); }
   if (s && eng.on) {
@@ -1316,13 +1323,20 @@ S.inMenu = () => S.page !== "edit";
 // TRANCHE et SON : on entend le réglage tout de suite ; SEL l'enregistre ; quitter la page, ou choisir une autre tranche
 // au pad, sans SEL le défait (la tranche revient comme avant, au moteur aussi)
 S.pending = null;
-S.holdSlice = () => { const s = curSample(); S.pending = s ? { k: S.slice, before: { ...s.cols[S.slice] } } : null; };
-S.revert = () => {
-  const p = S.pending, s = curSample();
+S.holdSlice = () => { const s = curSample(); S.pending = s ? { s, k: S.slice, before: { ...s.cols[S.slice] } } : null; };
+S.revert = () => {                                     // (sur le sample de l'édition ; le moteur, s'il joue encore celui-là)
+  const p = S.pending;
   S.pending = null;
-  if (!p || !s || !s.cols[p.k]) return;
-  s.cols[p.k] = { ...p.before };
-  eng.send({ t: "slice", i: p.k, ...s.cols[p.k] });
+  if (!p || !p.s.cols[p.k]) return;
+  p.s.cols[p.k] = { ...p.before };
+  if (p.s === curSample()) eng.send({ t: "slice", i: p.k, ...p.s.cols[p.k] });
+};
+// Important : un réglage non validé se voit (« SEL to save »), et SEL répond (« Saved »)
+S.unsaved = () => {
+  const p = S.pending;
+  if (!p || p.s !== curSample()) return false;
+  const c = p.s.cols[p.k], b = p.before;
+  return c.start !== b.start || c.len !== b.len || c.pitch !== b.pitch || c.gain !== b.gain;
 };
 let page = S.page;                                     // chaque changement de page passe ici
 Object.defineProperty(S, "page", {
@@ -1351,6 +1365,7 @@ S.marks.slice = (which, n, v) => {                     // SELECT : le début (la
   }
   c.start = ((sa - sl) * 1000) / r; c.len = ((se - sa) * 1000) / r;
   eng.send({ t: "slice", i: k, ...c });
+  S.note = "";
   return true;
 };
 S.marks.sound = (which, n) => {                        // SELECT : la hauteur ; MACRO : le volume
@@ -1358,6 +1373,7 @@ S.marks.sound = (which, n) => {                        // SELECT : la hauteur ; 
   c[key] = which === 0 ? clamp(c.pitch + n, -24, 24) : clamp(c.gain + n, 0, 100);
   if (c[key] === was) return false;
   eng.send({ t: "slice", i: S.slice, ...c });
+  S.note = "";
   return true;
 };
 // SAMPLE : SELECT et MACRO encadrent la partie gardée (un deux-centième du sample par cran) ; SEL rogne le sample, le
@@ -1391,6 +1407,7 @@ S.validate.slice = S.validate.sound = () => {
   const s = curSample();
   S.save(s);
   if (S.pending) S.pending.before = { ...s.cols[S.pending.k] };
+  setNote("Saved");
 };
 const mark = (which, n, v) => { const r = curSample() ? S.marks[S.page](which, n, v) : false; drawScreen(); return r; };
 S.hooks.knob.push((name, n, v) => {
@@ -1492,7 +1509,7 @@ function drawEdit(T) {
   header(T);
   if (!s) { txt("NO SAMPLE", LW / 2, 130, 600, 22, T.fg, "center"); txt("REC to capture", LW / 2, 152, 500, 13, T.mute, "center"); battery(T); return; }
   S.zoom = sliceZoom(s);
-  txt(S.note || `Slice ${String(S.slice + 1).padStart(2, "0")} / 16  ·  ${s.bars ? s.bars + (s.bars > 1 ? " bars" : " bar") : "one shot"}`, 10, 70, 500, 13, T.mute);
+  txt(S.note || (S.unsaved() ? "SEL to save" : "") || `Slice ${String(S.slice + 1).padStart(2, "0")} / 16  ·  ${s.bars ? s.bars + (s.bars > 1 ? " bars" : " bar") : "one shot"}`, 10, 70, 500, 13, T.mute);
   txt(Math.round(duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) + " BPM", LW - 10, 70, 600, 13, T.acc, "right");
   sctx.save(); sctx.beginPath(); sctx.rect(X0, Y0 - 8, W0, H0 + 8); sctx.clip();
   const n = s.ch[0].length, a = s.slices[S.slice] / n, b = s.slices[S.slice + 1] / n;

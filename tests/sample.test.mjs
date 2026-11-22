@@ -74,3 +74,18 @@ test("smartBounds : silence et sinus continu, près de la place régulière", ()
   const b = lib.smartBounds(s, rate);
   for (let i = 1; i < 16; i++) { assert.ok(b[i] > b[i - 1]); assert.ok(Math.abs(b[i] - i * 1000) <= 250 + 40); }
 });
+
+test("smartBounds : sans vrai creux, la coupe reste à sa place", () => {
+  const rate = 8000, N = 16000;
+  const x = Float32Array.from({ length: N }, (_, i) => (1 + 0.01 * Math.sin(i / 700)) * Math.sin(2 * Math.PI * 220 * i / rate));
+  const b = lib.smartBounds(x, rate);
+  for (let i = 1; i < 16; i++) assert.ok(Math.abs(b[i] - i * 1000) <= 40, `coupe ${i} à ${b[i] - i * 1000}`);
+});
+
+test("smartBounds : un son très court garde seize tranches jouables", () => {
+  const rate = 8000, N = 960, x = Float32Array.from({ length: N }, (_, i) => Math.sin(2 * Math.PI * 60 * i / rate));
+  const b = lib.smartBounds(x, rate);
+  for (let i = 1; i <= 16; i++) assert.ok(b[i] - b[i - 1] >= N / 32, `tranche ${i} : ${b[i] - b[i - 1]}`);
+  const t = lib.smartBounds(Float32Array.from({ length: 16 }, (_, i) => (i % 2 ? 1 : -1)), rate);
+  assert.equal(t[16], 16); for (let i = 1; i <= 16; i++) assert.ok(t[i] > t[i - 1] && t[i] <= 16);
+});

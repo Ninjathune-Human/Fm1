@@ -1072,3 +1072,22 @@ def test_rogner_bornes(page, tmp_path):
     page.evaluate("window.__sample.turn('SELECT', 900, 0)")
     a, b, rate = page.evaluate(f"[window.__sample.trim.a, window.__sample.trim.b, {CUR}.rate]")
     assert b - a >= 0.1 * rate - 1
+
+
+def test_import_sous_tranche(page, tmp_path):
+    with_sample(page, tmp_path, 4); tap(page, "[data-pad='5']"); to_menu(page, "slice")
+    old = page.evaluate(f"({{ ...{COLS}[4] }})")
+    page.evaluate("window.__sample.turn('MACRO', -20, 0)")                 # un réglage non validé
+    import_wav(page, wav(tmp_path / "court.wav", 1))
+    new = page.evaluate(f"{COLS}.map((c) => c.len)")
+    assert abs(new[4] - new[3]) < 20                                       # la tranche 5 du nouveau sample est intacte
+    assert page.evaluate("({ ...window.__sample.samples[0].cols[4] })") == old   # l'ancien sample est défait
+
+
+def test_sel_dit_ce_qu_il_fait(page, tmp_path):
+    with_sample(page, tmp_path); tap(page, "[data-pad='4']"); to_menu(page, "slice")
+    assert page.evaluate("window.__sample.unsaved()") is False
+    page.evaluate("window.__sample.turn('MACRO', -20, 0)")
+    assert page.evaluate("window.__sample.unsaved()") is True
+    tap(page, "[data-label='SEL']")
+    assert page.evaluate("[window.__sample.unsaved(), window.__sample.note]") == [False, "Saved"]
