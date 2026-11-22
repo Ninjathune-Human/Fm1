@@ -388,6 +388,13 @@ def test_select_sans_colonne(page, tmp_path):
     assert page.evaluate("window.__sample.cur") == 1
 
 
+# ---------------------------------------------------------------- platine, zone XY et pads
+import math
+
+PX, PY = 1370, 272                                       # le centre de la platine (unités du FM-1)
+XYR = (914, 572, 652, 341)                               # l'intérieur de la zone XY
+
+
 def dev_point(page, ux, uy):
     r = page.evaluate("(() => { const b = document.getElementById('panel').getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; })()")
     return r[0] + ux / 1640 * r[2], r[1] + uy / 990 * r[3]
