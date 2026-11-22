@@ -17,7 +17,8 @@ def base_url():
 @pytest.fixture(scope="session")
 def browser():
     with sync_playwright() as p:
-        b = p.chromium.launch(args=["--autoplay-policy=no-user-gesture-required"])
+        b = p.chromium.launch(args=["--autoplay-policy=no-user-gesture-required",
+                                    "--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"])   # (le micro du module sample)
         yield b
         b.close()
 
