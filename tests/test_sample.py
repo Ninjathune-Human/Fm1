@@ -865,3 +865,17 @@ def test_micro_refuse_montre_les_sources(page):
         x = page.evaluate("window.__sample.chipX('FILE')")
         page.mouse.click(*lcd_point(page, x, 68))
     assert fc.value is not None
+
+
+
+def test_puce_file_au_lever_du_doigt(page):
+    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
+    open_sample(page); power_sample(page)
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("window.__sample.page === 'capture'")
+    page.evaluate("window.__opened = 0; window.__sample.chooseFile = () => window.__opened++; 0")
+    x = page.evaluate("window.__sample.chipX('FILE')")
+    lcd_touch(page, x, 68)
+    assert page.evaluate("window.__opened") == 0          # Safari n'ouvre la fenêtre de fichier qu'au lever du doigt
+    lcd_touch(page, x, 68, kind="pointerup")
+    assert page.evaluate("window.__opened") == 1

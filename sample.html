@@ -1453,7 +1453,7 @@ screen.addEventListener("pointerdown", (e) => {
     let cx = 10;
     for (const k of chips()) {
       const w = SRC_LABEL[k].length * 8 + 18;
-      if (x >= cx && x < cx + w) { if (k === "file") S.chooseFile(); else if (S.sources()[k] === true) S.capt.source = k; break; }
+      if (x >= cx && x < cx + w) { if (k === "file") t.file = true; else if (S.sources()[k] === true) S.capt.source = k; break; }
       cx += w + 6;
     }
     t.mode = "done"; drawScreen(); return;
@@ -1501,6 +1501,7 @@ const lift = (e) => {
   const t = touches.get(e.pointerId);
   if (!t) return;
   touches.delete(e.pointerId);
+  if (t.file && e.type === "pointerup") S.chooseFile();        // la fenêtre de fichier s'ouvre au lever du doigt (Safari ne l'ouvre qu'alors)
   if (t.mode === "tap" && S.page === "edit" && curSample() && t.y >= Y0 && t.y < Y0 + H0) {   // un toucher : la tranche dessous
     const s = curSample(), f = fx(t.x), fr = f * s.ch[0].length;
     for (let k = 0; k < 16; k++) if (fr >= s.slices[k] && fr < s.slices[k + 1]) { S.slice = k; break; }
