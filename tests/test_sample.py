@@ -931,3 +931,15 @@ def test_micro_refuse_montre_les_sources(page):
     tap(page, "[data-label='REC']")
     page.wait_for_function("window.__sample.page === 'capture'")             # REC refusé : la page Capture reste
     assert page.evaluate("window.__sample.col") == 0
+
+
+def test_assign_appui_court_verrouille(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-label='ASSIGN']")                                     # un appui court : la liste reste (une souris seule)
+    assert page.evaluate("window.__sample.assigning") is True
+    page.evaluate("window.__sample.turn('MACRO', 2, 0)")
+    assert page.evaluate("window.__sample.macro.target") == "ECHO"
+    tap(page, "[data-label='ASSIGN']")                                     # un second appui la ferme
+    assert page.evaluate("window.__sample.assigning") is False
+    tap(page, "[data-label='ASSIGN']"); tap(page, "[data-label='EDIT']")   # une autre touche la ferme aussi
+    assert page.evaluate("[window.__sample.assigning, window.__sample.col]") == [False, 0]

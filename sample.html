@@ -1221,7 +1221,7 @@ S.hooks.cap.push((name, down) => {
 });
 </script>
 <script id="sample-screen">
-// Module sample et scratch : l'écran tactile (pages Capture, Édition, Envoi), ses touchers, SELECT, EDIT et SEND.
+// Module sample et scratch : l'écran (pages Capture, Édition, Envoi), SELECT, MACRO, EDIT, ASSIGN et SEND.
 // Le dessin suit celui de FM-1+VA : en-tête à quatre colonnes, ligne d'état, nom en bas à gauche, pile en bas à droite.
 "use strict";
 S.col = null; S.slice = 0; S.zoom = { from: 0, to: 1 }; S.target = null; S.levels = [];
@@ -1309,17 +1309,26 @@ S.hooks.cap.push((name, down) => {
 });
 // MACRO : dans un menu, il choisit la colonne (le tempo en dernier sur Édition) ; hors menu, il règle sa cible
 const LAST_COL = { edit: 4, capture: 3, send: 1 };
+// ASSIGN : tenu en tournant MACRO, la liste se ferme au relâcher ; un appui court la laisse ouverte (une souris seule ne
+// peut pas tenir ASSIGN et tourner MACRO), un second appui ou une autre touche la ferme
 S.assigning = false;
-S.hooks.cap.push((name, down) => { if (name === "ASSIGN") { S.assigning = down && S.on; drawScreen(); } });
+let assignWas = false, assignTurned = false;
+S.hooks.cap.push((name, down) => {
+  if (name !== "ASSIGN") { if (down && S.assigning) { S.assigning = false; drawScreen(); } return; }
+  if (down) { assignWas = S.assigning; assignTurned = false; S.assigning = S.on; }
+  else if (assignWas || assignTurned) S.assigning = false;
+  drawScreen();
+});
 S.hooks.knob.push((name, n) => {
   if (name !== "MACRO") return;
   if (S.assigning) {                                   // ASSIGN tenu : MACRO choisit sa cible, qui est gardée
     const L = S.MACRO_TARGETS, i = L.indexOf(S.macro.target), j = clamp(i + n, 0, L.length - 1);
+    assignTurned = true;
     if (j === i) return false;
     S.macro.target = L[j]; keep("macro", L[j]); drawScreen();
     return true;
   }
-  if (S.col == null) return S.macroTurn ? S.macroTurn(n) : false;
+  if (S.col == null) return S.macroTurn(n);
   const was = S.col;
   S.col = clamp(S.col + n, 0, LAST_COL[S.page]);
   drawScreen();
@@ -1458,7 +1467,7 @@ function drawSend(T) {
 function drawAssign(T) {
   txt("MACRO", 10, 30, 600, 18, T.fg);
   S.MACRO_TARGETS.forEach((k, i) => { const on = k === S.macro.target; txt(k, 10, 70 + i * 28, 600, on ? 22 : 18, on ? "#ffffff" : T.mute); });
-  txt("Turn MACRO", 10, 226, 600, 18, T.fg);
+  txt("Turn MACRO, ASSIGN to close", 10, 226, 600, 18, T.fg);
   battery(T);
 }
 S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
