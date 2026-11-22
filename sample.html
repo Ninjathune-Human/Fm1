@@ -1330,12 +1330,19 @@ function wave(s, x0, y0, w, h, from, to, colorAt) {
     sctx.fillStyle = colorAt((i0 + i1) / 2 / n); sctx.fillRect(x0 + i * 1.6, mid - hh, 1, hh * 2);
   }
 }
+// START ou LENGTH réglés : la tranche au milieu de l'écran, en grand (une demi-largeur de marge de chaque côté) ; sinon tout le sample
+function sliceZoom(s) {
+  if (S.col !== 0 && S.col !== 1) return { from: 0, to: 1 };
+  const n = s.ch[0].length, c = s.cols[S.slice], a = (s.slices[S.slice] + (c.start / 1000) * s.rate) / n, w = Math.max(1 / n, ((c.len / 1000) * s.rate) / n);
+  const from = clamp(a - w / 2, 0, 1);
+  return { from, to: Math.max(clamp(a + w * 1.5, 0, 1), from + 1 / n) };
+}
 const sx = (f) => X0 + (W0 * (f - S.zoom.from)) / (S.zoom.to - S.zoom.from);   // une fraction du sample vers l'écran
-const fx = (x) => S.zoom.from + ((x - X0) / W0) * (S.zoom.to - S.zoom.from);
 function drawEdit(T) {
   const s = curSample();
   header(T);
   if (!s) { txt("NO SAMPLE", LW / 2, 130, 600, 22, T.fg, "center"); txt("REC to capture", LW / 2, 152, 500, 13, T.mute, "center"); battery(T); return; }
+  S.zoom = sliceZoom(s);
   txt(S.note || `Slice ${String(S.slice + 1).padStart(2, "0")} / 16  ·  ${s.bars ? s.bars + (s.bars > 1 ? " bars" : " bar") : "one shot"}`, 10, 70, 500, 13, T.mute);
   txt(Math.round(duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm) + " BPM", LW - 10, 70, 600, 13, S.col === 4 ? "#ffffff" : T.acc, "right");
   sctx.save(); sctx.beginPath(); sctx.rect(X0, Y0 - 8, W0, H0 + 8); sctx.clip();
@@ -1357,7 +1364,6 @@ function drawEdit(T) {
   battery(T);
 }
 const chips = () => SOURCES.filter((k) => k !== "tab" || S.sources().tab);
-S.chipX = (label) => { let x = 10; for (const k of chips()) { const w = SRC_LABEL[k].length * 8 + 18; if (SRC_LABEL[k] === label) return x + w / 2; x += w + 6; } return -1; };
 function drawCapture(T) {
   header(T);
   const av = S.sources();
@@ -1394,7 +1400,6 @@ function drawCapture(T) {
   battery(T);
 }
 const TARGET_LABEL = { pigeon: "PIGEON", zp12: "ZP12", file: "FILE", erase: "ERASE" };
-S.targetChipX = (label) => { let x = 10; for (const k of S.targets()) { const w = TARGET_LABEL[k].length * 8 + 18; if (TARGET_LABEL[k] === label) return x + w / 2; x += w + 6; } return -1; };
 function drawSend(T) {
   header(T);
   const s = curSample();
@@ -1426,90 +1431,6 @@ function drawSend(T) {
 S.draw = (ctx, T) => (S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
 (function frame() { if (S.on) drawScreen(); requestAnimationFrame(frame); })();
 
-// ---------------------------------------------------------------- les touchers
-const touches = new Map();
-const lcdXY = (e) => { const r = screen.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * LW, ((e.clientY - r.top) / r.height) * 240]; };
-screen.addEventListener("pointerdown", (e) => {
-  if (!S.on) return;
-  e.preventDefault();
-  try { screen.setPointerCapture(e.pointerId); } catch { /* un pointeur déjà levé */ }
-  const [x, y] = lcdXY(e), s = curSample();
-  const t = { x, y, x0: x, mode: "tap" };
-  touches.set(e.pointerId, t);
-  if (touches.size === 2 && S.page === "edit" && s) {          // deux doigts : le pincement
-    const [p, q] = [...touches.values()];
-    for (const u of [p, q]) u.mode = "pinch";
-    S.pinch = { d0: Math.abs(p.x - q.x) || 1, span: S.zoom.to - S.zoom.from, mid: fx((p.x + q.x) / 2) };
-    return;
-  }
-  if (y < 54) { S.col = Math.min(3, Math.floor(x / 110)); t.mode = "value"; t.y0 = y; drawScreen(); return; }
-  if (S.page === "send" && y >= 58 && y < 78) {
-    let cx = 10;
-    for (const k of S.targets()) { const w = TARGET_LABEL[k].length * 8 + 18; if (x >= cx && x < cx + w) { S.target = k; S.sendArmed = false; break; } cx += w + 6; }
-    t.mode = "done"; drawScreen(); return;
-  }
-  if (S.page === "edit" && y >= 58 && y < 78 && x > LW - 90) { S.col = 4; t.mode = "done"; drawScreen(); return; }
-  if (S.page === "capture" && y >= 58 && y < 78) {
-    let cx = 10;
-    for (const k of chips()) {
-      const w = SRC_LABEL[k].length * 8 + 18;
-      if (x >= cx && x < cx + w) { if (k === "file") t.file = true; else if (S.sources()[k] === true) S.capt.source = k; break; }
-      cx += w + 6;
-    }
-    t.mode = "done"; drawScreen(); return;
-  }
-  if (S.page === "edit" && s && y >= Y0 - 8 && y < Y0 + H0 + 4) {
-    const n = s.ch[0].length;                                 // la poignée la plus proche : un début de tranche, ou la fin de la tranche choisie
-    let best = null;
-    for (let k = 0; k < 16; k++) {
-      const st = (s.slices[k] + (s.cols[k].start / 1000) * s.rate) / n, d = Math.abs(x - sx(st));
-      if (d < 6 && (!best || d < best.d)) best = { d, k, end: false };
-      if (k === S.slice) { const de = Math.abs(x - sx(st + ((s.cols[k].len / 1000) * s.rate) / n)); if (de < 6 && (!best || de < best.d)) best = { d: de, k, end: true }; }
-    }
-    if (best) { t.mode = best.end ? "end" : "handle"; t.k = best.k; S.slice = best.k; S.col = best.end ? 1 : 0; return; }
-  }
-});
-screen.addEventListener("pointermove", (e) => {
-  const t = touches.get(e.pointerId);
-  if (!t) return;
-  const [x, y] = lcdXY(e), s = curSample();
-  t.x = x; t.y = y;
-  if (t.mode === "pinch" && S.pinch && touches.size === 2) {
-    const [p, q] = [...touches.values()], span = clamp(S.pinch.span * (S.pinch.d0 / (Math.abs(p.x - q.x) || 1)), 1 / 64, 1);
-    let from = S.pinch.mid - span / 2;
-    from = clamp(from, 0, 1 - span);
-    S.zoom = { from, to: from + span };
-    drawScreen();
-  } else if (t.mode === "value") {
-    const steps = Math.trunc((t.y0 - y) / 6);                  // vers le haut : plus ; six pixels par pas
-    if (steps) { t.y0 -= steps * 6; editColumn(steps, 0); drawScreen(); }
-  } else if (t.mode === "end" && s) {
-    const c = s.cols[t.k], full = ((s.slices[t.k + 1] - s.slices[t.k]) / s.rate) * 1000;
-    const ms = ((x - t.x0) / W0) * (S.zoom.to - S.zoom.from) * (s.ch[0].length / s.rate) * 1000;
-    t.x0 = x;
-    c.len = Math.round(clamp(c.len + ms, 10, 4 * full));
-    eng.send({ t: "slice", i: t.k, ...c }); S.saveSoon(s); drawScreen();
-  } else if (t.mode === "handle" && s) {
-    const c = s.cols[t.k], full = ((s.slices[t.k + 1] - s.slices[t.k]) / s.rate) * 1000;
-    const ms = ((x - t.x0) / W0) * (S.zoom.to - S.zoom.from) * (s.ch[0].length / s.rate) * 1000;
-    t.x0 = x;
-    c.start = Math.round(clamp(c.start + ms, -full, full));
-    eng.send({ t: "slice", i: t.k, ...c }); S.saveSoon(s); drawScreen();
-  }
-});
-const lift = (e) => {
-  const t = touches.get(e.pointerId);
-  if (!t) return;
-  touches.delete(e.pointerId);
-  if (t.file && e.type === "pointerup") S.chooseFile();        // la fenêtre de fichier s'ouvre au lever du doigt (Safari ne l'ouvre qu'alors)
-  if (t.mode === "tap" && S.page === "edit" && curSample() && t.y >= Y0 && t.y < Y0 + H0) {   // un toucher : la tranche dessous
-    const s = curSample(), f = fx(t.x), fr = f * s.ch[0].length;
-    for (let k = 0; k < 16; k++) if (fr >= s.slices[k] && fr < s.slices[k + 1]) { S.slice = k; break; }
-    drawScreen();
-  }
-  if (!touches.size) S.pinch = null;
-};
-screen.addEventListener("pointerup", lift); screen.addEventListener("pointercancel", lift);
 </script>
 <script id="sample-gestures">
 // Module sample et scratch : les gestes de la platine, de la zone XY et des pads, le clavier et les notes MIDI.

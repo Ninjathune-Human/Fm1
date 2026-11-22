@@ -360,17 +360,6 @@ def test_tab_selon_navigateur(page):
 
 
 # ---------------------------------------------------------------- l'écran tactile
-def lcd_point(page, x, y):
-    """Un point de l'image LCD (440 x 240), en coordonnées de la page."""
-    r = page.evaluate("(() => { const b = document.getElementById('screen').getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; })()")
-    return r[0] + x / 440 * r[2], r[1] + y / 240 * r[3]
-
-
-def lcd_touch(page, x, y, pid=1, kind="pointerdown"):
-    cx, cy = lcd_point(page, x, y)
-    page.dispatch_event("#screen", kind, {"pointerId": pid, "clientX": cx, "clientY": cy, "isPrimary": pid == 1, "pointerType": "touch"})
-
-
 def lcd_lit(page):
     return page.evaluate("""(() => { const c = document.getElementById('screen'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
       let n = 0; for (let i = 0; i < d.length; i += 16) if (d[i] + d[i + 1] + d[i + 2] > 120) n++; return n; })()""")
@@ -391,60 +380,12 @@ def test_pages(page, tmp_path):
     tap(page, "[data-label='REC']")                                     # (l'arrêt de la capture armée)
 
 
-def test_colonne_et_select(page, tmp_path):
-    with_sample(page, tmp_path)
-    lcd_touch(page, 55, 30); lcd_touch(page, 55, 30, kind="pointerup")
-    assert page.evaluate("window.__sample.col") == 0
-    page.evaluate("window.__sample.turn('SELECT', 3, 0)")
-    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].start") == 3
-
-
 def test_select_sans_colonne(page, tmp_path):
     with_sample(page, tmp_path, 1)
     import_wav(page, wav(tmp_path / "b.wav", 2))
     page.evaluate("window.__sample.select(0); window.__sample.col = null")
     page.evaluate("window.__sample.turn('SELECT', 1, 0)")
     assert page.evaluate("window.__sample.cur") == 1
-
-
-def test_poignee(page, tmp_path):
-    with_sample(page, tmp_path)
-    x = 10 + 420 * 4 / 16
-    lcd_touch(page, x, 120); lcd_touch(page, x + 20, 120, kind="pointermove"); lcd_touch(page, x + 20, 120, kind="pointerup")
-    assert page.evaluate("window.__sample.slice") == 4
-    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[4].start") > 0
-
-
-def test_pincer(page, tmp_path):
-    with_sample(page, tmp_path)
-    lcd_touch(page, 200, 120, 1); lcd_touch(page, 240, 120, 2)
-    lcd_touch(page, 120, 120, 1, "pointermove"); lcd_touch(page, 320, 120, 2, "pointermove")
-    lcd_touch(page, 120, 120, 1, "pointerup"); lcd_touch(page, 320, 120, 2, "pointerup")
-    z = page.evaluate("window.__sample.zoom")
-    assert z["to"] - z["from"] < 1
-
-
-def test_tranche_touchee(page, tmp_path):
-    with_sample(page, tmp_path)
-    x = 10 + 420 * 8.5 / 16
-    lcd_touch(page, x, 150); lcd_touch(page, x, 150, kind="pointerup")
-    assert page.evaluate("window.__sample.slice") == 8
-
-
-def test_puces(page, tmp_path):
-    with_sample(page, tmp_path)
-    page.evaluate("window.__sample.page = 'capture'")
-    with page.expect_file_chooser() as fc:
-        x = page.evaluate("window.__sample.chipX('FILE')")
-        page.mouse.click(*lcd_point(page, x, 68))                       # (un vrai clic : le navigateur n'ouvre la fenêtre qu'à un geste)
-    assert fc.value is not None
-
-
-# ---------------------------------------------------------------- platine, zone XY et pads
-import math
-
-PX, PY = 1370, 272                                       # le centre de la platine (unités du FM-1)
-XYR = (914, 572, 652, 341)                               # l'intérieur de la zone XY
 
 
 def dev_point(page, ux, uy):
@@ -806,32 +747,6 @@ def test_eteindre_pendant_capture(page):
     assert page.evaluate("window.__streams.every((s) => s.getTracks().every((t) => t.readyState === 'ended'))") is True
 
 
-def test_glisser_une_valeur(page, tmp_path):
-    with_sample(page, tmp_path)
-    lcd_touch(page, 385, 40); lcd_touch(page, 385, 80, kind="pointermove"); lcd_touch(page, 385, 80, kind="pointerup")
-    assert page.evaluate("window.__sample.col") == 3
-    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[window.__sample.slice].gain") < 100
-
-
-def test_poignee_de_fin(page, tmp_path):
-    with_sample(page, tmp_path)
-    before = page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len")
-    x = 10 + 420 * 1 / 16 - 1                                            # la fin de la tranche 1, juste avant la limite suivante
-    page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len -= 60")
-    xe = 10 + 420 * ((before - 60) / 1000 / 4)
-    lcd_touch(page, xe, 120); lcd_touch(page, xe - 10, 120, kind="pointermove"); lcd_touch(page, xe - 10, 120, kind="pointerup")
-    assert page.evaluate("window.__sample.samples[window.__sample.cur].cols[0].len") < before - 60
-
-
-def test_puce_de_cible(page, tmp_path):
-    with_sample(page, tmp_path)
-    send_key(page)
-    page.evaluate("window.__sample.target = 'erase'")
-    x = page.evaluate("window.__sample.targetChipX('FILE')")
-    lcd_touch(page, x, 68); lcd_touch(page, x, 68, kind="pointerup")
-    assert page.evaluate("window.__sample.target") == "file"
-
-
 def test_micro_mono_reste_mono(page):
     page.add_init_script("""navigator.mediaDevices.getUserMedia = async () => { const c = new AudioContext(), o = c.createOscillator(), d = c.createMediaStreamDestination();
       d.channelCount = 1; d.channelCountMode = 'explicit'; o.connect(d); o.start(); return d.stream; };""")
@@ -873,21 +788,30 @@ def test_micro_refuse_montre_les_sources(page):
     open_sample(page); power_sample(page)
     tap(page, "[data-label='REC']")
     page.wait_for_function("window.__sample.page === 'capture'")             # REC refusé : la page Capture reste, avec ses sources
-    with page.expect_file_chooser() as fc:
-        x = page.evaluate("window.__sample.chipX('FILE')")
-        page.mouse.click(*lcd_point(page, x, 68))
-    assert fc.value is not None
 
 
+def test_ecran_ne_se_touche_pas(page, tmp_path):
+    with_sample(page, tmp_path)
+    before = page.evaluate("[window.__sample.col, window.__sample.slice, JSON.stringify(window.__sample.zoom)]")
+    for x, y in ((55, 30), (200, 120), (380, 68)):
+        b = page.evaluate("(() => { const r = document.getElementById('screen').getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; })()")
+        cx, cy = b[0] + x / 440 * b[2], b[1] + y / 240 * b[3]
+        for kind in ("pointerdown", "pointerup"):
+            page.dispatch_event("#screen", kind, {"pointerId": 1, "clientX": cx, "clientY": cy, "isPrimary": True, "pointerType": "touch"})
+    assert page.evaluate("[window.__sample.col, window.__sample.slice, JSON.stringify(window.__sample.zoom)]") == before
 
-def test_puce_file_au_lever_du_doigt(page):
-    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
-    open_sample(page); power_sample(page)
-    tap(page, "[data-label='REC']")
-    page.wait_for_function("window.__sample.page === 'capture'")
-    page.evaluate("window.__opened = 0; window.__sample.chooseFile = () => window.__opened++; 0")
-    x = page.evaluate("window.__sample.chipX('FILE')")
-    lcd_touch(page, x, 68)
-    assert page.evaluate("window.__opened") == 0          # Safari n'ouvre la fenêtre de fichier qu'au lever du doigt
-    lcd_touch(page, x, 68, kind="pointerup")
-    assert page.evaluate("window.__opened") == 1
+
+def test_pad_choisit_la_tranche(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-pad='8']")
+    assert page.evaluate("window.__sample.slice") == 8
+
+
+def test_zoom_suit_la_tranche(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.slice = 4; window.__sample.col = 0")
+    page.wait_for_timeout(50)
+    z = page.evaluate("window.__sample.zoom")
+    assert 0 < z["to"] - z["from"] < 0.5 and z["from"] < 4 / 16 < z["to"]
+    page.evaluate("window.__sample.col = 2"); page.wait_for_timeout(50)
+    assert page.evaluate("window.__sample.zoom") == {"from": 0, "to": 1}
