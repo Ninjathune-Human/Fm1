@@ -1601,5 +1601,62 @@ S.onMidi = (bytes) => {
   }
 };
 </script>
+<script id="sample-lights">
+// Module sample et scratch : les lumières, à chaque image. Comme sur le FM-1, chaque LED a son intensité --i (0 à 1).
+// Pads : la tranche que joue la boucle, avec une traînée qui s'éteint, la tranche choisie faiblement allumée ;
+// couronne : la LED en face du repère du disque et sa traînée ; PLAY bat la mesure ; REC clignote armé, fixe en
+// enregistrement ; zone XY : un point lumineux sous chaque doigt.
+"use strict";
+S.lit = { slice: -1, disc: 0 };
+const padI = new Float32Array(16);
+const setI = (el, v) => { const s = v.toFixed(3); if (el.__i !== s) { el.__i = s; el.style.setProperty("--i", s); } };
+let lastT = performance.now(), ptsKey = "";
+function lights() {
+  const now = performance.now(), dt = Math.min(0.1, (now - lastT) / 1000);
+  lastT = now;
+  const on = S.on && eng.on, p = eng.pos, playing = on && eng.playing;
+  // les pads
+  const sl = on && eng.sample && (playing || S.touch.platter) ? p.slice : -1;
+  for (let i = 0; i < 16; i++) {
+    if (i === sl) padI[i] = 1;
+    else padI[i] *= Math.exp(-dt / 0.1);
+    const rest = on && i === S.slice && eng.sample ? 0.25 : 0;
+    setI(panel.pads[i].g, Math.max(padI[i] < 0.004 ? 0 : padI[i], rest));
+  }
+  S.lit.slice = sl;
+  // le disque et sa couronne
+  const disc = on && eng.sample ? p.disc : 0;
+  S.lit.disc = disc;
+  panel.disc.setAttribute("transform", `rotate(${((disc * 180) / Math.PI).toFixed(2)} ${panel.center.platter[0]} ${panel.center.platter[1]})`);
+  const head = ((Math.round((disc / (2 * Math.PI)) * 32) % 32) + 32) % 32;
+  panel.leds.forEach((l, i) => {
+    const back = (head - i + 32) % 32;
+    setI(l, !on || !eng.sample ? 0 : back === 0 ? 1 : back === 1 ? 0.55 : back === 2 ? 0.28 : back === 3 ? 0.12 : 0);
+  });
+  // PLAY bat la mesure, REC clignote armé
+  const beat = playing ? ((p.loop % 1) + 1) % 1 : 1;
+  setI(panel.caps.PLAY.g, playing ? 0.55 + 0.45 * Math.max(0, 1 - beat * 2) : 0);
+  const rec = S.recording;
+  setI(panel.caps.REC.g, !rec ? 0 : rec.started() ? 1 : Math.floor(now / 250) % 2 ? 1 : 0.15);
+  // les points de la zone XY
+  const pts = S.touch ? S.touch.points : [], key = pts.map((q) => q.x.toFixed(3) + "," + q.y.toFixed(3)).join(";");
+  if (key !== ptsKey) {
+    ptsKey = key;
+    const [rx, ry, rw, rh] = panel.center.xy, g = panel.xyPts;
+    g.replaceChildren();
+    for (const q of pts) {
+      const x = rx + q.x * rw, y = ry + (1 - q.y) * rh, el = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
+      const pt = el("g", { class: "pt" });
+      pt.append(
+        el("line", { x1: rx, y1: y, x2: rx + rw, y2: y, class: "sk-lcd-acc", stroke: S.T.acc, "stroke-opacity": 0.45, "stroke-width": 1.4 }),
+        el("line", { x1: x, y1: ry, x2: x, y2: ry + rh, class: "sk-lcd-acc", stroke: S.T.acc, "stroke-opacity": 0.45, "stroke-width": 1.4 }),
+        el("circle", { cx: x, cy: y, r: 58, fill: "url(#gTouch)", opacity: 0.55 }),
+        el("circle", { cx: x, cy: y, r: 10, fill: "#ffffff" }));
+      g.append(pt);
+    }
+  }
+}
+(function loop() { lights(); requestAnimationFrame(loop); })();
+</script>
 </body>
 </html>

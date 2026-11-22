@@ -570,3 +570,72 @@ def test_clavier_et_midi(page, tmp_path):
     page.evaluate("window.__engine().midiIn(Uint8Array.of(0x90, 36, 100)); window.__engine().midiIn(Uint8Array.of(0x80, 36, 0))")
     pads = page.evaluate("window.__sent.filter((m) => m.t === 'pad' && m.i === 0).map((m) => m.on)")
     assert pads == [True, False]
+
+
+# ---------------------------------------------------------------- les lumières
+I_OF = "(el) => parseFloat(el.style.getPropertyValue('--i') || '0')"
+
+
+def test_led_des_pads(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.slice = 6")
+    page.wait_for_timeout(100)
+    rest = page.evaluate(f"({I_OF})(document.querySelector(\"[data-pad='6']\"))")
+    assert abs(rest - 0.25) < 0.05, rest
+    page.evaluate("window.__engine().play(true)")
+    page.wait_for_timeout(700)
+    k, cur, prev = page.evaluate(f"""(() => {{ const L = window.__sample.lit, k = L.slice, f = {I_OF};
+      return [k, f(document.querySelector(`[data-pad='${{k}}']`)), f(document.querySelector(`[data-pad='${{(k + 15) % 16}}']`))]; }})()""")
+    assert cur == 1 and 0 < prev < 1, (k, cur, prev)
+
+
+def test_couronne(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__engine().play(true)")
+    page.wait_for_timeout(500)
+    head, brightest = page.evaluate(f"""(() => {{ const d = window.__sample.lit.disc, f = {I_OF}, leds = [...document.querySelectorAll('#platter .led')];
+      const head = ((Math.round(d / (2 * Math.PI) * 32) % 32) + 32) % 32; let b = 0; leds.forEach((l, i) => {{ if (f(l) > f(leds[b])) b = i; }});
+      return [head, b]; }})()""")
+    assert head == brightest, (head, brightest)
+
+
+def test_play_bat(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__engine().play(true)")
+    page.wait_for_timeout(200)
+    n = page.evaluate(f"""() => new Promise((ok) => {{ const el = document.querySelector("[data-label='PLAY']"), f = {I_OF}; let n = 0, was = false;
+      const iv = setInterval(() => {{ const up = f(el) > 0.9; if (up && !was) n++; was = up; }}, 15);
+      setTimeout(() => {{ clearInterval(iv); ok(n); }}, 1000); }})""")
+    assert 1 <= n <= 3, n                                               # deux temps par seconde à 120
+
+
+def test_rec(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.capt.input = -24; window.__sample.capt.thresh = -0.1")   # armé : il attend un son qui ne vient pas
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!!window.__sample.recording")
+    seen = page.evaluate(f"""() => new Promise((ok) => {{ const el = document.querySelector("[data-label='REC']"), f = {I_OF}, s = new Set();
+      const iv = setInterval(() => s.add(f(el) > 0.5), 30); setTimeout(() => {{ clearInterval(iv); ok([...s]); }}, 1000); }})""")
+    assert sorted(seen) == [False, True]
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("!window.__sample.recording")
+    page.evaluate("window.__sample.capt.input = 0; window.__sample.capt.thresh = null")
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("window.__sample.recording && window.__sample.recording.started()")
+    page.wait_for_timeout(100)
+    assert page.evaluate(f"({I_OF})(document.querySelector(\"[data-label='REC']\"))") == 1
+    tap(page, "[data-label='REC']")
+
+
+def test_point_xy(page, tmp_path):
+    with_sample(page, tmp_path)
+    count = "document.querySelectorAll('#xy-pts .pt').length"
+    ptr(page, "#xy", "pointerdown", *xy_at(0.3, 0.3), pid=1)
+    page.wait_for_timeout(60)
+    assert page.evaluate(count) == 1
+    ptr(page, "#xy", "pointerdown", *xy_at(0.7, 0.6), pid=2)
+    page.wait_for_timeout(60)
+    assert page.evaluate(count) == 2
+    ptr(page, "#xy", "pointerup", *xy_at(0.7, 0.6), pid=2); ptr(page, "#xy", "pointerup", *xy_at(0.3, 0.3), pid=1)
+    page.wait_for_timeout(60)
+    assert page.evaluate(count) == 0
