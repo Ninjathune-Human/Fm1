@@ -38,8 +38,8 @@ main { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
   box-shadow: 0 46px 70px -18px rgb(0 0 0 / 0.42), 0 18px 26px -10px rgb(0 0 0 / 0.38), 0 3px 6px rgb(0 0 0 / 0.25); }
 .device > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 /* l'écran : une image LCD de 440 x 240, à 1,25 unité du FM-1 par pixel */
-.device canvas { position: absolute; left: 28.476%; top: 11.616%; width: 32.073%; height: 30.303%; background: #000; border-radius: 0.4%; touch-action: none; }
-.glass { position: absolute; left: 25.732%; top: 7.071%; width: 37.561%; height: 39.394%; border-radius: 8.12% / 12.82%; pointer-events: none;
+.device canvas { position: absolute; left: 36.159%; top: 11.616%; width: 30.244%; height: 28.586%; background: #000; border-radius: 0.4%; touch-action: none; }
+.glass { position: absolute; left: 33.415%; top: 7.071%; width: 35.732%; height: 37.677%; border-radius: 8.53% / 13.40%; pointer-events: none;
   background:
     linear-gradient(141deg, rgb(255 255 255 / 0.17) 0%, rgb(255 255 255 / 0.075) 35%, rgb(255 255 255 / 0) 35.3%),
     radial-gradient(85% 50% at 22% 0%, rgb(255 255 255 / 0.12), transparent 70%),
@@ -70,7 +70,7 @@ main { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
 /* l'allumage : le bouton sur le verre de l'écran */
 .start { position: absolute; inset: 0; border-radius: 5.85% / 9.7%; background: rgb(0 0 0 / 0.08); }
 .start[hidden] { display: none; }
-.start button { position: absolute; left: 44.51%; top: 26.77%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 8px;
+.start button { position: absolute; left: 51.280%; top: 25.909%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 8px;
   font: 600 1rem var(--body); padding: 0 22px 0 18px; min-height: 44px; border-radius: 999px; border: 0; white-space: nowrap;
   background: rgb(255 255 255 / 0.9); color: #1d1d1f; cursor: pointer; box-shadow: 0 10px 28px rgb(0 0 0 / 0.45), inset 0 1px 0 #ffffff; }
 .start button svg { width: 16px; height: 16px; }
@@ -461,7 +461,7 @@ for (const b of document.querySelectorAll(".lang button")) {
 // ---------------------------------------------------------------- l'impression du panneau : matrice 5 x 7 (HD44780)
 const DOT57 = {
   A: "01110 10001 10001 10001 11111 10001 10001", C: "01110 10001 10000 10000 10000 10001 01110", E: "11111 10000 10000 11110 10000 10000 11111",
-  L: "10000 10000 10000 10000 10000 10000 11111", M: "10001 11011 10101 10101 10001 10001 10001", R: "11110 10001 10001 11110 10100 10010 10001",
+  L: "10000 10000 10000 10000 10000 10000 11111", M: "10001 11011 10101 10101 10001 10001 10001", O: "01110 10001 10001 10001 10001 10001 01110", R: "11110 10001 10001 11110 10100 10010 10001",
   S: "01111 10000 10000 01110 00001 00001 11110", T: "11111 00100 00100 00100 00100 00100 00100",
 };
 const DOT_W = 2.52, DOT_H = 2.62;
@@ -687,21 +687,21 @@ function buildPanel(svg) {
   };
 
   // ---------------------------------------------------------------- la disposition validée
-  knob(135, 147, "MASTER", true, 40); knob(308, 147, "SELECT", false);
-  plate(95, 262, 252, 228, 34);
-  button(156, 319, 100, 80, "EDIT"); button(286, 319, 100, 80, "SEND");
-  button(156, 425, 100, 80, "PLAY", "STOP"); button(286, 425, 100, 80, "REC");
+  knob(135, 147, "MASTER", true, 40); knob(308, 147, "SELECT", false); knob(481, 147, "MACRO", false);
+  plate(95, 262, 382, 228, 34);
+  button(156, 319, 100, 80, "FILE"); button(286, 319, 100, 80, "EDIT"); button(416, 319, 100, 80, "SEND");
+  button(156, 425, 100, 80, "ASSIGN"); button(286, 425, 100, 80, "PLAY", "STOP"); button(416, 425, 100, 80, "REC");
   plate(62, 560, 810, 365, 50);
   dot(448, 741);
   for (let j = 0; j < 16; j++) key(j, 123 + 93 * (j % 8), j < 8 ? 659 : 825, j < 8 ? 150 : 152, j < 8 ? 621 : 787, 43);
 
-  // l'écran : un verre dans un cadre noir poli, 616 de large (390 sur le FM-1)
-  const W = 616;
-  el("rect", { x: 426, y: 82, width: W, height: 390, rx: 52, fill: "#000000", opacity: 0.9, filter: "url(#fShadow)" }, base);
-  el("rect", { x: 422, y: 70, width: W, height: 390, rx: 50, fill: "url(#gBezel)" }, base);
-  el("rect", { x: 423, y: 71, width: W - 2, height: 388, rx: 49, fill: "none", stroke: "url(#gBezelEdge)", "stroke-width": 2 }, base);
-  el("rect", { x: 434, y: 82, width: W - 24, height: 366, rx: 40, fill: "#060607" }, base);
-  el("rect", { x: 465, y: 113, width: W - 86, height: 304, rx: 8, fill: "#000000" }, base);
+  // l'écran : un verre dans un cadre noir poli, 586 de large (390 sur le FM-1), à droite de MACRO
+  const SX = 548, W = 586, H = 373;
+  el("rect", { x: SX + 4, y: 82, width: W, height: H, rx: 52, fill: "#000000", opacity: 0.9, filter: "url(#fShadow)" }, base);
+  el("rect", { x: SX, y: 70, width: W, height: H, rx: 50, fill: "url(#gBezel)" }, base);
+  el("rect", { x: SX + 1, y: 71, width: W - 2, height: H - 2, rx: 49, fill: "none", stroke: "url(#gBezelEdge)", "stroke-width": 2 }, base);
+  el("rect", { x: SX + 12, y: 82, width: W - 24, height: H - 24, rx: 40, fill: "#060607" }, base);
+  el("rect", { x: SX + 43, y: 113, width: W - 86, height: H - 86, rx: 8, fill: "#000000" }, base);
 
   // la zone XY : un verre sensible, au fond et aux traits du thème de l'écran
   const X0 = 902, Y0 = 560, XW = 676, XH = 365;
@@ -721,7 +721,7 @@ function buildPanel(svg) {
   el("rect", { x: X0 + 12, y: Y0 + 12, width: XW - 24, height: XH * 0.4, rx: 34, fill: "url(#gGlass)", opacity: 0.6, "pointer-events": "none" }, xy);
 
   // la platine : un puits poli, la couronne de 32 LED, le disque et son macaron
-  const PX = 1336, PY = 272, RW = 206, RL = 192, RD = 174, kk = RD / 140;
+  const PX = 1370, PY = 272, RW = 206, RL = 192, RD = 174, kk = RD / 140;
   el("circle", { cx: PX + 5, cy: PY + 10, r: RW + 2, fill: "#000000", opacity: 0.9, filter: "url(#fShadow)" }, base);
   el("circle", { cx: PX, cy: PY, r: RW, fill: "url(#gBezel)" }, base);
   el("circle", { cx: PX, cy: PY, r: RW - 1, fill: "none", stroke: "url(#gBezelEdge)", "stroke-width": 2 }, base);

@@ -13,14 +13,26 @@ def power_sample(page):
 
 def test_panneau(page):
     open_sample(page)
-    assert page.locator("#panel .cap").count() == 4
-    assert page.locator("#panel [data-knob]").count() == 2
+    assert page.locator("#panel .cap").count() == 6
+    assert page.locator("#panel [data-knob]").count() == 3
     assert page.locator("#panel .key[data-pad]").count() == 16
     assert page.is_visible("#platter") and page.is_visible("#xy")
     # l'image LCD de 440 x 240, tracée trois fois plus fine (comme l'écran du FM-1, 240 sur 720)
     assert page.evaluate("(() => { const c = document.getElementById('screen'); return [c.width / 3, c.height / 3]; })()") == [440, 240]
     assert page.locator(".deck .skins .swatch").count() == 6
     assert "Module sample" in page.inner_text("#fw-picker")
+
+
+def test_disposition_du_croquis(page):
+    open_sample(page)
+    box = lambda sel: page.locator(sel).bounding_box()
+    c = {n: box(f"[data-label='{n}']") for n in ("FILE", "EDIT", "SEND", "ASSIGN", "PLAY", "REC")}
+    assert c["FILE"]["x"] < c["EDIT"]["x"] < c["SEND"]["x"]
+    assert c["ASSIGN"]["x"] < c["PLAY"]["x"] < c["REC"]["x"]
+    assert abs(c["FILE"]["y"] - c["SEND"]["y"]) < 2 and c["ASSIGN"]["y"] > c["FILE"]["y"] + 40
+    m, s, scr, pl = box("[data-knob='MACRO']"), box("[data-knob='SELECT']"), box("#screen"), box("#platter")
+    assert m["x"] > s["x"] + s["width"] and m["x"] + m["width"] < scr["x"]
+    assert scr["x"] + scr["width"] < pl["x"]
 
 
 def test_langue_et_coloris(page):
@@ -431,7 +443,7 @@ def test_puces(page, tmp_path):
 # ---------------------------------------------------------------- platine, zone XY et pads
 import math
 
-PX, PY = 1336, 272                                       # le centre de la platine (unités du FM-1)
+PX, PY = 1370, 272                                       # le centre de la platine (unités du FM-1)
 XYR = (914, 572, 652, 341)                               # l'intérieur de la zone XY
 
 
