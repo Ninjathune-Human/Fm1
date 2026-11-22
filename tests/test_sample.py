@@ -816,13 +816,6 @@ def test_rec_pad_coupe_le_roll(page, tmp_path):
     page.dispatch_event("[data-pad='3']", "pointerup", {"pointerId": 3, "isPrimary": True})
 
 
-def test_micro_refuse_montre_les_sources(page):
-    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
-    open_sample(page); power_sample(page)
-    tap(page, "[data-label='REC']")
-    page.wait_for_function("window.__sample.page === 'capture'")             # REC refusé : la page Capture reste, avec ses sources
-
-
 def test_ecran_ne_se_touche_pas(page, tmp_path):
     with_sample(page, tmp_path)
     before = page.evaluate("[window.__sample.col, window.__sample.slice, JSON.stringify(window.__sample.zoom)]")
@@ -902,3 +895,39 @@ def test_macro_neutre_au_rallumage(page, tmp_path):
     page.evaluate("window.__sample.turn('MACRO', 9, 0)")
     page.click("#power"); page.click("#power"); page.wait_for_function("window.__sample.on")
     assert page.evaluate("window.__sample.macro.base.x") == 0.5
+
+
+def test_file_au_relacher(page, tmp_path):
+    open_sample(page); power_sample(page)
+    page.evaluate("window.__opened = 0; window.__sample.chooseFile = () => window.__opened++; 0")
+    hold(page, "[data-label='FILE']", True); assert page.evaluate("window.__opened") == 0
+    hold(page, "[data-label='FILE']", False); assert page.evaluate("window.__opened") == 1
+
+
+def test_file_ouvre_le_choix(page):
+    open_sample(page); power_sample(page)
+    with page.expect_file_chooser() as fc:
+        page.click("[data-label='FILE']")
+    assert fc.value is not None
+
+
+def test_file_pendant_une_capture(page):
+    open_sample(page); power_sample(page)
+    page.evaluate("window.__sample.capt.thresh = null; window.__opened = 0; window.__sample.chooseFile = () => window.__opened++; 0")
+    tap(page, "[data-label='REC']"); page.wait_for_function("!!window.__sample.recording")
+    tap(page, "[data-label='FILE']")
+    assert page.evaluate("window.__opened") == 0
+    tap(page, "[data-label='REC']")
+
+
+def test_sources_sans_file(page):
+    open_sample(page); power_sample(page)
+    assert "file" not in page.evaluate("Object.keys(window.__sample.sources())")
+
+
+def test_micro_refuse_montre_les_sources(page):
+    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
+    open_sample(page); power_sample(page)
+    tap(page, "[data-label='REC']")
+    page.wait_for_function("window.__sample.page === 'capture'")             # REC refusé : la page Capture reste
+    assert page.evaluate("window.__sample.col") == 0

@@ -1085,7 +1085,6 @@ const md = () => navigator.mediaDevices || null;
 S.sources = () => ({
   mic: S.micError || !!(md() && md().getUserMedia),
   fm1: !!S.fm1A(),
-  file: true,
   tab: !!(md() && md().getDisplayMedia),
 });
 
@@ -1096,6 +1095,8 @@ fileIn.accept = "audio/*,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,.mp4,.m
 document.body.append(fileIn);
 fileIn.addEventListener("change", () => { const f = fileIn.files[0]; fileIn.value = ""; if (f) S.importFile(f); });
 S.chooseFile = () => fileIn.click();
+// FILE : la fenêtre de fichier s'ouvre au relâcher (Safari ne l'ouvre qu'au lever du doigt), hors d'une capture
+S.hooks.cap.push((name, down) => { if (name === "FILE" && !down && S.on && !S.recording) S.chooseFile(); });
 S.importFile = async (file) => {
   const imp = S.lastImport = { done: false, error: null };
   try {
@@ -1229,7 +1230,7 @@ const fmtMs = (ms) => (Math.abs(ms) >= 1000 ? (ms / 1000).toFixed(2) + "s" : Mat
 const curSample = () => S.samples[S.cur] || null;
 
 // ---------------------------------------------------------------- ce que montrent les colonnes, et ce que SELECT y change
-const SOURCES = ["mic", "fm1", "file", "tab"], SRC_LABEL = { mic: "MIC", fm1: "FM-1", file: "FILE", tab: "TAB" };
+const SOURCES = ["mic", "fm1", "tab"], SRC_LABEL = { mic: "MIC", fm1: "FM-1", tab: "TAB" };
 function columns() {
   const s = curSample();
   if (S.page === "capture") {
