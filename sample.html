@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Module sample</title>
+</head>
+<body>
+<script id="sample-lib">
+// Module sample et scratch : les fonctions pures, partagées par la page et son worklet (sans DOM).
+"use strict";
+const TURN_SECONDS = 1.8;              // un tour de platine : 1,8 s de son, comme un 33 tours
+const MAX_SECONDS = 16;                // une capture, au plus
+const BARS = [1, 2, 4, 8];             // les longueurs de boucle, en mesures de quatre temps
+
+// le nombre de mesures qui demande le moins de changement de vitesse ; rate = durée du sample / durée de la boucle ;
+// au-delà d'une demi-octave, le sample se joue tel quel, sans boucle
+function fitBars(seconds, bpm) {
+  let best = null;
+  for (const bars of BARS) {
+    const rate = seconds / ((bars * 4 * 60) / bpm);
+    if (!best || Math.abs(Math.log2(rate)) < Math.abs(Math.log2(best.rate))) best = { bars, rate };
+  }
+  return Math.abs(Math.log2(best.rate)) > 0.5 ? { bars: null, rate: 1 } : best;
+}
+
+// n parts égales, de 0 à frames
+function sliceBounds(frames, n = 16) {
+  const b = new Int32Array(n + 1);
+  for (let i = 0; i <= n; i++) b[i] = Math.round((frames * i) / n);
+  return b;
+}
+
+// un fichier .wav, PCM 16 bits, canaux entrelacés
+function encodeWav(channels, sampleRate) {
+  const nc = channels.length, frames = channels[0].length, bytes = frames * nc * 2;
+  const out = new Uint8Array(44 + bytes), d = new DataView(out.buffer);
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) out[o + i] = s.charCodeAt(i); };
+  str(0, "RIFF"); d.setUint32(4, 36 + bytes, true); str(8, "WAVE");
+  str(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, nc, true);
+  d.setUint32(24, sampleRate, true); d.setUint32(28, sampleRate * nc * 2, true); d.setUint16(32, nc * 2, true); d.setUint16(34, 16, true);
+  str(36, "data"); d.setUint32(40, bytes, true);
+  for (let i = 0, o = 44; i < frames; i++)
+    for (let c = 0; c < nc; c++, o += 2) {
+      const v = Math.max(-1, Math.min(1, channels[c][i]));
+      d.setInt16(o, v < 0 ? Math.round(v * 32768) : Math.round(v * 32767), true);
+    }
+  return out;
+}
+
+// l'horloge MIDI reçue (24 impulsions par noire) : Start (0xFA) remet à zéro et lance, chaque 0xF8 compte, Stop (0xFC)
+// arrête. La phase vient du nombre d'impulsions reçues, jamais du tempo intégré : pas de dérive. Le temps de chaque
+// impulsion est lissé par une droite ajustée sur les dernières, qui efface la gigue des messages.
+function makeClock() {
+  const N = 48, ts = [], ks = [];
+  let count = 0;
+  const c = {
+    running: false, bpm: null,
+    fit() {                                           // t ≈ a + b k, aux moindres carrés
+      const n = ts.length;
+      if (n < 2) return null;
+      let sk = 0, st = 0, skk = 0, skt = 0;
+      for (let i = 0; i < n; i++) { sk += ks[i]; st += ts[i]; skk += ks[i] * ks[i]; skt += ks[i] * ts[i]; }
+      const b = (n * skt - sk * st) / (n * skk - sk * sk);
+      return { a: (st - b * sk) / n, b };
+    },
+    feed(byte, tMs) {
+      if (byte === 0xfa) { count = 0; ts.length = 0; ks.length = 0; c.running = true; return; }
+      if (byte === 0xfc) { c.running = false; return; }
+      if (byte !== 0xf8) return;
+      ts.push(tMs); ks.push(count); count++;
+      if (ts.length > N) { ts.shift(); ks.shift(); }
+      const f = c.fit();
+      if (f && f.b > 0) c.bpm = 60000 / (f.b * 24);
+    },
+    beats(tMs) {                                      // en temps depuis le Start ; au plus une impulsion d'avance
+      if (!count) return 0;
+      const f = c.fit();
+      if (!f || !(f.b > 0)) return (count - 1) / 24;
+      const k = (tMs - f.a) / f.b;
+      return Math.max(0, Math.min(count, k)) / 24;
+    },
+  };
+  return c;
+}
+
+// la durée d'une répétition (roll) en doubles croches
+function rollSeconds(bpm) { return 60 / bpm / 4; }
+</script>
+</body>
+</html>
