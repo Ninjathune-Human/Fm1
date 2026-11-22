@@ -7160,7 +7160,9 @@ function buildPanel(fw) {
     status.textContent = rom ? "ROM : vérification…" : "Préparation des échantillons…";
     try { status.textContent = await current.takeSamples(files, ac); }
     catch (err) { status.textContent = (rom ? "ROM : " : "Échantillons : ") + (err && err.message ? err.message : err); }
+    return status.textContent;
   }
+  window.__takeSamples = takeSamples;                 // le module sample du Duo envoie ses sons par ici
   $("samples").addEventListener("change", (e) => { const f = [...e.target.files]; e.target.value = ""; takeSamples(f); });
 
   // SLOOP : un fichier MIDI dans une piste, comme « Import MIDI » de son éditeur web, par le même protocole (SysEx sur l'USB

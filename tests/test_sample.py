@@ -639,3 +639,78 @@ def test_point_xy(page, tmp_path):
     ptr(page, "#xy", "pointerup", *xy_at(0.7, 0.6), pid=2); ptr(page, "#xy", "pointerup", *xy_at(0.3, 0.3), pid=1)
     page.wait_for_timeout(60)
     assert page.evaluate(count) == 0
+
+
+# ---------------------------------------------------------------- l'envoi
+def send_key(fr):
+    tap(fr, "[data-label='SEND']")
+
+
+def test_cibles_selon_fm1a(page):
+    a, b = open_duo_with(page, "sample")
+    b.evaluate("document.getElementById('go').click()")
+    b.wait_for_function("window.__sample.on")
+    assert b.evaluate("window.__sample.targets()") == ["file", "erase"]          # FM1-A éteint
+    a.evaluate("document.getElementById('go').click()")
+    a.wait_for_function("window.__fw.on && !window.__fw.splash", timeout=20000)
+    assert b.evaluate("window.__sample.targets()") == ["file", "erase"]          # FM-1+VA ne prend pas d'échantillons
+
+
+def sent_to(page, tmp_path, fid):
+    from test_natif import _natif
+    from test_emu import use
+    _natif(fid)
+    a, b = open_duo_with(page, "sample")
+    a.evaluate("document.getElementById('go').click()")
+    a.wait_for_function("window.__fw.on && !window.__fw.splash", timeout=20000)
+    page.set_default_timeout(30000)
+    assert use(a, fid) is True
+    a.wait_for_timeout(4000)                                                     # l'écran de démarrage
+    b.evaluate("document.getElementById('go').click()")
+    b.wait_for_function("window.__sample.on")
+    import_wav(b, wav(tmp_path / "boucle.wav", 4))
+    assert fid in b.evaluate("window.__sample.targets()")
+    send_key(b)
+    b.evaluate(f"window.__sample.target = '{fid}'")
+    return a, b
+
+
+def test_envoi_pigeon(page, tmp_path):
+    a, b = sent_to(page, tmp_path, "pigeon")
+    send_key(b)
+    assert b.evaluate("window.__sample.sendArmed") is True
+    assert "SEND to confirm" in b.evaluate("window.__sample.sendLine()")
+    send_key(b)
+    a.wait_for_function("document.getElementById('status').textContent.includes('chargé')", timeout=30000)
+
+
+def test_envoi_zp12(page, tmp_path):
+    a, b = sent_to(page, tmp_path, "zp12")
+    send_key(b)
+    a.wait_for_function("document.getElementById('status').textContent.startsWith('zp12 : 16 sons')", timeout=60000)
+
+
+def test_envoi_fichier(page, tmp_path):
+    with_sample(page, tmp_path)
+    send_key(page)
+    page.evaluate("window.__sample.target = 'file'")
+    with page.expect_download() as dl:
+        send_key(page)
+    d = dl.value
+    assert d.suggested_filename == "S01.wav"
+    assert open(d.path(), "rb").read(4) == b"RIFF"
+
+
+def test_erase(page, tmp_path):
+    with_sample(page, tmp_path)
+    send_key(page)
+    page.evaluate("window.__sample.target = 'erase'")
+    send_key(page)
+    assert page.evaluate("window.__sample.samples.length") == 1                  # d'abord la confirmation
+    send_key(page)
+    page.wait_for_function("window.__sample.samples.length === 0")
+    assert page.evaluate("window.__engine().sample") is None                     # plus rien dans le moteur
+    page.reload()
+    page.wait_for_selector("#panel [data-label='REC']")
+    page.wait_for_timeout(300)
+    assert page.evaluate("window.__sample.samples.length") == 0

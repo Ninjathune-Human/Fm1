@@ -268,6 +268,7 @@ class SampleProc extends AudioWorkletProcessor {
       case "echo": this.echoTo = [m.amount, m.feedback]; break;
       case "master": this.masterTo = m.v; break;
       case "slice": this.cols[m.i] = { start: m.start, len: m.len, pitch: m.pitch, gain: m.gain }; break;
+      case "unload": this.ch = null; this.frames = 0; this.slices = null; this.voices = []; this.playing = false; break;
       case "padbuf": this.padBuf[m.i] = m.ch ? { ch: m.ch, rate: m.rate } : null; break;
     }
   }
@@ -1020,6 +1021,7 @@ S.select = (i) => {
   S.cur = Math.max(0, i);
   const s = S.samples[S.cur];
   if (s) keep("cur", s.id);
+  if (!s && eng.sample) { eng.play(false); eng.sample = null; eng.send({ t: "unload" }); }
   if (s && eng.on) {
     eng.load(s);
     s.cols.forEach((c, k) => eng.send({ t: "slice", i: k, ...c }));
@@ -1261,7 +1263,6 @@ S.hooks.knob.push((name, n, v) => {
 S.hooks.cap.push((name, down) => {
   if (!down || !S.on) return;
   if (name === "EDIT") { S.page = "edit"; S.col = null; drawScreen(); }
-  else if (name === "SEND" && S.page !== "send") { S.page = "send"; S.col = null; S.sendArmed = false; drawScreen(); }
 });
 
 // ---------------------------------------------------------------- le dessin
@@ -1657,6 +1658,71 @@ function lights() {
   }
 }
 (function loop() { lights(); requestAnimationFrame(loop); })();
+</script>
+<script id="sample-send">
+// Module sample et scratch : l'envoi. SEND ouvre la page Envoi, SEND encore envoie ; remplacer la banque de Pigeon et
+// effacer un sample demandent une confirmation (un troisième SEND).
+"use strict";
+S.sendArmed = false;
+function fm1ATarget() {
+  const A = fm1A(), id = A && A.eng.entry && A.eng.entry.id;
+  return id === "pigeon" || id === "zp12" ? id : null;
+}
+S.targets = () => { const t = fm1ATarget(); return t ? [t, "file", "erase"] : ["file", "erase"]; };
+S.sendLine = () => {
+  const s = curSample(), id = s ? s.id : "";
+  switch (S.target) {
+    case "pigeon": return S.sendArmed ? "Replaces Pigeon's whole bank. SEND to confirm." : "Replaces Pigeon's whole bank";
+    case "zp12": return "16 slices to zp12 pads C1-D8";
+    case "file": return `Saves ${id}.wav`;
+    case "erase": return S.sendArmed ? `Erase ${id}? SEND to confirm.` : "Erases this sample";
+    default: return "";
+  }
+};
+// une tranche (ou le son propre d'un pad), en .wav ; au plus `max` secondes
+function sliceWav(s, k, max) {
+  const own = s.pads[k];
+  let ch, rate = s.rate;
+  if (own) { ch = own.ch; rate = own.rate; }
+  else ch = s.ch.map((c) => c.subarray(s.slices[k], s.slices[k + 1]));
+  if (max) ch = ch.map((c) => c.subarray(0, Math.min(c.length, Math.floor(max * rate))));
+  return encodeWav(ch, rate);
+}
+S.send = async (target) => {
+  const s = curSample();
+  if (!s) { setNote("No sample"); return S.note; }
+  if (target === "file") {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([encodeWav(s.ch, s.rate)], { type: "audio/wav" }));
+    a.download = s.id + ".wav";
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    setNote(`Saved ${s.id}.wav`);
+    return S.note;
+  }
+  if (target === "erase") { const id = s.id; await S.erase(s); setNote(`${id} erased`); return S.note; }
+  const A = fm1A();
+  if (!A || fm1ATarget() !== target) { setNote("FM1-A can't take samples"); return S.note; }
+  const F = A.w.File, mk = (bytes, name) => new F([bytes], name, { type: "audio/wav" });
+  let files;
+  if (target === "pigeon") {                         // la chanson d'abord, puis les seize pads (moins de 2 s chacun)
+    files = [mk(encodeWav(s.ch, s.rate), `${s.id}.wav`)];
+    for (let k = 0; k < 16; k++) files.push(mk(sliceWav(s, k, 1.9), `${s.id}-${String(k + 1).padStart(2, "0")}.wav`));
+  } else files = Array.from({ length: 16 }, (_, k) => mk(sliceWav(s, k), `${s.id}-${String(k + 1).padStart(2, "0")}.wav`));
+  setNote("Sending…");
+  try { const r = await A.w.__takeSamples(files); setNote(target === "pigeon" ? "Sent to Pigeon" : "Sent to zp12"); return r; }
+  catch (err) { setNote("Not sent: " + ((err && err.message) || err)); return S.note; }
+};
+S.hooks.cap.push((name, down) => {
+  if (name !== "SEND" || !down || !S.on) return;
+  if (S.page !== "send") { S.page = "send"; S.col = null; S.sendArmed = false; setNote(""); return; }
+  const list = S.targets();
+  if (!list.includes(S.target)) S.target = list[0];
+  if ((S.target === "pigeon" || S.target === "erase") && !S.sendArmed) { S.sendArmed = true; drawScreen(); return; }
+  S.sendArmed = false;
+  S.send(S.target);
+});
+S.hooks.knob.push(() => { if (S.page === "send") S.sendArmed = false; });   // changer de cible annule la confirmation
 </script>
 </body>
 </html>
