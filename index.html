@@ -6765,6 +6765,20 @@ function buildPanel(fw) {
     if (coreError) { const p = document.createElement("p"); p.className = "fw-note"; p.textContent = "Cœur d'émulation indisponible"; notes.push(p); }
     const tier = (text) => { const h = document.createElement("h3"); h.className = "fw-tier"; h.textContent = text; return h; };
     const all = entries(), favItems = favs.map((id) => all.find((e) => e.id === id)).filter(Boolean);
+    let duoShell = null;
+    try { duoShell = FM1_ID === "b" && window.parent.__duo && window.parent.__duo.useB ? window.parent.__duo : null; } catch { /* hors du Duo */ }
+    if (duoShell) {                                 // FM1-B du Duo : le module sample peut prendre sa place
+      const sec = document.createElement("section"), h = document.createElement("h3"), ul = document.createElement("ul"), li = document.createElement("li"), btn = document.createElement("button");
+      sec.className = "fw-sec"; sec.dataset.cat = "Modules";
+      h.className = "fw-tier"; h.textContent = "Modules";
+      ul.className = "fw-items";
+      btn.type = "button"; btn.className = "fw-item"; btn.dataset.id = "sample"; btn.title = "Capter, découper, scratcher et envoyer des samples, sur l'horloge du Duo";
+      const span = (cls, text) => { const x = document.createElement("span"); x.className = cls; x.textContent = text; return x; };
+      const thumb = span("fw-thumb", "SM"); thumb.setAttribute("aria-hidden", "true"); thumb.style.background = standIn("sample");
+      btn.append(thumb, span("fw-n", "Module sample"), span("fw-a", ""), span("fw-d", btn.title), span("fw-tags", ""));
+      btn.addEventListener("click", () => { closeSheet(); duoShell.useB("sample"); });
+      li.append(btn); ul.append(li); sec.append(h, ul); notes.push(sec);
+    }
     if (favItems.length) {
       const sec = document.createElement("section"), head = document.createElement("button"), ul = document.createElement("ul");
       sec.className = "fw-sec"; sec.dataset.cat = "Favoris";
@@ -6860,6 +6874,7 @@ function buildPanel(fw) {
   new MutationObserver(fit).observe(deckRow, { childList: true, subtree: true, attributeFilter: ["hidden"] });
   if (FM1_ID) addEventListener("scroll", () => { if (sheet.hidden && (scrollX || scrollY)) scrollTo(0, 0); });   // un cadre du Duo reste en place (clavier, focus)
   picker.addEventListener("click", () => (sheet.hidden ? openSheet() : closeSheet()));
+  if (FM1_ID && QS.has("choisir")) setTimeout(openSheet);   // revenu du module sample : la liste ouverte
   scrim.addEventListener("click", closeSheet);
   document.addEventListener("pointerdown", (e) => { if (!sheet.hidden && !box.contains(e.target)) closeSheet(); });
   search.addEventListener("input", renderResults);
@@ -7424,7 +7439,7 @@ registerProcessor("duo-horloge", DuoClock);
       </div>
       <div class="mode"><button type="button" class="fs" aria-label="Plein écran" title="Plein écran" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.5V3h4.5M12.5 3H17v4.5M17 12.5V17h-4.5M7.5 17H3v-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="seg lang" role="radiogroup" aria-label="Langue / Language"><button type="button" role="radio" data-l="fr" lang="fr" aria-checked="true">FR</button><button type="button" role="radio" data-l="en" lang="en" aria-checked="false">EN</button></div><nav class="seg" aria-label="Un ou deux FM-1"><a href="./">Solo</a><a href="?duo" aria-current="page">Duo</a></nav></div>
     </div>
-    <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay"></iframe><iframe name="b" title="FM1-B" src="?fm1=b" allow="midi; autoplay"></iframe></div>`;
+    <div class="duo-stage"><iframe name="a" title="FM1-A" src="?fm1=a" allow="midi; autoplay; microphone; display-capture"></iframe><iframe name="b" title="FM1-B" src="${keep("b") === "sample" ? "sample.html?fm1=b" : "?fm1=b"}" allow="midi; autoplay; microphone; display-capture"></iframe></div>`;
   document.body.append(root);
   if (window.__bindFullscreen) window.__bindFullscreen();
   const stage = root.querySelector(".duo-stage"), frames = { a: stage.children[0], b: stage.children[1] };
@@ -7592,7 +7607,12 @@ registerProcessor("duo-horloge", DuoClock);
   }
   setInterval(tick, 120);
   tick();
-  window.__duo = { frames, show, tick, lit, get linked() { return linked; }, get playing() { return playing; }, get bpm() { return bpm; } };   // pour les tests
+  // FM1-B : un FM-1 ou le module sample (sample.html), au choix de sa liste de firmwares ; le choix est gardé
+  function useB(kind, opts = {}) {
+    keep("b", kind === "sample" ? "sample" : "fm1");
+    frames.b.src = kind === "sample" ? "sample.html?fm1=b" : "?fm1=b" + (opts.choisir ? "&choisir" : "");
+  }
+  window.__duo = { frames, show, tick, lit, useB, get linked() { return linked; }, get playing() { return playing; }, get bpm() { return bpm; } };   // pour les tests
 })();
 </script>
 

@@ -111,3 +111,63 @@ def test_roll(page):
         const up = r > 0.1; if (up && !was) n++; was = up; }, 4);
       setTimeout(() => { clearInterval(iv); e.send({ t: 'roll', i: 0, on: false }); ok(n); }, 1000); })""")
     assert 7 <= hits <= 9, hits
+
+
+# ---------------------------------------------------------------- le cadre B du Duo
+def open_duo_with(page, b=None, w=1600, h=900):
+    """Le Duo ; b = 'sample' : le module déjà gardé dans FM1-B."""
+    page.set_viewport_size({"width": w, "height": h})
+    page.goto(page.base + "index.html")
+    page.evaluate(f"localStorage.setItem('fm1.duo.b', '{b}')" if b else "localStorage.removeItem('fm1.duo.b')")
+    page.goto(page.base + "index.html?duo")
+    page.wait_for_function("window.__duo && window.__duo.frames.a.contentWindow.__fw")
+    if b == "sample":
+        page.wait_for_function("window.__duo.frames.b.contentWindow.__sample")
+    else:
+        page.wait_for_function("window.__duo.frames.b.contentWindow.__fw")
+    return page.frame(name="a"), page.frame(name="b")
+
+
+def frame_b_url(page):
+    return page.evaluate("window.__duo.frames.b.contentWindow.location.href")
+
+
+def test_choisir_le_module_dans_b(page):
+    a, b = open_duo_with(page)
+    b.click("#fw-picker")
+    b.wait_for_selector("#fw-sections .fw-item[data-id='sample']")
+    b.click("#fw-sections .fw-item[data-id='sample']")
+    page.wait_for_function("window.__duo.frames.b.contentWindow.location.pathname.endsWith('sample.html') && window.__duo.frames.b.contentWindow.__sample")
+    assert page.evaluate("localStorage.getItem('fm1.duo.b')") == "sample"
+    assert "fm1=b" in frame_b_url(page)
+
+
+def test_revenir_a_un_fm1(page):
+    a, b = open_duo_with(page, "sample")
+    page.frame(name="b").click("#fw-picker")
+    page.wait_for_function("window.__duo.frames.b.contentWindow.__fw && !window.__duo.frames.b.contentWindow.document.getElementById('fw-sheet').hidden")
+    assert "choisir" in frame_b_url(page) and "sample.html" not in frame_b_url(page)
+    assert page.evaluate("localStorage.getItem('fm1.duo.b')") == "fm1"
+
+
+def test_module_garde_au_rechargement(page):
+    open_duo_with(page, "sample")
+    assert "sample.html" in frame_b_url(page)
+
+
+def test_pas_de_section_modules_ailleurs(page):
+    page.goto(page.base + "index.html")
+    page.click("#fw-picker")
+    page.wait_for_selector("#fw-sections .fw-item")
+    assert page.locator("#fw-sections .fw-item[data-id='sample']").count() == 0
+    a, b = open_duo_with(page)
+    a.click("#fw-picker")
+    a.wait_for_selector("#fw-sections .fw-item")
+    assert a.locator("#fw-sections .fw-item[data-id='sample']").count() == 0
+
+
+def test_allow_micro(page):
+    open_duo_with(page)
+    for k in ("a", "b"):
+        assert "microphone" in page.get_attribute(f"iframe[name={k}]", "allow")
+

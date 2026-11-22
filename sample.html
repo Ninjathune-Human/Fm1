@@ -843,6 +843,7 @@ S.turn = (name, n, v = 0) => turn(panel.knobs[name], n, v);   // pour les tests 
 
 // ---------------------------------------------------------------- le sélecteur de firmware (le Duo le branche)
 $("fw-picker").addEventListener("click", () => { if (S.onPicker) S.onPicker(); else location.href = "index.html"; });
+try { if (FM1_ID && parent.__duo && parent.__duo.useB) S.onPicker = () => parent.__duo.useB("fm1", { choisir: true }); } catch { /* hors du Duo */ }
 
 chooseSkin(SKINS[keep("skin")] ? keep("skin") : "mint");
 const fontsReady = document.fonts && document.fonts.load ? document.fonts.load('600 16px "Barlow Semi Condensed"').catch(() => {}) : Promise.resolve();
