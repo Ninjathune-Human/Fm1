@@ -237,3 +237,111 @@ def test_seul_avec_son_tempo(page):
     page.wait_for_timeout(400)
     assert page.evaluate("window.__engine().playing") is True
     assert abs(page.evaluate("window.__engine().pos.bpm") - 96) < 0.5
+
+
+# ---------------------------------------------------------------- la capture et la mémoire des samples
+def wav(path, seconds, hz=220, rate=44100):
+    import math, struct, wave
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(rate)
+        w.writeframes(b"".join(struct.pack("<h", int(12000 * math.sin(2 * math.pi * hz * i / rate))) for i in range(int(seconds * rate))))
+    return str(path)
+
+
+def import_wav(page, path):
+    page.set_input_files("#sample-file", path)
+    page.wait_for_function("window.__sample.lastImport && window.__sample.lastImport.done")
+    return page.evaluate("window.__sample.lastImport.error || null")
+
+
+RMS_OF = "(s) => { const x = s.ch[0]; let q = 0; for (let i = 0; i < x.length; i++) q += x[i] * x[i]; return Math.sqrt(q / x.length); }"
+SPY_GUM = """window.__gum = []; const g = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+  navigator.mediaDevices.getUserMedia = (c) => { window.__gum.push(c); return g(c); };"""
+
+
+def test_capture_micro(page):
+    page.add_init_script(SPY_GUM)
+    open_sample(page); power_sample(page)
+    page.evaluate("window.__sample.capt.thresh = null")
+    level = page.evaluate(f"async () => {{ const s = await window.__sample.capture('mic', {{ seconds: 1 }}); return [s.slices.length, ({RMS_OF})(s)]; }}")
+    assert level[0] == 17 and level[1] > 0.001, level
+    c = page.evaluate("window.__gum[0].audio")
+    assert c["echoCancellation"] is False and c["noiseSuppression"] is False and c["autoGainControl"] is False
+
+
+def test_mic_refuse(page, tmp_path):
+    page.add_init_script("navigator.mediaDevices.getUserMedia = () => Promise.reject(new DOMException('refusé', 'NotAllowedError'))")
+    open_sample(page); power_sample(page)
+    assert page.evaluate("window.__sample.capture('mic', { seconds: 0.3 }).then(() => 'ok', () => 'refus')") == "refus"
+    assert isinstance(page.evaluate("window.__sample.sources().mic"), str)
+    assert import_wav(page, wav(tmp_path / "a.wav", 1)) is None             # les autres sources restent
+    assert page.evaluate("window.__sample.samples.length") == 1
+
+
+def test_capture_fm1(page):
+    page.add_init_script(SPY_GUM)
+    a, b = duo_ready(page)
+    a.evaluate("window.__host.keyDown(7, 't')")
+    level = b.evaluate(f"async () => {{ window.__sample.capt.thresh = null; const s = await window.__sample.capture('fm1', {{ seconds: 1 }}); return ({RMS_OF})(s); }}")
+    a.evaluate("window.__host.keyUp('t')")
+    assert level > 0.01, level
+    assert b.evaluate("window.__gum.length") == 0
+
+
+def test_capture_fm1_interrompue(page):
+    errors = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    a, b = duo_ready(page)
+    a.evaluate("window.__host.keyDown(7, 't')")
+    got = b.evaluate("""() => { window.__sample.capt.thresh = null; const p = window.__sample.capture('fm1', { seconds: 4 });
+      setTimeout(() => window.__duo_a_off(), 600); return p.then((s) => s ? s.ch[0].length : -1, (e) => 'rejet ' + e); }""".replace(
+        "window.__duo_a_off()", "parent.__duo.frames.a.contentWindow.document.getElementById('power').click()"))
+    assert isinstance(got, int) and 0 < got < 4 * 48000, got
+    assert errors == []
+
+
+def test_fichier(page, tmp_path):
+    open_sample(page); power_sample(page)
+    assert import_wav(page, wav(tmp_path / "boucle.wav", 4)) is None
+    s = page.evaluate("(() => { const s = window.__sample.samples[window.__sample.cur]; return [s.bars, s.fit, s.slices.length]; })()")
+    assert s[0] == 2 and abs(s[1] - 1) < 1e-6 and s[2] == 17
+
+
+def test_fichier_court_et_long(page, tmp_path):
+    open_sample(page); power_sample(page)
+    import_wav(page, wav(tmp_path / "court.wav", 0.05))
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].bars") is None
+    import_wav(page, wav(tmp_path / "long.wav", 20))
+    s = page.evaluate("window.__sample.samples[window.__sample.cur]")
+    assert abs(len(s["ch"][0]) / s["rate"] - 16) < 0.01
+    assert "16 s" in page.evaluate("window.__sample.note")
+
+
+def test_rec_pad(page, tmp_path):
+    open_sample(page); power_sample(page)
+    import_wav(page, wav(tmp_path / "base.wav", 2))
+    before = page.evaluate("window.__sample.samples[0].ch[0].length")
+    page.evaluate("window.__sample.capt.thresh = null")
+    page.dispatch_event("[data-pad='3']", "pointerdown", {"pointerId": 3, "isPrimary": True})
+    tap(page, "[data-label='REC']")
+    page.wait_for_timeout(800)
+    tap(page, "[data-label='REC']")
+    page.dispatch_event("[data-pad='3']", "pointerup", {"pointerId": 3, "isPrimary": True})
+    page.wait_for_function("window.__sample.samples[0].pads[3] !== null", timeout=5000)
+    assert page.evaluate("window.__sample.samples.length") == 1
+    assert page.evaluate("window.__sample.samples[0].ch[0].length") == before
+
+
+def test_samples_gardes(page, tmp_path):
+    open_sample(page); power_sample(page)
+    import_wav(page, wav(tmp_path / "un.wav", 1)); import_wav(page, wav(tmp_path / "deux.wav", 2))
+    page.click("#power")
+    page.reload()
+    page.wait_for_function("window.__sample && window.__sample.samples.length === 2")
+    assert page.evaluate("window.__sample.samples[window.__sample.cur].id") == "S02"
+
+
+def test_tab_selon_navigateur(page):
+    page.add_init_script("delete MediaDevices.prototype.getDisplayMedia")
+    open_sample(page)
+    assert page.evaluate("window.__sample.sources().tab") is False

@@ -375,6 +375,42 @@ class SampleProc extends AudioWorkletProcessor {
 }
 registerProcessor("sample", SampleProc);
 </script>
+<script type="text/worklet" id="sample-rec-worklet">
+// L'enregistreur du module : armé, il attend un son au-dessus du seuil (ou part aussitôt, seuil à OFF), puis garde ses
+// blocs jusqu'à la longueur demandée ou à l'arrêt ; il envoie le niveau d'entrée, et ses blocs par paquets.
+class SampleRec extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.state = "idle"; this.thresh = null; this.max = 0; this.got = 0; this.buf = []; this.since = 0; this.lvl = 0;
+    this.port.onmessage = ({ data: m }) => {
+      if (m.t === "arm") { this.state = "armed"; this.thresh = m.thresh; this.max = m.max; this.got = 0; this.buf = []; }
+      else if (m.t === "stop") this.finish();
+    };
+  }
+  flush() { if (this.buf.length) { this.port.postMessage({ t: "data", blocks: this.buf }); this.buf = []; } }
+  finish() { if (this.state === "idle") return; this.flush(); this.state = "idle"; this.port.postMessage({ t: "done", frames: this.got }); }
+  process(inputs) {
+    const inp = inputs[0];
+    if (!inp || !inp.length) return true;
+    const n = inp[0].length;
+    let peak = 0;
+    for (const c of inp) for (let i = 0; i < n; i++) { const a = Math.abs(c[i]); if (a > peak) peak = a; }
+    const db = peak > 0 ? 20 * Math.log10(peak) : -Infinity;
+    this.lvl = Math.max(db, this.lvl - 1);
+    if ((this.since += n) >= sampleRate / 30) { this.since = 0; this.port.postMessage({ t: "level", db: this.lvl }); }
+    if (this.state === "armed" && (this.thresh == null || db > this.thresh)) this.state = "rec";
+    if (this.state === "rec") {
+      const take = Math.min(n, this.max - this.got);
+      this.buf.push(inp.slice(0, 2).map((c) => c.slice(0, take)));
+      this.got += take;
+      if (this.buf.length * 128 >= sampleRate / 4) this.flush();
+      if (this.got >= this.max) this.finish();
+    }
+    return true;
+  }
+}
+registerProcessor("sample-rec", SampleRec);
+</script>
 <script id="sample-panel">
 // Module sample et scratch : le panneau, dessiné comme celui du FM-1. Le dessin (matières, molettes, touches, plaques,
 // écran, impression en points) reprend buildPanel() d'index.html, lui-même adapté de la page de l'émulateur DUB-1
@@ -942,6 +978,208 @@ S.hooks.cap.push((name, down) => {
   else { eng.send({ t: "bpm", bpm: ownBpm }); eng.play(true); }
 });
 S.hooks.power.push((on) => { if (on) eng.send({ t: "bpm", bpm: ownBpm }); });
+</script>
+<script id="sample-store">
+// Module sample et scratch : la capture (micro, FM-1 voisin, fichier, onglet) et la mémoire des samples (IndexedDB).
+"use strict";
+S.samples = []; S.cur = 0; S.note = ""; S.level = -Infinity; S.recording = null; S.micError = null; S.heldPad = null; S.lastImport = null;
+S.capt = { source: "mic", input: 0, thresh: -30, length: 2 };   // SOURCE, INPUT (dB), THRESH (dB, null : OFF), LENGTH (mesures)
+const setNote = (s) => { S.note = s; drawScreen(); };
+
+// ---------------------------------------------------------------- la base fm1-samples
+const SDB = { name: "fm1-samples", version: 1, store: "samples" };
+function sdb() {
+  return (S._db ||= new Promise((ok, ko) => {
+    const r = indexedDB.open(SDB.name, SDB.version);
+    r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains(SDB.store)) r.result.createObjectStore(SDB.store); };
+    r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error);
+  }));
+}
+function sreq(mode, f) {
+  return sdb().then((d) => new Promise((ok, ko) => {
+    const tx = d.transaction(SDB.store, mode), q = f(tx.objectStore(SDB.store));
+    tx.oncomplete = () => ok(q && q.result); tx.onerror = () => ko(tx.error); tx.onabort = () => ko(tx.error);
+  }));
+}
+const plainSample = (s) => ({ id: s.id, name: s.name, rate: s.rate, ch: s.ch, bars: s.bars, fit: s.fit, slices: s.slices, pads: s.pads, cols: s.cols });
+S.save = (s) => sreq("readwrite", (st) => st.put(plainSample(s), s.id)).catch((err) => setNote("Not saved: " + (err && err.message || err)));
+S.erase = async (s) => {
+  await sreq("readwrite", (st) => st.delete(s.id));
+  const i = S.samples.indexOf(s);
+  if (i >= 0) S.samples.splice(i, 1);
+  S.select(Math.min(S.cur, S.samples.length - 1));
+};
+S.ready = sreq("readonly", (st) => st.getAll()).then((list) => {
+  S.samples = (list || []).sort((a, b) => (a.id < b.id ? -1 : 1));
+  const c = S.samples.findIndex((s) => s.id === keep("cur"));
+  S.select(c >= 0 ? c : S.samples.length - 1);
+}).catch(() => { /* sans mémoire : cette session */ });
+
+// le sample choisi : dans le moteur, avec ses réglages de tranches et ses sons de pads
+S.select = (i) => {
+  S.cur = Math.max(0, i);
+  const s = S.samples[S.cur];
+  if (s) keep("cur", s.id);
+  if (s && eng.on) {
+    eng.load(s);
+    s.cols.forEach((c, k) => eng.send({ t: "slice", i: k, ...c }));
+    s.pads.forEach((p, k) => eng.send({ t: "padbuf", i: k, ch: p ? p.ch : null, rate: p ? p.rate : 0 }));
+  }
+  drawScreen();
+};
+S.hooks.power.push((on) => { if (on) S.select(S.cur); });
+
+// un sample neuf : 16 s au plus, ses mesures au tempo du moment, ses 16 tranches
+function newId() {
+  const n = S.samples.reduce((m, s) => Math.max(m, parseInt(s.id.slice(1), 10) || 0), 0) + 1;
+  return "S" + String(n).padStart(2, "0");
+}
+function makeSample(ch, rate, name) {
+  const max = Math.round(MAX_SECONDS * rate);
+  if (ch[0].length > max) { ch = ch.map((c) => c.slice(0, max)); setNote(`Cut to ${MAX_SECONDS} s`); }
+  else setNote("");
+  const bpm = duoLinked() && S.clock.bpm ? S.clock.bpm : S.bpm, f = fitBars(ch[0].length / rate, bpm), slices = sliceBounds(ch[0].length);
+  const cols = Array.from({ length: 16 }, (_, i) => ({ start: 0, len: Math.round(((slices[i + 1] - slices[i]) / rate) * 1000), pitch: 0, gain: 100 }));
+  return { id: newId(), name, rate, ch, bars: f.bars, fit: f.rate, slices, pads: new Array(16).fill(null), cols };
+}
+async function addSample(s) {
+  S.samples.push(s);
+  await S.save(s);
+  S.select(S.samples.length - 1);
+  S.page = "edit"; drawScreen();
+  return s;
+}
+
+// ---------------------------------------------------------------- les sources
+function fm1A() {
+  try {
+    if (!FM1_ID) return null;
+    const w = parent.__duo.frames.a.contentWindow, e = w.__engine && w.__engine(), out = e && (e.an || e.analyser);
+    return e && e.on && out && w.__ac && w.__ac.state !== "closed" ? { w, eng: e, out, ac: w.__ac } : null;
+  } catch { return null; }
+}
+const md = () => navigator.mediaDevices || null;
+S.sources = () => ({
+  mic: S.micError || !!(md() && md().getUserMedia),
+  fm1: !!fm1A(),
+  file: true,
+  tab: !!(md() && md().getDisplayMedia),
+});
+
+// le fichier : un son (ou la vidéo d'un enregistrement d'écran) décodé par le navigateur
+const fileIn = document.createElement("input");
+fileIn.type = "file"; fileIn.id = "sample-file"; fileIn.hidden = true;
+fileIn.accept = "audio/*,.wav,.wave,.aif,.aiff,.mp3,.m4a,.aac,.caf,.flac,.mp4,.mov";
+document.body.append(fileIn);
+fileIn.addEventListener("change", () => { const f = fileIn.files[0]; fileIn.value = ""; if (f) S.importFile(f); });
+S.chooseFile = () => fileIn.click();
+S.importFile = async (file) => {
+  const imp = S.lastImport = { done: false, error: null };
+  try {
+    const ctx = eng.ac || new OfflineAudioContext(1, 1, 44100);
+    const audio = await ctx.decodeAudioData(await file.arrayBuffer());
+    const ch = [];
+    for (let c = 0; c < Math.min(2, audio.numberOfChannels); c++) ch.push(audio.getChannelData(c).slice());
+    const name = file.name.replace(/\.[^.]*$/, "").toUpperCase().replace(/[^A-Z0-9 ]/g, "").slice(0, 12) || "FILE";
+    await addSample(makeSample(ch, audio.sampleRate, name));
+  } catch (err) {
+    imp.error = String((err && err.message) || err);
+    setNote("Can't read this file");
+  }
+  imp.done = true;
+  return imp;
+};
+
+// ---------------------------------------------------------------- l'enregistrement
+const REC_SRC = () => $("sample-rec-worklet").textContent;
+async function recNode(ctx, W) {
+  if (!ctx.__sampleRec) ctx.__sampleRec = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([REC_SRC()], { type: "text/javascript" })));
+  await ctx.__sampleRec;
+  const node = new W.AudioWorkletNode(ctx, "sample-rec", { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], channelCount: 2, channelCountMode: "explicit" });
+  const mute = ctx.createGain(); mute.gain.value = 0;
+  node.connect(mute).connect(ctx.destination);         // (Safari ne fait tourner qu'un nœud relié à la sortie)
+  return { node, mute };
+}
+function joinBlocks(blocks) {
+  const nc = Math.max(...blocks.map((b) => b.length)), n = blocks.reduce((s, b) => s + b[0].length, 0);
+  const ch = Array.from({ length: nc }, () => new Float32Array(n));
+  let o = 0;
+  for (const b of blocks) { for (let c = 0; c < nc; c++) ch[c].set(b[Math.min(c, b.length - 1)], o); o += b[0].length; }
+  return ch;
+}
+S.capture = async (source = S.capt.source, opts = {}) => {
+  if (!eng.on) throw new Error("Switch the module on");
+  if (S.recording) throw new Error("Already recording");
+  let ctx, W, src, alive = () => true;
+  const cleanup = [];
+  if (source === "mic" || source === "tab") {
+    ctx = eng.ac; W = window;
+    let stream;
+    try {
+      stream = source === "mic"
+        ? await md().getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } })
+        : await md().getDisplayMedia({ audio: true, video: true });
+    } catch (err) {
+      if (source === "mic") S.micError = err && err.name === "NotAllowedError" ? "Microphone refused" : "No microphone";
+      setNote(source === "mic" ? S.micError : "No tab sound");
+      throw err;
+    }
+    cleanup.push(() => stream.getTracks().forEach((tr) => tr.stop()));
+    if (!stream.getAudioTracks().length) { cleanup.forEach((f) => f()); setNote("No sound shared"); throw new Error("no audio track"); }
+    src = ctx.createMediaStreamSource(stream);
+  } else if (source === "fm1") {
+    const A = fm1A();
+    if (!A) { setNote("FM1-A is off"); throw new Error("FM1-A is off"); }
+    ctx = A.ac; W = A.w; src = A.out;
+    alive = () => { try { return A.w.__engine && A.w.__engine() === A.eng && A.eng.on && ctx.state !== "closed"; } catch { return false; } };
+  } else throw new Error("unknown source " + source);
+  const gain = ctx.createGain(); gain.gain.value = Math.pow(10, (S.capt.input || 0) / 20);
+  src.connect(gain);
+  const { node, mute } = await recNode(ctx, W);
+  gain.connect(node);
+  cleanup.push(() => { for (const f of [() => src.disconnect(gain), () => gain.disconnect(), () => node.disconnect(), () => mute.disconnect()]) try { f(); } catch { /* déjà défait */ } });
+  const rate = ctx.sampleRate;
+  let seconds = opts.seconds;
+  if (!seconds && duoLinked() && S.clock.bpm) seconds = (S.capt.length * 4 * 60) / S.clock.bpm;
+  const max = Math.round(Math.min(seconds || MAX_SECONDS, MAX_SECONDS) * rate);
+  const thresh = opts.thresh !== undefined ? opts.thresh : S.capt.thresh;
+  const pad = opts.pad != null ? opts.pad : null;
+  return new Promise((resolve) => {
+    const blocks = [];
+    let watch = 0, done = false;
+    const finish = () => {
+      if (done) return;
+      done = true; clearInterval(watch); cleanup.forEach((f) => f()); S.recording = null; drawScreen();
+      if (!blocks.length) { setNote("Nothing recorded"); resolve(null); return; }
+      const ch = joinBlocks(blocks), name = source === "fm1" ? "FM-1" : source.toUpperCase();
+      if (pad != null && S.samples[S.cur]) {                   // REC avec un pad tenu : le son va sur ce pad seul
+        const s = S.samples[S.cur];
+        s.pads[pad] = { ch, rate, name };
+        eng.send({ t: "padbuf", i: pad, ch, rate });
+        S.save(s).then(() => resolve(s));
+        return;
+      }
+      addSample(makeSample(ch, rate, name)).then(resolve);
+    };
+    node.port.onmessage = ({ data: m }) => {
+      if (m.t === "level") { S.level = m.db; return; }
+      if (m.t === "data") { blocks.push(...m.blocks); return; }
+      if (m.t === "done") finish();
+    };
+    S.recording = { source, pad, started: () => blocks.length > 0, stop: () => { try { node.port.postMessage({ t: "stop" }); } catch { /* */ } setTimeout(finish, 400); } };
+    S.page = "capture"; drawScreen();
+    node.port.postMessage({ t: "arm", thresh, max });
+    watch = setInterval(() => { if (!alive()) finish(); }, 100);  // la source partie (FM1-A éteint) : ce qui a été capté reste
+  });
+};
+
+// REC : arme, puis arrête ; avec un pad tenu, la capture va sur ce pad
+S.hooks.pad.push((i, down) => { if (down) S.heldPad = i; else if (S.heldPad === i) S.heldPad = null; });
+S.hooks.cap.push((name, down) => {
+  if (name !== "REC" || !down || !eng.on) return;
+  if (S.recording) { S.recording.stop(); return; }
+  S.capture(S.capt.source, { pad: S.heldPad }).catch(() => {});
+});
 </script>
 </body>
 </html>
