@@ -468,7 +468,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
         <p class="legende"><span class="l-note">Notes</span><span class="l-bouton">Boutons</span><span class="l-molette">Molettes</span></p>
         <dl>
           <dt>Clavier</dt><dd>Il joue dès que la page a le focus, FM-1 allumé ; un champ ou un bouton de la page garde ses propres touches. C'est la place des touches qui compte : le piano reste un piano en AZERTY.</dd>
-          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois.</dd>
+          <dt>Touches</dt><dd>Clic ou doigt, plusieurs à la fois. Glisser d'une touche à l'autre les joue tour à tour, comme un glissando au piano.</dd>
           <dt>Molettes</dt><dd>Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité, à la souris comme au clavier.</dd>
           <dt>Maintenir</dt><dd>Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.</dd>
         </dl>
@@ -6101,8 +6101,9 @@ function buildPanel(fw) {
     b.hit.addEventListener("blur", () => { if (held.delete("f" + b.label)) syncButtons(); });
   }
   // ---------------------------------------------------------------- keys
+  const glide = new Map();                          // pointeur -> dernier point (glissando, plus bas)
   keys.forEach((k, i) => {
-    k.hit.addEventListener("pointerdown", (e) => { e.preventDefault(); k.hit.setPointerCapture(e.pointerId); fw.keyDown(i, "p" + e.pointerId); k.g.classList.add("held"); k.heldBy = "p" + e.pointerId; });
+    k.hit.addEventListener("pointerdown", (e) => { e.preventDefault(); k.hit.setPointerCapture(e.pointerId); fw.keyDown(i, "p" + e.pointerId); k.g.classList.add("held"); k.heldBy = "p" + e.pointerId; glide.set(e.pointerId, [e.clientX, e.clientY]); });
     k.hit.addEventListener("keydown", (e) => {
       const to = { ArrowLeft: i - 1, ArrowRight: i + 1 }[e.key];
       if (to !== undefined) { e.preventDefault(); e.stopPropagation(); const j = Math.max(0, Math.min(26, to)); keys.forEach((x, m) => (x.hit.tabIndex = m === j ? 0 : -1)); keys[j].hit.focus(); return; }
@@ -6110,8 +6111,26 @@ function buildPanel(fw) {
     });
     k.hit.addEventListener("keyup", (e) => { if (e.key === " " || e.key === "Enter") { e.stopPropagation(); fw.keyUp("f" + i); k.g.classList.remove("held"); } });
   });
+  // glissando, comme sur un piano : un doigt (la souris, le stylet) qui glisse d'une touche à l'autre les joue tour à tour.
+  // Le trajet depuis le point d'avant est suivi pas à pas, pour qu'un geste rapide ne saute aucune touche ; hors des
+  // touches, la dernière reste tenue
+  keybed.addEventListener("pointermove", (e) => {
+    const id = "p" + e.pointerId;
+    if (!glide.has(e.pointerId) || !keys.some((k) => k.heldBy === id)) return;
+    const [x0, y0] = glide.get(e.pointerId);
+    const n = Math.max(1, Math.ceil(Math.hypot(e.clientX - x0, e.clientY - y0) / 8));
+    for (let s = 1; s <= n; s++) {
+      const to = keys.findIndex((k) => k.hit === document.elementFromPoint(x0 + ((e.clientX - x0) * s) / n, y0 + ((e.clientY - y0) * s) / n));
+      const from = keys.findIndex((k) => k.heldBy === id);
+      if (to < 0 || to === from) continue;
+      keys[from].heldBy = null; keys[from].g.classList.remove("held"); fw.keyUp(id);
+      fw.keyDown(to, id); keys[to].g.classList.add("held"); keys[to].heldBy = id;
+    }
+    glide.set(e.pointerId, [e.clientX, e.clientY]);
+  });
   const pointerUp = (e) => {
     const id = "p" + e.pointerId;
+    glide.delete(e.pointerId);
     if (held.delete(id)) syncButtons();
     keys.forEach((k) => { if (k.heldBy === id) { k.heldBy = null; k.g.classList.remove("held"); fw.keyUp(id); } });
   };

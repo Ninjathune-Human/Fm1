@@ -11,7 +11,7 @@
   "Il joue dès que la page a le focus, FM-1 allumé ; un champ ou un bouton de la page garde ses propres touches. C'est la place des touches qui compte : le piano reste un piano en AZERTY.": "It plays as soon as the page has focus, with the FM-1 powered on; a field or a button on the page keeps its own keys. What counts is the position of the keys: the piano stays a piano on an AZERTY keyboard.",
   "Glisser vers le haut ou la droite, ou la molette de la souris. Lentement, un cran change la valeur d'une unité ; plus vite, le pas s'accélère. <kbd>Maj</kbd> garde un pas d'une unité, à la souris comme au clavier.": "Drag up or to the right, or use the mouse wheel. Slowly, one notch changes the value by one unit; faster, the step accelerates. <kbd>Shift</kbd> keeps a step of one unit, with the mouse as with the keyboard.",
   "Maj+clic ou clic droit garde un bouton enfoncé. Au doigt, maintenir d'une main et tourner de l'autre.": "Shift+click or right-click holds a button down. On a finger, hold with one hand and turn with the other.",
-  "Clic ou doigt, plusieurs à la fois.": "Click or finger, several at once.",
+  "Clic ou doigt, plusieurs à la fois. Glisser d'une touche à l'autre les joue tour à tour, comme un glissando au piano.": "Click or finger, several at once. Sliding from key to key plays each in turn, like a glissando on a piano.",
   "Tournez le téléphone pour des commandes plus grandes.": "Turn the phone for larger controls.",
   "Émulateur FM-1": "FM-1 Emulator",
   "Plein écran": "Full screen",
