@@ -1308,8 +1308,16 @@ S.hooks.cap.push((name, down) => {
 });
 // MACRO : dans un menu, il choisit la colonne (le tempo en dernier sur Édition) ; hors menu, il règle sa cible
 const LAST_COL = { edit: 4, capture: 3, send: 1 };
+S.assigning = false;
+S.hooks.cap.push((name, down) => { if (name === "ASSIGN") { S.assigning = down && S.on; drawScreen(); } });
 S.hooks.knob.push((name, n) => {
   if (name !== "MACRO") return;
+  if (S.assigning) {                                   // ASSIGN tenu : MACRO choisit sa cible, qui est gardée
+    const L = S.MACRO_TARGETS, i = L.indexOf(S.macro.target), j = clamp(i + n, 0, L.length - 1);
+    if (j === i) return false;
+    S.macro.target = L[j]; keep("macro", L[j]); drawScreen();
+    return true;
+  }
   if (S.col == null) return S.macroTurn ? S.macroTurn(n) : false;
   const was = S.col;
   S.col = clamp(S.col + n, 0, LAST_COL[S.page]);
@@ -1445,7 +1453,14 @@ function drawSend(T) {
   txt(S.note || (S.sendLine ? S.sendLine() : "SEND to send"), 10, 226, 600, S.sendArmed ? 15 : 18, "#ffffff");
   battery(T);
 }
-S.draw = (ctx, T) => (S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
+// ASSIGN tenu : la liste des cibles de MACRO, la cible en blanc
+function drawAssign(T) {
+  txt("MACRO", 10, 30, 600, 18, T.fg);
+  S.MACRO_TARGETS.forEach((k, i) => { const on = k === S.macro.target; txt(k, 10, 70 + i * 28, 600, on ? 22 : 18, on ? "#ffffff" : T.mute); });
+  txt("Turn MACRO", 10, 226, 600, 18, T.fg);
+  battery(T);
+}
+S.draw = (ctx, T) => (S.assigning ? drawAssign : S.page === "capture" ? drawCapture : S.page === "send" ? drawSend : drawEdit)(T);
 (function frame() { if (S.on) drawScreen(); requestAnimationFrame(frame); })();
 
 </script>
@@ -1453,6 +1468,21 @@ S.draw = (ctx, T) => (S.page === "capture" ? drawCapture : S.page === "send" ? d
 // Module sample et scratch : les gestes de la platine, de la zone XY et des pads, le clavier et les notes MIDI.
 "use strict";
 S.touch = { platter: 0, xy: 0, cut: false, reverse: false, pos: 0, filter: { x: 0.5, y: 0 }, echo: { amount: 0, feedback: 0 }, points: [] };
+// MACRO hors menu : il règle sa cible (gardée), et la zone XY revient à ses valeurs au lever des doigts
+S.MACRO_TARGETS = ["FILTER", "RES", "ECHO", "FEEDBACK", "TEMPO"];
+S.macro = { target: S.MACRO_TARGETS.includes(keep("macro")) ? keep("macro") : "FILTER", base: { x: 0.5, y: 0, amount: 0, feedback: 0 } };
+S.hooks.power.push((on) => { if (on) S.macro.base = { x: 0.5, y: 0, amount: 0, feedback: 0 }; });
+S.macroTurn = (n) => {
+  const b = S.macro.base, t = S.macro.target;
+  if (t === "TEMPO") { const was = S.bpm; S.bpm = S.bpm + n; return S.bpm !== was; }
+  const key = { FILTER: "x", RES: "y", ECHO: "amount", FEEDBACK: "feedback" }[t], was = b[key];
+  b[key] = t === "FEEDBACK" ? clamp(b[key] + n / 40, 0, 0.9) : clamp(b[key] + n / 36, 0, 1);
+  if (!S.touch.xy) {                                   // un doigt sur la zone XY garde la main
+    if (key === "x" || key === "y") { S.touch.filter = { x: b.x, y: b.y }; eng.send({ t: "filter", ...S.touch.filter }); }
+    else { S.touch.echo = { amount: b.amount, feedback: b.feedback }; eng.send({ t: "echo", ...S.touch.echo }); }
+  }
+  return b[key] !== was;
+};
 const devXY = (e) => { const r = panel.svg.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * VW, ((e.clientY - r.top) / r.height) * VH]; };
 const spb = () => { const s = eng.sample; return s ? s.ch[0].length / s.rate / S.loopLength() : 0; };   // secondes du sample par temps
 
@@ -1532,12 +1562,13 @@ function xyApply() {
     eng.send({ t: "echo", ...S.touch.echo });
   }
 }
-function xyRelease() {                                // doigts levés : retour à zéro en 250 ms
+function xyRelease() {                                // doigts levés : retour aux valeurs de MACRO en 250 ms
   const f0 = { ...S.touch.filter }, e0 = { ...S.touch.echo }, t0 = performance.now();
   cancelAnimationFrame(xyRamp);
   const step = () => {
-    const u = Math.min(1, (performance.now() - t0) / 250), k = 1 - u;
-    S.touch.filter = { x: 0.5 + (f0.x - 0.5) * k, y: f0.y * k }; S.touch.echo = { amount: e0.amount * k, feedback: e0.feedback * k };
+    const u = Math.min(1, (performance.now() - t0) / 250), k = 1 - u, b = S.macro.base;
+    S.touch.filter = { x: b.x + (f0.x - b.x) * k, y: b.y + (f0.y - b.y) * k };
+    S.touch.echo = { amount: b.amount + (e0.amount - b.amount) * k, feedback: b.feedback + (e0.feedback - b.feedback) * k };
     eng.send({ t: "filter", ...S.touch.filter }); eng.send({ t: "echo", ...S.touch.echo });
     if (u < 1 && !xyp.size) xyRamp = requestAnimationFrame(step);
   };
@@ -1553,7 +1584,7 @@ panel.xy.addEventListener("pointerdown", (e) => {
 panel.xy.addEventListener("pointermove", (e) => { if (xyp.has(e.pointerId)) { xyp.set(e.pointerId, xyNorm(e)); xyApply(); } });
 const xyUp = (e) => {
   if (!xyp.delete(e.pointerId)) return;
-  if (xyp.size === 1) { S.touch.echo = { amount: 0, feedback: 0 }; eng.send({ t: "echo", amount: 0, feedback: 0 }); xyApply(); }
+  if (xyp.size === 1) { const b = S.macro.base; S.touch.echo = { amount: b.amount, feedback: b.feedback }; eng.send({ t: "echo", ...S.touch.echo }); xyApply(); }
   else if (!xyp.size) { S.touch.xy = 0; S.touch.points = []; xyRelease(); }
 };
 panel.xy.addEventListener("pointerup", xyUp); panel.xy.addEventListener("pointercancel", xyUp);

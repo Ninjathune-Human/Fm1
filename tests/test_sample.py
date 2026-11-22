@@ -848,3 +848,57 @@ def test_zoom_suit_la_tranche(page, tmp_path):
     assert 0 < z["to"] - z["from"] < 0.5 and z["from"] < 4 / 16 < z["to"]
     page.evaluate("window.__sample.col = 2"); page.wait_for_timeout(50)
     assert page.evaluate("window.__sample.zoom") == {"from": 0, "to": 1}
+
+
+def hold(fr, sel, down):
+    fr.dispatch_event(sel, "pointerdown" if down else "pointerup", {"pointerId": 9, "isPrimary": True})
+
+
+def test_macro_filtre_hors_menu(page, tmp_path):
+    with_sample(page, tmp_path); spy_sent(page)
+    page.evaluate("window.__sample.turn('MACRO', 9, 0)")
+    assert abs(page.evaluate("window.__sample.macro.base.x") - 0.75) < 1e-9
+    assert page.evaluate("window.__sent.some((m) => m.t === 'filter' && Math.abs(m.x - 0.75) < 1e-9)")
+
+
+def test_assign_choisit_la_cible(page, tmp_path):
+    with_sample(page, tmp_path)
+    tap(page, "[data-label='EDIT']")                                       # dans un menu
+    hold(page, "[data-label='ASSIGN']", True)
+    assert page.evaluate("window.__sample.assigning") is True
+    page.evaluate("window.__sample.turn('MACRO', 1, 0)")
+    hold(page, "[data-label='ASSIGN']", False)
+    assert page.evaluate("[window.__sample.macro.target, window.__sample.col]") == ["RES", 0]
+    page.reload(); page.wait_for_selector("#panel [data-label='REC']")
+    assert page.evaluate("window.__sample.macro.target") == "RES"
+
+
+def test_xy_revient_a_macro(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.turn('MACRO', -9, 0)")                  # x 0.25
+    ptr(page, "#xy", "pointerdown", *xy_at(0.9, 0.5)); ptr(page, "#xy", "pointerup", *xy_at(0.9, 0.5))
+    page.wait_for_timeout(400)
+    assert abs(page.evaluate("window.__sample.touch.filter.x") - 0.25) < 1e-6
+
+
+def test_macro_pendant_le_doigt(page, tmp_path):
+    with_sample(page, tmp_path)
+    ptr(page, "#xy", "pointerdown", *xy_at(0.9, 0.5))
+    spy_sent(page); page.evaluate("window.__sample.turn('MACRO', 9, 0)")
+    assert page.evaluate("window.__sent.some((m) => m.t === 'filter')") is False
+    ptr(page, "#xy", "pointerup", *xy_at(0.9, 0.5)); page.wait_for_timeout(400)
+    assert abs(page.evaluate("window.__sample.touch.filter.x") - 0.75) < 1e-6
+
+
+def test_macro_tempo(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.macro.target = 'TEMPO'")
+    b = page.evaluate("window.__sample.bpm"); page.evaluate("window.__sample.turn('MACRO', 3, 0)")
+    assert page.evaluate("window.__sample.bpm") == b + 3
+
+
+def test_macro_neutre_au_rallumage(page, tmp_path):
+    with_sample(page, tmp_path)
+    page.evaluate("window.__sample.turn('MACRO', 9, 0)")
+    page.click("#power"); page.click("#power"); page.wait_for_function("window.__sample.on")
+    assert page.evaluate("window.__sample.macro.base.x") == 0.5
