@@ -12,6 +12,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read          # (relire l'archive natif des derniers déploiements réussis)
 
 concurrency:
   group: site-${{ github.ref }}
@@ -101,6 +102,25 @@ jobs:
           pattern: natif-*
           path: _site/natif
           merge-multiple: true
+
+      # un firmware sans nouvelle version navigateur (source introuvable, compilation en échec) garde celle du dernier
+      # déploiement, prise dans l'archive de la version « natif », au lieu de redevenir émulé ; si cette archive l'a déjà
+      # perdu, dans celle des cinq derniers déploiements réussis
+      - name: Natifs manquants, la version du dernier déploiement
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p _site/natif ancien
+          if gh release download "$NATIF_TAG" --repo "$GITHUB_REPOSITORY" -p natif.tar.gz -D ancien; then tar -xzf ancien/natif.tar.gz -C ancien; else echo "pas d'archive publiée"; fi
+          python3 tools/natif_garde.py tools/natif.json _site/natif ancien/natif
+          manque() { python3 -c "import json,os; print(sum(not os.path.exists('_site/natif/' + f['id'] + '/natif.json') for f in json.load(open('tools/natif.json'))['firmwares']))"; }
+          for id in $(gh run list --repo "$GITHUB_REPOSITORY" --workflow Site --branch main --status success --limit 5 --json databaseId -q '.[].databaseId'); do
+            [ "$(manque)" = 0 ] && break
+            rm -rf prec && mkdir prec
+            if gh run download "$id" --repo "$GITHUB_REPOSITORY" -n site-natif -D prec 2>/dev/null; then
+              tar -xzf prec/natif.tar.gz -C prec && python3 tools/natif_garde.py tools/natif.json _site/natif prec/natif
+            fi
+          done
 
       - uses: actions/checkout@v4
         with:
