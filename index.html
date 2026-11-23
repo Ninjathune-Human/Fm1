@@ -202,6 +202,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
   background: none; cursor: pointer; text-align: left; font: 400 0.9375rem/1.25 var(--body); color: var(--ink); touch-action: manipulation; }
 .fw-thumb { position: relative; display: grid; place-items: center; aspect-ratio: 1; overflow: hidden; border-radius: 10px; margin-bottom: 3px;
   font: 600 1.375rem/1 var(--body); letter-spacing: 0.02em; color: rgb(255 255 255 / 0.85); box-shadow: 0 0 0 0.5px var(--rule); }
+.fw-thumb.fw-icon { background: linear-gradient(135deg, #1d2a27, #0e1513); color: #9cc9bb; }
+.fw-icon svg { width: 66%; height: auto; fill: currentColor; stroke: currentColor; opacity: 0.95; }
 .fw-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
 .fw-thumb img.ok { opacity: 1; }
 .fw-thumb img.fade { transition: opacity 160ms ease-out; }
@@ -6774,7 +6776,7 @@ function buildPanel(fw) {
       ul.className = "fw-items";
       btn.type = "button"; btn.className = "fw-item"; btn.dataset.id = "sample"; btn.title = "Capter, découper, scratcher et envoyer des samples, sur l'horloge du Duo";
       const span = (cls, text) => { const x = document.createElement("span"); x.className = cls; x.textContent = text; return x; };
-      const thumb = span("fw-thumb", "SM"); thumb.setAttribute("aria-hidden", "true"); thumb.style.background = standIn("sample");
+      const thumb = span("fw-thumb fw-icon", ""); thumb.innerHTML = '<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2.00" y="15.0" width="2.4" height="10" rx="1.2"/><rect x="5.88" y="11.0" width="2.4" height="18" rx="1.2"/><rect x="9.75" y="6.0" width="2.4" height="28" rx="1.2"/><rect x="13.62" y="12.0" width="2.4" height="16" rx="1.2"/><rect x="17.50" y="4.0" width="2.4" height="32" rx="1.2"/><rect x="21.38" y="9.0" width="2.4" height="22" rx="1.2"/><rect x="25.25" y="14.0" width="2.4" height="12" rx="1.2"/><rect x="29.12" y="7.0" width="2.4" height="26" rx="1.2"/><rect x="33.00" y="2.0" width="2.4" height="36" rx="1.2"/><rect x="36.88" y="10.0" width="2.4" height="20" rx="1.2"/><rect x="40.75" y="13.0" width="2.4" height="14" rx="1.2"/><rect x="44.62" y="5.0" width="2.4" height="30" rx="1.2"/><rect x="48.50" y="8.0" width="2.4" height="24" rx="1.2"/><rect x="52.38" y="14.0" width="2.4" height="12" rx="1.2"/><rect x="56.25" y="11.0" width="2.4" height="18" rx="1.2"/><rect x="60.12" y="16.0" width="2.4" height="8" rx="1.2"/><path d="M17.5 3v34M33 3v34M48.5 3v34" stroke-width="1" stroke-dasharray="2 2.4"/></svg>'; thumb.setAttribute("aria-hidden", "true");
       btn.append(thumb, span("fw-n", "Module sample"), span("fw-a", ""), span("fw-d", btn.title), span("fw-tags", ""));
       btn.addEventListener("click", () => { closeSheet(); duoShell.useB("sample"); });
       li.append(btn); ul.append(li); sec.append(h, ul); notes.push(sec);

@@ -2,28 +2,29 @@
 
 # FM-1
 
-Émulateur FM-1 avec firmwares open source optimisés, dans le navigateur. · [English](README.en.md)
+Émulateur FM-1 dans le navigateur, avec des firmwares open source. · [English](README.en.md)
 
-**Ouvrir : [ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)**, dans Chrome, Edge, Firefox ou Safari récents, sur ordinateur, iPad et iPhone (souris, tactile, stylet).
-
-**Sur iPad, en app** : [FM1.ipa](https://github.com/Ninjathune-Human/Fm1/releases/download/ipad/FM1.ipa), le site embarqué, à installer avec [Sideloadly](https://sideloadly.io/) (avec un identifiant Apple gratuit, la signature dure 7 jours).
+**[ninjathune-human.github.io/Fm1](https://ninjathune-human.github.io/Fm1/)** : ordinateur, iPad, iPhone (souris, tactile, stylet). Sur iPad, en app : [FM1.ipa](https://github.com/Ninjathune-Human/Fm1/releases/download/ipad/FM1.ipa) avec [Sideloadly](https://sideloadly.io/).
 
 ## Utilisation
 
-- **Allumer** démarre le son. Le contrôle **Firmware**, sous le panneau, ouvre la liste : la recherche tolère les fautes et l'ordre des mots, Entrée démarre le premier résultat. **Ouvrir un .fwsc…** démarre un paquet de votre ordinateur, sans l'envoyer nulle part ; il reste ensuite dans la liste, sous Mes firmwares, dans ce navigateur.
-- Chaque firmware garde ses presets et ses patterns dans le navigateur. L'interrupteur **marche / arrêt** éteint le FM-1 ; l'éteindre efface les sauvegardes du seul firmware actif.
-- Le bouton **Mémoire**, sous le FM-1 : des copies nommées du firmware en cours, et une sauvegarde de toute la mémoire du FM-1 dans un fichier .json, au format du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1) (une sauvegarde passe d'un site à l'autre) ; un seul **Importer…** reconnaît l'une ou l'autre. Sous le panneau : le manuel, les raccourcis clavier, les fonctions du firmware chargé et **Sauvegarde et restauration**. **FR / EN** traduit l'interface, le manuel et les fiches.
-- **Duo** (`index.html?duo`) : deux FM-1 dans la page, chacun avec son firmware et sa mémoire. Avec **Tempo lié**, la page leur donne la même horloge MIDI au BPM choisi et un PLAY lance les deux ; seuls se choisissent alors les firmwares vérifiés en Duo. L'horloge vient du fork de Jake Pawlik.
-- **Module sample** (dans le Duo, en tête de la liste de FM1-B) : capter un son (micro, FM-1 voisin, fichier, onglet sur PC), le découper en 16 tranches jouées aux pads, le déformer à la platine et dans la zone XY, puis l'envoyer à Pigeon ou à zp12 dans FM1-A, ou l'enregistrer en .wav ; il suit le tempo lié.
-- **Fichier MIDI** : avec SLOOP, un fichier .mid entre dans une piste, comme par « Import MIDI » de [son éditeur web](https://github.com/isod89/sloop-fm1), dont la page parle le protocole.
+- **Allumer**, ou choisir un firmware : la liste s'ouvre sous le panneau, la recherche tolère les fautes. **Ouvrir un .fwsc…** lance un paquet local, jamais envoyé.
+- Chaque firmware garde sa mémoire dans le navigateur. **Copies** en garde des versions nommées ; **Sauvegarde et restauration** exporte tout en .json, au format du [fork de Jake Pawlik](https://github.com/jpawlik/Fm1).
+- **Duo** (`?duo`) : deux FM-1, chacun avec son firmware. **Tempo lié** : une même horloge MIDI, un PLAY lance les deux.
+- **FR / EN** traduit l'interface, le manuel et les fiches.
 
-## Comment ça marche
+## Module sample
 
-- **86 firmwares natifs** : une action GitHub les compile depuis leurs sources en WebAssembly, sans processeur émulé ([performances](docs/performance.md)). Ce sont eux qui suivent les nouvelles versions de leurs auteurs.
-- **Les 47 autres** tournent tels quels sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu), l'émulateur de la puce JieLi AC791N du FM-1 écrit par Joakim Eriksson, compilé au commit figé `60645a5`. Ils restent à leur version, en attendant d'être intégrés en natif ou retirés.
-- **FM-1+VA** est une réimplémentation écrite d'après le manuel publié par Baud Girl : moteurs FM, Virtual Analog et 8-Bit, séquenceur, MIDI (Web MIDI, patches DX7 en SysEx). Son firmware n'est pas redistribué ici et aucun code n'en est repris.
-- **Les LED** : sur le FM-1, un niveau entre éteint et allumé est une part du temps allumée. Le panneau dessine cette part, relevée dans les sources de chaque firmware ou mesurée par l'émulateur, telle que l'œil la perçoit.
-- Les paquets `.fwsc` sont ceux de leurs auteurs, vérifiés par leur empreinte SHA-256 ([catalogue](firmwares/catalogue.json), [rapport de vérification](docs/verification.md)).
+![Module sample](assets/module-sample.png)
+
+Dans le Duo, en tête de la liste de FM1-B : capter un son (micro, FM-1 voisin, fichier, onglet), le découper en 16 tranches jouées aux pads, le déformer à la platine et dans la zone XY, l'envoyer à FM1-A ou l'enregistrer en .wav.
+
+## Fonctionnement
+
+- **100 firmwares natifs**, compilés en WebAssembly depuis leurs sources par une action GitHub ([performances](docs/performance.md)).
+- **43 émulés** sur [fm1-emu](https://github.com/joakimeriksson/fm1-emu) (Joakim Eriksson), figé au commit `60645a5`.
+- **FM-1+VA** est écrit d'après le manuel de Baud Girl ; son firmware n'est pas redistribué.
+- Les paquets `.fwsc` sont ceux de leurs auteurs, vérifiés par SHA-256 ([catalogue](firmwares/catalogue.json), [vérification](docs/verification.md)).
 
 ## Firmwares
 
