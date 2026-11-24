@@ -410,7 +410,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <div class="midi-pop" id="midi-pop" role="dialog" aria-label="MIDI" hidden>
             <label>Entrée<select id="midi-in"><option value="">Toutes</option><option value="-">Aucune</option></select></label>
             <label>Canal<select id="midi-ch"><option value="0">Tel quel</option></select></label>
-            <label>Vitesse des potards<select id="midi-gain"><option value="1">Fine (×1)</option><option value="2">Normale (×2)</option><option value="4">Rapide (×4)</option><option value="8">Très rapide (×8)</option></select></label>
+            <label>Vitesse des potards<select id="midi-gain"><option value="0.5">Fine (×0,5)</option><option value="0.75">Moyenne (×0,75)</option><option value="1">Normale (×1)</option></select></label>
             <div class="cp-row"><button id="midi-learn" type="button" aria-pressed="false" title="Touchez un potard du FM-1, puis tournez celui de votre clavier MIDI">Associer les potards</button><button id="midi-unlearn" type="button" title="Oublier toutes les associations de potards">Effacer</button></div>
             <p>Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.</p>
           </div>
@@ -6477,9 +6477,9 @@ function buildPanel(fw) {
     if (current.midiIn) current.midiIn(d);
   }
   // les potards du clavier MIDI liés à ceux du panneau : « Associer les potards », on touche un potard du FM-1 puis on tourne le sien
-  let ccMap = {}, ccLast = {}, ccHist = {}, ccRel = {}, learn = false, learnLabel = null;
+  let ccMap = {}, ccLast = {}, ccHist = {}, ccRel = {}, ccAcc = {}, learn = false, learnLabel = null;
   try { ccMap = JSON.parse(keepM("map") || "{}"); } catch { ccMap = {}; }
-  let ccGain = +(keepM("gain") || 2);                   // crans du panneau par pas du potard MIDI : l'étalonnage
+  let ccGain = [0.5, 0.75, 1].includes(+keepM("gain")) ? +keepM("gain") : 1;                   // crans du panneau par pas du potard MIDI : l'étalonnage
   const learnBtn = $("midi-learn"), KNOB_NAMES = { MASTER: "MASTER", SELECT: "SELECT", PRESETS: "PRESETS", ALGORITHM: "ALGORITHM", KNOB1: "KNOB 1", KNOB2: "KNOB 2", KNOB3: "KNOB 3", KNOB4: "KNOB 4" };
   const learnShow = () => {
     device.classList.toggle("learn-on", learn);
@@ -6497,11 +6497,12 @@ function buildPanel(fw) {
     status.textContent = `${KNOB_NAMES[label]} : tournez maintenant un potard de votre clavier MIDI.`;
     return true;
   };
+  const SELECT_PAS = 6;                                  // pas de potard (× vitesse) par cran de SELECT
   function ccKnob(cc, v) {
     if (learn) {
       if (!learnLabel) return true;                      // rien à associer encore : le CC ne va pas au firmware
       for (const c of Object.keys(ccMap)) if (c === String(cc) || ccMap[c] === learnLabel) delete ccMap[c];
-      ccMap[cc] = learnLabel; ccLast[cc] = v; delete ccRel[cc]; ccHist[cc] = []; keepM("map", JSON.stringify(ccMap));
+      ccMap[cc] = learnLabel; ccLast[cc] = v; delete ccRel[cc]; ccHist[cc] = []; ccAcc[cc] = 0; keepM("map", JSON.stringify(ccMap));
       status.textContent = `${KNOB_NAMES[learnLabel]} suit le CC ${cc}.`;
       learnLabel = null; learnShow();
       return true;
@@ -6512,7 +6513,7 @@ function buildPanel(fw) {
     // à ses six derniers messages : tous au voisinage de 64 (ou de 0 et 127), et jamais en marche régulière d'un pas
     const h = (ccHist[cc] = [...(ccHist[cc] || []), v].slice(-6));
     if (!ccRel[cc] && h.length === 6) {
-      const mono = h.every((x, i) => i === 0 || x > h[i - 1]) || h.every((x, i) => i === 0 || x < h[i - 1]);
+      const mono = h.every((x, i) => i === 0 || x > h[i - 1]) || h.every((x, i) => i === 0 || x < h[i - 1]) || !h.some((x, i) => i && x === h[i - 1]);   // un potard absolu n'envoie que sur changement : jamais deux fois la même valeur de suite
       if (!mono && h.every((x) => x >= 54 && x <= 74)) ccRel[cc] = "64";
       else if (!mono && h.every((x) => x <= 8 || x >= 120) && h.some((x) => x <= 8) && h.some((x) => x >= 120)) ccRel[cc] = "2";
     }
@@ -6520,11 +6521,22 @@ function buildPanel(fw) {
     if (ccRel[cc]) n = (ccRel[cc] === "64" ? v - 64 : v < 64 ? v : v - 128);
     else if (label === "MASTER") { if (!(h.length < 6 && v >= 60 && v <= 68)) panel.masterTo(v / 127); return true; }   // (au voisinage de 64, six messages d'attente : un potard sans fin n'a pas encore été reconnu)
     else { const last = ccLast[cc]; ccLast[cc] = v; n = last === undefined ? 0 : v - last; }
-    panel.knobTurn(label, n * ccGain);
+    if (label === "SELECT") {                             // un menu se parcourt cran par cran : le firmware ne regarde que le signe, on cumule donc les pas du potard
+      ccAcc[cc] = (ccAcc[cc] || 0) + n * ccGain;
+      const c = Math.trunc(ccAcc[cc] / SELECT_PAS);
+      if (c) { ccAcc[cc] -= c * SELECT_PAS; for (let i = 0; i < Math.abs(c); i++) panel.knobTurn(label, Math.sign(c)); }
+      return true;
+    }
+    ccAcc[cc] = (ccAcc[cc] || 0) + n * ccGain;           // les vitesses sous 1 cumulent les fractions de cran
+    const c = Math.trunc(ccAcc[cc]);
+    if (c) { ccAcc[cc] -= c; panel.knobTurn(label, c); }
     return true;
   }
+  const gainSel = $("midi-gain");
+  gainSel.value = String(ccGain);
+  gainSel.addEventListener("change", () => { ccGain = +gainSel.value; keepM("gain", String(ccGain)); });
   learnBtn.addEventListener("click", () => learnSet(!learn));
-  $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; ccHist = {}; ccRel = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
+  $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; ccHist = {}; ccRel = {}; ccAcc = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && learn) learnSet(false); });
   window.__midiRoute = midiRoute;                        // pour les tests
   const midiOpen = (on) => { midiPop.hidden = !on; midiBtn.setAttribute("aria-expanded", String(on)); };

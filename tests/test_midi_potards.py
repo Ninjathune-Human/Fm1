@@ -21,9 +21,9 @@ def test_potards_associes(page):
     page.keyboard.press("Escape")
     assert not page.evaluate("document.querySelector('#device').classList.contains('learn-on')")
     page.evaluate(CC % (74, 23))
-    assert page.evaluate("window.__turns") == [["KNOB1", 6]]
+    assert page.evaluate("window.__turns") == [["KNOB1", 3]]
     page.evaluate(CC % (74, 21))
-    assert page.evaluate("window.__turns[1]") == ["KNOB1", -4]
+    assert page.evaluate("window.__turns[1]") == ["KNOB1", -2]
     # MASTER : valeur absolue
     page.click("#midi-btn"); page.click("#midi-learn")
     page.locator("#device .hit.knob").nth(0).click()
@@ -53,3 +53,22 @@ def test_potard_sans_fin(page):
     page.evaluate(CC % (112, 66)); page.evaluate(CC % (112, 63))
     t = page.evaluate("window.__turns")
     assert [x[0] for x in t] == ["MASTER", "MASTER"] and t[0][1] > 0 and t[1][1] < 0, t
+
+
+def test_select_un_cran_par_paliers(page):
+    """SELECT parcourt un menu : un message de potard ne doit pas valoir un cran (127 messages = 127 crans), et un sens puis l'autre reste fidèle."""
+    power_on(page)
+    page.evaluate("document.getElementById('midi-box').hidden = false")
+    page.evaluate("() => { const h = window.__host, t = h.turn.bind(h); window.__turns = []; h.turn = (l, n, v) => { window.__turns.push([l, n]); return t(l, n, v); }; }")
+    page.click("#midi-btn"); page.click("#midi-learn")
+    page.locator("#device .hit.knob").nth(1).click()                                          # SELECT
+    page.evaluate(CC % (75, 20)); page.keyboard.press("Escape")
+    for v in range(21, 61):                                                                   # 40 pas vers le haut
+        page.evaluate(CC % (75, v))
+    up = page.evaluate("window.__turns.filter(t => t[0] === 'SELECT')")
+    assert 3 <= len(up) <= 10 and all(t[1] == 1 for t in up), up
+    page.evaluate("window.__turns.length = 0")
+    for v in range(59, 19, -1):                                                               # puis 40 pas vers le bas
+        page.evaluate(CC % (75, v))
+    down = page.evaluate("window.__turns.filter(t => t[0] === 'SELECT')")
+    assert 3 <= len(down) <= 10 and all(t[1] == -1 for t in down), down
