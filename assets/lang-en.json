@@ -278,7 +278,12 @@
   "Oublier toutes les associations de potards": "Forget every knob link",
   "Associer : touchez un potard du FM-1, puis tournez celui de votre clavier MIDI.": "Link: touch a knob of the FM-1, then turn one on your MIDI keyboard.",
   "Associations de potards effacées.": "Knob links cleared.",
-  "Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé. Associer les potards : touchez un potard du FM-1, puis tournez celui de votre clavier MIDI ; le CC reçu lui est lié (MASTER suit la valeur, les autres tournent du même nombre de crans). Échap termine, Effacer oublie tout.": "When the browser handles MIDI, the MIDI button picks the input and the channel, for all firmwares and for this FM-1 only; its light blinks when messages arrive. A connected MIDI keyboard plays the loaded firmware. Link the knobs: touch a knob of the FM-1, then turn one on your MIDI keyboard; the CC received is linked to it (MASTER follows the value, the others turn by the same number of detents). Esc ends, Clear forgets everything."
+  "Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé. Associer les potards : touchez un potard du FM-1, puis tournez celui de votre clavier MIDI ; le CC reçu lui est lié (MASTER suit la valeur, les autres tournent du même nombre de crans). Échap termine, Effacer oublie tout.": "When the browser handles MIDI, the MIDI button picks the input and the channel, for all firmwares and for this FM-1 only; its light blinks when messages arrive. A connected MIDI keyboard plays the loaded firmware. Link the knobs: touch a knob of the FM-1, then turn one on your MIDI keyboard; the CC received is linked to it (MASTER follows the value, the others turn by the same number of detents). Esc ends, Clear forgets everything.",
+  "Vitesse des potards": "Knob speed",
+  "Fine (×1)": "Fine (×1)",
+  "Normale (×2)": "Normal (×2)",
+  "Rapide (×4)": "Fast (×4)",
+  "Très rapide (×8)": "Very fast (×8)"
  },
  "patterns": [
   [

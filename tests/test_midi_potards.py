@@ -21,9 +21,9 @@ def test_potards_associes(page):
     page.keyboard.press("Escape")
     assert not page.evaluate("document.querySelector('#device').classList.contains('learn-on')")
     page.evaluate(CC % (74, 23))
-    assert page.evaluate("window.__turns") == [["KNOB1", 3]]
+    assert page.evaluate("window.__turns") == [["KNOB1", 6]]
     page.evaluate(CC % (74, 21))
-    assert page.evaluate("window.__turns[1]") == ["KNOB1", -2]
+    assert page.evaluate("window.__turns[1]") == ["KNOB1", -4]
     # MASTER : valeur absolue
     page.click("#midi-btn"); page.click("#midi-learn")
     page.locator("#device .hit.knob").nth(0).click()

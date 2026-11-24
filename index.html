@@ -410,6 +410,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <div class="midi-pop" id="midi-pop" role="dialog" aria-label="MIDI" hidden>
             <label>Entrée<select id="midi-in"><option value="">Toutes</option><option value="-">Aucune</option></select></label>
             <label>Canal<select id="midi-ch"><option value="0">Tel quel</option></select></label>
+            <label>Vitesse des potards<select id="midi-gain"><option value="1">Fine (×1)</option><option value="2">Normale (×2)</option><option value="4">Rapide (×4)</option><option value="8">Très rapide (×8)</option></select></label>
             <div class="cp-row"><button id="midi-learn" type="button" aria-pressed="false" title="Touchez un potard du FM-1, puis tournez celui de votre clavier MIDI">Associer les potards</button><button id="midi-unlearn" type="button" title="Oublier toutes les associations de potards">Effacer</button></div>
             <p>Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.</p>
           </div>
@@ -6308,7 +6309,7 @@ function buildPanel(fw) {
     });
   }
   // les potards du clavier MIDI : MASTER suit la valeur, les autres tournent du même nombre de crans que le potard reçu
-  const knobTurn = (label, n) => { const k = knobs[label]; if (k && n) turn(k, n, 0); };
+  const knobTurn = (label, n) => { const k = knobs[label]; if (k && n) turn(k, k.enc.step(n, performance.now(), 120), k.enc.v); };   // avec la vitesse, comme la molette : le firmware accélère
   const masterTo = (x) => { const k = knobs.MASTER, n = Math.round((x * 1023 - Math.round((fw.G.master ?? 0.7) * 1023)) / 8); if (n) turn(k, n, 0); };
   return { setBody, setSkin, lights, knobs, knobTurn, masterTo };
 }
@@ -6478,6 +6479,7 @@ function buildPanel(fw) {
   // les potards du clavier MIDI liés à ceux du panneau : « Associer les potards », on touche un potard du FM-1 puis on tourne le sien
   let ccMap = {}, ccLast = {}, learn = false, learnLabel = null;
   try { ccMap = JSON.parse(keepM("map") || "{}"); } catch { ccMap = {}; }
+  let ccGain = +(keepM("gain") || 2);                   // crans du panneau par pas du potard MIDI : l'étalonnage
   const learnBtn = $("midi-learn"), KNOB_NAMES = { MASTER: "MASTER", SELECT: "SELECT", PRESETS: "PRESETS", ALGORITHM: "ALGORITHM", KNOB1: "KNOB 1", KNOB2: "KNOB 2", KNOB3: "KNOB 3", KNOB4: "KNOB 4" };
   const learnShow = () => {
     device.classList.toggle("learn-on", learn);
@@ -6507,9 +6509,11 @@ function buildPanel(fw) {
     const label = ccMap[cc];
     if (!label) return false;
     if (label === "MASTER") panel.masterTo(v / 127);
-    else { const last = ccLast[cc]; ccLast[cc] = v; if (last !== undefined) panel.knobTurn(label, Math.max(-24, Math.min(24, v - last))); }
+    else { const last = ccLast[cc]; ccLast[cc] = v; if (last !== undefined) panel.knobTurn(label, (v - last) * ccGain); }
     return true;
   }
+  $("midi-gain").value = String(ccGain);
+  $("midi-gain").addEventListener("change", (e) => { ccGain = +e.target.value; keepM("gain", String(ccGain)); });
   learnBtn.addEventListener("click", () => learnSet(!learn));
   $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && learn) learnSet(false); });
