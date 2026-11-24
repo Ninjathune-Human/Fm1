@@ -37,3 +37,19 @@ def test_potards_associes(page):
     n = page.evaluate("window.__turns.length")
     page.evaluate(CC % (74, 30))
     assert page.evaluate("window.__turns.length") == n
+
+
+def test_potard_sans_fin(page):
+    """Le premier potard du MiniLab envoie 64 + écart : reconnu après quelques messages, il fait varier le potard dans les deux sens."""
+    power_on(page)
+    page.evaluate("document.getElementById('midi-box').hidden = false")
+    page.evaluate("() => { const h = window.__host, t = h.turn.bind(h); window.__turns = []; h.turn = (l, n, v) => { window.__turns.push([l, n]); return t(l, n, v); }; }")
+    page.click("#midi-btn"); page.click("#midi-learn")
+    page.locator("#device .hit.knob").nth(0).click()                                          # MASTER
+    page.evaluate(CC % (112, 65)); page.keyboard.press("Escape")
+    for v in (65, 65, 66, 65, 65, 66):                                                        # tourné vers la droite : écarts positifs
+        page.evaluate(CC % (112, v))
+    page.evaluate("window.__turns.length = 0")
+    page.evaluate(CC % (112, 66)); page.evaluate(CC % (112, 63))
+    t = page.evaluate("window.__turns")
+    assert [x[0] for x in t] == ["MASTER", "MASTER"] and t[0][1] > 0 and t[1][1] < 0, t

@@ -6477,7 +6477,7 @@ function buildPanel(fw) {
     if (current.midiIn) current.midiIn(d);
   }
   // les potards du clavier MIDI liés à ceux du panneau : « Associer les potards », on touche un potard du FM-1 puis on tourne le sien
-  let ccMap = {}, ccLast = {}, learn = false, learnLabel = null;
+  let ccMap = {}, ccLast = {}, ccHist = {}, ccRel = {}, learn = false, learnLabel = null;
   try { ccMap = JSON.parse(keepM("map") || "{}"); } catch { ccMap = {}; }
   let ccGain = +(keepM("gain") || 2);                   // crans du panneau par pas du potard MIDI : l'étalonnage
   const learnBtn = $("midi-learn"), KNOB_NAMES = { MASTER: "MASTER", SELECT: "SELECT", PRESETS: "PRESETS", ALGORITHM: "ALGORITHM", KNOB1: "KNOB 1", KNOB2: "KNOB 2", KNOB3: "KNOB 3", KNOB4: "KNOB 4" };
@@ -6501,21 +6501,30 @@ function buildPanel(fw) {
     if (learn) {
       if (!learnLabel) return true;                      // rien à associer encore : le CC ne va pas au firmware
       for (const c of Object.keys(ccMap)) if (c === String(cc) || ccMap[c] === learnLabel) delete ccMap[c];
-      ccMap[cc] = learnLabel; ccLast[cc] = v; keepM("map", JSON.stringify(ccMap));
+      ccMap[cc] = learnLabel; ccLast[cc] = v; delete ccRel[cc]; ccHist[cc] = []; keepM("map", JSON.stringify(ccMap));
       status.textContent = `${KNOB_NAMES[learnLabel]} suit le CC ${cc}.`;
       learnLabel = null; learnShow();
       return true;
     }
     const label = ccMap[cc];
     if (!label) return false;
-    if (label === "MASTER") panel.masterTo(v / 127);
-    else { const last = ccLast[cc]; ccLast[cc] = v; if (last !== undefined) panel.knobTurn(label, (v - last) * ccGain); }
+    // un potard sans fin envoie des écarts, pas une position (le premier du MiniLab : 64 + écart, ou le complément à 2) ; on le reconnaît
+    // à ses six derniers messages : tous au voisinage de 64 (ou de 0 et 127), et jamais en marche régulière d'un pas
+    const h = (ccHist[cc] = [...(ccHist[cc] || []), v].slice(-6));
+    if (!ccRel[cc] && h.length === 6) {
+      const mono = h.every((x, i) => i === 0 || x > h[i - 1]) || h.every((x, i) => i === 0 || x < h[i - 1]);
+      if (!mono && h.every((x) => x >= 54 && x <= 74)) ccRel[cc] = "64";
+      else if (!mono && h.every((x) => x <= 8 || x >= 120) && h.some((x) => x <= 8) && h.some((x) => x >= 120)) ccRel[cc] = "2";
+    }
+    let n;
+    if (ccRel[cc]) n = (ccRel[cc] === "64" ? v - 64 : v < 64 ? v : v - 128);
+    else if (label === "MASTER") { if (!(h.length < 6 && v >= 60 && v <= 68)) panel.masterTo(v / 127); return true; }   // (au voisinage de 64, six messages d'attente : un potard sans fin n'a pas encore été reconnu)
+    else { const last = ccLast[cc]; ccLast[cc] = v; n = last === undefined ? 0 : v - last; }
+    panel.knobTurn(label, n * ccGain);
     return true;
   }
-  $("midi-gain").value = String(ccGain);
-  $("midi-gain").addEventListener("change", (e) => { ccGain = +e.target.value; keepM("gain", String(ccGain)); });
   learnBtn.addEventListener("click", () => learnSet(!learn));
-  $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
+  $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; ccHist = {}; ccRel = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && learn) learnSet(false); });
   window.__midiRoute = midiRoute;                        // pour les tests
   const midiOpen = (on) => { midiPop.hidden = !on; midiBtn.setAttribute("aria-expanded", String(on)); };
