@@ -139,8 +139,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, .file:focus-within
 .cp-pop #cp-copies:not([hidden]) + .cp-part { border-top: 1px solid var(--rule); padding-top: 12px; }
 .cp-pop #cp-msg:empty { display: none; }
 #backup-export:disabled { opacity: 0.6; cursor: progress; }
-.cp-pop .cp-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.cp-pop .cp-row button, .cp-pop .cp-row .file { min-height: 36px; padding: 0 12px; font-size: 0.875rem; }
+.learn-on .hit.knob { outline: 2px dashed var(--accent); outline-offset: -2px; border-radius: 50%; }
+.learn-on .hit.knob.learn-sel { outline-style: solid; background: rgba(120, 200, 170, 0.22); }
+.midi-pop .cp-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.midi-pop .cp-row button, .cp-pop .cp-row .file { min-height: 36px; padding: 0 12px; font-size: 0.875rem; }
 .cp-pop input[type="text"] { font: 500 0.9375rem var(--body); color: var(--ink); min-height: 40px; padding: 0 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); min-width: 0; }
 .cp-pop .cp-del { color: #c0392b; }
 #cp-btn[aria-expanded="true"] { border-color: var(--accent); }
@@ -408,6 +410,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <div class="midi-pop" id="midi-pop" role="dialog" aria-label="MIDI" hidden>
             <label>Entrée<select id="midi-in"><option value="">Toutes</option><option value="-">Aucune</option></select></label>
             <label>Canal<select id="midi-ch"><option value="0">Tel quel</option></select></label>
+            <div class="cp-row"><button id="midi-learn" type="button" aria-pressed="false" title="Touchez un potard du FM-1, puis tournez celui de votre clavier MIDI">Associer les potards</button><button id="midi-unlearn" type="button" title="Oublier toutes les associations de potards">Effacer</button></div>
             <p>Les firmwares émulés reçoivent tout, horloge comprise : Felucca et les siens la suivent avec CLK sur TRS. Ce choix vaut pour ce FM-1 seul.</p>
           </div>
         </div>
@@ -456,7 +459,7 @@ html.embed .duo-tabs { margin-left: auto; }                              /* FM1-
           <dt>Boutons propres à un firmware</dt><dd>Certains firmwares ajoutent un bouton sous le FM-1 : Importer un son DX7 avec FM-1+VA, Échantillons avec Pigeon et zp12, Fichier MIDI avec SLOOP : un fichier .mid dans une de ses pistes, comme « Import MIDI » de son éditeur, après un aperçu de ce qui change en route. Le volet de leurs fonctions l'explique.</dd>
           <dt>Coloris</dt><dd>Les six coloris du FM-1, en pastilles sous le FM-1. Avec FM-1+VA, l'écran prend le thème assorti.</dd>
           <dt>Solo et Duo</dt><dd>Solo et Duo, en haut de la page. Deux FM-1 à la fois, FM1-A et FM1-B, chacun avec son firmware, sa mémoire et son allumage : l'un au-dessus de l'autre en portrait, l'un ou l'autre en paysage, côte à côte au choix sur un grand écran. Tempo lié : la page donne la même horloge MIDI aux deux FM-1, au BPM choisi à côté, quel que soit leur firmware ; un PLAY seul, sur l'un ou l'autre, les lance et les arrête ensemble. FM-1+VA la suit de lui-même ; un autre firmware la suit s'il est réglé sur une horloge externe (CLK sur USB, ou TRS s'il est émulé : page CLOCK de HOME pour Felucca, GLOBAL de GLO pour Hortator), réglage à défaire ensuite pour qu'il rejoue seul. FM1-B prend FM-1+VA ou un firmware natif. FM1-B peut aussi devenir le module sample, en tête de sa liste de firmwares : il capte un son (le micro, le FM-1 voisin, un fichier, ou un onglet sur PC), le découpe en 16 tranches que jouent ses pads, le déforme à la platine et dans la zone XY, puis l'envoie à Pigeon ou à zp12 lancés dans FM1-A, ou l'enregistre en .wav ; avec le tempo lié, il suit la même horloge, et sa pastille Firmware ramène un FM-1.</dd>
-          <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé.</dd>
+          <dt>MIDI</dt><dd>Quand le navigateur gère le MIDI, le bouton MIDI choisit l'entrée et le canal, pour tous les firmwares et pour ce FM-1 seul ; son voyant clignote quand des messages arrivent. Un clavier MIDI branché joue le firmware chargé. Associer les potards : touchez un potard du FM-1, puis tournez celui de votre clavier MIDI ; le CC reçu lui est lié (MASTER suit la valeur, les autres tournent du même nombre de crans). Échap termine, Effacer oublie tout.</dd>
           <dt>Plein écran</dt><dd>Le bouton en haut à droite. Là où le navigateur ne le permet pas (iPhone), ajouter la page à l'écran d'accueil, par Partager puis Sur l'écran d'accueil, l'ouvre sans barre.</dd>
           <dt>Ce que le navigateur garde</dt><dd>Les presets, patterns et réglages de chaque firmware, le dernier firmware choisi, le coloris et le choix MIDI, dans ce navigateur seulement. Éteindre efface ceux du firmware actif ; avec FM-1+VA, le coloris revient aussi à Menthe. Une sauvegarde, par le bouton Mémoire, garde le tout dans un fichier.</dd>
           <dt>Crédits et licences</dt><dd>FM-1+VA n'est pas le code de Baud Girl : son firmware compilé ne tourne que sur la puce JieLi du FM-1. Tout est réécrit d'après le <a href="https://baudgirl.com/work/FM-1+VA/manual" target="_blank" rel="noopener">manuel FM-1+VA</a>. Le panneau vient de l'<a href="https://sbegueria.github.io/fm1-dub/emu/" target="_blank" rel="noopener">émulateur DUB-1</a>, sous licence GPL-3.0, comme cette page. Les firmwares émulés tournent sur le cœur <a href="https://github.com/joakimeriksson/fm1-emu" target="_blank" rel="noopener">fm1-emu</a> de Joakim Eriksson, sous licence MIT. Chaque firmware garde sa licence, rappelée dans le volet de ses fonctions ; leurs textes sont dans le dossier <a href="https://github.com/Ninjathune-Human/Fm1/tree/main/firmwares/licences" target="_blank" rel="noopener">firmwares/licences</a> du dépôt.</dd>
@@ -6188,6 +6191,7 @@ function buildPanel(fw) {
     let drag = null, wheel = 0;
     k.enc = enc;
     k.hit.addEventListener("pointerdown", (e) => {
+      if (window.__midiLearnPick && window.__midiLearnPick(k.label)) { e.preventDefault(); return; }   // « Associer » : ce potard attend un potard MIDI
       e.preventDefault(); k.hit.setPointerCapture(e.pointerId);
       drag = { y: e.clientY, x: e.clientX, pitch: PITCH[e.pointerType] || 8 }; enc.reset();
     });
@@ -6303,7 +6307,10 @@ function buildPanel(fw) {
       show(k, d, br, "", live);
     });
   }
-  return { setBody, setSkin, lights, knobs };
+  // les potards du clavier MIDI : MASTER suit la valeur, les autres tournent du même nombre de crans que le potard reçu
+  const knobTurn = (label, n) => { const k = knobs[label]; if (k && n) turn(k, n, 0); };
+  const masterTo = (x) => { const k = knobs.MASTER, n = Math.round((x * 1023 - Math.round((fw.G.master ?? 0.7) * 1023)) / 8); if (n) turn(k, n, 0); };
+  return { setBody, setSkin, lights, knobs, knobTurn, masterTo };
 }
 
 // FM-1+VA emulator: switching on, the draw loop, DX7 files, factory reset.
@@ -6462,11 +6469,50 @@ function buildPanel(fw) {
     if (d[0] !== 0xf8 && d[0] !== 0xfe) {                // le voyant : ce qui arrive (sans l'horloge ni l'Active Sensing)
       midiBtn.classList.add("rx"); clearTimeout(midiBlink); midiBlink = setTimeout(() => midiBtn.classList.remove("rx"), 120);
     }
+    if ((d[0] & 0xf0) === 0xb0 && ccKnob(d[1], d[2])) return;                  // un potard associé : le potard du panneau tourne
     if ((d[0] & 0xf0) === 0x90 && d[2] > 0) midiKeys.add(d[1] - 53);          // le retour visuel d'une note MIDI
     else if ((d[0] & 0xf0) === 0x80 || (d[0] & 0xf0) === 0x90) midiKeys.delete(d[1] - 53);
     else if ((d[0] & 0xf0) === 0xb0 && (d[1] === 123 || d[1] === 120)) midiKeys.clear();   // toutes les notes coupées
     if (current.midiIn) current.midiIn(d);
   }
+  // les potards du clavier MIDI liés à ceux du panneau : « Associer les potards », on touche un potard du FM-1 puis on tourne le sien
+  let ccMap = {}, ccLast = {}, learn = false, learnLabel = null;
+  try { ccMap = JSON.parse(keepM("map") || "{}"); } catch { ccMap = {}; }
+  const learnBtn = $("midi-learn"), KNOB_NAMES = { MASTER: "MASTER", SELECT: "SELECT", PRESETS: "PRESETS", ALGORITHM: "ALGORITHM", KNOB1: "KNOB 1", KNOB2: "KNOB 2", KNOB3: "KNOB 3", KNOB4: "KNOB 4" };
+  const learnShow = () => {
+    device.classList.toggle("learn-on", learn);
+    for (const [n, k] of Object.entries(panel.knobs)) k.hit.classList.toggle("learn-sel", learn && learnLabel === n);
+    learnBtn.setAttribute("aria-pressed", String(learn));
+  };
+  function learnSet(on) {
+    learn = on; learnLabel = null; learnShow();
+    status.textContent = on ? "Associer : touchez un potard du FM-1, puis tournez celui de votre clavier MIDI." : "";
+    if (on) midiOpen(false);
+  }
+  window.__midiLearnPick = (label) => {                   // appelé par le potard touché ; vrai : le toucher ne le tourne pas
+    if (!learn) return false;
+    learnLabel = label; learnShow();
+    status.textContent = `${KNOB_NAMES[label]} : tournez maintenant un potard de votre clavier MIDI.`;
+    return true;
+  };
+  function ccKnob(cc, v) {
+    if (learn) {
+      if (!learnLabel) return true;                      // rien à associer encore : le CC ne va pas au firmware
+      for (const c of Object.keys(ccMap)) if (c === String(cc) || ccMap[c] === learnLabel) delete ccMap[c];
+      ccMap[cc] = learnLabel; ccLast[cc] = v; keepM("map", JSON.stringify(ccMap));
+      status.textContent = `${KNOB_NAMES[learnLabel]} suit le CC ${cc}.`;
+      learnLabel = null; learnShow();
+      return true;
+    }
+    const label = ccMap[cc];
+    if (!label) return false;
+    if (label === "MASTER") panel.masterTo(v / 127);
+    else { const last = ccLast[cc]; ccLast[cc] = v; if (last !== undefined) panel.knobTurn(label, Math.max(-24, Math.min(24, v - last))); }
+    return true;
+  }
+  learnBtn.addEventListener("click", () => learnSet(!learn));
+  $("midi-unlearn").addEventListener("click", () => { ccMap = {}; ccLast = {}; keepM("map", "{}"); status.textContent = "Associations de potards effacées."; });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && learn) learnSet(false); });
   window.__midiRoute = midiRoute;                        // pour les tests
   const midiOpen = (on) => { midiPop.hidden = !on; midiBtn.setAttribute("aria-expanded", String(on)); };
   midiBtn.addEventListener("click", () => midiOpen(midiPop.hidden));
