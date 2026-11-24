@@ -6513,7 +6513,7 @@ function buildPanel(fw) {
     // à ses six derniers messages : tous au voisinage de 64 (ou de 0 et 127), et jamais en marche régulière d'un pas
     const h = (ccHist[cc] = [...(ccHist[cc] || []), v].slice(-6));
     if (!ccRel[cc] && h.length === 6) {
-      const mono = h.every((x, i) => i === 0 || x > h[i - 1]) || h.every((x, i) => i === 0 || x < h[i - 1]) || !h.some((x, i) => i && x === h[i - 1]);   // un potard absolu n'envoie que sur changement : jamais deux fois la même valeur de suite
+      const mono = h.every((x, i) => i === 0 || x > h[i - 1]) || h.every((x, i) => i === 0 || x < h[i - 1]) || (!h.some((x, i) => i && x === h[i - 1]) && Math.abs(h.reduce((a, x) => a + x, 0) / 6 - 64) > 7);   // sans répétition (un potard absolu n'en envoie jamais) : un balayage qui s'écarte de 64 est un potard absolu qui change de sens
       if (!mono && h.every((x) => x >= 54 && x <= 74)) ccRel[cc] = "64";
       else if (!mono && h.every((x) => x <= 8 || x >= 120) && h.some((x) => x <= 8) && h.some((x) => x >= 120)) ccRel[cc] = "2";
     }

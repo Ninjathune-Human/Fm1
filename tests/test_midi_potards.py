@@ -63,12 +63,27 @@ def test_select_un_cran_par_paliers(page):
     page.click("#midi-btn"); page.click("#midi-learn")
     page.locator("#device .hit.knob").nth(1).click()                                          # SELECT
     page.evaluate(CC % (75, 20)); page.keyboard.press("Escape")
-    for v in range(21, 61):                                                                   # 40 pas vers le haut
+    for v in range(21, 46):                                                                   # 25 pas vers le haut
         page.evaluate(CC % (75, v))
     up = page.evaluate("window.__turns.filter(t => t[0] === 'SELECT')")
     assert 3 <= len(up) <= 10 and all(t[1] == 1 for t in up), up
     page.evaluate("window.__turns.length = 0")
-    for v in range(59, 19, -1):                                                               # puis 40 pas vers le bas
+    for v in range(45, 19, -1):                                                               # puis 25 pas vers le bas
         page.evaluate(CC % (75, v))
     down = page.evaluate("window.__turns.filter(t => t[0] === 'SELECT')")
     assert 3 <= len(down) <= 10 and all(t[1] == -1 for t in down), down
+
+
+def test_sans_fin_rapide_sans_repetition(page):
+    """Un potard sans fin tourné vite n'envoie pas deux fois la même valeur : il est quand même reconnu (sinon MASTER saute à 50 % et ne bouge plus)."""
+    power_on(page)
+    page.evaluate("document.getElementById('midi-box').hidden = false")
+    page.click("#midi-btn"); page.click("#midi-learn")
+    page.locator("#device .hit.knob").nth(0).click()
+    page.evaluate(CC % (112, 65)); page.keyboard.press("Escape")
+    for v in (66, 68, 65, 70, 67, 69, 66, 68, 67):
+        page.evaluate(CC % (112, v))
+    m0 = page.evaluate("window.__host.G.master")
+    for v in (66, 67, 66, 68):
+        page.evaluate(CC % (112, v))
+    assert page.evaluate("window.__host.G.master") > m0 + 0.05
