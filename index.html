@@ -1883,6 +1883,7 @@ registerProcessor("fm1va", Engine);
 // La liaison entre ce panneau et les firmwares exécutés par le cœur fm1-emu : identifiants
 // des touches et encodeurs (fm1-soc, d'après panel.c de Felucca), écran, voyants, catalogue.
 const KEY_IDS = { "OCT-": 0, "OCT+": 1, FX: 2, SEL: 3, ENV: 4, LFO: 5, EDIT: 6, GLO: 7, HOME: 8, SAVE: 9, ARP: 10, SEQ: 11, PLAY: 12, REC: 13 };
+const midiKeys = new Set();                              // les touches (0 = F3 .. 26 = G5) tenues par le MIDI reçu : le panneau les allume, le firmware le fasse ou non
 const noteId = (i) => (Number.isInteger(i) && i >= 0 && i < 27 ? 14 + i : -1);   // 0 = F3 .. 26 = G5
 const ENC_IDS = { SELECT: 0, ALGORITHM: 1, KNOB1: 2, KNOB2: 3, KNOB3: 4, KNOB4: 5, PRESETS: 6 };
 const potAfter = (pot, clicks) => Math.max(0, Math.min(1023, pot + 8 * clicks));
@@ -6298,7 +6299,7 @@ function buildPanel(fw) {
       show(b, d, br, hue, live, !sweep);
     }
     keys.forEach((k, i) => {
-      const d = L ? L.d[14 + i] : sweep ? sweep[14 + i] : fw.keyLit(i) ? 1 : 0, br = L && L.br ? L.br[14 + i] : 0;
+      const d = Math.max(L ? L.d[14 + i] : sweep ? sweep[14 + i] : fw.keyLit(i) ? 1 : 0, midiKeys.has(i) ? 1 : 0), br = L && L.br && !midiKeys.has(i) ? L.br[14 + i] : 0;
       show(k, d, br, "", live);
     });
   }
@@ -6461,6 +6462,9 @@ function buildPanel(fw) {
     if (d[0] !== 0xf8 && d[0] !== 0xfe) {                // le voyant : ce qui arrive (sans l'horloge ni l'Active Sensing)
       midiBtn.classList.add("rx"); clearTimeout(midiBlink); midiBlink = setTimeout(() => midiBtn.classList.remove("rx"), 120);
     }
+    if ((d[0] & 0xf0) === 0x90 && d[2] > 0) midiKeys.add(d[1] - 53);          // le retour visuel d'une note MIDI
+    else if ((d[0] & 0xf0) === 0x80 || (d[0] & 0xf0) === 0x90) midiKeys.delete(d[1] - 53);
+    else if ((d[0] & 0xf0) === 0xb0 && (d[1] === 123 || d[1] === 120)) midiKeys.clear();   // toutes les notes coupées
     if (current.midiIn) current.midiIn(d);
   }
   window.__midiRoute = midiRoute;                        // pour les tests
@@ -6894,6 +6898,7 @@ function buildPanel(fw) {
 
   function showContext() {
     document.querySelector(".file").hidden = current !== va;
+    midiKeys.clear();
     $("samples-box").hidden = !(current.kind === "natif" && current.entry.natif_echantillons);
     $("cp-copies").hidden = $("cp-exp").hidden = !((current.kind === "natif" || current.kind === "emu") && (current.kind === "natif" ? current.entry?.id : emu.entry?.id)); window.__cpRefresh?.();
     $("smf-box").hidden = !(current.kind === "emu" && current.entry?.id === "sloop");   // Fichier MIDI : SLOOP, pour l'instant
